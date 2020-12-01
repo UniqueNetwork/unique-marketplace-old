@@ -1,0 +1,5 @@
+.eslintrc.js
+config/*
+**/build/*
+**/coverage/*
+**/node_modules/*
