@@ -1,10 +1,10 @@
 {
-  "name": "polkadot-apps",
-  "repository": "https://github.com/polkadot-js/apps",
+  "name": "nft-marketplace",
+  "repository": "https://github.com/usetech-llc/marketplace",
   "main": "packages/apps-electron/build/electron.js",
-  "description": "An Apps portal into the Polkadot network",
-  "author": "Jaco Greeff <jacogr@gmail.com>",
-  "version": "0.69.2-19",
+  "description": "Nft marketplace by UseTech.com",
+  "author": "Jaco Greeff <jacogr@gmail.com>, Konstantin Pozdnikin <kpozdnikin@usetech.com>",
+  "version": "0.69.2-16",
   "license": "Apache-2",
   "private": true,
   "homepage": ".",
@@ -92,6 +92,8 @@
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-is": "^17.0.1",
+    "sass": "^1.26.8",
+    "sass-loader": "^8.0.2",
     "source-map-explorer": "^2.5.1",
     "styled-components": "^5.2.1",
     "stylelint": "^13.8.0",
@@ -102,5 +104,8 @@
     "webpack-cli": "^3.3.12",
     "webpack-merge": "^5.4.0",
     "webpack-plugin-serve": "^1.2.1"
+  },
+  "dependencies": {
+    "react-images-uploading": "^3.1.2"
   }
 }
