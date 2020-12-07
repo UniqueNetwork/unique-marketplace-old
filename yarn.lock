@@ -4116,6 +4116,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@xstate/react@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "@xstate/react@npm:1.1.0"
+  dependencies:
+    use-isomorphic-layout-effect: ^1.0.0
+    use-subscription: ^1.3.0
+  peerDependencies:
+    "@xstate/fsm": ^1.0.0
+    react: ^16.8.0 || ^17.0.0
+    xstate: ^4.11.0
+  peerDependenciesMeta:
+    "@xstate/fsm":
+      optional: true
+    xstate:
+      optional: true
+  checksum: 3caa98ba54366a8b7913d73a54b3bbc64c78679123d9ad0ebdeda68b1b793ea0587025eea13355eb8b888573add81ed16c11c0b1dfa4a76ada87eae96c3d6509
+  languageName: node
+  linkType: hard
+
 "@xtuc/ieee754@npm:^1.2.0":
   version: 1.2.0
   resolution: "@xtuc/ieee754@npm:1.2.0"
@@ -13378,6 +13397,7 @@ fsevents@^1.2.7:
     "@types/store": ^2.0.2
     "@types/styled-components": ^5.1.4
     "@types/styled-theming": ^2.2.5
+    "@xstate/react": ^1.1.0
     concurrently: ^5.3.0
     devtron: ^1.4.0
     dnslink-cloudflare: ^3.0.0
@@ -13404,6 +13424,7 @@ fsevents@^1.2.7:
     webpack-cli: ^3.3.12
     webpack-merge: ^5.4.0
     webpack-plugin-serve: ^1.2.1
+    xstate: ^4.15.0
   languageName: unknown
   linkType: soft
 
@@ -18741,12 +18762,35 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"use-isomorphic-layout-effect@npm:^1.0.0":
+  version: 1.1.0
+  resolution: "use-isomorphic-layout-effect@npm:1.1.0"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+  checksum: 4ebf06ca6a28d2d3319c326e9cb239776cd89015b7d3c7b85779b47f957781e67a0ff31eb108941c90e54d25d04ebdd0af55195cc1ec9c8ec286e7ea5fdc296f
+  languageName: node
+  linkType: hard
+
 "use-memo-one@npm:^1.1.1":
   version: 1.1.1
   resolution: "use-memo-one@npm:1.1.1"
   peerDependencies:
     react: ^16.8.0
   checksum: 691a41156a966ec83246b0c684f9ce84dcf9fe1d6441d136d3a2cf681d84f5be510265e1e3a5951b1f2f45a760a3492e3c389392c1e66240d5430150148383df
+  languageName: node
+  linkType: hard
+
+"use-subscription@npm:^1.3.0":
+  version: 1.5.1
+  resolution: "use-subscription@npm:1.5.1"
+  dependencies:
+    object-assign: ^4.1.1
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0
+  checksum: 3abcef55244fc12ba02f8a2a35e1d53984f9bc40d205713245b61defc1d84015b310d6d684d0fe3555c6b4a892aecc585e7c90bad4031d543bc77fe31284ee71
   languageName: node
   linkType: hard
 
@@ -19512,6 +19556,13 @@ fsevents@^1.2.7:
   version: 2.2.0
   resolution: "xmlchars@npm:2.2.0"
   checksum: 69bbb61e8d939873c8aa7d006d082944de2eb6f12f55e53fdfc670d544e677736b59e498ece303f264bd1dc39b77557eef1c1c9bfb09eb5e1e30ac552420d81e
+  languageName: node
+  linkType: hard
+
+"xstate@npm:^4.15.0":
+  version: 4.15.0
+  resolution: "xstate@npm:4.15.0"
+  checksum: f1fb8044c9b54cdfcb99e900c6a967c98ec46d0d9a54b1602906f89931f2e0c980d59addce2e1b17aa146589176cebd8bee01761af3001fbfaf7dd91bac139db
   languageName: node
   linkType: hard
 

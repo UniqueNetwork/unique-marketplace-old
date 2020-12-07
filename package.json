@@ -106,6 +106,8 @@
     "webpack-plugin-serve": "^1.2.1"
   },
   "dependencies": {
-    "react-images-uploading": "^3.1.2"
+    "@xstate/react": "^1.1.0",
+    "react-images-uploading": "^3.1.2",
+    "xstate": "^4.15.0"
   }
 }

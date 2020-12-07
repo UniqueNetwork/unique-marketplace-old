@@ -19,7 +19,7 @@ interface Props {
 
 function CollectionSearch({ addCollection, account, collections }: Props): React.ReactElement<Props> {
   const { api } = useApi();
-  const [collectionsAvailable, setCollectionsAvailabe] = useState<Array<NftCollectionBigInterface>>([]);
+  const [collectionsAvailable, setCollectionsAvailable] = useState<Array<NftCollectionBigInterface>>([]);
   const [collectionsMatched, setCollectionsMatched] = useState<Array<NftCollectionBigInterface>>([]);
   const [searchString, setSearchString] = useState<string>('');
   const { presetTokensCollections } = useCollections();
@@ -69,7 +69,7 @@ function CollectionSearch({ addCollection, account, collections }: Props): React
   const getCollections = useCallback(async () => {
     const collections = await presetTokensCollections();
     if (collections && collections.length) {
-      setCollectionsAvailabe(collections);
+      setCollectionsAvailable(collections);
     }
   }, []);
 

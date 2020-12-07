@@ -1,25 +1,25 @@
 // Copyright 2020 UseTech authors & contributors
 
 // global app props and types
-import { NftCollectionInterface } from '@polkadot/react-hooks';
+import { NftCollectionBigInterface, useApi, useCollections } from '@polkadot/react-hooks';
 
 // external imports
-import React, {memo, ReactElement, useState} from 'react';
+import React, { memo, ReactElement, useCallback, useEffect, useState } from 'react';
 import { Route, Switch } from 'react-router-dom'
+import List from 'semantic-ui-react/dist/commonjs/elements/List';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
-import { Table, AccountSelector } from '@polkadot/react-components';
+import { AccountSelector, Input } from '@polkadot/react-components';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 
 // local imports and components
 import NftDetailsModal from '../../components/NftDetailsModal';
-import NftCollectionCardForSale from '../../components/NftCollectionCardForSale';
 import './styles.scss';
 
 interface BuyTokensProps {
   className?: string;
 }
 
-const collectionsForSale: Array<NftCollectionInterface> = [
+/* const collectionsForSale: Array<NftCollectionInterface> = [
   {
     decimalPoints: 0,
     description: 'Remake of classic CryptoPunks game',
@@ -38,41 +38,84 @@ const collectionsForSale: Array<NftCollectionInterface> = [
     offchainSchema: 'https://uniqueapps.usetech.com/api/images/{id',
     prefix: 'GAL',
   }
-];
+]; */
 
 const BuyTokens = ({ className }: BuyTokensProps): ReactElement<BuyTokensProps> => {
+  const { api } = useApi();
   const [account, setAccount] = useState<string | null>(null);
+  const { presetTokensCollections } = useCollections();
+  const [collectionsAvailable, setCollectionsAvailable] = useState<Array<NftCollectionBigInterface>>([]);
+  const [searchString, setSearchString] = useState<string>('');
+  const [selectedCollection, setSelectedCollection] = useState<NftCollectionBigInterface>();
+
+  const getCollections = useCallback(async () => {
+    const collections = await presetTokensCollections();
+    if (collections && collections.length) {
+      setCollectionsAvailable(collections);
+    }
+  }, []);
+
+  const selectCollection = useCallback((collection: NftCollectionBigInterface) => {
+    setSelectedCollection(collection);
+  }, [setSelectedCollection]);
+
+  const collectionName16Decoder = useCallback((name) => {
+    const collectionNameArr = name.map((item: any) => item.toNumber());
+    collectionNameArr.splice(-1, 1);
+    return String.fromCharCode(...collectionNameArr);
+  }, []);
+
+  useEffect(() => {
+    void getCollections();
+  }, [api]);
+
+  console.log('collectionsAvailable', collectionsAvailable);
 
   return (
     <div className='nft-store'>
-      <Header as='h2'>Buy Tokens</Header>
+      <Header as='h2'>Nft Tokens</Header>
       <Grid className='account-selector'>
         <Grid.Row>
-          <Grid.Column width={16}>
+          <Grid.Column width={6}>
             <AccountSelector onChange={setAccount} />
           </Grid.Column>
         </Grid.Row>
         <Grid.Row>
-          <Grid.Column width={16}>
-            <Table
-              empty={'No collections added'}
-              header={[]}
-            >
-              { collectionsForSale.map((collection) => (
-                <tr key={collection.id}>
-                  <td className='overflow'>
-                    <NftCollectionCardForSale
-                      account={account}
-                      canTransferTokens
-                      collection={collection}
-                      openTransferModal={() => {}}
-                      openDetailedInformationModal={() => {}}
-                      shouldUpdateTokens={null}
-                    />
-                  </td>
-                </tr>
-              ))}
-            </Table>
+          <Grid.Column width={6}>
+            <Input
+              className='explorer--query label-small'
+              help={<span>Find and select your token collection. For example, you can find tokens from <a href='https://ipfs-gateway.usetech.com/ipns/QmaMtDqE9nhMX9RQLTpaCboqg7bqkb6Gi67iCKMe8NDpCE/' target='_blank' rel='noopener noreferrer'>SubstraPunks</a></span>}
+              isDisabled={!collectionsAvailable.length}
+              label={'Find collection'}
+              onChange={setSearchString}
+              value={searchString}
+              placeholder='Search...'
+              withLabel
+            />
+            <div className='nft-collections'>
+              <List divided relaxed>
+                { collectionsAvailable.map((collection) => (
+                <List.Item onClick={selectCollection.bind(null, collection)} key={collection.id}>
+                  <List.Content>
+                    <List.Header as='a'>{collectionName16Decoder(collection.Name).toLowerCase()}</List.Header>
+                    <List.Description as='a'>{collectionName16Decoder(collection.Description)}</List.Description>
+                  </List.Content>
+                </List.Item>
+                ))}
+              </List>
+            </div>
+          </Grid.Column>
+          <Grid.Column width={10}>
+            <Input
+              className='explorer--query label-small'
+              help={<span>Find your token. For example, 1</span>}
+              isDisabled={!collectionsAvailable.length}
+              label={'Find token'}
+              onChange={setSearchString}
+              value={searchString}
+              placeholder='Search...'
+              withLabel
+            />
           </Grid.Column>
         </Grid.Row>
       </Grid>
