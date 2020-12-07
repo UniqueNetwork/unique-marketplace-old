@@ -1,0 +1,11 @@
+.token-details {
+  img {
+    width: 100%;
+  }
+
+  &.ui.modal {
+    .actions {
+      padding: 1rem !important;
+    }
+  }
+}

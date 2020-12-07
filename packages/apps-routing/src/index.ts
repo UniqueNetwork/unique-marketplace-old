@@ -4,6 +4,7 @@
 import { TFunction } from 'i18next';
 import { Routes } from './types';
 
+import extrinsics from './extrinsics';
 /*
 import accounts from './accounts';
 import addresses from './addresses';
@@ -13,7 +14,6 @@ import contracts from './contracts';
 import council from './council';
 import democracy from './democracy';
 import explorer from './explorer';
-import extrinsics from './extrinsics';
 import genericAsset from './generic-asset';
 import js from './js';
 */
@@ -42,7 +42,8 @@ export default function create (t: TFunction): Routes {
     nftWallet(t),
     nftMint(t),
     nftStore(t),
-    settings(t)
+    settings(t),
+    extrinsics(t),
     /* accounts(t),
     addresses(t),
     explorer(t),
@@ -60,11 +61,9 @@ export default function create (t: TFunction): Routes {
     calendar(t),
     contracts(t),
     storage(t),
-    extrinsics(t),
     rpc(t),
     signing(t),
     sudo(t),
-    js(t),
-    settings(t) */
+    js(t), */
   ];
 }
