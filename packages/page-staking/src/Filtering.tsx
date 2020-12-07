@@ -2,19 +2,19 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import queryString from 'query-string';
-import React, { useCallback, useEffect } from 'react';
-
+import React, { useEffect } from 'react';
 import { Input, Toggle } from '@polkadot/react-components';
 import { useApi } from '@polkadot/react-hooks';
 import { isString } from '@polkadot/util';
 
 import { useTranslation } from './translate';
+import Ledgend from './Ledgend';
 
 interface Props {
   children?: React.ReactNode;
   className?: string;
   nameFilter: string;
-  setNameFilter: (value: string, isQuery: boolean) => void;
+  setNameFilter: (value: string) => void;
   setWithIdentity: (value: boolean) => void;
   withIdentity: boolean;
 }
@@ -28,15 +28,10 @@ function Filtering ({ children, className, nameFilter, setNameFilter, setWithIde
     const queryFilter = queryString.parse(location.href.split('?')[1]).filter;
 
     if (isString(queryFilter)) {
-      setNameFilter(queryFilter, true);
+      setNameFilter(queryFilter);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const _setNameFilter = useCallback(
-    (value: string) => setNameFilter(value, false),
-    [setNameFilter]
-  );
 
   return (
     <div className={className}>
@@ -44,7 +39,7 @@ function Filtering ({ children, className, nameFilter, setNameFilter, setWithIde
         autoFocus
         isFull
         label={t<string>('filter by name, address or index')}
-        onChange={_setNameFilter}
+        onChange={setNameFilter}
         value={nameFilter}
       />
       <div className='staking--optionsBar'>
@@ -57,6 +52,7 @@ function Filtering ({ children, className, nameFilter, setNameFilter, setWithIde
             value={withIdentity}
           />
         )}
+        <Ledgend />
       </div>
     </div>
   );

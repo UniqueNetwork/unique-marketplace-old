@@ -1,8 +1,9 @@
 // Copyright 2017-2020 @polkadot/app-democracy authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import type { Bytes, Option } from '@polkadot/types';
-import type { BlockNumber, Call, SchedulePeriod, SchedulePriority } from '@polkadot/types/interfaces';
+import { BlockNumber, Call, SchedulePeriod, SchedulePriority } from '@polkadot/types/interfaces';
+
+import { Bytes, Option } from '@polkadot/types';
 
 export interface ScheduledExt {
   blockNumber: BlockNumber;

@@ -1,13 +1,16 @@
 // Copyright 2017-2020 @polkadot/react-components authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import { VoidFn } from './types';
+
 import React, { useCallback, useMemo } from 'react';
 import styled from 'styled-components';
+import { classes } from './util';
 
-import type { VoidFn } from './types';
 import EditButton from './EditButton';
 import InputTags from './InputTags';
 import Tag from './Tag';
+
 import { useTranslation } from './translate';
 
 interface Props {
@@ -21,7 +24,7 @@ interface Props {
   value: string[];
 }
 
-function Tags ({ children, className = '', isEditable, isEditing, onChange, onSave, onToggleIsEditing, value }: Props): React.ReactElement<Props> {
+function Tags ({ children, className, isEditable, isEditing, onChange, onSave, onToggleIsEditing, value }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
 
   const contents = useMemo(
@@ -45,7 +48,7 @@ function Tags ({ children, className = '', isEditable, isEditing, onChange, onSa
   );
 
   return (
-    <div className={`ui--Tags ${className}`}>
+    <div className={classes('ui--Tags', className)}>
       {isEditable && isEditing
         ? (
           <InputTags

@@ -3,7 +3,6 @@
 
 import React from 'react';
 import styled from 'styled-components';
-
 import { AddressInfo, Icon } from '@polkadot/react-components';
 
 import { useTranslation } from '../translate';

@@ -1,18 +1,17 @@
 // Copyright 2017-2020 @polkadot/react-components authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import React, { useMemo } from 'react';
+import { DecodedEvent } from '@polkadot/api-contract/types';
+import { Event } from '@polkadot/types/interfaces';
+import { Codec } from '@polkadot/types/types';
 
-import type { DecodedEvent } from '@polkadot/api-contract/types';
-import type { Bytes } from '@polkadot/types';
-import type { Event } from '@polkadot/types/interfaces';
-import type { Codec } from '@polkadot/types/types';
+import React, { useMemo } from 'react';
 import { Input } from '@polkadot/react-components';
 import Params from '@polkadot/react-params';
-import { getTypeDef } from '@polkadot/types';
+import { getTypeDef } from '@polkadot/types/create';
 
 import { useTranslation } from './translate';
-import { getContractAbi } from './util';
+import { classes, getContractAbi } from './util';
 
 export interface Props {
   children?: React.ReactNode;
@@ -45,7 +44,7 @@ function EventDisplay ({ children, className = '', value }: Props): React.ReactE
           const abi = getContractAbi(accountId.toString());
 
           if (abi) {
-            const decoded = abi.decodeEvent(encoded as Bytes);
+            const decoded = abi.decodeEvent(encoded.toU8a(true));
 
             return {
               ...decoded,
@@ -64,7 +63,7 @@ function EventDisplay ({ children, className = '', value }: Props): React.ReactE
   );
 
   return (
-    <div className={`ui--Event ${className}`}>
+    <div className={classes('ui--Event', className)}>
       {children}
       <Params
         isDisabled

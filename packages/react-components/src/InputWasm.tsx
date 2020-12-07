@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import React, { useCallback } from 'react';
-
 import { compactAddLength, isWasm } from '@polkadot/util';
 
 import InputFile, { InputFileProps } from './InputFile';

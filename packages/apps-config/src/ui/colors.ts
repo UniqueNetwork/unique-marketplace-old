@@ -1,9 +1,6 @@
 // Copyright 2017-2020 @polkadot/apps-config authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The mapping here is done on the actual chain name (system.chain RPC) or
-// the actual RPC node it is corrected to (system.name RPC)
-
 // defaults
 const emptyColor = '#99999';
 
@@ -14,7 +11,7 @@ const chainCrust = '#ff8812';
 const chainDarwinia = 'linear-gradient(-45deg, #FE3876 0%, #7C30DD 71%, #3A30DD 100%)';
 const chainHanonycash = '#0099CC';
 const chainKulupu = '#003366';
-const chainPhala = '#a7e300';
+const chainPhala = '#4dc56a';
 const chainPlasm = '#2096F3';
 const chainPolkadot = '#e6007a';
 const chainKusama = '#000000';
@@ -26,6 +23,7 @@ const chainRoccoTick = '#22bb22';
 const chainRoccoTrack = '#bb2222';
 const chainRoccoTrick = '#2222bb';
 const chainWestend = '#da68a7';
+const nftTestnet = '#A2DD18';
 
 // based on node name
 // alphabetical
@@ -37,15 +35,12 @@ const nodeEquilibrium = '#1792ff';
 const nodeMoonbeam = '#53cbc9';
 const nodeNodle = '#1ab394';
 const nodeKilt = '#eb5b2a';
-const nodeSora = '#2D2926';
 const nodeStafi = '#00F3AB';
 const nodeSubsocial = '#b9018c';
 
-export { emptyColor };
-
-// Alphabetical overrides based on the actual matched chain name
-// NOTE: This is as retrieved via the system.chain RPC
-export const chainColors: Record<string, any> = [
+// overrides based on the actual matched chain name
+// alphabetical
+const chainColors: Record<string, any> = [
   ['acala mandala pc1', chainRoccoAcala],
   ['Darwinia Crab', chainCrab],
   ['crust maxwell cc2', chainCrust],
@@ -59,7 +54,7 @@ export const chainColors: Record<string, any> = [
   ['Kusama CC3', chainKusama],
   ['laminar turbulence pc1', chainRococoLaminar],
   ['Moonbase Alpha', nodeMoonbeam],
-  ['Phala poc 3', chainPhala],
+  ['phala poc 2', chainPhala],
   ['Plasm', chainPlasm],
   ['Polkadot', chainPolkadot],
   ['Polkadot CC1', chainPolkadot],
@@ -67,15 +62,16 @@ export const chainColors: Record<string, any> = [
   ['Tick', chainRoccoTick],
   ['Track', chainRoccoTrack],
   ['Trick', chainRoccoTrick],
-  ['Westend', chainWestend]
+  ['Westend', chainWestend],
+  ['NFT Testnet', nftTestnet]
 ].reduce((colors, [chain, color]): Record<string, any> => ({
   ...colors,
   [chain.toLowerCase()]: color
 }), {});
 
-// Alphabetical overrides based on the actual software node type
-// NOTE: This is as retrieved via the system.name RPC
-export const nodeColors: Record<string, any> = [
+// overrides based on the actual software node type (all '-' converted to ' ')
+// alphabetical
+const nodeColors: Record<string, any> = [
   ['Bifrost Node', nodeBifrost],
   ['Canvas Node', nodeCanvas],
   ['centrifuge chain', nodeCentrifuge],
@@ -84,7 +80,6 @@ export const nodeColors: Record<string, any> = [
   ['Equilibrium node', nodeEquilibrium],
   ['kilt node', nodeKilt],
   ['nodle chain node', nodeNodle],
-  ['SORA-Substrate Node', nodeSora],
   ['Stafi node', nodeStafi],
   ['subsocial node', nodeSubsocial]
   // ['node template', emptyColor],
@@ -94,3 +89,9 @@ export const nodeColors: Record<string, any> = [
   ...colors,
   [node.toLowerCase().replace(/-/g, ' ')]: color
 }), {});
+
+export {
+  chainColors,
+  emptyColor,
+  nodeColors
+};

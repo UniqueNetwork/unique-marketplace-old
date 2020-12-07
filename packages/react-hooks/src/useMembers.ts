@@ -1,9 +1,9 @@
 // Copyright 2017-2020 @polkadot/app-democracy authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { useMemo } from 'react';
+import { AccountId } from '@polkadot/types/interfaces';
 
-import type { AccountId } from '@polkadot/types/interfaces';
+import { useMemo } from 'react';
 import { useAccounts, useApi, useCall } from '@polkadot/react-hooks';
 
 interface Result {

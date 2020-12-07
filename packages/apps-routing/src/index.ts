@@ -1,9 +1,10 @@
 // Copyright 2017-2020 @polkadot/apps-routing authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import type { TFunction } from 'i18next';
+import { TFunction } from 'i18next';
+import { Routes } from './types';
 
-import type { Routes } from './types';
+/*
 import accounts from './accounts';
 import addresses from './addresses';
 import calendar from './calendar';
@@ -15,10 +16,17 @@ import explorer from './explorer';
 import extrinsics from './extrinsics';
 import genericAsset from './generic-asset';
 import js from './js';
+*/
+import nftWallet from './nft-wallet';
+import nftMint from './nft-mint';
+import nftStore from './nft-store';
+/*
 import parachains from './parachains';
 import poll from './poll';
 import rpc from './rpc';
+*/
 import settings from './settings';
+/*
 import signing from './signing';
 import society from './society';
 import staking from './staking';
@@ -27,10 +35,15 @@ import sudo from './sudo';
 import techcomm from './techcomm';
 import transfer from './transfer';
 import treasury from './treasury';
+*/
 
 export default function create (t: TFunction): Routes {
   return [
-    accounts(t),
+    nftWallet(t),
+    nftMint(t),
+    nftStore(t),
+    settings(t)
+    /* accounts(t),
     addresses(t),
     explorer(t),
     claims(t),
@@ -52,6 +65,6 @@ export default function create (t: TFunction): Routes {
     signing(t),
     sudo(t),
     js(t),
-    settings(t)
+    settings(t) */
   ];
 }

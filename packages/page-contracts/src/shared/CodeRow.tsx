@@ -1,14 +1,14 @@
 // Copyright 2017-2020 @polkadot/react-components authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import { CodeStored } from '@polkadot/app-contracts/types';
+
 import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
-
 import { registry } from '@polkadot/react-api';
-import { Icon } from '@polkadot/react-components';
 import Row from '@polkadot/react-components/Row';
+import { Icon } from '@polkadot/react-components';
 
-import type { CodeStored } from '../types';
 import contracts from '../store';
 
 interface Props {

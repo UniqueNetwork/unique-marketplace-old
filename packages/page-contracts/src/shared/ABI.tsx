@@ -2,12 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import React from 'react';
-
 import { Abi } from '@polkadot/api-contract';
 import { IconLink, InputFile, Labelled } from '@polkadot/react-components';
 
-import { useTranslation } from '../translate';
 import Messages from './Messages';
+import { useTranslation } from '../translate';
 
 interface Props {
   className?: string;

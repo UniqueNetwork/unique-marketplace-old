@@ -1,10 +1,10 @@
 // Copyright 2017-2020 @polkadot/app-explorer authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import React, { useMemo } from 'react';
+import { BlockNumber, Extrinsic } from '@polkadot/types/interfaces';
+import { KeyedEvent } from '@polkadot/react-query/types';
 
-import type { KeyedEvent } from '@polkadot/react-query/types';
-import type { BlockNumber, Extrinsic } from '@polkadot/types/interfaces';
+import React, { useMemo } from 'react';
 import { Table } from '@polkadot/react-components';
 
 import { useTranslation } from '../translate';

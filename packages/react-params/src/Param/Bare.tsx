@@ -3,6 +3,7 @@
 
 import React from 'react';
 import styled from 'styled-components';
+import { classes } from '@polkadot/react-components/util';
 
 interface Props {
   children?: React.ReactNode;
@@ -11,7 +12,7 @@ interface Props {
 
 function Bare ({ children, className = '' }: Props): React.ReactElement<Props> {
   return (
-    <div className={`ui--row ${className}`}>
+    <div className={classes('ui--row', className)}>
       {children}
     </div>
   );

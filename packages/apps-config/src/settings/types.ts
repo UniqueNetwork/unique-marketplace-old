@@ -8,10 +8,3 @@ export interface Option {
   text: React.ReactNode;
   value: string | number;
 }
-
-export interface LinkOption extends Option {
-  dnslink?: string;
-  isChild?: boolean;
-  isDevelopment?: boolean;
-  textBy: string;
-}

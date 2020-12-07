@@ -1,54 +1,35 @@
 // Copyright 2017-2020 @polkadot/app-staking authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import React, { useMemo } from 'react';
+import { EraIndex, SlashingSpans } from '@polkadot/types/interfaces';
 
-import type { SlashingSpans } from '@polkadot/types/interfaces';
-import { AddressMini, Expander } from '@polkadot/react-components';
+import React, { useMemo } from 'react';
+import { AddressMini, Expander, Spinner } from '@polkadot/react-components';
 import { formatNumber } from '@polkadot/util';
 
-import type { NominatedBy as NominatedByType } from '../../types';
 import { useTranslation } from '../../translate';
 
 interface Props {
-  nominators?: NominatedByType[];
+  nominators?: [string, EraIndex, number][];
   slashingSpans?: SlashingSpans | null;
 }
 
 interface Chilled {
-  active: null | [number, () => React.ReactNode[]];
-  chilled: null | [number, () => React.ReactNode[]];
+  active: string[];
+  chilled: string[];
 }
 
-function extractFunction (all: string[]): null | [number, () => React.ReactNode[]] {
-  return all.length
-    ? [
-      all.length,
-      () => all.map((who): React.ReactNode =>
-        <AddressMini
-          key={who}
-          value={who}
-        />
-      )
-    ]
-    : null;
-}
-
-function extractChilled (nominators: NominatedByType[] = [], slashingSpans?: SlashingSpans | null): Chilled {
+function extractChilled (nominators: [string, EraIndex, number][] = [], slashingSpans?: SlashingSpans | null): Chilled {
   const chilled = slashingSpans
     ? nominators
-      .filter(({ submittedIn }) => !slashingSpans.lastNonzeroSlash.isZero() && slashingSpans.lastNonzeroSlash.gte(submittedIn))
-      .map(({ nominatorId }) => nominatorId)
+      .filter(([, submittedIn]) => !slashingSpans.lastNonzeroSlash.isZero() && slashingSpans.lastNonzeroSlash.gte(submittedIn))
+      .map(([who]) => who)
     : [];
+  const active = nominators
+    .filter(([who]) => !chilled.includes(who))
+    .map(([who]) => who);
 
-  return {
-    active: extractFunction(
-      nominators
-        .filter(({ nominatorId }) => !chilled.includes(nominatorId))
-        .map(({ nominatorId }) => nominatorId)
-    ),
-    chilled: extractFunction(chilled)
-  };
+  return { active, chilled };
 }
 
 function NominatedBy ({ nominators, slashingSpans }: Props): React.ReactElement<Props> {
@@ -61,18 +42,33 @@ function NominatedBy ({ nominators, slashingSpans }: Props): React.ReactElement<
 
   return (
     <td className='expand all'>
-      {active && (
-        <Expander
-          renderChildren={active[1]}
-          summary={t<string>('Nominations ({{count}})', { replace: { count: formatNumber(active[0]) } })}
-        />
-      )}
-      {chilled && (
-        <Expander
-          renderChildren={chilled[1]}
-          summary={t<string>('Renomination required ({{count}})', { replace: { count: formatNumber(chilled[0]) } })}
-        />
-      )}
+      {nominators
+        ? (
+          <>
+            {active.length !== 0 && (
+              <Expander summary={t<string>('Nominations ({{count}})', { replace: { count: formatNumber(active.length) } })}>
+                {active.map((who): React.ReactNode =>
+                  <AddressMini
+                    key={who}
+                    value={who}
+                  />
+                )}
+              </Expander>
+            )}
+            {chilled.length !== 0 && (
+              <Expander summary={t<string>('Renomination required ({{count}})', { replace: { count: formatNumber(chilled.length) } })}>
+                {chilled.map((who): React.ReactNode =>
+                  <AddressMini
+                    key={who}
+                    value={who}
+                  />
+                )}
+              </Expander>
+            )}
+          </>
+        )
+        : <Spinner variant='mini' />
+      }
     </td>
   );
 }

@@ -1,7 +1,7 @@
 // Copyright 2017-2020 @polkadot/react-components authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import type { ThemeDef } from '../types';
+import { ThemeDef } from '../types';
 
 export default (theme: ThemeDef): string => `
   .ui--output {
@@ -24,6 +24,12 @@ export default (theme: ThemeDef): string => `
     &.monospace {
       font-family: monospace;
     }
+
+    .ui--output-button {
+      position: absolute;
+      top: 0.25rem;
+      right: 0.25rem;
+    }
   }
 
   header .ui--Button-Group {
@@ -44,7 +50,7 @@ export default (theme: ThemeDef): string => `
   }
 
   button.ui--Button {
-    font: ${theme.fontSans};
+    font-family: ${theme.fontSans};
   }
 
   .editable {

@@ -5,7 +5,6 @@
 
 import React from 'react';
 import styled from 'styled-components';
-
 import { BestNumber, Chain, NodeName, NodeVersion } from '@polkadot/react-query';
 
 interface Props {

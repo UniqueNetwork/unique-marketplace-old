@@ -1,10 +1,12 @@
 // Copyright 2017-2020 @polkadot/react-components authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import React from 'react';
+import { AccountId, AccountIndex, Address } from '@polkadot/types/interfaces';
 
-import type { AccountId, AccountIndex, Address } from '@polkadot/types/interfaces';
+import React from 'react';
 import { Nonce } from '@polkadot/react-query';
+
+import { classes } from './util';
 
 export interface Props {
   className?: string;
@@ -19,7 +21,7 @@ function NonceDisplay ({ className = '', label, params }: Props): React.ReactEle
 
   return (
     <Nonce
-      className={`ui--Nonce ${className}`}
+      className={classes('ui--Nonce', className)}
       label={label}
       params={params.toString()}
     />

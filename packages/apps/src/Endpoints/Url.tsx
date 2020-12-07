@@ -3,7 +3,6 @@
 
 import React, { useCallback } from 'react';
 import styled from 'styled-components';
-
 import { Toggle } from '@polkadot/react-components';
 
 interface Props {

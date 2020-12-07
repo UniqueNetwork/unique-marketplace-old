@@ -1,12 +1,12 @@
 // Copyright 2017-2020 @polkadot/react-components authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import BN from 'bn.js';
-import ChartJs from 'chart.js';
-import React, { useMemo } from 'react';
-import * as Chart from 'react-chartjs-2';
+import { LineProps } from './types';
 
-import type { LineProps } from './types';
+import BN from 'bn.js';
+import React, { useMemo } from 'react';
+import ChartJs from 'chart.js';
+import * as Chart from 'react-chartjs-2';
 
 interface State {
   chartData: ChartJs.ChartData;

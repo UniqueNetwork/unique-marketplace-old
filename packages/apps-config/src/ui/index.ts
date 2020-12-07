@@ -4,8 +4,6 @@
 import { chainColors, nodeColors } from './colors';
 import { identityNodes } from './identityIcons';
 
-export * from './logos';
-
 function sanitize (value?: string): string {
   return value?.toLowerCase().replace('-', ' ') || '';
 }

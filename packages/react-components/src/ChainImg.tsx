@@ -3,8 +3,7 @@
 
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
-
-import { chainLogos, emptyLogos, namedLogos, nodeLogos } from '@polkadot/apps-config';
+import { chainLogos, emptyLogo, namedLogos, nodeLogos } from '@polkadot/apps-config/ui/logos';
 import { useApi } from '@polkadot/react-hooks';
 
 interface Props {
@@ -22,7 +21,7 @@ function ChainImg ({ className = '', logo, onClick }: Props): React.ReactElement
   const [isEmpty, img] = useMemo((): [boolean, string] => {
     const found: unknown = namedLogos[logo || ''] || chainLogos[sanitize(systemChain)] || nodeLogos[sanitize(systemName)];
 
-    return [!found || logo === 'empty', (found || emptyLogos.empty) as string];
+    return [!found || logo === 'empty', (found || emptyLogo) as string];
   }, [logo, systemChain, systemName]);
 
   return (

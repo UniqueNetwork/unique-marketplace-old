@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { useMemo, useState } from 'react';
-
 import { isUndefined } from '@polkadot/util';
 
 export type FormField<T> = [

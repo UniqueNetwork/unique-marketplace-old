@@ -2,8 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ComponentType } from 'react';
-
-import type { Environment } from '../types';
+import { Environment } from '../types';
 import { getEnvironment } from '../util';
 
 const onlyOn = (environment: Environment) => <T extends ComponentType<any>>(component: T): T | (() => null) => {

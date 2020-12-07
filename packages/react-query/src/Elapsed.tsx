@@ -3,13 +3,11 @@
 
 import BN from 'bn.js';
 import React, { useEffect, useState } from 'react';
-
 import { bnToBn } from '@polkadot/util';
 
 type Ticker = (now: number) => void;
 
 interface Props {
-  children?: React.ReactNode;
   className?: string;
   value?: BN | Date | number;
 }
@@ -57,7 +55,7 @@ function getDisplayValue (now = 0, value: BN | Date | number = 0): string {
 
 tick();
 
-function Elapsed ({ children, className = '', value }: Props): React.ReactElement<Props> {
+function Elapsed ({ className = '', value }: Props): React.ReactElement<Props> {
   const [now, setNow] = useState(lastNow);
 
   useEffect((): () => void => {
@@ -71,8 +69,8 @@ function Elapsed ({ children, className = '', value }: Props): React.ReactElemen
   }, []);
 
   return (
-    <div className={`ui--Elapsed ${className}`}>
-      {getDisplayValue(now, value)}{children}
+    <div className={['ui--Elapsed', className].join(' ')}>
+      {getDisplayValue(now, value)}
     </div>
   );
 }

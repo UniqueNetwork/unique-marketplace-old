@@ -1,19 +1,19 @@
 // Copyright 2017-2020 @polkadot/react-components authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import React, { useCallback, useState } from 'react';
+import { ConstantCodec } from '@polkadot/metadata/decorate/types';
+import { DropdownOptions } from '../util/types';
+import { ConstValue, ConstValueBase } from './types';
 
-import type { ConstantCodec } from '@polkadot/metadata/decorate/types';
+import React, { useCallback, useState } from 'react';
 import { ApiPromise } from '@polkadot/api';
 import { useApi } from '@polkadot/react-hooks';
 
-import type { DropdownOptions } from '../util/types';
-import type { ConstValue, ConstValueBase } from './types';
 import LinkedWrapper from '../InputExtrinsic/LinkedWrapper';
-import keyOptions from './options/key';
-import sectionOptions from './options/section';
 import SelectKey from './SelectKey';
 import SelectSection from './SelectSection';
+import keyOptions from './options/key';
+import sectionOptions from './options/section';
 
 interface Props {
   className?: string;

@@ -1,29 +1,32 @@
 // Copyright 2017-2020 @polkadot/react-api authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import { InjectedExtension } from '@polkadot/extension-inject/types';
+import { KeyringStore } from '@polkadot/ui-keyring/types';
+import { ChainProperties, ChainType } from '@polkadot/types/interfaces';
+import { ApiProps, ApiState } from './types';
+
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import store from 'store';
-
-import type { InjectedExtension } from '@polkadot/extension-inject/types';
-import type { ChainProperties, ChainType } from '@polkadot/types/interfaces';
-import type { KeyringStore } from '@polkadot/ui-keyring/types';
-import { deriveMapCache, setDeriveCache } from '@polkadot/api-derive/util';
 import { ApiPromise } from '@polkadot/api/promise';
-import { ethereumNetworks, POLKADOT_DENOM_BLOCK, POLKADOT_GENESIS, typesBundle, typesChain, typesRpc, typesSpec } from '@polkadot/apps-config';
+import { setDeriveCache, deriveMapCache } from '@polkadot/api-derive/util';
+import { typesChain, typesSpec, typesBundle, typesRpc } from '@polkadot/apps-config/api';
+import { POLKADOT_DENOM_BLOCK, POLKADOT_GENESIS } from '@polkadot/apps-config/api/constants';
 import { web3Accounts, web3Enable } from '@polkadot/extension-dapp';
-import { TokenUnit } from '@polkadot/react-components/InputNumber';
-import { StatusContext } from '@polkadot/react-components/Status';
-import ApiSigner from '@polkadot/react-signer/signers/ApiSigner';
 import { WsProvider } from '@polkadot/rpc-provider';
+import { StatusContext } from '@polkadot/react-components/Status';
+import { TokenUnit } from '@polkadot/react-components/InputNumber';
 import keyring from '@polkadot/ui-keyring';
+
 import uiSettings from '@polkadot/ui-settings';
+import ApiSigner from '@polkadot/react-signer/signers/ApiSigner';
 import { formatBalance, isTestChain } from '@polkadot/util';
 import { setSS58Format } from '@polkadot/util-crypto';
 import { defaults as addressDefaults } from '@polkadot/util-crypto/address/defaults';
 
-import type { ApiProps, ApiState } from './types';
 import ApiContext from './ApiContext';
 import registry from './typeRegistry';
+import { ethereumNetworks } from '@polkadot/apps-config/settings';
 
 interface Props {
   children: React.ReactNode;
@@ -179,12 +182,10 @@ function Api ({ children, store, url }: Props): React.ReactElement<Props> | null
   const [state, setState] = useState<ApiState>({ hasInjectedAccounts: false, isApiReady: false } as unknown as ApiState);
   const [isApiConnected, setIsApiConnected] = useState(false);
   const [isApiInitialized, setIsApiInitialized] = useState(false);
-  const [apiError, setApiError] = useState<null | string>(null);
   const [extensions, setExtensions] = useState<InjectedExtension[] | undefined>();
-
   const value = useMemo<ApiProps>(
-    () => ({ ...state, api, apiError, extensions, isApiConnected, isApiInitialized, isWaitingInjected: !extensions }),
-    [apiError, extensions, isApiConnected, isApiInitialized, state]
+    () => ({ ...state, api, extensions, isApiConnected, isApiInitialized, isWaitingInjected: !extensions }),
+    [extensions, isApiConnected, isApiInitialized, state]
   );
 
   // initial initialization
@@ -197,7 +198,6 @@ function Api ({ children, store, url }: Props): React.ReactElement<Props> | null
 
     api.on('connected', () => setIsApiConnected(true));
     api.on('disconnected', () => setIsApiConnected(false));
-    api.on('error', (error: Error) => setApiError(error.message));
     api.on('ready', (): void => {
       const injectedPromise = web3Enable('polkadot-js/apps');
 
@@ -207,11 +207,7 @@ function Api ({ children, store, url }: Props): React.ReactElement<Props> | null
 
       loadOnReady(api, injectedPromise, store, types)
         .then(setState)
-        .catch((error): void => {
-          console.error(error);
-
-          setApiError((error as Error).message);
-        });
+        .catch(console.error);
     });
 
     setIsApiInitialized(true);

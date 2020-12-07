@@ -1,29 +1,18 @@
 // Copyright 2017-2020 @polkadot/apps-config authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The mapping here is done on the actual chain name (system.chain RPC) or
-// the actual RPC node it is corrected to (system.name RPC)
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
 // anything for a specific chain, most would probably fit into the node category (but allow for chain-specific)
 // alphabetical
 import chainDusty from './chains/dusty.png';
 import chainKusama from './chains/kusama-128.gif';
+import chainRococo from './chains/rococo.svg';
 import chainRococoTick from './chains/rococo-tick.svg';
 import chainRococoTrack from './chains/rococo-track.svg';
 import chainRococoTrick from './chains/rococo-trick.svg';
-import chainRococo from './chains/rococo.svg';
-// last-resort fallback, just something empty
-import emptyLogo from './empty.svg';
-// extensions
-// alphabetical
-import extensionPolkadotJs from './extensions/polkadot-js.svg';
-// external links
-// alphabetical
-import externalCommonwealth from './external/commonwealth.png';
-import externalPolkascan from './external/polkascan.png';
-import externalPolkassembly from './external/polkassembly.png';
-import externalPolkastats from './external/polkastats.png';
-import externalSubscan from './external/subscan.svg';
+import chainUseTech from './chains/usetech.svg';
+
 // defaults for the node type, assuming we don't have a specific chain, but rather match on the implementation
 // alphabetical
 import nodeAcala from './nodes/acala-circle.svg';
@@ -39,25 +28,41 @@ import nodeEdgeware from './nodes/edgeware-circle.svg';
 import nodeEncointerNotee from './nodes/encointer-notee.svg';
 import nodeEncointerTeeproxy from './nodes/encointer-teeproxy.svg';
 import nodeEquilibrium from './nodes/equilibrium.svg';
+import nodeNodle from './nodes/nodle.svg';
 import nodeHanonycash from './nodes/hanonycash.svg';
 import nodeKilt from './nodes/kilt.svg';
 import nodeKulupu from './nodes/kulupu.svg';
 import nodeLaminar from './nodes/laminar-circle.svg';
 import moonbeam from './nodes/moonbeam.png';
-import nodeNodle from './nodes/nodle.svg';
 import nodePhala from './nodes/phala.svg';
 import nodePlasm from './nodes/plasm.png';
 import nodePolkadot from './nodes/polkadot-circle.svg';
 import nodePolkadotJs from './nodes/polkadot-js.svg';
 import nodeRobonomics from './nodes/robonomics.svg';
-import nodeSora from './nodes/sora-substrate.svg';
 import nodeStafi from './nodes/stafi.png';
 import nodeSubsocial from './nodes/subsocial.svg';
 import nodeSubstrate from './nodes/substrate-hexagon.svg';
 
-// Alphabetical overrides based on the actual matched chain name
-// NOTE: This is as retrieved via system.chain RPC
-export const chainLogos: Record<string, unknown> = [
+// extensions
+// alphabetical
+import extensionPolkadotJs from './extensions/polkadot-js.svg';
+
+// external links
+// alphabetical
+import externalCommonwealth from './external/commonwealth.png';
+import externalPolkascan from './external/polkascan.png';
+import externalPolkassembly from './external/polkassembly.png';
+import externalPolkastats from './external/polkastats.png';
+import externalSubscan from './external/subscan.svg';
+
+// last-resort fallback, just something empty
+import emptyLogo from './empty.svg';
+
+// overrides based on the actual matched chain name
+// NOTE: this matches up with RPC system.chain
+// alphabetical
+const chainLogos: Record<string, any> = [
+  ['NFT Testnet', chainUseTech],
   ['darwinia crab', nodeCrab],
   ['Dusty', chainDusty],
   ['Kusama', chainKusama], // new name after CC3
@@ -69,14 +74,15 @@ export const chainLogos: Record<string, unknown> = [
   ['Tick', chainRococoTick],
   ['Track', chainRococoTrack],
   ['Trick', chainRococoTrick]
-].reduce((logos, [chain, logo]): Record<string, unknown> => ({
+].reduce((logos, [chain, logo]): Record<string, any> => ({
   ...logos,
   [(chain as string).toLowerCase()]: logo
 }), {});
 
-// Alphabetical overrides based on the actual software node type
-// NOTE: This is as retrieved via system.name RPC
-export const nodeLogos: Record<string, unknown> = [
+// overrides based on the actual software node type (all '-' converted to ' ')
+// NOTE: this matches up with what the RPC via system.name
+// alphabetical
+const nodeLogos: Record<string, any> = [
   ['airalab-robonomics', nodeRobonomics],
   ['Bifrost Node', nodeBifrost],
   ['Bifrost', nodeBifrost],
@@ -84,7 +90,7 @@ export const nodeLogos: Record<string, unknown> = [
   ['centrifuge chain', nodeCentrifuge],
   ['Centrifuge Chain Node', nodeCentrifuge],
   ['darwinia crab', nodeCrab],
-  ['crust', nodeCrust],
+  ['crust node', nodeCrust],
   ['darwinia', nodeDarwinia],
   ['darwinia parachain', nodeDarwinia],
   ['Dock Full Node', nodeDockMainnet],
@@ -102,23 +108,21 @@ export const nodeLogos: Record<string, unknown> = [
   ['Plasm Node', nodePlasm],
   ['phala-substrate-node', nodePhala],
   ['polkadot-js', nodePolkadotJs],
-  ['SORA-Substrate Node', nodeSora],
   ['Stafi Node', nodeStafi],
   ['Stafi', nodeStafi],
   ['subsocial-node', nodeSubsocial],
   ['substrate-node', nodeSubstrate],
   ['Equilibrium Node', nodeEquilibrium],
   ['Equilibrium', nodeEquilibrium]
-].reduce((logos, [node, logo]): Record<string, unknown> => ({
+].reduce((logos, [node, logo]): Record<string, any> => ({
   ...logos,
   [(node as string).toLowerCase().replace(/-/g, ' ')]: logo
 }), {});
 
-// Alphabetical overrides when we pass an explicit logo name
-// NOTE: Matches with what is defined as "info" in settings/endpoints.ts
-// (Generally would be the 'network' key in the known ss58 as per
-// https://github.com/polkadot-js/common/blob/master/packages/networks/src/index.ts)
-export const namedLogos: Record<string, unknown> = {
+// overrides when we pass an explicit logo name
+// NOTE: this matches up with what is defined as "info" in settings/endpoints.ts
+// alphabetical
+const namedLogos: Record<string, any> = {
   acala: nodeAcala,
   alexander: nodePolkadot,
   bifrost: nodeBifrost,
@@ -152,7 +156,6 @@ export const namedLogos: Record<string, unknown> = {
   rococoTick: chainRococoTick,
   rococoTrack: chainRococoTrack,
   rococoTrick: chainRococoTrick,
-  'sora-substrate': nodeSora,
   stafi: nodeStafi,
   subsocial: nodeSubsocial,
   substrate: nodeSubstrate,
@@ -160,12 +163,12 @@ export const namedLogos: Record<string, unknown> = {
 };
 
 // extension logos
-export const extensionLogos: Record<string, unknown> = {
+const extensionLogos: Record<string, any> = {
   'polkadot-js': extensionPolkadotJs
 };
 
-// external logos, i.e. for explorers
-export const externalLogos: Record<string, unknown> = {
+// external logos
+const externalLogos: Record<string, any> = {
   commonwealth: externalCommonwealth,
   polkascan: externalPolkascan,
   polkassembly: externalPolkassembly,
@@ -174,7 +177,7 @@ export const externalLogos: Record<string, unknown> = {
 };
 
 // empty logos
-export const emptyLogos: Record<string, unknown> = {
+const emptyLogos: Record<string, any> = {
   empty: emptyLogo
 };
 
@@ -184,3 +187,12 @@ export const emptyLogos: Record<string, unknown> = {
     new Image().src = src as string;
   });
 });
+
+export {
+  chainLogos,
+  emptyLogo,
+  extensionLogos,
+  externalLogos,
+  namedLogos,
+  nodeLogos
+};

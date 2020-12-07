@@ -3,11 +3,8 @@
 
 import typesChain from './chain';
 import typesSpec from './spec';
-
-export { default as typesBundle } from './bundle';
-export * from './constants';
-export * from './params';
-export { default as typesRpc } from './rpc';
+import typesBundle from './bundle';
+import typesRpc from './rpc';
 
 export function getChainTypes (specName: string, chainName: string): Record<string, string | Record<string, unknown>> {
   return {
@@ -18,5 +15,7 @@ export function getChainTypes (specName: string, chainName: string): Record<stri
 
 export {
   typesChain,
-  typesSpec
+  typesSpec,
+  typesBundle,
+  typesRpc
 };

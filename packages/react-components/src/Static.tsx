@@ -3,7 +3,6 @@
 
 import React from 'react';
 
-import CopyButton from './CopyButton';
 import Labelled from './Labelled';
 
 interface Props {
@@ -18,11 +17,10 @@ interface Props {
   isSmall?: boolean;
   label?: React.ReactNode;
   value?: React.ReactNode;
-  withCopy?: boolean;
   withLabel?: boolean;
 }
 
-function Static ({ children, className = '', defaultValue, help, isFull, isHidden, isSmall, label, value, withCopy, withLabel }: Props): React.ReactElement<Props> {
+function Static ({ children, className = '', defaultValue, help, isFull, isHidden, isSmall, label, value, withLabel }: Props): React.ReactElement<Props> {
   return (
     <Labelled
       className={className}
@@ -37,9 +35,6 @@ function Static ({ children, className = '', defaultValue, help, isFull, isHidde
         {value || defaultValue}
         {children}
       </div>
-      {withCopy && (
-        <CopyButton value={value} />
-      )}
     </Labelled>
   );
 }

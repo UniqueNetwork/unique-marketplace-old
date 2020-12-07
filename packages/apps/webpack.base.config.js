@@ -35,6 +35,16 @@ function createWebpack (ENV, context) {
     new WebpackPluginServe({
       hmr: false, // switch off, Chrome WASM memory leak
       liveReload: false, // explict off, overrides hmr
+      middleware: (app, builtins) => {
+        app.use(builtins.proxy('/api/health', {
+          changeOrigin: true,
+          target: 'https://uniqueapps.usetech.com'
+        }));
+        app.use(builtins.proxy('/api/mint', {
+          changeOrigin: true,
+          target: 'https://uniqueapps.usetech.com'
+        }));
+      },
       port: 3000,
       progress: false, // since we have hmr off, disable
       static: path.join(process.cwd(), '/build')
@@ -60,7 +70,7 @@ function createWebpack (ENV, context) {
         },
         {
           exclude: /(node_modules)/,
-          test: /\.css$/,
+          test: /\.(s[ac]|c)ss$/,
           use: [
             isProd
               ? MiniCssExtractPlugin.loader
@@ -70,7 +80,8 @@ function createWebpack (ENV, context) {
               options: {
                 importLoaders: 1
               }
-            }
+            },
+            'sass-loader',
           ]
         },
         {
@@ -158,7 +169,7 @@ function createWebpack (ENV, context) {
           ...mapChunks('polkadot', [
             /* 00 */ /node_modules\/@polkadot\/(wasm)/,
             /* 01 */ /node_modules\/(@polkadot\/(api|metadata|rpc|types))/,
-            /* 02 */ /node_modules\/(@polkadot\/(extension|keyring|networks|react|ui|util|vanitygen)|@acala-network|@edgeware|@laminar|@ledgerhq|@open-web3|@sora-substrate|@subsocial|@zondax|edgeware)/
+            /* 02 */ /node_modules\/(@polkadot\/(extension|keyring|networks|react|ui|util|vanitygen)|@acala-network|@edgeware|@laminar|@ledgerhq|@open-web3|@subsocial|@zondax|edgeware)/
           ]),
           ...mapChunks('react', [
             /* 00 */ /node_modules\/(@fortawesome)/,

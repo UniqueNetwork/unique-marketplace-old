@@ -1,10 +1,17 @@
 // Copyright 2017-2020 @polkadot/apps-config authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import type { TFunction } from 'i18next';
+import { TFunction } from 'i18next';
+import { Option } from './types';
 
-import type { LinkOption } from './types';
 import { CUSTOM_ENDPOINT_KEY } from './constants';
+
+export interface LinkOption extends Option {
+  dnslink?: string;
+  isChild?: boolean;
+  isDevelopment?: boolean;
+  textBy: string;
+}
 
 interface EnvWindow {
   // eslint-disable-next-line camelcase
@@ -56,6 +63,13 @@ function createLiveNetworks (t: TFunction): LinkOption[] {
   return [
     // fixed, polkadot
     {
+      dnslink: 'nftTestnet',
+      info: 'nftTestnet',
+      text: t<string>('rpc.polkadot.parity', 'NFT Testnet (Live, hosted by UseTech)', { ns: 'apps-config' }),
+      textBy: t('rpc.hosted.by', 'hosted by {{host}}', { ns: 'apps-config', replace: { host: 'UseTech' } }),
+      value: 'wss://unique.usetech.com'
+    },
+    {
       dnslink: 'polkadot',
       info: 'polkadot',
       text: t('rpc.polkadot.parity', 'Polkadot', { ns: 'apps-config' }),
@@ -69,18 +83,6 @@ function createLiveNetworks (t: TFunction): LinkOption[] {
       value: 'wss://cc1-1.polkadot.network'
     },
     {
-      info: 'polkadot',
-      text: t('rpc.polkadot.onfinality', 'Polkadot', { ns: 'apps-config' }),
-      textBy: t('rpc.hosted.by', 'hosted by {{host}}', { ns: 'apps-config', replace: { host: 'OnFinality' } }),
-      value: 'wss://polkadot.api.onfinality.io/public-ws'
-    },
-    {
-      info: 'polkadot',
-      text: t('rpc.polkadot.patractlabs', 'Polkadot', { ns: 'apps-config' }),
-      textBy: t('rpc.hosted.by', 'hosted by {{host}}', { ns: 'apps-config', replace: { host: 'Patract Elara' } }),
-      value: 'wss://polkadot.elara.patract.io'
-    },
-    {
       dnslink: 'kusama',
       info: 'kusama',
       text: t('rpc.kusama.parity', 'Kusama', { ns: 'apps-config' }),
@@ -92,18 +94,6 @@ function createLiveNetworks (t: TFunction): LinkOption[] {
       text: t('rpc.kusama.w3f', 'Kusama', { ns: 'apps-config' }),
       textBy: t('rpc.hosted.by', 'hosted by {{host}}', { ns: 'apps-config', replace: { host: 'Web3 Foundation' } }),
       value: 'wss://cc3-5.kusama.network'
-    },
-    {
-      info: 'kusama',
-      text: t('rpc.kusama.onfinality', 'Kusama', { ns: 'apps-config' }),
-      textBy: t('rpc.hosted.by', 'hosted by {{host}}', { ns: 'apps-config', replace: { host: 'OnFinality' } }),
-      value: 'wss://kusama.api.onfinality.io/public-ws'
-    },
-    {
-      info: 'kusama',
-      text: t('rpc.kusama.patractlabs', 'Kusama', { ns: 'apps-config' }),
-      textBy: t('rpc.hosted.by', 'hosted by {{host}}', { ns: 'apps-config', replace: { host: 'Patract Elara' } }),
-      value: 'wss://kusama.elara.patract.io'
     },
     {
       info: 'kusama',
@@ -143,7 +133,7 @@ function createLiveNetworks (t: TFunction): LinkOption[] {
       info: 'edgeware',
       text: t('rpc.edgeware', 'Edgeware', { ns: 'apps-config' }),
       textBy: t('rpc.hosted.by', 'hosted by {{host}}', { ns: 'apps-config', replace: { host: 'Commonwealth Labs' } }),
-      value: 'wss://mainnet4.edgewa.re'
+      value: 'wss://mainnet1.edgewa.re'
     },
     {
       info: 'equilibrium',
@@ -340,26 +330,20 @@ function createTestNetworks (t: TFunction): LinkOption[] {
     {
       info: 'moonbaseAlpha',
       text: t('rpc.moonbeam', 'Moonbase Alpha', { ns: 'apps-config' }),
-      textBy: t('rpc.hosted.by', 'hosted by {{host}}', { ns: 'apps-config', replace: { host: 'Moonbeam Network' } }),
+      textBy: t('rpc.hosted.by', 'hosted by {{host}}', { ns: 'apps-config', replace: { host: 'Moonbeam Protocol' } }),
       value: 'wss://wss.testnet.moonbeam.network'
     },
     {
       info: 'phala',
-      text: t('rpc.phala', 'Phala PoC-3', { ns: 'apps-config' }),
+      text: t('rpc.phala', 'Phala PoC-2', { ns: 'apps-config' }),
       textBy: t('rpc.hosted.by', 'hosted by {{host}}', { ns: 'apps-config', replace: { host: 'Phala Network' } }),
-      value: 'wss://poc3.phala.network/ws'
+      value: 'wss://poc2.phala.network/ws'
     },
     {
       info: 'laminar',
       text: t('rpc.turbulence', 'Turbulence', { ns: 'apps-config' }),
       textBy: t('rpc.hosted.by', 'hosted by {{host}}', { ns: 'apps-config', replace: { host: 'Laminar' } }),
       value: 'wss://testnet-node-1.laminar-chain.laminar.one/ws'
-    },
-    {
-      info: 'sora-substrate',
-      text: t('rpc.sora-substrate', 'SORA-Substrate', { ns: 'apps-config' }),
-      textBy: t('rpc.hosted.by', 'hosted by {{host}}', { ns: 'apps-config', replace: { host: 'Soramitsu' } }),
-      value: 'wss://ws.parachain-node-1.s1.dev.soraneo.soramitsu.co.jp'
     },
     {
       dnslink: 'westend',
@@ -395,7 +379,7 @@ function createCustom (t: TFunction): LinkOption[] {
     : [];
 }
 
-export function createWsEndpoints (t: TFunction): LinkOption[] {
+export function createEndpoints (t: TFunction): LinkOption[] {
   return [
     ...createCustom(t),
     {

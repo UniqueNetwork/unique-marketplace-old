@@ -2,9 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import React from 'react';
+import { ThemeProps } from '@polkadot/react-components/types';
 import styled from 'styled-components';
-
-import type { ThemeProps } from '@polkadot/react-components/types';
 
 interface Props {
   children?: React.ReactNode;
@@ -21,7 +20,7 @@ function Holder ({ children, className = '', withBorder, withPadding }: Props): 
   );
 }
 
-export default React.memo(styled(Holder)(({ theme }: ThemeProps) => `
+export default React.memo(styled(Holder)`
   &.withBorder {
     border-left: 0.25rem solid #f2f2f2;
   }
@@ -37,7 +36,7 @@ export default React.memo(styled(Holder)(({ theme }: ThemeProps) => `
 
   .ui--Param .ui--Labelled label {
     text-transform: none !important;
-    font: ${theme.fontMono};
+    font-family: ${({ theme }: ThemeProps) => theme.fontMono};
   }
 
   .ui--row {
@@ -45,7 +44,7 @@ export default React.memo(styled(Holder)(({ theme }: ThemeProps) => `
   }
 
   .ui--Param-Address {
-    font: ${theme.fontMono};
+    font-family: ${({ theme }: ThemeProps) => theme.fontMono};
   }
 
   .ui--Params-Content {
@@ -95,4 +94,4 @@ export default React.memo(styled(Holder)(({ theme }: ThemeProps) => `
       right: 3.5rem;
     }
   }
-`));
+`);

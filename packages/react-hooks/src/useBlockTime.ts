@@ -3,14 +3,12 @@
 
 import BN from 'bn.js';
 import { useMemo } from 'react';
-
-import type { Time } from '@polkadot/util/types';
 import { useApi } from '@polkadot/react-hooks';
 import { BN_ONE, extractTime } from '@polkadot/util';
 
 import { useTranslation } from './translate';
 
-type Result = [number, string, Time];
+type Result = [number, string];
 
 const DEFAULT_TIME = new BN(6000);
 
@@ -26,8 +24,7 @@ export function useBlockTime (blocks = BN_ONE): Result {
         api.consts.timestamp?.minimumPeriod.muln(2) ||
         DEFAULT_TIME
       );
-      const time = extractTime(blockTime.mul(blocks).toNumber());
-      const { days, hours, minutes, seconds } = time;
+      const { days, hours, minutes, seconds } = extractTime(blockTime.mul(blocks).toNumber());
       const timeStr = [
         days ? (days > 1) ? t<string>('{{days}} days', { replace: { days } }) : t<string>('1 day') : null,
         hours ? (hours > 1) ? t<string>('{{hours}} hrs', { replace: { hours } }) : t<string>('1 hr') : null,
@@ -40,8 +37,7 @@ export function useBlockTime (blocks = BN_ONE): Result {
 
       return [
         blockTime.toNumber(),
-        timeStr,
-        time
+        timeStr
       ];
     },
     [api, blocks, t]

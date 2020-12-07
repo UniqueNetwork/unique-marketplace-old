@@ -1,9 +1,10 @@
 // Copyright 2017-2020 @polkadot/react-components authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import { ThemeProps } from '../types';
+
 import { createGlobalStyle } from 'styled-components';
 
-import type { ThemeProps } from '../types';
 import cssComponents from './components';
 import cssForm from './form';
 import cssMedia from './media';
@@ -214,7 +215,7 @@ export default createGlobalStyle<Props & ThemeProps>(({ theme, uiHighlight }: Pr
   #root {
     background: ${theme.bgPage};
     color: ${theme.color};
-    font: ${theme.fontSans};
+    font-family: ${theme.fontSans};
     height: 100%;
   }
 
@@ -299,7 +300,7 @@ export default createGlobalStyle<Props & ThemeProps>(({ theme, uiHighlight }: Pr
   body {
     height: 100%;
     margin: 0;
-    font: ${theme.fontSans};
+    font-family: ${theme.fontSans};
   }
 
   br {
@@ -331,13 +332,11 @@ export default createGlobalStyle<Props & ThemeProps>(({ theme, uiHighlight }: Pr
 
   h1, h2, h3, h4, h5 {
     color: ${theme.colorSummary};
-    font: ${theme.fontSans};
+    font-family: ${theme.fontSans};
     font-weight: ${theme.fontWeightLight};
-    margin-bottom: 0.25rem;
   }
 
   h1 {
-    font-size: 1.75rem;
     text-transform: lowercase;
 
     em {
@@ -346,8 +345,8 @@ export default createGlobalStyle<Props & ThemeProps>(({ theme, uiHighlight }: Pr
     }
   }
 
-  h2 {
-    font-size: 1.71428571rem;
+  h1, h2, h3, h4, h5 {
+    margin-bottom: 0.25rem;
   }
 
   header {
@@ -367,7 +366,7 @@ export default createGlobalStyle<Props & ThemeProps>(({ theme, uiHighlight }: Pr
     box-sizing: border-box;
     color: ${theme.colorLabel};
     display: block;
-    font: ${theme.fontSans};
+    font-family: ${theme.fontSans};
     font-size: 1rem;
     font-weight: 400;
   }

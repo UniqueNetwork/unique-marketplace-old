@@ -2,8 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import React, { useCallback } from 'react';
-
-import { Button, Card } from '@polkadot/react-components';
+import { Card, Button } from '@polkadot/react-components';
 
 import AssetRow from './AssetRow';
 import { useTranslation } from './translate';

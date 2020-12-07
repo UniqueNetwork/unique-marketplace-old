@@ -1,16 +1,15 @@
 // Copyright 2017-2020 @polkadot/app-signing authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import { KeypairType } from '@polkadot/util-crypto/types';
+
 import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
-
-import type { KeypairType } from '@polkadot/util-crypto/types';
 import { Badge, Dropdown, Input, InputAddress, Static } from '@polkadot/react-components';
-import { useApi } from '@polkadot/react-hooks';
 import keyring from '@polkadot/ui-keyring';
 import uiSettings from '@polkadot/ui-settings';
 import { isHex } from '@polkadot/util';
-import { signatureVerify } from '@polkadot/util-crypto';
+import { naclVerify, schnorrkelVerify } from '@polkadot/util-crypto';
 
 import { useTranslation } from './translate';
 
@@ -22,7 +21,6 @@ interface Props {
 
 function Verify ({ className = '' }: Props): React.ReactElement {
   const { t } = useTranslation();
-  const { isEthereum } = useApi();
   const [{ cryptoType, isValid }, setValidity] = useState<{ cryptoType: CryptoTypes; isValid: boolean }>({ cryptoType: 'unknown', isValid: false });
   const [{ data, isHexData }, setData] = useState<{ data: string; isHexData: boolean }>({ data: '', isHexData: false });
   const [{ isValidPk, publicKey }, setPublicKey] = useState<{ isValidPk: boolean; publicKey: Uint8Array | null }>({ isValidPk: false, publicKey: null });
@@ -33,13 +31,33 @@ function Verify ({ className = '' }: Props): React.ReactElement {
     let cryptoType: CryptoTypes = 'unknown';
     let isValid = isValidPk && isValidSignature;
 
-    // We use signatureVerify to detect validity and crypto type
+    // We cannot just use the keyring verify since it may be an address. So here we first check
+    // for ed25519, if not valid, we try against sr25519 - if neither are valid, well, we have
+    // not been able to validate the signature
     if (isValid && publicKey) {
-      const verification = signatureVerify(data, signature, publicKey);
+      let isValidSr = false;
+      let isValidEd = false;
 
-      if (verification.crypto !== 'none') {
-        isValid = verification.isValid;
-        cryptoType = verification.crypto;
+      try {
+        isValidEd = naclVerify(data, signature, publicKey);
+      } catch (error) {
+        // do nothing, already set to false
+      }
+
+      if (isValidEd) {
+        cryptoType = 'ed25519';
+      } else {
+        try {
+          isValidSr = schnorrkelVerify(data, signature, publicKey);
+        } catch (error) {
+          // do nothing, already set to false
+        }
+
+        if (isValidSr) {
+          cryptoType = 'sr25519';
+        } else {
+          isValid = false;
+        }
       }
     }
 
@@ -56,9 +74,9 @@ function Verify ({ className = '' }: Props): React.ReactElement {
         console.error(err);
       }
 
-      setPublicKey({ isValidPk: !!publicKey && (publicKey.length === 32 || (isEthereum && publicKey.length === 20)), publicKey });
+      setPublicKey({ isValidPk: !!publicKey && publicKey.length === 32, publicKey });
     },
-    [isEthereum]
+    []
   );
 
   const _onChangeData = useCallback(
@@ -67,8 +85,8 @@ function Verify ({ className = '' }: Props): React.ReactElement {
   );
 
   const _onChangeSignature = useCallback(
-    (signature: string) => setSignature({ isValidSignature: isHex(signature) && (signature.length === 130 || (isEthereum && signature.length === 132)), signature }),
-    [isEthereum]
+    (signature: string) => setSignature({ isValidSignature: isHex(signature) && signature.length === 130, signature }),
+    []
   );
 
   return (

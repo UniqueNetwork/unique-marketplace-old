@@ -1,9 +1,10 @@
 // Copyright 2017-2020 @polkadot/react-params authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import type { Registry, TypeDef } from '@polkadot/types/types';
-import { getTypeDef } from '@polkadot/types';
-import { TypeDefInfo } from '@polkadot/types/types';
+import { Registry, TypeDef, TypeDefInfo } from '@polkadot/types/types';
+
+import { Raw } from '@polkadot/types';
+import { getTypeDef } from '@polkadot/types/create';
 import { BN_ZERO, isBn } from '@polkadot/util';
 
 const warnList: string[] = [];
@@ -112,7 +113,7 @@ export default function getInitValue (registry: Registry, def: TypeDef): unknown
       return undefined;
 
     case 'Extrinsic':
-      return registry.createType('Raw');
+      return new Raw(registry);
 
     case 'Null':
       return null;

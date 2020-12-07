@@ -1,10 +1,12 @@
 // Copyright 2017-2020 @polkadot/react-components authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import React, { useEffect, useState } from 'react';
+import { AccountId, AccountIndex, Address } from '@polkadot/types/interfaces';
 
-import type { AccountId, AccountIndex, Address } from '@polkadot/types/interfaces';
+import React, { useEffect, useState } from 'react';
 import keyring from '@polkadot/ui-keyring';
+
+import { classes } from './util';
 
 interface Props {
   accountId: AccountId | AccountIndex | Address | string | Uint8Array | null;
@@ -42,7 +44,7 @@ function CryptoType ({ accountId, className = '', label = '' }: Props): React.Re
   }, [accountId]);
 
   return (
-    <div className={`ui--CryptoType ${className}`}>
+    <div className={classes('ui--CryptoType', className)}>
       {label}{type}
     </div>
   );

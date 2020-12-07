@@ -1,9 +1,9 @@
 // Copyright 2017-2020 @polkadot/react-components authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import React from 'react';
+import { KeyringSectionOption } from '@polkadot/ui-keyring/options/types';
 
-import type { KeyringSectionOption } from '@polkadot/ui-keyring/options/types';
+import React from 'react';
 
 import Dropdown from '../Dropdown';
 

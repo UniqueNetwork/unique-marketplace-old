@@ -1,7 +1,8 @@
 // Copyright 2017-2020 @polkadot/app-staking authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import type { DeriveAccountInfo } from '@polkadot/api-derive/types';
+import { DeriveAccountInfo } from '@polkadot/api-derive/types';
+
 import { ApiPromise } from '@polkadot/api';
 import keyring from '@polkadot/ui-keyring';
 

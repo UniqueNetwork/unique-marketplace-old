@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { useCallback, useState } from 'react';
-
 import { useIsMountedRef } from './useIsMountedRef';
 
 export function useIncrement (defaultValue = 1): [number, () => void, (value: number) => void] {

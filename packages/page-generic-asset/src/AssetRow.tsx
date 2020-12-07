@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import React, { useState } from 'react';
-
 import { CopyButton } from '@polkadot/react-components';
 import Row from '@polkadot/react-components/Row';
 

@@ -3,7 +3,6 @@
 
 import React, { useCallback, useState } from 'react';
 import { useParams } from 'react-router-dom';
-
 import { Button, InputAddressSimple } from '@polkadot/react-components';
 
 import { useTranslation } from '../translate';

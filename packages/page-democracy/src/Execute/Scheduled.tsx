@@ -1,15 +1,14 @@
 // Copyright 2017-2020 @polkadot/app-democracy authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import React from 'react';
+import { BlockNumber } from '@polkadot/types/interfaces';
+import { ScheduledExt } from './types';
 
-import type { BlockNumber } from '@polkadot/types/interfaces';
+import React from 'react';
 import { CallExpander } from '@polkadot/react-components';
 import { useApi, useCall } from '@polkadot/react-hooks';
 import { BlockToTime } from '@polkadot/react-query';
 import { formatNumber } from '@polkadot/util';
-
-import type { ScheduledExt } from './types';
 
 interface Props {
   className?: string;

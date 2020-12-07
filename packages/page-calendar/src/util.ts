@@ -1,7 +1,8 @@
 // Copyright 2017-2020 @polkadot/app-calendar authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import type { DateState } from './types';
+import { DateState } from './types';
+
 import { DAYS } from './constants';
 
 export function newZeroDate (input: Date): Date {
@@ -52,12 +53,4 @@ export function getDateState (_dateMonth: Date, _dateSelected: Date): DateState 
     days,
     startClass: `start${DAYS[dateMonth.getDay()]}`
   };
-}
-
-export function dateCalendarFormat (date: Date): string {
-  return new Date(date)
-    .toISOString()
-    .split('.')[0]
-    .replaceAll('-', '')
-    .replaceAll(':', '') + 'Z';
 }

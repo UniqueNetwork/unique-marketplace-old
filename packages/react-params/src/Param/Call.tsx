@@ -1,12 +1,12 @@
 // Copyright 2017-2020 @polkadot/react-params authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import React from 'react';
+import { Extrinsic } from '@polkadot/types/interfaces';
+import { Props } from '../types';
 
-import type { Extrinsic } from '@polkadot/types/interfaces';
+import React from 'react';
 import { Call, Static } from '@polkadot/react-components';
 
-import type { Props } from '../types';
 import Bare from './Bare';
 import Unknown from './Unknown';
 

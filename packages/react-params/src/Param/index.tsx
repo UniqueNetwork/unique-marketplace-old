@@ -1,12 +1,13 @@
 // Copyright 2017-2020 @polkadot/react-params authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import React, { useMemo, useRef } from 'react';
+import { Props, Props as CProps } from '../types';
 
+import React, { useMemo, useRef } from 'react';
+import { classes } from '@polkadot/react-components/util';
 import { encodeTypeDef } from '@polkadot/types/create';
 import { isUndefined } from '@polkadot/util';
 
-import type { Props as CProps, Props } from '../types';
 import findComponent from './findComponent';
 import Static from './Static';
 
@@ -34,7 +35,7 @@ function Param ({ className = '', defaultValue, isDisabled, isInOption, isOption
     )
     : (
       <compRef.current
-        className={`ui--Param ${className}`}
+        className={classes('ui--Param', className)}
         defaultValue={defaultValue}
         isDisabled={isDisabled}
         isInOption={isInOption}

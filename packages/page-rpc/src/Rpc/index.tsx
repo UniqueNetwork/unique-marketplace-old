@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import React, { useContext } from 'react';
-
 import { StatusContext } from '@polkadot/react-components';
 
 import Results from './Results';

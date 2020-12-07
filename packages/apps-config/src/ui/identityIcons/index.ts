@@ -2,9 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // overrides based on the actual software node type, valid values are one of -
-// polkadot, substrate, beachball, robohash
-
-export const identityNodes: Record<string, string> = [
+// polkadot, substrate, beachball
+const identityNodes: Record<string, string> = [
   ['centrifuge chain', 'polkadot'],
   ['edgeware-node', 'substrate'],
   ['joystream-node', 'beachball'],
@@ -18,3 +17,7 @@ export const identityNodes: Record<string, string> = [
   ...icons,
   [spec.toLowerCase().replace(/-/g, ' ')]: icon
 }), {});
+
+export {
+  identityNodes
+};

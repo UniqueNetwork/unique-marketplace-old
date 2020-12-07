@@ -1,18 +1,20 @@
 // Copyright 2017-2020 @polkadot/react-components authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import type { IconName } from '@fortawesome/fontawesome-svg-core';
+import { QueueStatus, QueueTx, QueueTxStatus } from './types';
+
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { IconName } from '@fortawesome/fontawesome-svg-core';
 
-import type { QueueStatus, QueueTx, QueueTxStatus } from './types';
 import AddressMini from '../AddressMini';
 import Button from '../Button';
 import Icon from '../Icon';
 import Spinner from '../Spinner';
 import { useTranslation } from '../translate';
-import { STATUS_COMPLETE } from './constants';
+import { classes } from '../util';
 import StatusContext from './Context';
+import { STATUS_COMPLETE } from './constants';
 
 export { StatusContext };
 
@@ -68,7 +70,7 @@ function signerIconName (status: QueueTxStatus): IconName {
 function renderStatus ({ account, action, id, message, removeItem, status }: QueueStatus): React.ReactNode {
   return (
     <div
-      className={`item ${status}`}
+      className={classes('item', status)}
       key={id}
     >
       <div className='wrapper'>
@@ -115,7 +117,7 @@ function renderItem ({ error, extrinsic, id, removeItem, rpc, status }: QueueTx)
 
   return (
     <div
-      className={`item ${status}`}
+      className={classes('item', status)}
       key={id}
     >
       <div className='wrapper'>

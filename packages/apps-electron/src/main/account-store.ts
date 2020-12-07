@@ -2,10 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { app } from 'electron';
-import path from 'path';
-
-import type { KeyringJson } from '@polkadot/ui-keyring/types';
 import { FileStore } from '@polkadot/ui-keyring/stores';
+import { KeyringJson } from '@polkadot/ui-keyring/types';
+import path from 'path';
 
 import { IpcMainHandler } from './ipc-main-handler';
 import { registerIpcHandler } from './register-ipc-handler';
@@ -32,10 +31,10 @@ export const accountStoreIpcHandler = (fileStore: FileStore): IpcMainHandler => 
     }
   }),
   'account-store-remove': async (key: string) => new Promise((resolve) =>
-    fileStore.remove(key, () => resolve(undefined))
+    fileStore.remove(key, resolve)
   ),
   'account-store-set': async (key: string, value: KeyringJson) => new Promise((resolve) =>
-    fileStore.set(key, value, () => resolve(undefined))
+    fileStore.set(key, value, resolve)
   )
 });
 

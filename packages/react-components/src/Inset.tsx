@@ -4,10 +4,10 @@
 import React, { useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
-
 import { useToggle } from '@polkadot/react-hooks';
 
 import Icon from './Icon';
+import { classes } from './util';
 
 export interface InsetProps {
   className?: string;
@@ -38,7 +38,18 @@ function Inset ({ children, className = '', header, href, isCollapsible, isError
 
   return (
     <div
-      className={`ui--Inset ${href ? ' as-link' : ''}${isCollapsible ? ' collapsible' : ''}${(isError && !isSuccess) ? ' error' : ''}${(!isError && isSuccess) ? ' success' : ''}${withBottomMargin ? ' bottom-margin' : ''}${withTopMargin ? ' top-margin' : ''} ${className}`}
+      className={
+        classes(
+          'ui--Inset',
+          href && 'as-link',
+          isCollapsible && 'collapsible',
+          (isError && !isSuccess) && 'error',
+          (!isError && isSuccess) && 'success',
+          withBottomMargin && 'bottom-margin',
+          withTopMargin && 'top-margin',
+          className
+        )
+      }
     >
       {isCollapsible && (
         <div
@@ -47,13 +58,13 @@ function Inset ({ children, className = '', header, href, isCollapsible, isError
         >
           <h3>{header}</h3>
           <Icon
-            className={isCollapsed ? 'collapsed' : ''}
+            className={classes(isCollapsed && 'collapsed')}
             icon='angle-up'
           />
         </div>
       )}
       <div
-        className={`children${(isCollapsible && isCollapsed) ? ' collapsed' : ''}`}
+        className={classes('children', (isCollapsible && isCollapsed) && 'collapsed')}
         onClick={_onClick}
       >
         {children}
