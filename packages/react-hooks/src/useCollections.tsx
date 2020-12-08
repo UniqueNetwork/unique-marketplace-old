@@ -24,8 +24,38 @@ export interface NftCollectionInterface {
   prefix: string;
 }
 
+export type TokenOffer = {
+  address: string;
+  collectionId: string;
+  metadata: any;
+  price: number;
+  tokenId: string;
+}
+
+export type TokenTrade = {
+  buyerAddress: string;
+  collectionId: string;
+  dateTime: string;
+  metadata: any;
+  price: number;
+  sellerAddress: string;
+  tokenId: string;
+}
+
+// https://docs.google.com/document/d/1WED9VP8Yj52Un4qmkGDpzjesQTzwwoDgYMk1Ty8yftQ/edit
 export function useCollections() {
   const { api } = useApi();
+
+  // get offers
+  // if connection ID not specified, returns 30 last token sale offers
+  const getTokensForSale = useCallback((collectionId?: string): Array<TokenOffer> => {
+    return [];
+  }, []);
+
+  // if connection ID not specified, returns 30 last trades
+  const getTrades = useCallback((): Array<TokenTrade> => {
+    return [];
+  }, []);
 
   const getTokensOfCollection = useCallback(async (collectionId: number, ownerId: string) => {
     if (!api) {
@@ -81,7 +111,9 @@ export function useCollections() {
   }, [api]);
 
   return {
+    getTokensForSale,
     getTokensOfCollection,
+    getTrades,
     getDetailedTokenInfo,
     getDetailedCollectionInfo,
     getDetailedRefungibleTokenInfo,

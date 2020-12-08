@@ -2,7 +2,7 @@
 import { imgPath, url } from '../../constants';
 
 import React, { useCallback, useState } from 'react';
-import { useLocation, Link } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import Modal from 'semantic-ui-react/dist/commonjs/modules/Modal/Modal';
 import { Button } from '@polkadot/react-components';
@@ -25,8 +25,11 @@ function NftDetailsModal({ account, className }: Props): React.ReactElement<Prop
   }, []);
 
   const query = useQuery();
-  const punkId = query.get('id');
+  const tokenId = query.get('id');
   const collectionName = query.get('collection');
+  const balance = query.get('balance');
+
+  console.log('balance', balance, 'tokenId', tokenId, 'collectionName', collectionName);
 
   const closeModal = useCallback(() => {
     history.back();
@@ -39,10 +42,10 @@ function NftDetailsModal({ account, className }: Props): React.ReactElement<Prop
       <Modal.Header>NFT Token Details</Modal.Header>
       <Modal.Content>
         <div className='token-image'>
-          <img src={`${url}${imgPath}/images/punks/image${punkId}.png`} />
+          <img src={`${url}${imgPath}/images/punks/image${tokenId}.png`} />
         </div>
         <div className='token-info'>
-          <Header as='h3'>{collectionName} #{punkId}</Header>
+          <Header as='h3'>{collectionName} #{tokenId}</Header>
           <p><strong>Mail punk</strong></p>
           <Header as='h4'>Accessories</Header>
           { accessories.map((accessory) => (
@@ -53,9 +56,6 @@ function NftDetailsModal({ account, className }: Props): React.ReactElement<Prop
           <Header as='h4'>Selling this NFT</Header>
         </div>
         <TradeContainer />
-        <p>
-          Also you can use the <Link to='/wallet'>NFT Wallet</Link> to find SubstraPunks collection (search for Collection #4 there) and transfer your character to someone else. By the way, the transfers for SubstraPunks collection are free!
-        </p>
       </Modal.Content>
       <Modal.Actions>
         <Button
