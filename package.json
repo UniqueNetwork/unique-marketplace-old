@@ -95,7 +95,7 @@
     "sass": "^1.26.8",
     "sass-loader": "^8.0.2",
     "source-map-explorer": "^2.5.1",
-    "styled-components": "^5.2.1",
+    "styled-components": "^5.2.0",
     "stylelint": "^13.8.0",
     "stylelint-config-recommended": "^3.0.0",
     "stylelint-config-styled-components": "^0.1.1",

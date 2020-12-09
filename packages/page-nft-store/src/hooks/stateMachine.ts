@@ -12,118 +12,63 @@ const marketplaceStateMachine = Machine({
     loadingTokenInfo: {
       on: {
         SALE: 'sale',
+        NO_OFFER_PLACED: 'idle',
         CANCEL: 'cancelSale',
-        BUY: 'buy'
+        BUY: 'buy',
       }
     },
     cancelSale: {
       on: {
-        CANCEL: 'cancelTransaction',
+        SUCCESS: 'loadingTokenInfo',
+        FAIL: 'registerDeposit'
       }
     },
-    cancelTransaction: {
+    takeChargeDeposit: {
       on: {
-        SUCCESS: 'revertNftToUser',
-        FAIL: 'failure'
+        REVERT: 'revertNftToUser',
+        LIVE: 'loadingTokenInfo'
       }
     },
     revertNftToUser: {
       on: {
-        SUCCESS: 'success',
-        FAIL: 'failure'
+        SUCCESS: 'loadingTokenInfo',
+        FAIL: 'takeChargeDeposit'
       }
     },
     sale: {
       on: {
-        START_SALE: 'transferNftToEscrow'
+        SUCCESS: 'registerDeposit',
+        FAIL: 'loadingTokenInfo'
       }
     },
-    transferNftToEscrow: {
+    registerDeposit: {
       on: {
-        SUCCESS: 'setNftPrice',
-        FAIL: 'failure'
+        SUCCESS: 'getDepositReady',
       }
     },
-    setNftPrice: {
+    getDepositReady: {
       on: {
-        SUCCESS: 'askTransaction',
-        FAIL: 'failure'
+        SUCCESS: 'askPrice',
+        FAIL: 'registerDeposit'
       }
     },
-    askTransaction: {
+    askPrice: {
       on: {
-        SUCCESS: 'registerSale',
-        FAIL: 'failure'
-      }
-    },
-    registerSale: {
-      on: {
-        SUCCESS: 'success',
-        FAIL: 'failure'
-      }
-    },
-    registerNftInEscrow: {
-      on: {
-        SUCCESS: 'registerNftInEscrow',
-        FAIL: 'failure'
+        SALE_SUCCESS: 'loadingTokenInfo',
+        SALE_CANCEL: 'cancelSale'
       }
     },
     buy: {
       on: {
-        LOCK: 'locking'
+        DEPOSIT_SUCCESS: 'sentKsm',
+        DEPOSIT_FAIL: 'loadingTokenInfo'
       }
     },
-    locking: {
+    sentKsm: {
       on: {
-        SUCCESS: 'calculateCommission',
-        FAIL: 'failure'
+        BUY_SUCCESS: 'loadingTokenInfo',
+        BUY_FAIL: 'loadingTokenInfo'
       }
-    },
-    calculateCommission: {
-      on: {
-        SUCCESS: 'showCommission',
-        FAIL: 'failure'
-      }
-    },
-    showCommission: {
-      on: {
-        SUCCESS: 'checkUserEscrowBalance',
-        FAIL: 'failure'
-      }
-    },
-    checkUserEscrowBalance: {
-      on: {
-        SUCCESS: 'transferMoneyToEscrow',
-        FAIL: 'failure'
-      }
-    },
-    transferMoneyToEscrow: {
-      on: {
-        SUCCESS: 'registerMoneyTransfer',
-        FAIL: 'failure'
-      }
-    },
-    registerMoneyTransfer: {
-      on: {
-        SUCCESS: 'buyNft',
-        FAIL: 'failure'
-      }
-    },
-    buyNft: {
-      on: {
-        SUCCESS: 'success',
-        FAIL: 'failure'
-      }
-    },
-    failure: {
-      on: {
-        RETRY: {
-          target: 'loadingTokenInfo',
-        }
-      }
-    },
-    success: {
-      type: 'final'
     }
   }
 });

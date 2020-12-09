@@ -13,11 +13,6 @@ interface MarketplaceStagesInterface {
   currentMarketplaceState: any;
 }
 
-interface PunkFromServerInterface {
-  address: string;
-  price: string;
-}
-
 // 0 == user owns token, no offers placed
 // 1 == user pressed Trade button
 // 2 == token sent to vault, waiting for deposit (ownership cannot be determined)
