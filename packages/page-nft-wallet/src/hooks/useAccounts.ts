@@ -18,7 +18,7 @@ export default function useAccounts (): UseAccounts {
   const [state, setState] = useState<UseAccounts>({ allAccounts: [], hasAccounts: false, isAccount: () => false });
 
   useEffect((): () => void => {
-    const subscription = accountObservable.subject.subscribe((accounts): void => {
+    const subscription = accountObservable.subject.subscribe((accounts: Array<string>): void => {
       if (mountedRef.current) {
         const allAccounts = accounts ? Object.keys(accounts) : [];
         const hasAccounts = allAccounts.length !== 0;

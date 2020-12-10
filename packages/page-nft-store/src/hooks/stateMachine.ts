@@ -15,24 +15,19 @@ const marketplaceStateMachine = Machine({
         NO_OFFER_PLACED: 'idle',
         CANCEL: 'cancelSale',
         BUY: 'buy',
+        REVERT_UNUSED_KSM: 'revertKsm'
+      }
+    },
+    revertKsm: {
+      on: {
+        WITHDRAW_SUCCESS: 'loadingTokenInfo',
+        WITHDRAW_ERROR: 'loadingTokenInfo'
       }
     },
     cancelSale: {
       on: {
         SUCCESS: 'loadingTokenInfo',
         FAIL: 'registerDeposit'
-      }
-    },
-    takeChargeDeposit: {
-      on: {
-        REVERT: 'revertNftToUser',
-        LIVE: 'loadingTokenInfo'
-      }
-    },
-    revertNftToUser: {
-      on: {
-        SUCCESS: 'loadingTokenInfo',
-        FAIL: 'takeChargeDeposit'
       }
     },
     sale: {

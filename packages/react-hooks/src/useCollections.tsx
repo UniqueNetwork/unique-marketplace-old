@@ -42,6 +42,12 @@ export type TokenTrade = {
   tokenId: string;
 }
 
+export type TokenInfo = {
+  Collection: number;
+  Owner: string;
+  Data: any;
+}
+
 // https://docs.google.com/document/d/1WED9VP8Yj52Un4qmkGDpzjesQTzwwoDgYMk1Ty8yftQ/edit
 export function useCollections() {
   const { api } = useApi();
@@ -73,12 +79,12 @@ export function useCollections() {
     return (await api.query.nft.collection(collectionId));
   }, []);
 
-  const getDetailedTokenInfo = useCallback( async(collectionId: string, tokenId: string) => {
+  const getDetailedTokenInfo = useCallback( async(collectionId: string, tokenId: string): Promise<TokenInfo | null> => {
     if (!api) {
-      return;
+      return null;
     }
     // @ts-ignore
-    return (await api.query.nft.itemList([collectionId, tokenId]));
+    return (await api.query.nft.nftItemList(collectionId, tokenId));
   }, [api]);
 
   const getDetailedRefungibleTokenInfo = useCallback(async (collectionId: number, tokenId: string) => {
