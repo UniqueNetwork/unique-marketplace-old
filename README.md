@@ -1,30 +1,23 @@
-# Usetech nft marketplace
+### install deps
 
-За основу взят [Create React App](https://github.com/facebook/create-react-app) на 17 react и 4 typescript.
-К нему добавлен ant.design 4.8
+```yarn install```
 
-## Доступные команды
+### Start ui
 
-Запуск проекта локально
+```yarn start```
 
-### `yarn start`
+### Production build
 
-Запускает проект [http://localhost:3000](http://localhost:3000) в development mode.
+```yarn build```
 
-Для запуска тестов
+### Docker node build
 
-### `yarn test`
+```docker-compose up -d --build```
 
-Для продакшен сборки
+### Docker rebuild node
 
-### `yarn build`
+```docker stop nft_parachain_node_1```
 
-Docker сборка
+```sudo rm ./chain-data```
 
-`docker build -t marketplace:prod .`
-
-`docker run -p 8080:80 -t marketplace:prod`
-
-### Документация по разработке
-
-[https://digitalmerch.atlassian.net/wiki/spaces/MD/pages/1926332420/frontend]
+```docker start nft_parachain_node_1```
