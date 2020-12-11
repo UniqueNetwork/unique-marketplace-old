@@ -1,6 +1,6 @@
 // Copyright 2020 UseTech authors & contributors
 import { useCallback, useState } from 'react';
-import { useApi } from '@polkadot/react-hooks';
+// import { useApi } from '@polkadot/react-hooks';
 import { formatBalance } from '@polkadot/util';
 
 const value = 0;
@@ -8,9 +8,10 @@ const maxgas = 1000000000000;
 // const decimals = 12; // kusamaDecimals
 
 // https://docs.google.com/document/d/1WED9VP8Yj52Un4qmkGDpzjesQTzwwoDgYMk1Ty8yftQ/edit
-export function useNftContract(account) {
-  const { api } = useApi();
-  const [contractInstance, setContractInstance] = useState();
+export function useNftContract(account: string) {
+  // const { api } = useApi();
+  // const [contractInstance, setContractInstance] = useState();
+  const [contractInstance] = useState<any | null>();
 
   // get offers
   // if connection ID not specified, returns 30 last token sale offers

@@ -1,12 +1,12 @@
 // Copyright 2020 UseTech authors & contributors
 
 // global app props and types
-import {NftCollectionBigInterface, NftCollectionInterface, useApi, useCollections} from '@polkadot/react-hooks';
+import {NftCollectionBigInterface, useApi, useCollections} from '@polkadot/react-hooks';
 
 // external imports
 import React, { memo, ReactElement, useCallback, useEffect, useState } from 'react';
 import { Route, Switch } from 'react-router-dom'
-import { useHistory } from 'react-router';
+// import { useHistory } from 'react-router';
 import List from 'semantic-ui-react/dist/commonjs/elements/List';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import Dropdown from 'semantic-ui-react/dist/commonjs/modules/Dropdown';
@@ -45,12 +45,13 @@ interface BuyTokensProps {
 
 const BuyTokens = ({ className }: BuyTokensProps): ReactElement<BuyTokensProps> => {
   const { api } = useApi();
-  const history = useHistory();
+  // const history = useHistory();
   const [account, setAccount] = useState<string | null>(null);
   const { presetTokensCollections } = useCollections();
   const [collectionsAvailable, setCollectionsAvailable] = useState<Array<NftCollectionBigInterface>>([]);
   const [searchString, setSearchString] = useState<string>('');
-  const [selectedCollection, setSelectedCollection] = useState<NftCollectionBigInterface>();
+  // const [selectedCollection, setSelectedCollection] = useState<NftCollectionBigInterface>();
+  const [, setSelectedCollection] = useState<NftCollectionBigInterface>();
 
   const getCollections = useCallback(async () => {
     const collections = await presetTokensCollections();
@@ -69,9 +70,9 @@ const BuyTokens = ({ className }: BuyTokensProps): ReactElement<BuyTokensProps> 
     return String.fromCharCode(...collectionNameArr);
   }, []);
 
-  const openTransferModal = useCallback((collection, tokenId, balance) => {
+  /* const openTransferModal = useCallback((collection, tokenId, balance) => {
     history.push(`/store/token-details?collection=${collection}&id=${tokenId}&balance=${balance}`)
-  }, []);
+  }, []); */
 
   useEffect(() => {
     void getCollections();
@@ -148,7 +149,7 @@ const BuyTokens = ({ className }: BuyTokensProps): ReactElement<BuyTokensProps> 
                   </Dropdown>
                 </Grid.Column>
               </Grid.Row>
-              <Grid.Row>
+              {/* <Grid.Row>
                 <div className='nft-tokens'>
                   { account && tokensOfCollection.map((token) => (
                     <NftTokenCard
@@ -163,7 +164,7 @@ const BuyTokens = ({ className }: BuyTokensProps): ReactElement<BuyTokensProps> 
                     />
                   )) }
                 </div>
-              </Grid.Row>
+              </Grid.Row> */}
             </Grid>
           </Grid.Column>
         </Grid.Row>

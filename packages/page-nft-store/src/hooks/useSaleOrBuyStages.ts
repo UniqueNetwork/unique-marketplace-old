@@ -26,10 +26,10 @@ interface PunkFromServerInterface {
 // 8 == User deposited KSM, waiting to register
 // 9 == KSM deposited, Can sign buy transaction
 
-type saleStage = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | '10';
+// type saleStage = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | '10';
 
 const useSaleOrBuyStages = (): SaleOrByStagesInterface => {
-  const [saleStage, setSaleStage] = useState<saleStage>('0');
+  // const [saleStage, setSaleStage] = useState<saleStage>('0');
   const [errorWhileFetchingPunks, setErrorWhileFetchingPunks] = useState<boolean>(false);
   const [punksForSale, setPunksForSale] = useState<Array<any>>([]);
   const { fetchData } = useFetch();

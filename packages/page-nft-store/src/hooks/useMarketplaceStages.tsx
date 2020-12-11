@@ -47,7 +47,7 @@ const useMarketplaceStages = (account: string, token: NftTokenInterface): Market
   const { getDetailedTokenInfo } = useCollections();
   const { getUserDeposit } = useNftContract(account);
   const { balance } = useBalance(account);
-  const [error, setError] = useState();
+  const [error, setError] = useState<string | null>(null);
   const { queueExtrinsic } = useContext(StatusContext);
 
   const sentCurrentUserAction = useCallback((userAction: 'BUY' | 'CANCEL' | 'SALE' | 'REVERT_UNUSED_KSM') => {

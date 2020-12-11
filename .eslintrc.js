@@ -30,11 +30,11 @@ module.exports = {
     '@typescript-eslint/unbound-method': 'off',
     'simple-import-sort/imports': [
       'error',
-      {
-        groups: [
-          ['^[^\/\\.]'],
-          ['^@polkadot'],
-          ['^\\.']
+      { 
+        groups: [ 
+            ['^[^\/\\.]'],
+            ['^@polkadot'],
+            ['^\\.']
         ],
       },
     ]

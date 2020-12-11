@@ -20,20 +20,20 @@ import { Option } from '@polkadot/types';
 import keyring from '@polkadot/ui-keyring';
 import { BN_ZERO, formatBalance, formatNumber } from '@polkadot/util';
 
-import { useTranslation } from '../translate';
-import { createMenuGroup } from '../util';
 import Backup from '../modals/Backup';
 import ChangePass from '../modals/ChangePass';
 import DelegateModal from '../modals/Delegate';
 import Derive from '../modals/Derive';
 import IdentityMain from '../modals/IdentityMain';
 import IdentitySub from '../modals/IdentitySub';
-import ProxyOverview from '../modals/ProxyOverview';
 import MultisigApprove from '../modals/MultisigApprove';
+import ProxyOverview from '../modals/ProxyOverview';
 import RecoverAccount from '../modals/RecoverAccount';
 import RecoverSetup from '../modals/RecoverSetup';
 import Transfer from '../modals/Transfer';
 import UndelegateModal from '../modals/Undelegate';
+import { useTranslation } from '../translate';
+import { createMenuGroup } from '../util';
 import useMultisigApprovals from './useMultisigApprovals';
 import useProxies from './useProxies';
 
@@ -229,18 +229,18 @@ function Account ({ account: { address, meta }, className = '', delegation, filt
                 </div>
                 <table>
                   <tbody>
-                  <tr>
-                    <td>{t<string>('threshold')}</td>
-                    <td>{formatNumber(recoveryInfo.threshold)}</td>
-                  </tr>
-                  <tr>
-                    <td>{t<string>('delay')}</td>
-                    <td>{formatNumber(recoveryInfo.delayPeriod)}</td>
-                  </tr>
-                  <tr>
-                    <td>{t<string>('deposit')}</td>
-                    <td>{formatBalance(recoveryInfo.deposit)}</td>
-                  </tr>
+                    <tr>
+                      <td>{t<string>('threshold')}</td>
+                      <td>{formatNumber(recoveryInfo.threshold)}</td>
+                    </tr>
+                    <tr>
+                      <td>{t<string>('delay')}</td>
+                      <td>{formatNumber(recoveryInfo.delayPeriod)}</td>
+                    </tr>
+                    <tr>
+                      <td>{t<string>('deposit')}</td>
+                      <td>{formatBalance(recoveryInfo.deposit)}</td>
+                    </tr>
                   </tbody>
                 </table>
               </div>
@@ -386,7 +386,7 @@ function Account ({ account: { address, meta }, className = '', delegation, filt
         )}
       </td>
       <td className='address media--1400'>
-        {meta.parentAddress && (
+        {(meta.parentAddress as string) && (
           <AddressMini value={meta.parentAddress} />
         )}
       </td>

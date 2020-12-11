@@ -16,7 +16,8 @@ interface Props {
 }
 
 function NftDetailsModal({ account, className }: Props): React.ReactElement<Props> {
-  const [accessories, setAccessories] = useState<Array<string>>([]);
+  // const [accessories, setAccessories] = useState<Array<string>>([]);
+  const [accessories] = useState<Array<string>>([]);
   const search = useLocation().search;
   console.log('search', search);
 
