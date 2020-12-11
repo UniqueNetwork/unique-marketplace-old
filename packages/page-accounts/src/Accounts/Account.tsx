@@ -229,18 +229,18 @@ function Account ({ account: { address, meta }, className = '', delegation, filt
                 </div>
                 <table>
                   <tbody>
-                    <tr>
-                      <td>{t<string>('threshold')}</td>
-                      <td>{formatNumber(recoveryInfo.threshold)}</td>
-                    </tr>
-                    <tr>
-                      <td>{t<string>('delay')}</td>
-                      <td>{formatNumber(recoveryInfo.delayPeriod)}</td>
-                    </tr>
-                    <tr>
-                      <td>{t<string>('deposit')}</td>
-                      <td>{formatBalance(recoveryInfo.deposit)}</td>
-                    </tr>
+                  <tr>
+                    <td>{t<string>('threshold')}</td>
+                    <td>{formatNumber(recoveryInfo.threshold)}</td>
+                  </tr>
+                  <tr>
+                    <td>{t<string>('delay')}</td>
+                    <td>{formatNumber(recoveryInfo.delayPeriod)}</td>
+                  </tr>
+                  <tr>
+                    <td>{t<string>('deposit')}</td>
+                    <td>{formatBalance(recoveryInfo.deposit)}</td>
+                  </tr>
                   </tbody>
                 </table>
               </div>

@@ -1,5 +1,13 @@
 .eslintrc.js
-config/*
 **/build/*
 **/coverage/*
 **/node_modules/*
+**/packages/apps-config/*
+**/packages/apps-electron/*
+**/packages/apps-accounts/*
+**/packages/page-parachains/*
+
+**/packages/page-nft-store/*
+**/packages/page-nft-wallet/*
+**/packages/react-hooks/*
+**/packages/react-params/*
