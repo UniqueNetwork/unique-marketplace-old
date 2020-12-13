@@ -12,3 +12,11 @@ export interface Punk {
   attributes: Array<string>,
   isOwned: boolean;
 }
+
+export interface NftTokenInterface {
+  collectionId: string;
+  data: any;
+  price: string;
+  sellerAddress: string;
+  tokenId: string;
+}

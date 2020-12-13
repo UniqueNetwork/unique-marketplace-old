@@ -1,7 +1,6 @@
 // Copyright 2020 @polkadot/app-nft authors & contributors
 
-// import { PunkForSaleInterface, Punk } from '../types';
-// import { url, path, attributes } from '../constants';
+import { NftTokenInterface } from '../types';
 
 import {useCallback, useContext, useEffect, useState} from 'react';
 import { useMachine } from '@xstate/react';
@@ -10,21 +9,15 @@ import { useCollections, TokenInfo, useNftContract, useApi } from '@polkadot/rea
 import marketplaceStateMachine from './stateMachine';
 import useBalance from '@polkadot/app-nft-wallet/src/hooks/useBalance';
 import { StatusContext } from '@polkadot/react-components/Status';
-
-const vaultAddress = '5Gs3Vmbsr2xaBLCKwTqvUfT511u14QB9jqks2WEsQyWvNvLC';
+import config from '../config';
 
 interface MarketplaceStagesInterface {
   error: string | null;
   sentCurrentUserAction: (action: 'BUY' | 'CANCEL' | 'SALE' | 'REVERT_UNUSED_KSM') => void;
   tokenInfo: any;
-}
-
-interface NftTokenInterface {
-  collectionId: string;
-  data: any;
-  price: string;
-  sellerAddress: string;
-  tokenId: string;
+  tokenPriceForSale: number | undefined;
+  readyToAskPrice: boolean;
+  setTokenPriceForSale: (price: number) => void;
 }
 
 // 0 == user owns token, no offers placed
@@ -45,10 +38,12 @@ const useMarketplaceStages = (account: string, token: NftTokenInterface): Market
   const [state, send] = useMachine(marketplaceStateMachine);
   const [tokenInfo, setTokenInfo] = useState<TokenInfo | null | undefined>();
   const { getDetailedTokenInfo } = useCollections();
-  const { getUserDeposit } = useNftContract(account);
+  const { abi, getDepositor, getUserDeposit } = useNftContract(account);
   const { balance } = useBalance(account);
   const [error, setError] = useState<string | null>(null);
   const { queueExtrinsic } = useContext(StatusContext);
+  const [readyToAskPrice, setReadyToAskPrice] = useState<boolean>(false);
+  const [tokenPriceForSale, setTokenPriceForSale] = useState<number>();
 
   const sentCurrentUserAction = useCallback((userAction: 'BUY' | 'CANCEL' | 'SALE' | 'REVERT_UNUSED_KSM') => {
     send(userAction);
@@ -63,9 +58,22 @@ const useMarketplaceStages = (account: string, token: NftTokenInterface): Market
   /**********user actions*************/
   const sale = useCallback(() => {
     console.log('sale');
+    // checkBalance(nft, owner) - is nft on balance/ is balance > fee?
+    // deposit nft to contract
+    queueExtrinsic({
+      accountId: account && account.toString(),
+      extrinsic: api.tx.nft
+        .transfer(config.vaultAddress, token.collectionId, token.tokenId, 0),
+      isUnsigned: false,
+      txFailedCb: () => send('TRANSFER_NFT_TO_CONTRACT_FAIL'),
+      txStartCb: () => console.log('deposit nft to contract start'),
+      txSuccessCb: () => send('TRANSFER_NFT_TO_CONTRACT_SUCCESS'),
+      txUpdateCb: () => console.log('deposit nft to contract update')
+    });
   }, []);
 
   const buy = useCallback(async () => {
+    // send deposit to contract
     // Check if KSM deposit is needed and deposit
     console.log('buy');
     const deposited = parseFloat(await getUserDeposit() || '');
@@ -83,7 +91,7 @@ const useMarketplaceStages = (account: string, token: NftTokenInterface): Market
       queueExtrinsic({
         accountId: account && account.toString(),
         extrinsic: api.tx.balances
-          .transfer(vaultAddress, needed),
+          .transfer(config.vaultAddress, needed),
         isUnsigned: false,
         txFailedCb: () => send('DEPOSIT_FAIL'),
         txStartCb: () => console.log('transfer start'),
@@ -93,6 +101,20 @@ const useMarketplaceStages = (account: string, token: NftTokenInterface): Market
     }
     // buyStep3
   }, [account, api, getFee, getUserDeposit, queueExtrinsic, token]);
+
+  const sentTokenToAccount = useCallback(() => {
+    // tokenId, newOwner (account)
+    queueExtrinsic({
+      accountId: account && account.toString(),
+      extrinsic: api.tx.contracts
+        .call(config.marketContractAddress, config.value, config.maxgas, abi.messages.buy(token.collectionId, token.tokenId)),
+      isUnsigned: false,
+      txFailedCb: () => send('SEND_TOKEN_FAIL'),
+      txStartCb: () => console.log('send token to account start'),
+      txSuccessCb: () => send('SEND_TOKEN_SUCCESS'),
+      txUpdateCb: () => console.log('send token to account update')
+    });
+  }, [account, api, queueExtrinsic]);
 
   const cancelSale = useCallback(() => {
     console.log('cancelSale');
@@ -106,10 +128,29 @@ const useMarketplaceStages = (account: string, token: NftTokenInterface): Market
     console.log('loadingTokenInfo');
     const tokenInfo = await getDetailedTokenInfo(token.collectionId, token.tokenId);
     setTokenInfo(tokenInfo);
-  }, []);
+  }, [setTokenInfo]);
 
-  const registerDeposit = useCallback(() => {
+  const registerDeposit = useCallback(async () => {
     console.log('registerDeposit');
+    const address = await getDepositor(token.tokenId, account);
+    if (address === account) {
+      // depositor is me
+      send('NFT_DEPOSIT_READY');
+    } else {
+      send('NFT_DEPOSIT_FAIL');
+    }
+    // Wait for Vault transaction
+    /* while (true) {
+      const address = await getDepositor(token.tokenId, account);
+      if (depositorAddressList.includes(address)) {
+        this.notifyTxObserver(`Waiting for deposit: ${block} of 3 block(s) passed`);
+        return address;
+      } else {
+        this.notifyTxObserver(`Waiting for deposit: ${block} of 3 block(s) passed`);
+        if (block < 3) block++;
+        await delay(6000);
+      }
+    }; */
   }, []);
 
   const getDepositReady = useCallback(() => {
@@ -118,6 +159,7 @@ const useMarketplaceStages = (account: string, token: NftTokenInterface): Market
 
   const askPrice = useCallback(() => {
     console.log('askPrice');
+    setReadyToAskPrice(true);
   }, []);
 
   const sentKsm = useCallback(() => {
@@ -128,32 +170,31 @@ const useMarketplaceStages = (account: string, token: NftTokenInterface): Market
 
   useEffect(() => {
     switch (state.value) {
-      case 'loadingTokenInfo':
-        loadingTokenInfo();
+      case 'UPDATE_TOKEN_STATE':
+        void loadingTokenInfo();
         break;
-      case 'revertKsm':
-        revertKsm();
+      case 'BUY':
+        void buy();
         break;
-      case 'cancelSale':
-        cancelSale();
+      case 'SALE':
+        void sale();
         break;
-      case 'sale':
-        sale();
+      case 'DEPOSIT_SUCCESS':
+        void sentTokenToAccount();
         break;
-      case 'registerDeposit':
-        registerDeposit();
+      case 'DEPOSIT_FAIL':
+      case 'SEND_TOKEN_FAIL':
+      case 'SEND_TOKEN_SUCCESS':
+        void send('UPDATE_TOKEN_STATE');
         break;
-      case 'getDepositReady':
-        getDepositReady();
+      case 'TRANSFER_NFT_TO_CONTRACT_SUCCESS':
+        void registerDeposit();
         break;
-      case 'askPrice':
-        askPrice();
+      case 'NFT_DEPOSIT_FAIL':
+        void registerDeposit();
         break;
-      case 'buy':
-        buy();
-        break;
-      case 'sentKsm':
-        sentKsm();
+      case 'NFT_DEPOSIT_READY':
+        void askPrice();
         break;
       default:
         break;
@@ -164,7 +205,24 @@ const useMarketplaceStages = (account: string, token: NftTokenInterface): Market
     send('OPEN_TOKEN_WINDOW');
   }, [send]);
 
-  return { error, sentCurrentUserAction, tokenInfo }
+  useEffect(() => {
+    if (readyToAskPrice && tokenPriceForSale) {
+      /*
+      if ((parseFloat(price) < 0.01) || (parseFloat(price) > 10000) || isNaN(parseFloat(price))) throw `
+      Sorry, price should be in the range between 0.01 and 10000 KSM. You have input: ${price}`;
+       */
+      // await n.trade(punkId, price, owner);
+    }
+  }, [tokenPriceForSale, readyToAskPrice]);
+
+  return {
+    error,
+    sentCurrentUserAction,
+    tokenInfo,
+    tokenPriceForSale,
+    readyToAskPrice,
+    setTokenPriceForSale
+  }
 };
 
 export default useMarketplaceStages;
