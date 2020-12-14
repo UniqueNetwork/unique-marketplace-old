@@ -12,11 +12,13 @@ import { StatusContext } from '@polkadot/react-components/Status';
 import config from '../config';
 
 interface MarketplaceStagesInterface {
+  cancelSale: () => void;
   error: string | null;
   sentCurrentUserAction: (action: 'BUY' | 'CANCEL' | 'SALE' | 'REVERT_UNUSED_KSM') => void;
   tokenInfo: any;
   tokenPriceForSale: number | undefined;
   readyToAskPrice: boolean;
+  revertKsm: () => void;
   setTokenPriceForSale: (price: number) => void;
   submitTokenPrice: () => void;
 }
@@ -117,12 +119,25 @@ const useMarketplaceStages = (account: string, token: NftTokenInterface): Market
     });
   }, [account, api, queueExtrinsic]);
 
-  const cancelSale = useCallback(() => {
-    console.log('cancelSale');
-  }, []);
-
-  const revertKsm = useCallback(() => {
+  const revertKsm = useCallback(async () => {
     console.log('revertKsm');
+    const deposited = parseFloat(await getUserDeposit() || '');
+    console.log('deposited', deposited);
+    /*
+    const ksmexp = BigNumber(10).pow(this.ksmDecimals);
+    const balance = new BigNumber(amount);
+    const balanceToSend = balance.multipliedBy(ksmexp).integerValue(BigNumber.ROUND_DOWN);
+     */
+    queueExtrinsic({
+      accountId: account && account.toString(),
+      extrinsic: api.tx.contracts
+        .call(config.marketContractAddress, config.value, config.maxgas, abi.messages.withdraw(2, deposited)),
+      isUnsigned: false,
+      txFailedCb: () => send('TRANSFER_NFT_TO_CONTRACT_FAIL'),
+      txStartCb: () => console.log('deposit nft to contract start'),
+      txSuccessCb: () => send('TRANSFER_NFT_TO_CONTRACT_SUCCESS'),
+      txUpdateCb: () => console.log('deposit nft to contract update')
+    });
   }, []);
 
   const loadingTokenInfo = useCallback(async () => {
@@ -171,8 +186,19 @@ const useMarketplaceStages = (account: string, token: NftTokenInterface): Market
     });
   }, []);
 
-  const sentKsm = useCallback(() => {
-    console.log('sentKsm');
+  const cancelSale = useCallback(() => {
+    console.log('cancelSale');
+    // cancelAsync(punkId, punk.owner)
+    queueExtrinsic({
+      accountId: account && account.toString(),
+      extrinsic: api.tx.contracts
+        .call(config.marketContractAddress, config.value, config.maxgas, abi.messages.cancel(token.collectionId, token.tokenId)),
+      isUnsigned: false,
+      txFailedCb: () => send('CANCEL_SALE_FAIL'),
+      txStartCb: () => console.log('cancelSale start'),
+      txSuccessCb: () => send('CANCEL_SALE_SUCCESS'),
+      txUpdateCb: () => console.log('cancelSale update')
+    });
   }, []);
 
   console.log('current', state);
@@ -195,6 +221,8 @@ const useMarketplaceStages = (account: string, token: NftTokenInterface): Market
       case 'SEND_TOKEN_FAIL':
       case 'SEND_TOKEN_SUCCESS':
       case 'REGISTER_SALE_SUCCESS':
+      case 'CANCEL_SALE_SUCCESS':
+      case 'CANCEL_SALE_FAIL':
         void send('UPDATE_TOKEN_STATE');
         break;
       case 'TRANSFER_NFT_TO_CONTRACT_SUCCESS':
@@ -219,11 +247,13 @@ const useMarketplaceStages = (account: string, token: NftTokenInterface): Market
   }, [send]);
 
   return {
+    cancelSale,
     error,
     sentCurrentUserAction,
     tokenInfo,
     tokenPriceForSale,
     readyToAskPrice,
+    revertKsm,
     setTokenPriceForSale,
     submitTokenPrice,
   }

@@ -26,8 +26,8 @@ const marketplaceStateMachine = Machine({
     },
     cancelSale: {
       on: {
-        SUCCESS: 'loadingTokenInfo',
-        FAIL: 'registerDeposit'
+        CANCEL_SALE_SUCCESS: 'loadingTokenInfo',
+        CANCEL_SALE_FAIL: 'loadingTokenInfo'
       }
     },
     sale: {
