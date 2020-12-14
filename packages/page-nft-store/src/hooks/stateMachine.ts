@@ -49,8 +49,14 @@ const marketplaceStateMachine = Machine({
     },
     askPrice: {
       on: {
-        ASK_PRICE_SUCCESS: 'loadingTokenInfo',
+        ASK_PRICE_SUCCESS: 'registerSale',
         ASK_PRICE_FAIL: 'askPrice'
+      }
+    },
+    registerSale: {
+      on: {
+        REGISTER_SALE_SUCCESS: 'loadingTokenInfo',
+        REGISTER_SALE_FAIL: 'askPrice'
       }
     },
     buy: {

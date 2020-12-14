@@ -18,6 +18,7 @@ interface MarketplaceStagesInterface {
   tokenPriceForSale: number | undefined;
   readyToAskPrice: boolean;
   setTokenPriceForSale: (price: number) => void;
+  submitTokenPrice: () => void;
 }
 
 // 0 == user owns token, no offers placed
@@ -137,29 +138,37 @@ const useMarketplaceStages = (account: string, token: NftTokenInterface): Market
       // depositor is me
       send('NFT_DEPOSIT_READY');
     } else {
-      send('NFT_DEPOSIT_FAIL');
+      setTimeout(() => {
+        send('NFT_DEPOSIT_FAIL');
+      }, 6000)
     }
-    // Wait for Vault transaction
-    /* while (true) {
-      const address = await getDepositor(token.tokenId, account);
-      if (depositorAddressList.includes(address)) {
-        this.notifyTxObserver(`Waiting for deposit: ${block} of 3 block(s) passed`);
-        return address;
-      } else {
-        this.notifyTxObserver(`Waiting for deposit: ${block} of 3 block(s) passed`);
-        if (block < 3) block++;
-        await delay(6000);
-      }
-    }; */
   }, []);
 
-  const getDepositReady = useCallback(() => {
-    console.log('getDepositReady');
+  const submitTokenPrice = useCallback(() => {
+   /* if (tokenPriceForSale && ((tokenPriceForSale < 0.01) || (tokenPriceForSale > 10000)))`
+      Sorry, price should be in the range between 0.01 and 10000 KSM. You have input: ${price}
+    `;*/
+    send('ASK_PRICE_SUCCESS');
   }, []);
 
   const askPrice = useCallback(() => {
     console.log('askPrice');
     setReadyToAskPrice(true);
+  }, []);
+
+  const registerSale = useCallback(() => {
+    //  // Transaction #2: Invoke ask method on market contract to set the price
+    //     await this.askAsync(punkId, priceBN.toString(), ownerAddress);
+    queueExtrinsic({
+      accountId: account && account.toString(),
+      extrinsic: api.tx.contracts
+        .call(config.marketContractAddress, config.value, config.maxgas, abi.messages.ask(token.collectionId, token.tokenId, 2, tokenPriceForSale)),
+      isUnsigned: false,
+      txFailedCb: () => send('REGISTER_SALE_FAIL'),
+      txStartCb: () => console.log('registerSale start'),
+      txSuccessCb: () => send('REGISTER_SALE_SUCCESS'),
+      txUpdateCb: () => console.log('registerSale update')
+    });
   }, []);
 
   const sentKsm = useCallback(() => {
@@ -185,6 +194,7 @@ const useMarketplaceStages = (account: string, token: NftTokenInterface): Market
       case 'DEPOSIT_FAIL':
       case 'SEND_TOKEN_FAIL':
       case 'SEND_TOKEN_SUCCESS':
+      case 'REGISTER_SALE_SUCCESS':
         void send('UPDATE_TOKEN_STATE');
         break;
       case 'TRANSFER_NFT_TO_CONTRACT_SUCCESS':
@@ -194,7 +204,10 @@ const useMarketplaceStages = (account: string, token: NftTokenInterface): Market
         void registerDeposit();
         break;
       case 'NFT_DEPOSIT_READY':
+      case 'REGISTER_SALE_FAIL':
         void askPrice();
+      case 'ASK_PRICE_SUCCESS':
+        void registerSale();
         break;
       default:
         break;
@@ -205,23 +218,14 @@ const useMarketplaceStages = (account: string, token: NftTokenInterface): Market
     send('OPEN_TOKEN_WINDOW');
   }, [send]);
 
-  useEffect(() => {
-    if (readyToAskPrice && tokenPriceForSale) {
-      /*
-      if ((parseFloat(price) < 0.01) || (parseFloat(price) > 10000) || isNaN(parseFloat(price))) throw `
-      Sorry, price should be in the range between 0.01 and 10000 KSM. You have input: ${price}`;
-       */
-      // await n.trade(punkId, price, owner);
-    }
-  }, [tokenPriceForSale, readyToAskPrice]);
-
   return {
     error,
     sentCurrentUserAction,
     tokenInfo,
     tokenPriceForSale,
     readyToAskPrice,
-    setTokenPriceForSale
+    setTokenPriceForSale,
+    submitTokenPrice,
   }
 };
 

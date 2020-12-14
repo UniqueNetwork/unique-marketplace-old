@@ -46,7 +46,7 @@ export function useNftContract(account: string) {
       console.log('getDepositor Error: ', e);
     }
     return null;
-  }, []);
+  }, [contractInstance, keyring]);
 
   return {
     abi,
