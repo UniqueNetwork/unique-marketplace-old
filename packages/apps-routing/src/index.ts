@@ -5,7 +5,6 @@ import { TFunction } from 'i18next';
 import { Routes } from './types';
 
 import extrinsics from './extrinsics';
-/*
 import accounts from './accounts';
 import addresses from './addresses';
 import calendar from './calendar';
@@ -16,17 +15,13 @@ import democracy from './democracy';
 import explorer from './explorer';
 import genericAsset from './generic-asset';
 import js from './js';
-*/
 import nftWallet from './nft-wallet';
 import nftMint from './nft-mint';
 import nftStore from './nft-store';
-/*
 import parachains from './parachains';
 import poll from './poll';
 import rpc from './rpc';
-*/
 import settings from './settings';
-/*
 import signing from './signing';
 import society from './society';
 import staking from './staking';
@@ -35,7 +30,6 @@ import sudo from './sudo';
 import techcomm from './techcomm';
 import transfer from './transfer';
 import treasury from './treasury';
-*/
 
 export default function create (t: TFunction): Routes {
   return [
@@ -44,7 +38,7 @@ export default function create (t: TFunction): Routes {
     nftStore(t),
     settings(t),
     extrinsics(t),
-    /* accounts(t),
+    accounts(t),
     addresses(t),
     explorer(t),
     claims(t),
@@ -64,6 +58,6 @@ export default function create (t: TFunction): Routes {
     rpc(t),
     signing(t),
     sudo(t),
-    js(t), */
+    js(t),
   ];
 }
