@@ -148,7 +148,7 @@ const useMarketplaceStages = (account: string, token: NftTokenInterface): Market
 
   const registerDeposit = useCallback(async () => {
     console.log('registerDeposit');
-    const address = await getDepositor(token.tokenId, account);
+    const address = await getDepositor(token, account);
     if (address === account) {
       // depositor is me
       send('NFT_DEPOSIT_READY');
