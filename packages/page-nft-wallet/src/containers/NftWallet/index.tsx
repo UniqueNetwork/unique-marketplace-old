@@ -66,20 +66,10 @@ function NftWallet ({ className }: NftWalletProps): React.ReactElement<NftWallet
   }, []);
 
   const tokenUrl = useCallback((collection, tokenId: string): string => {
-    if (collection.offchainSchema.indexOf('image{id}.pn') !== -1) {
-      return collection.offchainSchema.replace('image{id}.pn', `image${tokenId}.png`)
-    }
-    if (collection.offchainSchema.indexOf('image{id}.jp') !== -1) {
-      return collection.offchainSchema.replace('image{id}.jp', `image${tokenId}.jpg`)
-    }
-    if (collection.offchainSchema.indexOf('image/{id}.jp') !== -1) {
-      return collection.offchainSchema.replace('{id}.jp', `${tokenId}.jpg`)
-    }
-    if (collection.offchainSchema.indexOf('image/{id}.pn') !== -1) {
-      return collection.offchainSchema.replace('{id}.pn', `${tokenId}.png`)
-    }
-    if (collection.offchainSchema.indexOf('images/{id') !== -1) {
-      return collection.offchainSchema.replace('{id', `${tokenId.toString()}`)
+    if (collection.offchainSchema.includes('{id}')) {
+      return collection.offchainSchema.replace('{id}', `${tokenId}`);
+    } else if (collection.offchainSchema.includes('{id')) {
+      return collection.offchainSchema.replace('{id', `${tokenId}`);
     }
     return '';
   },  []);
@@ -89,9 +79,6 @@ function NftWallet ({ className }: NftWalletProps): React.ReactElement<NftWallet
   }, []);
 
   useEffect(() => {
-    if (currentAccount.current && account !== currentAccount.current) {
-      // setCollections([]);
-    }
     currentAccount.current = account;
   }, [account]);
 
@@ -147,6 +134,7 @@ function NftWallet ({ className }: NftWalletProps): React.ReactElement<NftWallet
                 openTransferModal={openTransferModal}
                 openDetailedInformationModal={openDetailedInformationModal}
                 removeCollection={removeCollection}
+                setSelectedCollection={setSelectedCollection}
                 setShouldUpdateTokens={setShouldUpdateTokens}
                 shouldUpdateTokens={shouldUpdateTokens}
                 tokenUrl={tokenUrl}

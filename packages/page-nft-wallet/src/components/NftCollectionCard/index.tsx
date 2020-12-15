@@ -14,19 +14,21 @@ interface Props {
   removeCollection: (collection: number) => void;
   openTransferModal: (collection: NftCollectionInterface, tokenId: string, balance: number) => void;
   openDetailedInformationModal: (collection: NftCollectionInterface, tokenId: string) => void;
+  setSelectedCollection: (collection: NftCollectionInterface | null) => void;
   setShouldUpdateTokens: (collectionId: number | null) => void;
   shouldUpdateTokens: number | null;
   tokenUrl: (collection: NftCollectionInterface, tokenId: string) => string;
 }
 
-function NftCollectionCard({ account, canTransferTokens, collection, removeCollection, openTransferModal, openDetailedInformationModal, setShouldUpdateTokens, shouldUpdateTokens, tokenUrl }: Props): React.ReactElement<Props> {
+function NftCollectionCard({ account, canTransferTokens, collection, removeCollection, openTransferModal, openDetailedInformationModal, setSelectedCollection, setShouldUpdateTokens, shouldUpdateTokens, tokenUrl }: Props): React.ReactElement<Props> {
   const [opened, setOpened] = useState(false);
   const [tokensOfCollection, setTokensOfCollection] = useState<Array<string>>([]);
-  const { getTokensOfCollection } = useCollections();
+  const { getTokensOfCollection, getDetailedCollectionInfo } = useCollections();
   const currentAccount = useRef<string | null | undefined>();
 
-  const openCollection = useCallback((isOpen) => {
+  const openCollection = useCallback(async (isOpen) => {
     setOpened(isOpen);
+    setSelectedCollection(await getDetailedCollectionInfo(collection.id));
   }, [account, opened, setTokensOfCollection]);
 
   const updateTokens = useCallback(async () => {

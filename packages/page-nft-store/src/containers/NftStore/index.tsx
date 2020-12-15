@@ -1,7 +1,8 @@
 // Copyright 2020 UseTech authors & contributors
 
 // global app props and types
-import {NftCollectionBigInterface, useApi, useCollections} from '@polkadot/react-hooks';
+import { NftTokenInterface } from '../../types';
+import { NftCollectionInterface, useApi, useCollections } from '@polkadot/react-hooks';
 
 // external imports
 import React, { memo, ReactElement, useCallback, useEffect, useState } from 'react';
@@ -47,11 +48,12 @@ const BuyTokens = ({ className }: BuyTokensProps): ReactElement<BuyTokensProps> 
   const { api } = useApi();
   // const history = useHistory();
   const [account, setAccount] = useState<string | null>(null);
-  const { presetTokensCollections } = useCollections();
-  const [collectionsAvailable, setCollectionsAvailable] = useState<Array<NftCollectionBigInterface>>([]);
+  const { presetTokensCollections, getDetailedCollectionInfo, getTokensOfCollection } = useCollections();
+  const [collectionsAvailable, setCollectionsAvailable] = useState<Array<NftCollectionInterface>>([]);
   const [searchString, setSearchString] = useState<string>('');
   // const [selectedCollection, setSelectedCollection] = useState<NftCollectionBigInterface>();
-  const [, setSelectedCollection] = useState<NftCollectionBigInterface>();
+  const [selectedCollection, setSelectedCollection] = useState<NftCollectionInterface | null>(null);
+  const [tokensListForTrade, setTokensListForTrade] = useState<Array<NftTokenInterface>>([]);
 
   const getCollections = useCallback(async () => {
     const collections = await presetTokensCollections();
@@ -60,25 +62,37 @@ const BuyTokens = ({ className }: BuyTokensProps): ReactElement<BuyTokensProps> 
     }
   }, []);
 
-  const selectCollection = useCallback((collection: NftCollectionBigInterface) => {
-    setSelectedCollection(collection);
+  const selectCollection = useCallback(async (collection: NftCollectionInterface) => {
+    console.log('collection', collection);
+    setSelectedCollection(await getDetailedCollectionInfo(collection.id));
   }, [setSelectedCollection]);
-
-  const collectionName16Decoder = useCallback((name) => {
-    const collectionNameArr = name.map((item: any) => item.toNumber());
-    collectionNameArr.splice(-1, 1);
-    return String.fromCharCode(...collectionNameArr);
-  }, []);
 
   /* const openTransferModal = useCallback((collection, tokenId, balance) => {
     history.push(`/store/token-details?collection=${collection}&id=${tokenId}&balance=${balance}`)
   }, []); */
 
+  const setTokensList = useCallback(async () => {
+    if (selectedCollection && account) {
+      const tokensOfCollection = (await getTokensOfCollection(selectedCollection.id, account)) as any;
+      setTokensListForTrade(tokensOfCollection);
+    }
+  }, [account, selectedCollection, getTokensOfCollection]);
+
   useEffect(() => {
     void getCollections();
   }, [api]);
 
-  console.log('collectionsAvailable', collectionsAvailable);
+  useEffect(() => {
+    void setTokensList();
+  }, [setTokensList]);
+
+  useEffect(() => {
+    if (!selectedCollection && collectionsAvailable.length) {
+      void selectCollection(collectionsAvailable[0]);
+    }
+  }, [collectionsAvailable, selectCollection, selectedCollection]);
+
+  console.log('collectionsAvailable', collectionsAvailable, 'selectedCollection', selectedCollection, 'tokensListForTrade', tokensListForTrade);
 
   return (
     <div className='nft-store'>
@@ -106,8 +120,8 @@ const BuyTokens = ({ className }: BuyTokensProps): ReactElement<BuyTokensProps> 
                 { collectionsAvailable.map((collection) => (
                 <List.Item onClick={selectCollection.bind(null, collection)} key={collection.id}>
                   <List.Content>
-                    <List.Header as='a'>{collectionName16Decoder(collection.Name).toLowerCase()}</List.Header>
-                    <List.Description as='a'>{collectionName16Decoder(collection.Description)}</List.Description>
+                    <List.Header as='a'>{collection.name}</List.Header>
+                    <List.Description as='a'>{collection.description}</List.Description>
                   </List.Content>
                 </List.Item>
                 ))}

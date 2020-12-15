@@ -22,7 +22,7 @@ function CollectionSearch({ addCollection, account, collections }: Props): React
   const [collectionsAvailable, setCollectionsAvailable] = useState<Array<NftCollectionBigInterface>>([]);
   const [collectionsMatched, setCollectionsMatched] = useState<Array<NftCollectionBigInterface>>([]);
   const [searchString, setSearchString] = useState<string>('');
-  const { presetTokensCollections } = useCollections();
+  const { collectionName8Decoder, collectionName16Decoder, presetTokensCollections } = useCollections();
   const currentAccount = useRef<string | null | undefined>();
 
   const searchCollection = useCallback(async () => {
@@ -41,18 +41,6 @@ function CollectionSearch({ addCollection, account, collections }: Props): React
   const hasThisCollection = useCallback((collectionInfo) => {
     return !!collections.find(collection => collection.id === collectionInfo.id);
   }, [collections]);
-
-  const collectionName16Decoder = useCallback((name) => {
-    const collectionNameArr = name.map((item: any) => item.toNumber());
-    collectionNameArr.splice(-1, 1);
-    return String.fromCharCode(...collectionNameArr);
-  }, []);
-
-  const collectionName8Decoder = useCallback((name) => {
-    const collectionNameArr = Array.prototype.slice.call(name);
-    collectionNameArr.splice(-1, 1);
-    return String.fromCharCode(...collectionNameArr);
-  }, []);
 
   const addCollectionToAccount = useCallback((item: NftCollectionBigInterface) => {
     addCollection({
