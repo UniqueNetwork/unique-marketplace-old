@@ -1,13 +1,12 @@
 // Copyright 2020 UseTech authors & contributors
 
 // global app props and types
-import { NftTokenInterface } from '../../types';
 import { NftCollectionInterface, useApi, useCollections } from '@polkadot/react-hooks';
 
 // external imports
 import React, { memo, ReactElement, useCallback, useEffect, useState } from 'react';
 import { Route, Switch } from 'react-router-dom'
-// import { useHistory } from 'react-router';
+import { useHistory } from 'react-router';
 import List from 'semantic-ui-react/dist/commonjs/elements/List';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import Dropdown from 'semantic-ui-react/dist/commonjs/modules/Dropdown';
@@ -16,6 +15,8 @@ import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 
 // local imports and components
 import NftDetailsModal from '../../components/NftDetailsModal';
+import NftTokenCard from '../../components/NftTokenCard';
+
 import { filterOptions } from './filterOptions';
 import './styles.scss';
 
@@ -46,14 +47,14 @@ interface BuyTokensProps {
 
 const BuyTokens = ({ className }: BuyTokensProps): ReactElement<BuyTokensProps> => {
   const { api } = useApi();
-  // const history = useHistory();
+  const history = useHistory();
   const [account, setAccount] = useState<string | null>(null);
   const { presetTokensCollections, getDetailedCollectionInfo, getTokensOfCollection } = useCollections();
   const [collectionsAvailable, setCollectionsAvailable] = useState<Array<NftCollectionInterface>>([]);
   const [searchString, setSearchString] = useState<string>('');
   // const [selectedCollection, setSelectedCollection] = useState<NftCollectionBigInterface>();
   const [selectedCollection, setSelectedCollection] = useState<NftCollectionInterface | null>(null);
-  const [tokensListForTrade, setTokensListForTrade] = useState<Array<NftTokenInterface>>([]);
+  const [tokensListForTrade, setTokensListForTrade] = useState<Array<string>>([]);
 
   const getCollections = useCallback(async () => {
     const collections = await presetTokensCollections();
@@ -67,13 +68,14 @@ const BuyTokens = ({ className }: BuyTokensProps): ReactElement<BuyTokensProps> 
     setSelectedCollection(await getDetailedCollectionInfo(collection.id));
   }, [setSelectedCollection]);
 
-  /* const openTransferModal = useCallback((collection, tokenId, balance) => {
-    history.push(`/store/token-details?collection=${collection}&id=${tokenId}&balance=${balance}`)
-  }, []); */
+  const openDetailedInformationModal = useCallback((collection, tokenId) => {
+    history.push(`/store/token-details?collection=${collection}&id=${tokenId}`)
+  }, []);
 
   const setTokensList = useCallback(async () => {
     if (selectedCollection && account) {
       const tokensOfCollection = (await getTokensOfCollection(selectedCollection.id, account)) as any;
+      console.log('tokensOfCollection', tokensOfCollection);
       setTokensListForTrade(tokensOfCollection);
     }
   }, [account, selectedCollection, getTokensOfCollection]);
@@ -163,22 +165,20 @@ const BuyTokens = ({ className }: BuyTokensProps): ReactElement<BuyTokensProps> 
                   </Dropdown>
                 </Grid.Column>
               </Grid.Row>
-              {/* <Grid.Row>
+              <Grid.Row>
                 <div className='nft-tokens'>
-                  { account && tokensOfCollection.map((token) => (
+                  { account && selectedCollection && tokensListForTrade.map((token) => (
                     <NftTokenCard
                       account={account}
-                      canTransferTokens={token.isOwn}
-                      collection={token.collection}
+                      canTransferTokens={true}
+                      collection={selectedCollection}
                       key={token}
-                      openTransferModal={openTransferModal}
                       openDetailedInformationModal={openDetailedInformationModal}
-                      shouldUpdateTokens={shouldUpdateTokens}
                       token={token}
                     />
                   )) }
                 </div>
-              </Grid.Row> */}
+              </Grid.Row>
             </Grid>
           </Grid.Column>
         </Grid.Row>

@@ -94,7 +94,6 @@ export function useCollections() {
       return;
     }
     // @ts-ignore
-    console.log('collectionId', collectionId, 'ownerId', ownerId);
     return (await api.query.nft.addressTokens(collectionId, ownerId));
   }, [api]);
 
@@ -147,9 +146,6 @@ export function useCollections() {
       const collections: Array<NftCollectionInterface> = [];
       for (let i = 1; i <= collectionsCount; i++) {
         const collectionInf = await getDetailedCollectionInfo(i) as any;
-        /* if (collectionInf && collectionInf.Owner && collectionInf.Owner.toString() !== '5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM') {
-          collections.push({ ...collectionInf, id: i });
-        } */
         if (collectionInf) {
           collections.push({...collectionInf, id: i});
         }

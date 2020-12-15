@@ -5,7 +5,7 @@ import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import { Button, Input, Table, Label, LabelHelp } from '@polkadot/react-components';
-import { useCollections, NftCollectionInterface, NftCollectionBigInterface } from '@polkadot/react-hooks';
+import { useCollections, NftCollectionInterface } from '@polkadot/react-hooks';
 
 import { useApi } from '@polkadot/react-hooks';
 
@@ -19,17 +19,16 @@ interface Props {
 
 function CollectionSearch({ addCollection, account, collections }: Props): React.ReactElement<Props> {
   const { api } = useApi();
-  const [collectionsAvailable, setCollectionsAvailable] = useState<Array<NftCollectionBigInterface>>([]);
-  const [collectionsMatched, setCollectionsMatched] = useState<Array<NftCollectionBigInterface>>([]);
+  const [collectionsAvailable, setCollectionsAvailable] = useState<Array<NftCollectionInterface>>([]);
+  const [collectionsMatched, setCollectionsMatched] = useState<Array<NftCollectionInterface>>([]);
   const [searchString, setSearchString] = useState<string>('');
-  const { collectionName8Decoder, collectionName16Decoder, presetTokensCollections } = useCollections();
+  const { presetTokensCollections } = useCollections();
   const currentAccount = useRef<string | null | undefined>();
 
   const searchCollection = useCallback(async () => {
     const filteredCollections = collectionsAvailable.filter((collection) => {
-      const collectionName = collectionName16Decoder(collection.Name).toLowerCase();
       if (
-        collectionName.indexOf(searchString.toLowerCase()) !== -1
+        collection.name.indexOf(searchString.toLowerCase()) !== -1
         || collection.id.toString().toLowerCase().indexOf(searchString.toLowerCase()) !== -1
       ) {
         return collection;
@@ -42,16 +41,8 @@ function CollectionSearch({ addCollection, account, collections }: Props): React
     return !!collections.find(collection => collection.id === collectionInfo.id);
   }, [collections]);
 
-  const addCollectionToAccount = useCallback((item: NftCollectionBigInterface) => {
-    addCollection({
-      id: item.id,
-      decimalPoints: item.DecimalPoints.toNumber(),
-      description: collectionName16Decoder(item.Description),
-      name: collectionName16Decoder(item.Name),
-      offchainSchema: collectionName8Decoder(item.OffchainSchema),
-      prefix: collectionName8Decoder(item.TokenPrefix),
-      isReFungible: item.Mode.isReFungible,
-    })
+  const addCollectionToAccount = useCallback((item: NftCollectionInterface) => {
+    addCollection(item)
   }, [addCollection]);
 
   const getCollections = useCallback(async () => {
@@ -119,7 +110,7 @@ function CollectionSearch({ addCollection, account, collections }: Props): React
             {collectionsMatched.map((item) => (
               <tr className='collection-row' key={item.id}>
                 <td className='collection-name'>
-                  Collection name: <strong>{collectionName16Decoder(item.Name)}</strong>
+                  Collection name: <strong>{item.name}</strong>
                 </td>
                 <td className='collection-actions'>
                   <Button

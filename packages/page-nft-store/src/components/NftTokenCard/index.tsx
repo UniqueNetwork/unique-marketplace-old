@@ -1,6 +1,5 @@
 // Copyright 2020 UseTech authors & contributors
 import React, { useCallback, useEffect, useState } from 'react';
-import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 import Item from 'semantic-ui-react/dist/commonjs/views/Item';
 import { NftCollectionInterface, useCollections } from '@polkadot/react-hooks';
 
@@ -10,15 +9,12 @@ interface Props {
   account: string;
   canTransferTokens: boolean;
   collection: NftCollectionInterface;
-  openTransferModal: (collection: NftCollectionInterface, tokenId: string, balance: number) => void;
   openDetailedInformationModal: (collection: NftCollectionInterface, tokenId: string) => void;
-  shouldUpdateTokens: number | null;
   token: string;
-  tokenUrl: (collection: NftCollectionInterface, tokenId: string) => string;
 }
 
-function NftTokenCard({ account, canTransferTokens, collection, openTransferModal, openDetailedInformationModal, shouldUpdateTokens, token, tokenUrl }: Props): React.ReactElement<Props> {
-  const { getDetailedRefungibleTokenInfo } = useCollections();
+function NftTokenCard({ account, canTransferTokens, collection, openDetailedInformationModal, token }: Props): React.ReactElement<Props> {
+  const { getDetailedRefungibleTokenInfo, getTokenImageUrl } = useCollections();
   const [balance, setBalance] = useState<number>(0);
 
   const getTokenDetails = useCallback(async () => {
@@ -29,17 +25,12 @@ function NftTokenCard({ account, canTransferTokens, collection, openTransferModa
         return;
       }
       const balance = owner.fraction.toNumber() / Math.pow(10, collection.decimalPoints);
+      console.log('balance', balance);
       setBalance(balance);
     } catch (e) {
       console.error('token balance calculation error', e);
     }
   }, []);
-
-  useEffect(() => {
-    if (shouldUpdateTokens && shouldUpdateTokens === collection.id) {
-      void getTokenDetails();
-    }
-  }, [shouldUpdateTokens]);
 
   useEffect(() => {
     void getTokenDetails();
@@ -50,24 +41,21 @@ function NftTokenCard({ account, canTransferTokens, collection, openTransferModa
   }
 
   return (
-    <tr className='token-row' key={token}>
-      <td className='token-image'>
+    <div className='token-row' key={token}>
+      <div className='token-image'>
         <a onClick={openDetailedInformationModal.bind(null, collection, token)}>
-          <Item.Image size='mini' src={tokenUrl(collection, token)} />
+          <Item.Image size='mini' src={getTokenImageUrl(collection, token)} />
         </a>
-      </td>
-      <td className='token-name'>
+      </div>
+      <div className='token-name'>
         {collection.prefix} #{token.toString()}
-      </td>
+      </div>
       { collection.isReFungible && (
-        <td className='token-balance'>
+        <div className='token-balance'>
           Balance: {balance}
-        </td>
+        </div>
       )}
-      <td className='token-actions'>
-        <Button disabled={!canTransferTokens} onClick={openTransferModal.bind(null, collection, token, balance)} primary>Transfer token</Button>
-      </td>
-    </tr>
+    </div>
   )
 }
 
