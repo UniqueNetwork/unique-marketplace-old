@@ -1,6 +1,7 @@
 // Copyright 2020 UseTech authors & contributors
 import React, { useCallback, useEffect, useState } from 'react';
-import Item from 'semantic-ui-react/dist/commonjs/views/Item';
+import Card from 'semantic-ui-react/dist/commonjs/views/Card';
+import Image from 'semantic-ui-react/dist/commonjs/elements/Image';
 import { NftCollectionInterface, useCollections } from '@polkadot/react-hooks';
 
 import './styles.scss';
@@ -41,21 +42,25 @@ function NftTokenCard({ account, canTransferTokens, collection, openDetailedInfo
   }
 
   return (
-    <div className='token-row' key={token}>
-      <div className='token-image'>
-        <a onClick={openDetailedInformationModal.bind(null, collection, token)}>
-          <Item.Image size='mini' src={getTokenImageUrl(collection, token)} />
-        </a>
-      </div>
-      <div className='token-name'>
-        {collection.prefix} #{token.toString()}
-      </div>
-      { collection.isReFungible && (
-        <div className='token-balance'>
-          Balance: {balance}
-        </div>
-      )}
-    </div>
+    <Card onClick={openDetailedInformationModal.bind(null, collection, token)} className='token-card' key={token}>
+      <Image src={getTokenImageUrl(collection, token)} wrapped ui={false} />
+      <Card.Content>
+        <Card.Header>{collection.prefix} #{token.toString()}</Card.Header>
+        <Card.Meta>
+          <span className='date'>Some token info</span>
+        </Card.Meta>
+        <Card.Description>
+          Some token description
+        </Card.Description>
+      </Card.Content>
+      <Card.Content extra>
+        { collection.isReFungible && (
+          <a> className='token-balance'>
+            Balance: {balance}
+          </a>
+        )}
+      </Card.Content>
+    </Card>
   )
 }
 

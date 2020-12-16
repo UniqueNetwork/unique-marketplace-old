@@ -1,5 +1,11 @@
 .nft-store {
 
+  .nft-tokens {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+  }
+
   .punks-for-sale {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr;
