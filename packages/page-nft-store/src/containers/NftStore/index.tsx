@@ -1,7 +1,7 @@
 // Copyright 2020 UseTech authors & contributors
 
 // global app props and types
-import { NftCollectionInterface, useApi, useCollections } from '@polkadot/react-hooks';
+import { NftCollectionInterface, useApi, useCollections, useNftTests } from '@polkadot/react-hooks';
 
 // external imports
 import React, { memo, ReactElement, useCallback, useEffect, useState } from 'react';
@@ -55,6 +55,7 @@ const BuyTokens = ({ className }: BuyTokensProps): ReactElement<BuyTokensProps> 
   // const [selectedCollection, setSelectedCollection] = useState<NftCollectionBigInterface>();
   const [selectedCollection, setSelectedCollection] = useState<NftCollectionInterface | null>(null);
   const [tokensListForTrade, setTokensListForTrade] = useState<Array<string>>([]);
+  const { createToken } = useNftTests(account);
 
   const getCollections = useCallback(async () => {
     const collections = await presetTokensCollections();
@@ -94,6 +95,12 @@ const BuyTokens = ({ className }: BuyTokensProps): ReactElement<BuyTokensProps> 
     }
   }, [collectionsAvailable, selectCollection, selectedCollection]);
 
+  useEffect(() => {
+    if (account && api) {
+      // createToken();
+    }
+  }, [account, api, createToken]);
+
   console.log('collectionsAvailable', collectionsAvailable, 'selectedCollection', selectedCollection, 'tokensListForTrade', tokensListForTrade);
 
   return (
@@ -108,7 +115,7 @@ const BuyTokens = ({ className }: BuyTokensProps): ReactElement<BuyTokensProps> 
         <Grid.Row>
           <Grid.Column width={6}>
             <Input
-              className='explorer--query label-small'
+              className='explorer--query input-search'
               help={<span>Find and select your token collection. For example, you can find tokens from <a href='https://ipfs-gateway.usetech.com/ipns/QmaMtDqE9nhMX9RQLTpaCboqg7bqkb6Gi67iCKMe8NDpCE/' target='_blank' rel='noopener noreferrer'>SubstraPunks</a></span>}
               isDisabled={!collectionsAvailable.length}
               label={'Find collection'}
@@ -135,7 +142,7 @@ const BuyTokens = ({ className }: BuyTokensProps): ReactElement<BuyTokensProps> 
               <Grid.Row>
                 <Grid.Column width={12}>
                   <Input
-                    className='explorer--query label-small'
+                    className='explorer--query input-search'
                     help={<span>Find your token. For example, 1</span>}
                     isDisabled={!collectionsAvailable.length}
                     label={'Find token'}
