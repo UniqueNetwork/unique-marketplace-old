@@ -5,7 +5,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useApi } from '@polkadot/react-hooks';
 
-export default function useBalance (accountId: string | null) {
+export function useBalance (accountId: string | null) {
   const { api } = useApi();
   const [balance, setBalance] = useState<any | null>(null);
   const [balanceError, setBalanceError] = useState<boolean>(false);

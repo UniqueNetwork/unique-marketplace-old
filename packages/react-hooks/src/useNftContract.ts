@@ -1,8 +1,11 @@
 // Copyright 2020 UseTech authors & contributors
-import { useCallback, useState } from 'react';
-// import { useApi } from '@polkadot/react-hooks';
+import { useCallback, useEffect, useState } from 'react';
+import { Abi, ContractPromise as Contract, ContractPromise } from '@polkadot/api-contract';
+import { useApi } from '@polkadot/react-hooks';
 import { formatBalance } from '@polkadot/util';
 import keyring from '@polkadot/ui-keyring';
+// @ts-ignore
+import marketContractAbi from './metadata.json';
 
 const value = 0;
 const maxgas = 1000000000000;
@@ -18,19 +21,20 @@ export interface NftTokenInterface {
 
 // https://docs.google.com/document/d/1WED9VP8Yj52Un4qmkGDpzjesQTzwwoDgYMk1Ty8yftQ/edit
 export function useNftContract(account: string) {
-  // const { api } = useApi();
-  // const [contractInstance, setContractInstance] = useState();
-  const [contractInstance] = useState<any | undefined>();
-  const [abi] = useState<any | undefined>();
+  const { api } = useApi();
+  const [contractInstance, setContractInstance] = useState<Contract | null>(null);
+  const [abi, setAbi] = useState<Abi | undefined>();
 
   // get offers
   // if connection ID not specified, returns 30 last token sale offers
   const getUserDeposit = useCallback(async (): Promise<string | null> => {
     try {
-      const result = await contractInstance.call('rpc', 'get_balance', value, maxgas, 2).send(account);
-      if (result.output) {
-        let balance = result.output;
-        return formatBalance(balance);
+      if (contractInstance) {
+        const result = await contractInstance.call('rpc', 'get_balance', value, maxgas, 2).send(account);
+        if (result.output) {
+          let balance = result.output;
+          return formatBalance(balance);
+        }
       }
     } catch (e) {
       console.log('getUserDeposit Error: ', e);
@@ -38,10 +42,10 @@ export function useNftContract(account: string) {
     return null;
   }, []);
 
-  const getDepositor = useCallback(async (token: NftTokenInterface, readerAddress: string) => {
+  const getDepositor = useCallback(async (collectionId: string, tokenId: string, readerAddress: string) => {
     try {
       // const keyring = new keyring({ type: 'sr25519' });
-      const result = await contractInstance.call('rpc', 'get_nft_deposit', value, maxgas, token.collectionId, token.tokenId).send(readerAddress);
+      const result = await contractInstance.call('rpc', 'get_nft_deposit', value, maxgas, collectionId, tokenId).send(readerAddress);
       if (result.output) {
         const address = keyring.encodeAddress(result.output.toString());
         console.log("Deposit address: ", address);
@@ -53,6 +57,18 @@ export function useNftContract(account: string) {
     }
     return null;
   }, [contractInstance, keyring]);
+
+  const initAbi = useCallback(() => {
+    const jsonAbi = new Abi(marketContractAbi, api.registry.getChainProperties());
+    const newContractInstance = new ContractPromise(api, abi, marketContractAddress);
+    console.log('jsonAbi', jsonAbi);
+    setAbi(jsonAbi);
+    setContractInstance(newContractInstance)
+  }, [Abi, api]);
+
+  useEffect(() => {
+    initAbi();
+  }, []);
 
   return {
     abi,

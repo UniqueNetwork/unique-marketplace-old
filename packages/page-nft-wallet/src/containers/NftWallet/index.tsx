@@ -7,10 +7,9 @@ import React, { useCallback, useEffect, useState, useRef } from 'react';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid/Grid';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header/Header';
 import { Table, LabelHelp } from '@polkadot/react-components';
-import { NftCollectionInterface } from '@polkadot/react-hooks';
+import { NftCollectionInterface, useBalance } from '@polkadot/react-hooks';
 
 // local imports and components
-import useBalance from '../../hooks/useBalance';
 import TransferModal from '../../components/TransferModal/';
 import TokenDetailsModal from '../../components/TokenDetailsModal/';
 import NftCollectionCard from '../../components/NftCollectionCard';

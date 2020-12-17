@@ -21,7 +21,7 @@ export interface NftCollectionBigInterface {
 
 export interface NftCollectionInterface {
   // access
-  id: number;
+  id: string;
   decimalPoints: number;
   // constOnChainSchema
   description: string;
@@ -89,7 +89,7 @@ export function useCollections() {
     return [];
   }, []);
 
-  const getTokensOfCollection = useCallback(async (collectionId: number, ownerId: string) => {
+  const getTokensOfCollection = useCallback(async (collectionId: string, ownerId: string) => {
     if (!api) {
       return;
     }

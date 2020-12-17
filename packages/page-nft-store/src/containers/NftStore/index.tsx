@@ -190,7 +190,7 @@ const BuyTokens = ({ className }: BuyTokensProps): ReactElement<BuyTokensProps> 
           </Grid.Column>
         </Grid.Row>
       </Grid>
-      { account && (
+      { account && selectedCollection && (
         <Switch>
           <Route
             path="*/token-details"
@@ -198,6 +198,7 @@ const BuyTokens = ({ className }: BuyTokensProps): ReactElement<BuyTokensProps> 
           >
             <NftDetailsModal
               account={account}
+              collectionId={selectedCollection.id}
             />
           </Route>
         </Switch>

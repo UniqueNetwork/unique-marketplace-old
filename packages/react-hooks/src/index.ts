@@ -7,6 +7,7 @@ export { useAccounts } from './useAccounts';
 export { useAddresses } from './useAddresses';
 export { useApi } from './useApi';
 export { useAvailableSlashes } from './useAvailableSlashes';
+export { useBalance } from './useBalance';
 export { useBlockTime } from './useBlockTime';
 export { useCacheKey } from './useCacheKey';
 export { useCall } from './useCall';
