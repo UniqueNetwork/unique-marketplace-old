@@ -149,6 +149,7 @@ const useMarketplaceStages = (account: string, collectionId: string, tokenId: st
     console.log('loadingTokenInfo');
     const tokenInfo = await getDetailedTokenInfo(collectionId, tokenId);
     setTokenInfo(tokenInfo);
+    console.log('tokenInfo', tokenInfo);
   }, [setTokenInfo]);
 
   const registerDeposit = useCallback(async () => {
@@ -209,47 +210,32 @@ const useMarketplaceStages = (account: string, collectionId: string, tokenId: st
   console.log('current', state);
 
   useEffect(() => {
-    switch (state.value) {
-      case 'UPDATE_TOKEN_STATE':
+    switch (true) {
+      case state.matches('idle'): // 'UPDATE_TOKEN_STATE':
         void loadingTokenInfo();
         break;
-      case 'BUY':
+      case state.matches('buy'):
         void buy();
         break;
-      case 'SALE':
+      case state.matches('sale'):
         void sale();
         break;
-      case 'DEPOSIT_SUCCESS':
+      case state.matches('sentTokenToNewOwner'):
         void sentTokenToAccount();
         break;
-      case 'DEPOSIT_FAIL':
-      case 'SEND_TOKEN_FAIL':
-      case 'SEND_TOKEN_SUCCESS':
-      case 'REGISTER_SALE_SUCCESS':
-      case 'CANCEL_SALE_SUCCESS':
-      case 'CANCEL_SALE_FAIL':
-        void send('UPDATE_TOKEN_STATE');
-        break;
-      case 'TRANSFER_NFT_TO_CONTRACT_SUCCESS':
+      case state.matches('registerDeposit'):
         void registerDeposit();
         break;
-      case 'NFT_DEPOSIT_FAIL':
-        void registerDeposit();
-        break;
-      case 'NFT_DEPOSIT_READY':
-      case 'REGISTER_SALE_FAIL':
+      case state.matches('askPrice'):
         void askPrice();
-      case 'ASK_PRICE_SUCCESS':
+        break;
+      case state.matches('registerSale'):
         void registerSale();
         break;
       default:
         break;
     }
   }, [state.value, loadingTokenInfo]);
-
-  useEffect(() => {
-    send('OPEN_TOKEN_WINDOW');
-  }, [send]);
 
   return {
     cancelSale,
