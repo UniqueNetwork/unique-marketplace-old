@@ -5,11 +5,10 @@ import { useApi } from '@polkadot/react-hooks';
 import { formatBalance } from '@polkadot/util';
 import keyring from '@polkadot/ui-keyring';
 import { getContractAbi } from '@polkadot/react-components/util';
-import marketContractAbi from './metadata.json';
 
 const value = 0;
 const maxgas = 1000000000000;
-const marketContractAddress = '5CYN9j3YvRkqxewoxeSvRbhAym4465C57uMmX5j4yz99L5H6';
+export const marketContractAddress = '5CYN9j3YvRkqxewoxeSvRbhAym4465C57uMmX5j4yz99L5H6';
 // const decimals = 12; // kusamaDecimals
 
 export interface NftTokenInterface {
@@ -68,6 +67,26 @@ export function useNftContract(account: string) {
     setContractInstance(newContractInstance)
   }, [Abi, api]);
 
+  const getTokenAsk = useCallback(async (collectionId, tokenId) => {
+    if (contractInstance) {
+      const askIdResult = await contractInstance.call('rpc', 'get_ask_id_by_token', value, maxgas, collectionId, tokenId).send(marketContractAddress);
+      if (askIdResult.output) {
+        const askId = askIdResult.output.toNumber();
+        console.log("Token Ask ID: ", askId);
+        const askResult = await contractInstance.call('rpc', 'get_ask_by_id', value, maxgas, askId).send(marketContractAddress);
+        if (askResult.output) {
+          const askOwnerAddress = keyring.encodeAddress(askResult.output[4].toString());
+          console.log("Ask owner: ", askOwnerAddress);
+          return {
+            owner: askOwnerAddress,
+            price: askResult.output[3].toString()
+          };
+        }
+      }
+    }
+    return null;
+  }, []);
+
   useEffect(() => {
     initAbi();
   }, []);
@@ -75,6 +94,7 @@ export function useNftContract(account: string) {
   return {
     abi,
     getDepositor,
-    getUserDeposit
+    getUserDeposit,
+    getTokenAsk
   };
 }

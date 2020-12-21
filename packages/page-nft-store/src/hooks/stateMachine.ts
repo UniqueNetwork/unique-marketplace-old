@@ -38,7 +38,7 @@ const marketplaceStateMachine = Machine({
     },
     registerDeposit: {
       on: {
-        SUCCESS: 'getDepositReady',
+        REGISTER_DEPOSIT_SUCCESS: 'getDepositReady',
       }
     },
     getDepositReady: {

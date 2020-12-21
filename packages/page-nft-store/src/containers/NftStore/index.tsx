@@ -65,12 +65,11 @@ const BuyTokens = ({ className }: BuyTokensProps): ReactElement<BuyTokensProps> 
   }, []);
 
   const selectCollection = useCallback(async (collection: NftCollectionInterface) => {
-    console.log('collection', collection);
     setSelectedCollection(await getDetailedCollectionInfo(collection.id));
   }, [setSelectedCollection]);
 
-  const openDetailedInformationModal = useCallback((collection, tokenId) => {
-    history.push(`/store/token-details?collection=${collection}&id=${tokenId}`)
+  const openDetailedInformationModal = useCallback((collection: NftCollectionInterface, tokenId) => {
+    history.push(`/store/token-details?collectionId=${collection.id}&tokenId=${tokenId}`)
   }, []);
 
   const setTokensList = useCallback(async () => {
@@ -196,10 +195,7 @@ const BuyTokens = ({ className }: BuyTokensProps): ReactElement<BuyTokensProps> 
             path="*/token-details"
             key="TokenDetailsModal"
           >
-            <NftDetailsModal
-              account={account}
-              collectionId={selectedCollection.id}
-            />
+            <NftDetailsModal account={account} />
           </Route>
         </Switch>
       )}

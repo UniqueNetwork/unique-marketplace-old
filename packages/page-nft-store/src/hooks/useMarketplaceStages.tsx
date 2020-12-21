@@ -2,7 +2,7 @@
 
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { useMachine } from '@xstate/react';
-import { useCollections, TokenInfo, useNftContract, useApi, useBalance } from '@polkadot/react-hooks';
+import { useCollections, TokenInfo, useNftContract, useApi, useBalance, marketContractAddress } from '@polkadot/react-hooks';
 
 import marketplaceStateMachine from './stateMachine';
 import { StatusContext } from '@polkadot/react-components/Status';
@@ -11,8 +11,10 @@ import config from '../config';
 interface MarketplaceStagesInterface {
   cancelSale: () => void;
   error: string | null;
-  sentCurrentUserAction: (action: 'BUY' | 'CANCEL' | 'SALE' | 'REVERT_UNUSED_KSM') => void;
+  isCancelSaleStage: boolean;
+  sendCurrentUserAction: (action: 'BUY' | 'CANCEL' | 'SALE' | 'REVERT_UNUSED_KSM') => void;
   tokenInfo: any;
+  tokenContractInfo: { price: string; owner: string };
   tokenPriceForSale: number | undefined;
   readyToAskPrice: boolean;
   revertKsm: () => void;
@@ -38,14 +40,15 @@ const useMarketplaceStages = (account: string, collectionId: string, tokenId: st
   const [state, send] = useMachine(marketplaceStateMachine);
   const [tokenInfo, setTokenInfo] = useState<TokenInfo | null | undefined>();
   const { getDetailedTokenInfo } = useCollections();
-  const { abi, getDepositor, getUserDeposit } = useNftContract(account);
+  const { abi, getDepositor, getUserDeposit, getTokenAsk } = useNftContract(account);
   const { balance } = useBalance(account);
   const [error, setError] = useState<string | null>(null);
   const { queueExtrinsic } = useContext(StatusContext);
   const [readyToAskPrice, setReadyToAskPrice] = useState<boolean>(false);
   const [tokenPriceForSale, setTokenPriceForSale] = useState<number>();
+  const [tokenContractInfo, setTokenContractInfo] = useState<{ owner: string, price: string }>();
 
-  const sentCurrentUserAction = useCallback((userAction: 'BUY' | 'CANCEL' | 'SALE' | 'REVERT_UNUSED_KSM') => {
+  const sendCurrentUserAction = useCallback((userAction: 'BUY' | 'CANCEL' | 'SALE' | 'REVERT_UNUSED_KSM') => {
     send(userAction);
   }, [send]);
 
@@ -145,12 +148,24 @@ const useMarketplaceStages = (account: string, collectionId: string, tokenId: st
     });
   }, [account, abi, api]);
 
+  const loadCancelSaleStage = useCallback(async (token) => {
+    const isContractOwner = token.Owner === marketContractAddress;
+    if (isContractOwner) {
+      const ask = await getTokenAsk(collectionId, tokenId);
+      console.log("ask: ", ask);
+      if (ask) {
+        setTokenContractInfo(ask)
+      }
+    }
+  }, [setTokenContractInfo, getTokenAsk]);
+
   const loadingTokenInfo = useCallback(async () => {
     console.log('loadingTokenInfo');
     const tokenInfo = await getDetailedTokenInfo(collectionId, tokenId);
     setTokenInfo(tokenInfo);
     console.log('tokenInfo', tokenInfo);
-  }, [setTokenInfo]);
+    await loadCancelSaleStage(tokenInfo);
+  }, [setTokenInfo, loadCancelSaleStage]);
 
   const registerDeposit = useCallback(async () => {
     console.log('registerDeposit');
@@ -211,7 +226,8 @@ const useMarketplaceStages = (account: string, collectionId: string, tokenId: st
 
   useEffect(() => {
     switch (true) {
-      case state.matches('idle'): // 'UPDATE_TOKEN_STATE':
+      // on load - update token state
+      case state.matches('idle'):
         void loadingTokenInfo();
         break;
       case state.matches('buy'):
@@ -240,8 +256,9 @@ const useMarketplaceStages = (account: string, collectionId: string, tokenId: st
   return {
     cancelSale,
     error,
-    sentCurrentUserAction,
+    sendCurrentUserAction,
     tokenInfo,
+    tokenContractInfo,
     tokenPriceForSale,
     readyToAskPrice,
     revertKsm,
