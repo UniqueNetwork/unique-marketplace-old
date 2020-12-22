@@ -28,9 +28,11 @@ export function useNftContract(account: string) {
   // get offers
   // if connection ID not specified, returns 30 last token sale offers
   const getUserDeposit = useCallback(async (): Promise<string | null> => {
+    console.log('contractInstance', contractInstance);
     try {
       if (contractInstance) {
-        const result = await contractInstance.call('rpc', 'get_balance', value, maxgas, 2).send(account);
+        const result = await contractInstance.read( 'get_balance', value, maxgas, 2).send(account);
+        console.log('result', result);
         if (result.output) {
           let balance = result.output;
           return formatBalance(balance);
@@ -40,13 +42,13 @@ export function useNftContract(account: string) {
       console.log('getUserDeposit Error: ', e);
     }
     return null;
-  }, []);
+  }, [contractInstance]);
 
   const getDepositor = useCallback(async (collectionId: string, tokenId: string, readerAddress: string) => {
     try {
       if (contractInstance) {
         // const keyring = new keyring({ type: 'sr25519' });
-        const result = await contractInstance.call('rpc', 'get_nft_deposit', value, maxgas, collectionId, tokenId).send(readerAddress);
+        const result = await contractInstance.read('get_nft_deposit', value, maxgas, collectionId, tokenId).send(readerAddress);
         if (result.output) {
           const address = keyring.encodeAddress(result.output.toString());
           console.log("Deposit address: ", address);
@@ -63,17 +65,18 @@ export function useNftContract(account: string) {
   const initAbi = useCallback(() => {
     const jsonAbi = getContractAbi(marketContractAddress);
     const newContractInstance = new ContractPromise(api, jsonAbi, marketContractAddress);
+    console.log('newContractInstance', newContractInstance);
     setAbi(jsonAbi);
     setContractInstance(newContractInstance)
   }, [Abi, api]);
 
   const getTokenAsk = useCallback(async (collectionId, tokenId) => {
     if (contractInstance) {
-      const askIdResult = await contractInstance.call('rpc', 'get_ask_id_by_token', value, maxgas, collectionId, tokenId).send(marketContractAddress);
+      const askIdResult = await contractInstance.read('get_ask_id_by_token', value, maxgas, collectionId, tokenId).send(marketContractAddress);
       if (askIdResult.output) {
         const askId = askIdResult.output.toNumber();
         console.log("Token Ask ID: ", askId);
-        const askResult = await contractInstance.call('rpc', 'get_ask_by_id', value, maxgas, askId).send(marketContractAddress);
+        const askResult = await contractInstance.read('get_ask_by_id', value, maxgas, askId).send(marketContractAddress);
         if (askResult.output) {
           const askOwnerAddress = keyring.encodeAddress(askResult.output[4].toString());
           console.log("Ask owner: ", askOwnerAddress);

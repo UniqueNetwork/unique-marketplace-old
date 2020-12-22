@@ -75,7 +75,6 @@ const BuyTokens = ({ className }: BuyTokensProps): ReactElement<BuyTokensProps> 
   const setTokensList = useCallback(async () => {
     if (selectedCollection && account) {
       const tokensOfCollection = (await getTokensOfCollection(selectedCollection.id, account)) as any;
-      console.log('tokensOfCollection', tokensOfCollection);
       setTokensListForTrade(tokensOfCollection);
     }
   }, [account, selectedCollection, getTokensOfCollection]);
@@ -99,8 +98,6 @@ const BuyTokens = ({ className }: BuyTokensProps): ReactElement<BuyTokensProps> 
       // createToken();
     }
   }, [account, api, createToken]);
-
-  console.log('collectionsAvailable', collectionsAvailable, 'selectedCollection', selectedCollection, 'tokensListForTrade', tokensListForTrade);
 
   return (
     <div className='nft-store'>

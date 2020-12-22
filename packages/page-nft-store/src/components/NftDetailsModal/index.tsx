@@ -24,33 +24,33 @@ function NftDetailsModal({ account }: Props): React.ReactElement<Props> {
   const balance = query.get('balance');
   const { getTokenImageUrl, getDetailedCollectionInfo } = useCollections();
   const [collectionInfo, setCollectionInfo] = useState<NftCollectionInterface | null | undefined>();
-  const { tokenInfo, tokenContractInfo } = useMarketplaceStages(account, collectionId, tokenId);
+  const { sendCurrentUserAction, tokenInfo, tokenContractInfo } = useMarketplaceStages(account, collectionId, tokenId);
   const [isOwner, setIsOwner] = useState<boolean>(false);
 
   const uOwnIt = tokenInfo && tokenInfo.Owner.toString() === account;
-  console.log('tokenInfo', tokenInfo, 'owner');
-
-  console.log('balance', balance, 'tokenId', tokenId, 'collectionName', collectionId);
 
   const closeModal = useCallback(() => {
     history.back();
   }, []);
-  console.log('Modal!!!');
 
   const loadCollectionInfo = useCallback(async () => {
     setCollectionInfo(await getDetailedCollectionInfo(collectionId));
   }, [collectionId, setCollectionInfo]);
 
   const onBuy = useCallback(() => {
-
+    sendCurrentUserAction('BUY');
   }, []);
 
   const onSale = useCallback(() => {
-
+    sendCurrentUserAction('SALE');
   }, []);
 
   const onCancel = useCallback(() => {
+    sendCurrentUserAction('CANCEL');
+  }, []);
 
+  const onWithdraw = useCallback(() => {
+    sendCurrentUserAction('REVERT_UNUSED_MONEY');
   }, []);
 
   useEffect(() => {
@@ -100,6 +100,11 @@ function NftDetailsModal({ account }: Props): React.ReactElement<Props> {
               onClick={onCancel}
             />
           )}
+          <Button
+            icon='history'
+            label='Withdraw'
+            onClick={onWithdraw}
+          />
         </div>
         <TradeContainer />
       </Modal.Content>

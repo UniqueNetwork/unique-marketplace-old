@@ -26,7 +26,6 @@ function NftTokenCard({ account, canTransferTokens, collection, openDetailedInfo
         return;
       }
       const balance = owner.fraction.toNumber() / Math.pow(10, collection.decimalPoints);
-      console.log('balance', balance);
       setBalance(balance);
     } catch (e) {
       console.error('token balance calculation error', e);

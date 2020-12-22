@@ -15,10 +15,10 @@ const marketplaceStateMachine = Machine({
         NO_OFFER_PLACED: 'idle',
         CANCEL: 'cancelSale',
         BUY: 'buy',
-        REVERT_UNUSED_KSM: 'revertKsm'
+        REVERT_UNUSED_MONEY: 'revertMoney'
       }
     },
-    revertKsm: {
+    revertMoney: {
       on: {
         WITHDRAW_SUCCESS: 'loadingTokenInfo',
         WITHDRAW_ERROR: 'loadingTokenInfo'

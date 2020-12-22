@@ -8,11 +8,13 @@ import marketplaceStateMachine from './stateMachine';
 import { StatusContext } from '@polkadot/react-components/Status';
 import config from '../config';
 
+type UserActionType = 'BUY' | 'CANCEL' | 'SALE' | 'REVERT_UNUSED_MONEY';
+
 interface MarketplaceStagesInterface {
   cancelSale: () => void;
   error: string | null;
   isCancelSaleStage: boolean;
-  sendCurrentUserAction: (action: 'BUY' | 'CANCEL' | 'SALE' | 'REVERT_UNUSED_KSM') => void;
+  sendCurrentUserAction: (action: UserActionType) => void;
   tokenInfo: any;
   tokenContractInfo: { price: string; owner: string };
   tokenPriceForSale: number | undefined;
@@ -48,7 +50,7 @@ const useMarketplaceStages = (account: string, collectionId: string, tokenId: st
   const [tokenPriceForSale, setTokenPriceForSale] = useState<number>();
   const [tokenContractInfo, setTokenContractInfo] = useState<{ owner: string, price: string }>();
 
-  const sendCurrentUserAction = useCallback((userAction: 'BUY' | 'CANCEL' | 'SALE' | 'REVERT_UNUSED_KSM') => {
+  const sendCurrentUserAction = useCallback((userAction: UserActionType) => {
     send(userAction);
   }, [send]);
 
@@ -72,7 +74,6 @@ const useMarketplaceStages = (account: string, collectionId: string, tokenId: st
 
   /**********user actions*************/
   const sale = useCallback(() => {
-    console.log('sale');
     // checkBalance(nft, owner) - is nft on balance/ is balance > fee?
     // deposit nft to contract
     queueTransaction(
@@ -88,7 +89,6 @@ const useMarketplaceStages = (account: string, collectionId: string, tokenId: st
   const buy = useCallback(async () => {
     // send deposit to contract
     // Check if KSM deposit is needed and deposit
-    console.log('buy');
     const deposited = parseFloat(await getUserDeposit() || '');
     console.log("Deposited KSM: ", deposited);
     const price = parseFloat('0');
@@ -128,9 +128,7 @@ const useMarketplaceStages = (account: string, collectionId: string, tokenId: st
   }, [account, abi, api, queueTransaction]);
 
   const revertKsm = useCallback(async () => {
-    console.log('revertKsm');
     const deposited = parseFloat(await getUserDeposit() || '');
-    console.log('deposited', deposited);
     /*
     const ksmexp = BigNumber(10).pow(this.ksmDecimals);
     const balance = new BigNumber(amount);
@@ -160,15 +158,12 @@ const useMarketplaceStages = (account: string, collectionId: string, tokenId: st
   }, [setTokenContractInfo, getTokenAsk]);
 
   const loadingTokenInfo = useCallback(async () => {
-    console.log('loadingTokenInfo');
     const tokenInfo = await getDetailedTokenInfo(collectionId, tokenId);
     setTokenInfo(tokenInfo);
-    console.log('tokenInfo', tokenInfo);
     await loadCancelSaleStage(tokenInfo);
   }, [setTokenInfo, loadCancelSaleStage]);
 
   const registerDeposit = useCallback(async () => {
-    console.log('registerDeposit');
     const address = await getDepositor(collectionId, tokenId, account);
     if (address === account) {
       // depositor is me
@@ -188,7 +183,6 @@ const useMarketplaceStages = (account: string, collectionId: string, tokenId: st
   }, []);
 
   const askPrice = useCallback(() => {
-    console.log('askPrice');
     setReadyToAskPrice(true);
   }, []);
 
@@ -208,7 +202,6 @@ const useMarketplaceStages = (account: string, collectionId: string, tokenId: st
   }, [account, api, collectionId, tokenId]);
 
   const cancelSale = useCallback(() => {
-    console.log('cancelSale');
     // cancelAsync(punkId, punk.owner)
     queueExtrinsic({
       accountId: account && account.toString(),
@@ -227,7 +220,7 @@ const useMarketplaceStages = (account: string, collectionId: string, tokenId: st
   useEffect(() => {
     switch (true) {
       // on load - update token state
-      case state.matches('idle'):
+      case state.matches('loadingTokenInfo'):
         void loadingTokenInfo();
         break;
       case state.matches('buy'):
@@ -252,6 +245,10 @@ const useMarketplaceStages = (account: string, collectionId: string, tokenId: st
         break;
     }
   }, [state.value, loadingTokenInfo]);
+
+  useEffect(() => {
+    send('UPDATE_TOKEN_STATE');
+  }, [send]);
 
   return {
     cancelSale,

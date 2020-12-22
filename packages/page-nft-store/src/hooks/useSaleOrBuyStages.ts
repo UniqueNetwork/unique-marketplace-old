@@ -54,10 +54,8 @@ const useSaleOrBuyStages = (): SaleOrByStagesInterface => {
   }, []);
 
   const loadPunkFromChain = useCallback(async (contractAddress, collectionId, punkId) => {
-    console.log(`Loading punk ${punkId} from collection ${collectionId}`);
 
     const item = await api.query.nft.nftItemList(collectionId, punkId) as unknown as { Data: any, Owner: any };
-    console.log("Received item: ", item);
 
     let attrArray = [];
     for (let i = 0; i < 7; i++) {
