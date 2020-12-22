@@ -55,17 +55,31 @@ function NftDetailsModal({ account }: Props): React.ReactElement<Props> {
   }, []);
 
   const getBuyStep = useMemo((): number => {
-    if (value === 'buy') {
-      return 1;
+    switch (value) {
+      case 'buy':
+        return 1;
+      case 'sentTokenToNewOwner':
+        return 2;
+      default:
+        return 0;
     }
-    return 0;
   }, [value]);
 
   const getSaleStep = useMemo((): number => {
-    if (value === 'sale') {
-      return 1;
+    switch (value) {
+      case 'sale':
+        return 1;
+      case 'registerDeposit':
+        return 2;
+      case 'getDepositReady':
+        return 3;
+      case 'askPrice':
+        return 4;
+      case 'registerSale':
+        return 5;
+      default:
+        return 0;
     }
-    return 0;
   }, [value]);
 
   useEffect(() => {
