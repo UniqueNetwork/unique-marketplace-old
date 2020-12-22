@@ -1,13 +1,14 @@
 // Copyright 2020 UseTech authors & contributors
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import Modal from 'semantic-ui-react/dist/commonjs/modules/Modal/Modal';
 import { Button } from '@polkadot/react-components';
 import {NftCollectionInterface, useCollections} from '@polkadot/react-hooks';
 
-import TradeContainer from '../TradeContainer';
+import BuySteps from '../BuySteps';
+import SaleSteps from '../SaleSteps';
 import './styles.scss';
 import useMarketplaceStages from "../../hooks/useMarketplaceStages";
 
@@ -20,11 +21,11 @@ function NftDetailsModal({ account }: Props): React.ReactElement<Props> {
   const [accessories] = useState<Array<string>>([]);
   const query = new URLSearchParams(useLocation().search);
   const tokenId = query.get('tokenId') || '0';
-  const collectionId = query.get('collection') || '';
-  const balance = query.get('balance');
+  const collectionId = query.get('collectionId') || '';
   const { getTokenImageUrl, getDetailedCollectionInfo } = useCollections();
   const [collectionInfo, setCollectionInfo] = useState<NftCollectionInterface | null | undefined>();
-  const { sendCurrentUserAction, tokenInfo, tokenContractInfo } = useMarketplaceStages(account, collectionId, tokenId);
+  // if tokenContractInfo is not empty - token is on contract (ready to buy)
+  const { deposited, sendCurrentUserAction, tokenInfo, tokenContractInfo, value } = useMarketplaceStages(account, collectionId, tokenId);
   const [isOwner, setIsOwner] = useState<boolean>(false);
 
   const uOwnIt = tokenInfo && tokenInfo.Owner.toString() === account;
@@ -53,9 +54,25 @@ function NftDetailsModal({ account }: Props): React.ReactElement<Props> {
     sendCurrentUserAction('REVERT_UNUSED_MONEY');
   }, []);
 
+  const getBuyStep = useMemo((): number => {
+    if (value === 'buy') {
+      return 1;
+    }
+    return 0;
+  }, [value]);
+
+  const getSaleStep = useMemo((): number => {
+    if (value === 'sale') {
+      return 1;
+    }
+    return 0;
+  }, [value]);
+
   useEffect(() => {
     void loadCollectionInfo();
   }, [collectionId]);
+
+  console.log('state value', value);
 
   return (
     <Modal className="nft-details" size='large' open onClose={closeModal}>
@@ -79,7 +96,7 @@ function NftDetailsModal({ account }: Props): React.ReactElement<Props> {
           { !!(!uOwnIt && tokenInfo) && (
             <p><strong>The owner is </strong>{tokenInfo.Owner.toString()}</p>
           )}
-          { !uOwnIt && (
+          { !!(!uOwnIt && tokenContractInfo) &&(
             <Button
               icon='shopping-cart'
               label='Buy it'
@@ -100,13 +117,20 @@ function NftDetailsModal({ account }: Props): React.ReactElement<Props> {
               onClick={onCancel}
             />
           )}
-          <Button
-            icon='history'
-            label='Withdraw'
-            onClick={onWithdraw}
-          />
+          { !!(deposited && deposited > 0) && (
+            <Button
+              icon='history'
+              label='Withdraw'
+              onClick={onWithdraw}
+            />
+          )}
         </div>
-        <TradeContainer />
+        { getSaleStep !== 0 && (
+          <SaleSteps step={getSaleStep} />
+        )}
+        { getBuyStep !== 0 && (
+          <BuySteps step={getBuyStep} />
+        )}
       </Modal.Content>
       <Modal.Actions>
         <Button

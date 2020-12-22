@@ -7,21 +7,22 @@ import { useCollections, TokenInfo, useNftContract, useApi, useBalance, marketCo
 import marketplaceStateMachine from './stateMachine';
 import { StatusContext } from '@polkadot/react-components/Status';
 import config from '../config';
+import { StateValue } from "xstate";
 
 type UserActionType = 'BUY' | 'CANCEL' | 'SALE' | 'REVERT_UNUSED_MONEY';
 
 interface MarketplaceStagesInterface {
   cancelSale: () => void;
+  deposited: number | undefined;
   error: string | null;
-  isCancelSaleStage: boolean;
   sendCurrentUserAction: (action: UserActionType) => void;
   tokenInfo: any;
-  tokenContractInfo: { price: string; owner: string };
+  tokenContractInfo: { price: string; owner: string } | undefined;
   tokenPriceForSale: number | undefined;
   readyToAskPrice: boolean;
-  revertKsm: () => void;
   setTokenPriceForSale: (price: number) => void;
   submitTokenPrice: () => void;
+  value: StateValue;
 }
 
 // 0 == user owns token, no offers placed
@@ -47,12 +48,17 @@ const useMarketplaceStages = (account: string, collectionId: string, tokenId: st
   const [error, setError] = useState<string | null>(null);
   const { queueExtrinsic } = useContext(StatusContext);
   const [readyToAskPrice, setReadyToAskPrice] = useState<boolean>(false);
+  const [deposited, setDeposited] = useState<number>();
   const [tokenPriceForSale, setTokenPriceForSale] = useState<number>();
   const [tokenContractInfo, setTokenContractInfo] = useState<{ owner: string, price: string }>();
 
   const sendCurrentUserAction = useCallback((userAction: UserActionType) => {
     send(userAction);
   }, [send]);
+
+  const getDeposited = useCallback(async () => {
+    setDeposited(parseFloat(await getUserDeposit() || ''));
+  }, [getUserDeposit, setDeposited]);
 
   const getFee = useCallback((price) => {
     if (price <= 0.001) return 0;
@@ -89,9 +95,15 @@ const useMarketplaceStages = (account: string, collectionId: string, tokenId: st
   const buy = useCallback(async () => {
     // send deposit to contract
     // Check if KSM deposit is needed and deposit
-    const deposited = parseFloat(await getUserDeposit() || '');
-    console.log("Deposited KSM: ", deposited);
-    const price = parseFloat('0');
+    if (!tokenContractInfo) {
+      console.error('tokenContractInfo is undefined');
+      return;
+    }
+    if (!deposited) {
+      console.error('deposited is undefined');
+      return;
+    }
+    const price = parseFloat(tokenContractInfo.price);
     const feeFull = getFee(price);
     const feePaid = getFee(deposited);
     if (deposited < price) {
@@ -111,7 +123,7 @@ const useMarketplaceStages = (account: string, collectionId: string, tokenId: st
       );
     }
     // buyStep3
-  }, [account, api, getFee, getUserDeposit, queueTransaction]);
+  }, [account, api, getFee, getUserDeposit, queueTransaction, tokenInfo]);
 
   const sentTokenToAccount = useCallback(() => {
     // tokenId, newOwner (account)
@@ -127,7 +139,7 @@ const useMarketplaceStages = (account: string, collectionId: string, tokenId: st
     }
   }, [account, abi, api, queueTransaction]);
 
-  const revertKsm = useCallback(async () => {
+  const revertMoney = useCallback(async () => {
     const deposited = parseFloat(await getUserDeposit() || '');
     /*
     const ksmexp = BigNumber(10).pow(this.ksmDecimals);
@@ -159,9 +171,12 @@ const useMarketplaceStages = (account: string, collectionId: string, tokenId: st
 
   const loadingTokenInfo = useCallback(async () => {
     const tokenInfo = await getDetailedTokenInfo(collectionId, tokenId);
+
     setTokenInfo(tokenInfo);
+
     await loadCancelSaleStage(tokenInfo);
-  }, [setTokenInfo, loadCancelSaleStage]);
+    await getDeposited();
+  }, [getDeposited, getDetailedTokenInfo, setTokenInfo, loadCancelSaleStage]);
 
   const registerDeposit = useCallback(async () => {
     const address = await getDepositor(collectionId, tokenId, account);
@@ -215,8 +230,6 @@ const useMarketplaceStages = (account: string, collectionId: string, tokenId: st
     });
   }, [account, api, collectionId, tokenId]);
 
-  console.log('current', state);
-
   useEffect(() => {
     switch (true) {
       // on load - update token state
@@ -241,6 +254,8 @@ const useMarketplaceStages = (account: string, collectionId: string, tokenId: st
       case state.matches('registerSale'):
         void registerSale();
         break;
+      case state.matches('revertMoney'):
+        void revertMoney();
       default:
         break;
     }
@@ -252,15 +267,16 @@ const useMarketplaceStages = (account: string, collectionId: string, tokenId: st
 
   return {
     cancelSale,
+    deposited,
     error,
     sendCurrentUserAction,
     tokenInfo,
     tokenContractInfo,
     tokenPriceForSale,
     readyToAskPrice,
-    revertKsm,
     setTokenPriceForSale,
     submitTokenPrice,
+    value: state.value
   }
 };
 
