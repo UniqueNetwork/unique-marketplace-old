@@ -3,6 +3,10 @@
   .ui--Labelled.explorer--query.input-search {
     padding: 0;
     margin-bottom: 1rem;
+
+    label {
+      left: 1.45rem !important;
+    }
   }
 
   .nft-tokens {

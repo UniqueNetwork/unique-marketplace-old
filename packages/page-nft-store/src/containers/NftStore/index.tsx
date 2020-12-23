@@ -4,7 +4,7 @@
 import { NftCollectionInterface, useApi, useCollections, useNftTests } from '@polkadot/react-hooks';
 
 // external imports
-import React, { memo, ReactElement, useCallback, useEffect, useState } from 'react';
+import React, { memo, ReactElement, useCallback, useEffect, useState, useMemo } from 'react';
 import { Route, Switch } from 'react-router-dom'
 import { useHistory } from 'react-router';
 import List from 'semantic-ui-react/dist/commonjs/elements/List';
@@ -51,7 +51,8 @@ const BuyTokens = ({ className }: BuyTokensProps): ReactElement<BuyTokensProps> 
   const [account, setAccount] = useState<string | null>(null);
   const { presetTokensCollections, getDetailedCollectionInfo, getTokensOfCollection } = useCollections();
   const [collectionsAvailable, setCollectionsAvailable] = useState<Array<NftCollectionInterface>>([]);
-  const [searchString, setSearchString] = useState<string>('');
+  const [collectionSearchString, setCollectionSearchString] = useState<string>('');
+  const [tokenSearchString, setTokenSearchString] = useState<string>('');
   // const [selectedCollection, setSelectedCollection] = useState<NftCollectionBigInterface>();
   const [selectedCollection, setSelectedCollection] = useState<NftCollectionInterface | null>(null);
   const [tokensListForTrade, setTokensListForTrade] = useState<Array<string>>([]);
@@ -75,9 +76,18 @@ const BuyTokens = ({ className }: BuyTokensProps): ReactElement<BuyTokensProps> 
   const setTokensList = useCallback(async () => {
     if (selectedCollection && account) {
       const tokensOfCollection = (await getTokensOfCollection(selectedCollection.id, account)) as any;
+      console.log('tokensOfCollection', tokensOfCollection);
       setTokensListForTrade(tokensOfCollection);
     }
   }, [account, selectedCollection, getTokensOfCollection]);
+
+  const collectionsFiltered = useMemo(() => {
+    return collectionsAvailable.filter(item => item.name.toLowerCase().indexOf(collectionSearchString) !== -1);
+  }, [collectionsAvailable, collectionSearchString]);
+
+  const tokensFiltered = useMemo(() => {
+    return tokensListForTrade.filter(item => item.toString().toLowerCase().indexOf(tokenSearchString) !== -1);
+  }, [tokensListForTrade, tokenSearchString]);
 
   useEffect(() => {
     void getCollections();
@@ -115,14 +125,14 @@ const BuyTokens = ({ className }: BuyTokensProps): ReactElement<BuyTokensProps> 
               help={<span>Find and select your token collection. For example, you can find tokens from <a href='https://ipfs-gateway.usetech.com/ipns/QmaMtDqE9nhMX9RQLTpaCboqg7bqkb6Gi67iCKMe8NDpCE/' target='_blank' rel='noopener noreferrer'>SubstraPunks</a></span>}
               isDisabled={!collectionsAvailable.length}
               label={'Find collection'}
-              onChange={setSearchString}
-              value={searchString}
+              onChange={setCollectionSearchString}
+              value={collectionSearchString}
               placeholder='Search...'
               withLabel
             />
             <div className='nft-collections'>
               <List divided relaxed>
-                { collectionsAvailable.map((collection) => (
+                { collectionsFiltered.map((collection) => (
                 <List.Item onClick={selectCollection.bind(null, collection)} key={collection.id}>
                   <List.Content>
                     <List.Header as='a'>{collection.name}</List.Header>
@@ -142,8 +152,8 @@ const BuyTokens = ({ className }: BuyTokensProps): ReactElement<BuyTokensProps> 
                     help={<span>Find your token. For example, 1</span>}
                     isDisabled={!collectionsAvailable.length}
                     label={'Find token'}
-                    onChange={setSearchString}
-                    value={searchString}
+                    onChange={setTokenSearchString}
+                    value={tokenSearchString}
                     placeholder='Search...'
                     withLabel
                   />
@@ -170,7 +180,7 @@ const BuyTokens = ({ className }: BuyTokensProps): ReactElement<BuyTokensProps> 
               </Grid.Row>
               <Grid.Row>
                 <div className='nft-tokens'>
-                  { account && selectedCollection && tokensListForTrade.map((token) => (
+                  { account && selectedCollection && tokensFiltered.map((token) => (
                     <NftTokenCard
                       account={account}
                       canTransferTokens={true}
