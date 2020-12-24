@@ -1,16 +1,19 @@
 // Copyright 2020 UseTech authors & contributors
 
-import React, { useCallback, useEffect, useState, useMemo } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
+import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import Modal from 'semantic-ui-react/dist/commonjs/modules/Modal/Modal';
-import { Button } from '@polkadot/react-components';
-import {NftCollectionInterface, useCollections} from '@polkadot/react-hooks';
+
+import { Button, Input} from '@polkadot/react-components';
+import { NftCollectionInterface, useCollections } from '@polkadot/react-hooks';
+import useMarketplaceStages from '../../hooks/useMarketplaceStages';
 
 import BuySteps from '../BuySteps';
 import SaleSteps from '../SaleSteps';
+
 import './styles.scss';
-import useMarketplaceStages from "../../hooks/useMarketplaceStages";
 
 interface Props {
   account: string;
@@ -25,8 +28,17 @@ function NftDetailsModal({ account }: Props): React.ReactElement<Props> {
   const { getTokenImageUrl, getDetailedCollectionInfo } = useCollections();
   const [collectionInfo, setCollectionInfo] = useState<NftCollectionInterface | null | undefined>();
   // if tokenContractInfo is not empty - token is on contract (ready to buy)
-  const { deposited, sendCurrentUserAction, tokenInfo, tokenContractInfo, value } = useMarketplaceStages(account, collectionId, tokenId);
+  const {
+    deposited,
+    sendCurrentUserAction,
+    setPrice,
+    transferStep,
+    tokenInfo,
+    tokenContractInfo,
+    readyToAskPrice
+  } = useMarketplaceStages(account, collectionId, tokenId);
   const [isOwner, setIsOwner] = useState<boolean>(false);
+  const [tokenPriceForSale, setTokenPriceForSale] = useState<string>('');
 
   const uOwnIt = tokenInfo && tokenInfo.Owner.toString() === account;
 
@@ -54,39 +66,13 @@ function NftDetailsModal({ account }: Props): React.ReactElement<Props> {
     sendCurrentUserAction('REVERT_UNUSED_MONEY');
   }, []);
 
-  const getBuyStep = useMemo((): number => {
-    switch (value) {
-      case 'buy':
-        return 1;
-      case 'sentTokenToNewOwner':
-        return 2;
-      default:
-        return 0;
-    }
-  }, [value]);
-
-  const getSaleStep = useMemo((): number => {
-    switch (value) {
-      case 'sale':
-        return 1;
-      case 'registerDeposit':
-        return 2;
-      case 'getDepositReady':
-        return 3;
-      case 'askPrice':
-        return 4;
-      case 'registerSale':
-        return 5;
-      default:
-        return 0;
-    }
-  }, [value]);
+  const onSavePrice = useCallback(() => {
+    setPrice(tokenPriceForSale);
+  }, [setPrice, tokenPriceForSale]);
 
   useEffect(() => {
     void loadCollectionInfo();
   }, [collectionId]);
-
-  console.log('state value', value);
 
   return (
     <Modal className="nft-details" size='large' open onClose={closeModal}>
@@ -139,11 +125,36 @@ function NftDetailsModal({ account }: Props): React.ReactElement<Props> {
             />
           )}
         </div>
-        { getSaleStep !== 0 && (
-          <SaleSteps step={getSaleStep} />
+        { transferStep !== 0 && (
+          <SaleSteps step={transferStep} />
         )}
-        { getBuyStep !== 0 && (
-          <BuySteps step={getBuyStep} />
+        { readyToAskPrice && (
+          <Grid className='ask-price-form' verticalAlign='middle' centered>
+            <Grid.Row>
+              <Grid.Column width={4}>
+                <Input
+                  className='explorer--query input-search'
+                  help={<span>Set nft token price</span>}
+                  label={'Set price'}
+                  onChange={setTokenPriceForSale}
+                  placeholder=''
+                  type='number'
+                  value={tokenPriceForSale}
+                  withLabel
+                />
+              </Grid.Column>
+              <Grid.Column width={4}>
+                <Button
+                  icon='save'
+                  label='Set price'
+                  onClick={onSavePrice}
+                />
+              </Grid.Column>
+            </Grid.Row>
+          </Grid>
+        )}
+        { transferStep !== 0 && (
+          <BuySteps step={transferStep} />
         )}
       </Modal.Content>
       <Modal.Actions>

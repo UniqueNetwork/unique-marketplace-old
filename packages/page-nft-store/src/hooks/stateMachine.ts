@@ -61,8 +61,14 @@ const marketplaceStateMachine = Machine({
     },
     buy: {
       on: {
+        SEND_MONEY_SUCCESS: 'checkDepositReady',
+        SEND_MONEY_FAIL: 'loadingTokenInfo'
+      }
+    },
+    checkDepositReady: {
+      on: {
         DEPOSIT_SUCCESS: 'sentTokenToNewOwner',
-        DEPOSIT_FAIL: 'loadingTokenInfo'
+        DEPOSIT_FAIL: 'checkDepositReady',
       }
     },
     sentTokenToNewOwner: {

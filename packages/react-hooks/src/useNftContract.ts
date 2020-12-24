@@ -1,5 +1,5 @@
 // Copyright 2020 UseTech authors & contributors
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useMemo } from 'react';
 import { Abi, ContractPromise } from '@polkadot/api-contract';
 import { useApi } from '@polkadot/react-hooks';
 import { formatBalance } from '@polkadot/util';
@@ -49,6 +49,7 @@ export function useNftContract(account: string) {
       if (contractInstance) {
         // const keyring = new keyring({ type: 'sr25519' });
         const result = await contractInstance.read('get_nft_deposit', value, maxgas, collectionId, tokenId).send(readerAddress);
+        console.log('result!!!', result);
         if (result.output) {
           const address = keyring.encodeAddress(result.output.toString());
           console.log("Deposit address: ", address);
@@ -90,14 +91,19 @@ export function useNftContract(account: string) {
     return null;
   }, []);
 
+  const isContractReady = useMemo(() => {
+    return !!(abi && contractInstance);
+  }, [abi, contractInstance]);
+
   useEffect(() => {
     initAbi();
-  }, []);
+  }, [initAbi]);
 
   return {
     abi,
     getDepositor,
     getUserDeposit,
-    getTokenAsk
+    getTokenAsk,
+    isContractReady,
   };
 }
