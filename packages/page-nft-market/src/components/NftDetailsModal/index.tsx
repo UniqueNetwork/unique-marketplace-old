@@ -37,7 +37,7 @@ function NftDetailsModal({ account }: Props): React.ReactElement<Props> {
     tokenContractInfo,
     readyToAskPrice
   } = useMarketplaceStages(account, collectionId, tokenId);
-  const [isOwner, setIsOwner] = useState<boolean>(false);
+  // const [isOwner, setIsOwner] = useState<boolean>(false);
   const [tokenPriceForSale, setTokenPriceForSale] = useState<string>('');
 
   const uOwnIt = tokenInfo && tokenInfo.Owner.toString() === account;
@@ -96,13 +96,18 @@ function NftDetailsModal({ account }: Props): React.ReactElement<Props> {
           { !!(!uOwnIt && tokenInfo) && (
             <p><strong>The owner is </strong>{tokenInfo.Owner.toString()}</p>
           )}
-          { !!(!uOwnIt && tokenContractInfo) &&(
+          {/*{ !!(!uOwnIt && tokenContractInfo) &&(
             <Button
               icon='shopping-cart'
               label='Buy it'
               onClick={onBuy}
             />
-          )}
+          )}*/}
+          <Button
+            icon='shopping-cart'
+            label='Buy it'
+            onClick={onBuy}
+          />
           { uOwnIt && (
             <Button
               icon='dollar-sign'

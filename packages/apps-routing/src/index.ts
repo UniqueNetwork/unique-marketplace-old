@@ -17,7 +17,7 @@ import genericAsset from './generic-asset';
 import js from './js';
 import nftWallet from './nft-wallet';
 import nftMint from './nft-mint';
-import nftStore from './nft-store';
+import nftMarket from './nft-market';
 import parachains from './parachains';
 import poll from './poll';
 import rpc from './rpc';
@@ -35,7 +35,7 @@ export default function create (t: TFunction): Routes {
   return [
     nftWallet(t),
     nftMint(t),
-    nftStore(t),
+    nftMarket(t),
     settings(t),
     extrinsics(t),
     accounts(t),

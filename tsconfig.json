@@ -16,7 +16,7 @@
       "@polkadot/apps-routing/*": [ "packages/apps-routing/src/*" ],
       "@polkadot/app-nft-wallet": [ "packages/page-nft-wallet/src" ],
       "@polkadot/app-nft-mint": [ "packages/page-nft-mint/src" ],
-      "@polkadot/app-nft-store": [ "packages/page-nft-store/src" ],
+      "@polkadot/app-nft-market": [ "packages/page-nft-market/src" ],
       "@polkadot/app-accounts": [ "packages/page-accounts/src" ],
       "@polkadot/app-accounts/*": [ "packages/page-accounts/src/*" ],
       "@polkadot/app-addresses": [ "packages/page-addresses/src" ],

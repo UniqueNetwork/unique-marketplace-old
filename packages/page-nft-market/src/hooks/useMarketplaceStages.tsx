@@ -95,8 +95,9 @@ const useMarketplaceStages = (account: string, collectionId: string, tokenId: st
   }, [api, queueTransaction]);
 
   const buy = useCallback(async () => {
+    console.log('buy');
     setTimeout(() => {
-      send('DEPOSIT_SUCCESS');
+      send('SEND_MONEY_SUCCESS');
     }, 1000);
     // send deposit to contract
     // Check if KSM deposit is needed and deposit
@@ -121,18 +122,25 @@ const useMarketplaceStages = (account: string, collectionId: string, tokenId: st
       queueTransaction(
         api.tx.balances
           .transfer(config.vaultAddress, needed),
-        'DEPOSIT_FAIL',
+        'SEND_MONEY_FAIL',
         'transfer start',
-        'DEPOSIT_SUCCESS',
+        'SEND_MONEY_SUCCESS',
         'transfer update'
       );
     }*/
     // buyStep3
-  }, [account, api, getFee, getUserDeposit, queueTransaction, tokenInfo]);
+  }, [account, api, getFee, getUserDeposit, queueTransaction, send, tokenInfo]);
+
+  const checkDepositReady = useCallback(() => {
+    setTimeout(() => {
+      send('SEND_MONEY_SUCCESS');
+    }, 1000);
+  }, [send]);
 
   const sentTokenToAccount = useCallback(() => {
+    console.log('sentTokenToNewOwner');
     setTimeout(() => {
-      send('SEND_TOKEN_SUCCESS');
+      send('DEPOSIT_SUCCESS');
     }, 1000);
     // tokenId, newOwner (account)
     /*if (abi) {
@@ -311,6 +319,10 @@ const useMarketplaceStages = (account: string, collectionId: string, tokenId: st
         break;
       case state.matches('revertMoney'):
         void revertMoney();
+        break;
+      case state.matches('checkDepositReady'):
+        void checkDepositReady();
+        break;
       default:
         break;
     }

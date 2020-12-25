@@ -2192,18 +2192,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@polkadot/app-nft-mint@workspace:packages/page-nft-mint":
+"@polkadot/app-nft-market@workspace:packages/page-nft-market":
   version: 0.0.0-use.local
-  resolution: "@polkadot/app-nft-mint@workspace:packages/page-nft-mint"
+  resolution: "@polkadot/app-nft-market@workspace:packages/page-nft-market"
   dependencies:
     "@babel/runtime": ^7.9.2
     "@polkadot/react-components": ^0.66.2-13
   languageName: unknown
   linkType: soft
 
-"@polkadot/app-nft-store@workspace:packages/page-nft-store":
+"@polkadot/app-nft-mint@workspace:packages/page-nft-mint":
   version: 0.0.0-use.local
-  resolution: "@polkadot/app-nft-store@workspace:packages/page-nft-store"
+  resolution: "@polkadot/app-nft-mint@workspace:packages/page-nft-mint"
   dependencies:
     "@babel/runtime": ^7.9.2
     "@polkadot/react-components": ^0.66.2-13

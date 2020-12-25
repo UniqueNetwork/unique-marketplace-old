@@ -1,8 +1,8 @@
 {
-  "name": "@polkadot/app-nft-store",
+  "name": "@polkadot/app-nft-market",
   "private": true,
   "version": "1",
-  "description": "Nft token store",
+  "description": "Nft token market",
   "main": "index.js",
   "scripts": {},
   "author": "Konstantin Pozdnikin <kpozdnikin@usetech.ru>",

@@ -110,7 +110,7 @@ const BuyTokens = ({ className }: BuyTokensProps): ReactElement<BuyTokensProps> 
   }, [account, api, createToken]);
 
   return (
-    <div className='nft-store'>
+    <div className='nft-market'>
       <Header as='h2'>Nft Tokens</Header>
       <Grid className='account-selector'>
         <Grid.Row>
