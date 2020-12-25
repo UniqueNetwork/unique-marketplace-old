@@ -238,10 +238,9 @@ const useMarketplaceStages = (account: string, collectionId: string, tokenId: st
   }, [account, api, collectionId, tokenId]);
 
   const setPrice = useCallback((price) => {
-    setTimeout(() => {
-      setReadyToAskPrice(false);
-      send('ASK_PRICE_SUCCESS');
-    }, 1000);
+    setTokenPriceForSale(price);
+    setReadyToAskPrice(false);
+    send('ASK_PRICE_SUCCESS');
   }, [send]);
 
   const transferStep = useMemo((): number => {
