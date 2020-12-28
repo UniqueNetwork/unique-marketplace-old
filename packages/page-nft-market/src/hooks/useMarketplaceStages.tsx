@@ -2,7 +2,8 @@
 
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useMachine } from '@xstate/react';
-import { useCollections, TokenInfo, useNftContract, useApi, useBalance, marketContractAddress } from '@polkadot/react-hooks';
+// import BN from 'bn.js';
+import { useCollections, TokenInfo, useNftContract, useApi, useBalance, marketContractAddress, decimals } from '@polkadot/react-hooks';
 
 import marketplaceStateMachine from './stateMachine';
 import { StatusContext } from '@polkadot/react-components/Status';
@@ -159,11 +160,14 @@ const useMarketplaceStages = (account: string, collectionId: string, tokenId: st
     setTimeout(() => {
       send('TRANSFER_NFT_TO_CONTRACT_SUCCESS');
     }, 1000);
-    // const deposited = parseFloat(await getUserDeposit() || '');
     /*
-    const ksmexp = BigNumber(10).pow(this.ksmDecimals);
-    const balance = new BigNumber(amount);
-    const balanceToSend = balance.multipliedBy(ksmexp).integerValue(BigNumber.ROUND_DOWN);
+    При исполнении сделки, нужно посылать только сумму, указанную в withdraw.
+    При снятии неиспользованных средств нужно также возмещать комиссию marketplace за вычетом комиссии сети Kusama (0.0027 KSM).
+
+    const deposited = parseFloat(await getUserDeposit() || '');
+    const expectedCommission = new BN(10).pow(decimals);
+    const balance = new BN(deposited);
+    const balanceToSend = balance.iadd(expectedCommission).integerValue(BN.ROUND_DOWN);
      */
     /* queueExtrinsic({
       accountId: account && account.toString(),
@@ -322,6 +326,9 @@ const useMarketplaceStages = (account: string, collectionId: string, tokenId: st
         break;
       case state.matches('checkDepositReady'):
         void checkDepositReady();
+        break;
+      case state.matches('cancelSale'):
+        void cancelSale();
         break;
       default:
         break;

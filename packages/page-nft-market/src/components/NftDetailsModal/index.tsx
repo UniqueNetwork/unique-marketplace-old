@@ -89,7 +89,6 @@ function NftDetailsModal({ account }: Props): React.ReactElement<Props> {
           { accessories.map((accessory) => (
             <div className='accessory'>Red Glasses</div>
           ))}
-          <Header as='h4'>Ownership</Header>
           { uOwnIt && (
             <p><strong>You own it!</strong> (address: {account})</p>
           )}
@@ -103,32 +102,47 @@ function NftDetailsModal({ account }: Props): React.ReactElement<Props> {
               onClick={onBuy}
             />
           )}*/}
-          <Button
-            icon='shopping-cart'
-            label='Buy it'
-            onClick={onBuy}
-          />
-          { uOwnIt && (
+          {/*{ uOwnIt && (
             <Button
               icon='dollar-sign'
               label='Sale it'
               onClick={onSale}
             />
-          )}
-          { (tokenContractInfo && tokenContractInfo.owner === account) && (
+          )}*/}
+          {/*{ (tokenContractInfo && tokenContractInfo.owner === account) && (
             <Button
               icon='window-close'
               label='Cancel sale'
               onClick={onCancel}
             />
-          )}
-          { !!(deposited && deposited > 0) && (
+          )}*/}
+          {/*{ !!(deposited && deposited > 0) && (
             <Button
               icon='history'
               label='Withdraw'
               onClick={onWithdraw}
             />
-          )}
+          )}*/}
+          <Button
+            icon='shopping-cart'
+            label='Buy it'
+            onClick={onBuy}
+          />
+          <Button
+            icon='history'
+            label='Withdraw'
+            onClick={onWithdraw}
+          />
+          <Button
+            icon='dollar-sign'
+            label='Sale it'
+            onClick={onSale}
+          />
+          <Button
+            icon='window-close'
+            label='Cancel sale'
+            onClick={onCancel}
+          />
         </div>
         { transferStep !== 0 && (
           <SaleSteps step={transferStep} />

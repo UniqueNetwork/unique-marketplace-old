@@ -23,7 +23,7 @@ export { useIsMountedRef } from './useIsMountedRef';
 export { useLoadingDelay } from './useLoadingDelay';
 export { useMembers } from './useMembers';
 export { useModal } from './useModal';
-export { useNftContract, marketContractAddress } from './useNftContract';
+export { decimals, useNftContract, marketContractAddress } from './useNftContract';
 export { useNftTests } from './useNftTests';
 export { useNonEmptyString } from './useNonEmptyString';
 export { useNonZeroBn } from './useNonZeroBn';

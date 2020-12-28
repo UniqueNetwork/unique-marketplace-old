@@ -9,7 +9,7 @@ import { getContractAbi } from '@polkadot/react-components/util';
 const value = 0;
 const maxgas = 1000000000000;
 export const marketContractAddress = '5CYN9j3YvRkqxewoxeSvRbhAym4465C57uMmX5j4yz99L5H6';
-// const decimals = 12; // kusamaDecimals
+export const decimals = 12; // kusamaDecimals
 
 export interface NftTokenInterface {
   collectionId: string;

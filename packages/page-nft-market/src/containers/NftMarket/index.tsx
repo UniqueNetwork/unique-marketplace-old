@@ -5,7 +5,7 @@ import { NftCollectionInterface, useApi, useCollections, useNftTests } from '@po
 
 // external imports
 import React, { memo, ReactElement, useCallback, useEffect, useState, useMemo } from 'react';
-import { Route, Switch } from 'react-router-dom'
+import { Route, Switch } from 'react-router-dom';
 import { useHistory } from 'react-router';
 import List from 'semantic-ui-react/dist/commonjs/elements/List';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
