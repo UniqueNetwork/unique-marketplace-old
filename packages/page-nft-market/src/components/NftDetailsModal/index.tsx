@@ -74,6 +74,22 @@ function NftDetailsModal({ account }: Props): React.ReactElement<Props> {
     void loadCollectionInfo();
   }, [collectionId]);
 
+  /* on-chain schema
+  {
+    [
+        {"Trait 1":
+            {
+                "type": "enum",
+                "size": 1,
+                "values": ["Black Lipstick","Red Lipstick","Smile","Teeth Smile","Purple Lipstick","Nose Ring","Asian Eyes","Sun Glasses","Red Glasses","Round Eyes","Left Earring","Right Earring","Two Earrings","Brown Beard","Mustache-Beard","Mustache","Regular Beard","Up Hair","Down Hair","Mahawk","Red Mahawk","Orange Hair","Bubble Hair","Emo Hair","Thin Hair","Bald","Blonde Hair","Caret Hair","Pony Tails","Cigar","Pipe"]
+            }
+        }
+    ]
+  }
+  */
+  // off-chain schema
+  // "metadata": "https://ipfs-gateway.usetech.com/ipns/QmaMtDqE9nhMX9RQLTpaCboqg7bqkb6Gi67iCKMe8NDpCE/metadata/token{id}"
+
   return (
     <Modal className="nft-details" size='large' open onClose={closeModal}>
       <Modal.Header>NFT Token Details</Modal.Header>

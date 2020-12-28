@@ -124,7 +124,7 @@ export function useCollections() {
     if (!api) {
       return null;
     }
-    // @ts-ignore
+
     return (await api.query.nft.nftItemList(collectionId, tokenId));
   }, [api]);
 
@@ -132,7 +132,7 @@ export function useCollections() {
     if (!api) {
       return;
     }
-    // @ts-ignore
+
     return (await api.query.nft.reFungibleItemList(collectionId, tokenId));
   }, [api]);
 

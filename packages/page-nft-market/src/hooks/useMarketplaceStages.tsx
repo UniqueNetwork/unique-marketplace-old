@@ -42,7 +42,7 @@ const useMarketplaceStages = (account: string, collectionId: string, tokenId: st
   const { api } = useApi();
   const [state, send] = useMachine(marketplaceStateMachine);
   const [tokenInfo, setTokenInfo] = useState<TokenInfo | null | undefined>();
-  const { getDetailedTokenInfo } = useCollections();
+  const { getDetailedTokenInfo, getDetailedRefungibleTokenInfo } = useCollections();
   const { abi, getDepositor, getUserDeposit, getTokenAsk, isContractReady } = useNftContract(account);
   const { balance } = useBalance(account);
   const [error, setError] = useState<string | null>(null);
@@ -284,6 +284,7 @@ const useMarketplaceStages = (account: string, collectionId: string, tokenId: st
   }, [setTokenContractInfo, getTokenAsk]);
 
   const loadingTokenInfo = useCallback(async () => {
+    // for re-fungible await getDetailedRefungibleTokenInfo(collectionId, tokenId);
     const tokenInfo = await getDetailedTokenInfo(collectionId, tokenId);
 
     setTokenInfo(tokenInfo);
