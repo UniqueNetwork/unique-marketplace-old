@@ -1,13 +1,14 @@
-// Copyright 2017-2020 @polkadot/react-hooks authors & contributors
+// Copyright 2017-2021 @polkadot/react-hooks authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { DeriveAccountFlags, DeriveAccountInfo } from '@polkadot/api-derive/types';
-import { StringOrNull } from '@polkadot/react-components/types';
-import { KeyringJson$Meta } from '@polkadot/ui-keyring/types';
-import { AddressFlags, AddressIdentity, UseAccountInfo } from './types';
+import type { DeriveAccountFlags, DeriveAccountInfo } from '@polkadot/api-derive/types';
+import type { Nominations, ValidatorPrefs } from '@polkadot/types/interfaces';
+import type { KeyringJson$Meta } from '@polkadot/ui-keyring/types';
+import type { AddressFlags, AddressIdentity, UseAccountInfo } from './types';
 
 import { useCallback, useEffect, useState } from 'react';
-import keyring from '@polkadot/ui-keyring';
+
+import { keyring } from '@polkadot/ui-keyring';
 
 import { useAccounts } from './useAccounts';
 import { useAddresses } from './useAddresses';
@@ -25,28 +26,46 @@ const IS_NONE = {
   isInContacts: false,
   isInjected: false,
   isMultisig: false,
+  isNominator: false,
   isOwned: false,
   isProxied: false,
   isSociety: false,
   isSudo: false,
-  isTechCommittee: false
+  isTechCommittee: false,
+  isValidator: false
 };
 
 export function useAccountInfo (value: string | null, isContract = false): UseAccountInfo {
   const { api } = useApi();
   const { isAccount } = useAccounts();
   const { isAddress } = useAddresses();
-  const accountInfo = useCall<DeriveAccountInfo>(api.derive.accounts.info as any, [value]);
-  const accountFlags = useCall<DeriveAccountFlags>(api.derive.accounts.flags as any, [value]);
+  const accountInfo = useCall<DeriveAccountInfo>(api.derive.accounts.info, [value]);
+  const accountFlags = useCall<DeriveAccountFlags>(api.derive.accounts.flags, [value]);
+  const nominator = useCall<Nominations>(api.query.staking?.nominators, [value]);
+  const validator = useCall<ValidatorPrefs>(api.query.staking?.validators, [value]);
   const [accountIndex, setAccountIndex] = useState<string | undefined>(undefined);
   const [tags, setSortedTags] = useState<string[]>([]);
   const [name, setName] = useState('');
-  const [genesisHash, setGenesisHash] = useState<StringOrNull>(null);
+  const [genesisHash, setGenesisHash] = useState<string | null>(null);
   const [identity, setIdentity] = useState<AddressIdentity | undefined>();
   const [flags, setFlags] = useState<AddressFlags>(IS_NONE);
   const [meta, setMeta] = useState<KeyringJson$Meta | undefined>();
   const [isEditingName, toggleIsEditingName] = useToggle();
   const [isEditingTags, toggleIsEditingTags] = useToggle();
+
+  useEffect((): void => {
+    validator && setFlags((flags) => ({
+      ...flags,
+      isValidator: !validator.isEmpty
+    }));
+  }, [validator]);
+
+  useEffect((): void => {
+    nominator && setFlags((flags) => ({
+      ...flags,
+      isNominator: !nominator.isEmpty
+    }));
+  }, [nominator]);
 
   useEffect((): void => {
     accountFlags && setFlags((flags) => ({
@@ -112,7 +131,7 @@ export function useAccountInfo (value: string | null, isContract = false): UseAc
         setFlags((flags): AddressFlags => ({
           ...flags,
           isDevelopment: accountOrAddress?.meta.isTesting || false,
-          isEditable: !!(!identity?.display && (isInContacts || accountOrAddress?.meta.isMultisig || (accountOrAddress && !(accountOrAddress.meta.isInjected || accountOrAddress.meta.isHardware)))) || false,
+          isEditable: !!(!identity?.display && (isInContacts || accountOrAddress?.meta.isMultisig || (accountOrAddress && !(accountOrAddress.meta.isInjected)))) || false,
           isExternal: !!accountOrAddress?.meta.isExternal || false,
           isHardware: !!accountOrAddress?.meta.isHardware || false,
           isInContacts,

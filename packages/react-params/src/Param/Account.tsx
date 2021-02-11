@@ -1,16 +1,17 @@
-// Copyright 2017-2020 @polkadot/react-params authors & contributors
+// Copyright 2017-2021 @polkadot/react-params authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { Props } from '../types';
+import type { Props } from '../types';
 
 import React, { useCallback, useState } from 'react';
+
 import { InputAddress } from '@polkadot/react-components';
-import keyring from '@polkadot/ui-keyring';
+import { keyring } from '@polkadot/ui-keyring';
 
 import Bare from './Bare';
 
 function Account ({ className = '', defaultValue: { value }, isDisabled, isError, isInOption, label, onChange, withLabel }: Props): React.ReactElement<Props> {
-  const [defaultValue] = useState((value as string)?.toString());
+  const [defaultValue] = useState(() => (value as string)?.toString());
 
   const _onChange = useCallback(
     (value?: string | null): void => {

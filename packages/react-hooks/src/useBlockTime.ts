@@ -1,30 +1,36 @@
-// Copyright 2017-2020 @polkadot/app-democracy authors & contributors
+// Copyright 2017-2021 @polkadot/app-democracy authors & contributors
 // SPDX-License-Identifier: Apache-2.0
+
+import type { ApiPromise } from '@polkadot/api';
+import type { Time } from '@polkadot/util/types';
 
 import BN from 'bn.js';
 import { useMemo } from 'react';
+
 import { useApi } from '@polkadot/react-hooks';
 import { BN_ONE, extractTime } from '@polkadot/util';
 
 import { useTranslation } from './translate';
 
-type Result = [number, string];
+type Result = [number, string, Time];
 
 const DEFAULT_TIME = new BN(6000);
 
-export function useBlockTime (blocks = BN_ONE): Result {
+export function useBlockTime (blocks = BN_ONE, apiOverride?: ApiPromise): Result {
   const { t } = useTranslation();
   const { api } = useApi();
 
   return useMemo(
     (): Result => {
+      const a = apiOverride || api;
       const blockTime = (
-        api.consts.babe?.expectedBlockTime ||
-        api.consts.difficulty?.targetBlockTime ||
-        api.consts.timestamp?.minimumPeriod.muln(2) ||
+        a.consts.babe?.expectedBlockTime ||
+        a.consts.difficulty?.targetBlockTime ||
+        a.consts.timestamp?.minimumPeriod.muln(2) ||
         DEFAULT_TIME
       );
-      const { days, hours, minutes, seconds } = extractTime(blockTime.mul(blocks).toNumber());
+      const time = extractTime(blockTime.mul(blocks).toNumber());
+      const { days, hours, minutes, seconds } = time;
       const timeStr = [
         days ? (days > 1) ? t<string>('{{days}} days', { replace: { days } }) : t<string>('1 day') : null,
         hours ? (hours > 1) ? t<string>('{{hours}} hrs', { replace: { hours } }) : t<string>('1 hr') : null,
@@ -37,9 +43,10 @@ export function useBlockTime (blocks = BN_ONE): Result {
 
       return [
         blockTime.toNumber(),
-        timeStr
+        timeStr,
+        time
       ];
     },
-    [api, blocks, t]
+    [api, apiOverride, blocks, t]
   );
 }

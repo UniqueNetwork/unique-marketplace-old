@@ -1,11 +1,12 @@
-// Copyright 2017-2020 @polkadot/react-components authors & contributors
+// Copyright 2017-2021 @polkadot/react-components authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { AbiMessage } from '@polkadot/api-contract/types';
+import type { AbiMessage } from '@polkadot/api-contract/types';
+import type { ThemeProps } from '@polkadot/react-components/types';
 
 import React from 'react';
-import { ThemeProps } from '@polkadot/react-components/types';
 import styled from 'styled-components';
+
 import { Icon, Tooltip } from '@polkadot/react-components';
 import { encodeTypeDef } from '@polkadot/types/create';
 import { stringCamelCase } from '@polkadot/util';
@@ -77,9 +78,9 @@ function MessageSignature ({ className, message: { args, identifier, isConstruct
   );
 }
 
-export default React.memo(styled(MessageSignature)`
-  font-family: ${({ theme }: ThemeProps) => theme.fontMono};
-  font-weight: 400;
+export default React.memo(styled(MessageSignature)(({ theme }: ThemeProps) => `
+  font: ${theme.fontMono};
+  font-weight: ${theme.fontWeightNormal};
   flex-grow: 1;
 
   .ui--MessageSignature-mutates {
@@ -90,7 +91,7 @@ export default React.memo(styled(MessageSignature)`
 
   .ui--MessageSignature-name {
     color: #2f8ddb;
-    font-weight: 400;
+    font-weight: ${theme.fontWeightNormal};
   }
 
   .ui--MessageSignature-type {
@@ -100,4 +101,4 @@ export default React.memo(styled(MessageSignature)`
   .ui--MessageSignature-returnType {
     color: #ff8600;
   }
-`);
+`));

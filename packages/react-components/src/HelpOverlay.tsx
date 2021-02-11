@@ -1,11 +1,12 @@
-// Copyright 2017-2020 @polkadot/react-components authors & contributors
+// Copyright 2017-2021 @polkadot/react-components authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { ThemeProps } from './types';
+import type { ThemeProps } from './types';
 
 import React from 'react';
 import ReactMd from 'react-markdown';
 import styled from 'styled-components';
+
 import { useToggle } from '@polkadot/react-hooks';
 
 import Icon from './Icon';
@@ -48,18 +49,18 @@ export default React.memo(styled(HelpOverlay)(({ theme }: ThemeProps) => `
     color: ${theme.color};
     cursor: pointer;
     font-size: 2rem;
-    padding: 1rem 1.5rem 0 0;
+    padding: 0.65rem 1.5rem 0 0;
   }
 
   > .help-button {
     position: absolute;
     right: 0rem;
-    top: 0.125rem;
+    top: 0rem;
   }
 
   .help-slideout {
-    background: #eee;
-    border-left: 0.25rem solid #ddd;
+    background: ${theme.bgPage};
+    box-shadow: -6px 0px 20px 0px rgba(0, 0, 0, 0.3);
     bottom: 0;
     max-width: 50rem;
     overflow-y: scroll;

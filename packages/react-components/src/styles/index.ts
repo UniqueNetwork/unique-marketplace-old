@@ -1,7 +1,7 @@
-// Copyright 2017-2020 @polkadot/react-components authors & contributors
+// Copyright 2017-2021 @polkadot/react-components authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { ThemeProps } from '../types';
+import type { ThemeProps } from '../types';
 
 import { createGlobalStyle } from 'styled-components';
 
@@ -76,11 +76,11 @@ export default createGlobalStyle<Props & ThemeProps>(({ theme, uiHighlight }: Pr
   }
 
   .highlight--bg-faint:before {
-    opacity: 0.025;
+    opacity: 0.0375;
   }
 
   .highlight--bg-light:before {
-    opacity: 0.125;
+    opacity: 0.2;
   }
 
   .highlight--border {
@@ -215,7 +215,7 @@ export default createGlobalStyle<Props & ThemeProps>(({ theme, uiHighlight }: Pr
   #root {
     background: ${theme.bgPage};
     color: ${theme.color};
-    font-family: ${theme.fontSans};
+    font: ${theme.fontSans};
     height: 100%;
   }
 
@@ -259,6 +259,15 @@ export default createGlobalStyle<Props & ThemeProps>(({ theme, uiHighlight }: Pr
       }
     }
 
+    &.mark {
+      margin: 0.5rem 0 0.5rem 2.25rem;
+      padding: 0.5rem 1rem;
+    }
+
+    &.nomargin {
+      margin-left: 0;
+    }
+
     &.extraMargin {
       margin: 2rem auto;
     }
@@ -300,7 +309,7 @@ export default createGlobalStyle<Props & ThemeProps>(({ theme, uiHighlight }: Pr
   body {
     height: 100%;
     margin: 0;
-    font-family: ${theme.fontSans};
+    font: ${theme.fontSans};
   }
 
   br {
@@ -332,11 +341,13 @@ export default createGlobalStyle<Props & ThemeProps>(({ theme, uiHighlight }: Pr
 
   h1, h2, h3, h4, h5 {
     color: ${theme.colorSummary};
-    font-family: ${theme.fontSans};
+    font: ${theme.fontSans};
     font-weight: ${theme.fontWeightLight};
+    margin-bottom: 0.25rem;
   }
 
   h1 {
+    font-size: 1.75rem;
     text-transform: lowercase;
 
     em {
@@ -345,8 +356,8 @@ export default createGlobalStyle<Props & ThemeProps>(({ theme, uiHighlight }: Pr
     }
   }
 
-  h1, h2, h3, h4, h5 {
-    margin-bottom: 0.25rem;
+  h2 {
+    font-size: 1.71428571rem;
   }
 
   header {
@@ -366,9 +377,9 @@ export default createGlobalStyle<Props & ThemeProps>(({ theme, uiHighlight }: Pr
     box-sizing: border-box;
     color: ${theme.colorLabel};
     display: block;
-    font-family: ${theme.fontSans};
+    font: ${theme.fontSans};
     font-size: 1rem;
-    font-weight: 400;
+    font-weight: ${theme.fontWeightNormal};
   }
 
   main {

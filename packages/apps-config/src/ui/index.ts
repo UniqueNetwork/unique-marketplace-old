@@ -1,8 +1,10 @@
-// Copyright 2017-2020 @polkadot/apps-config authors & contributors
+// Copyright 2017-2021 @polkadot/apps-config authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import { chainColors, nodeColors } from './colors';
 import { identityNodes } from './identityIcons';
+
+export * from './logos';
 
 function sanitize (value?: string): string {
   return value?.toLowerCase().replace('-', ' ') || '';

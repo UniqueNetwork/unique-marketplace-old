@@ -1,9 +1,10 @@
-// Copyright 2017-2020 @polkadot/react-query authors & contributors
+// Copyright 2017-2021 @polkadot/react-query authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { IndexedEvent, KeyedEvent } from './types';
+import type { IndexedEvent, KeyedEvent } from './types';
 
 import React, { useEffect, useState } from 'react';
+
 import { useApi } from '@polkadot/react-hooks';
 import { stringToU8a } from '@polkadot/util';
 import { xxhashAsHex } from '@polkadot/util-crypto';
@@ -31,7 +32,11 @@ function EventsBase ({ children }: Props): React.ReactElement<Props> {
       api.query.system.events((records): void => {
         const newEvents: IndexedEvent[] = records
           .map((record, index) => ({ indexes: [index], record }))
-          .filter(({ record: { event: { method, section } } }) => section !== 'system' && (method !== 'Deposit' || !['balances', 'treasury'].includes(section)))
+          .filter(({ record: { event: { method, section } } }) =>
+            section !== 'system' &&
+            (method !== 'Deposit' || !['balances', 'treasury'].includes(section)) &&
+            (section !== 'inclusion' || !['CandidateBacked', 'CandidateIncluded'].includes(method))
+          )
           .reduce((combined: IndexedEvent[], e): IndexedEvent[] => {
             const prev = combined.find(({ record: { event: { method, section } } }) => e.record.event.section === section && e.record.event.method === method);
 

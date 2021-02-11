@@ -1,4 +1,4 @@
-// Copyright 2017-2020 @polkadot/react-components authors & contributors
+// Copyright 2017-2021 @polkadot/react-components authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import React from 'react';
@@ -16,7 +16,9 @@ interface TableProps {
   filter?: React.ReactNode;
   footer?: React.ReactNode;
   header?: [React.ReactNode?, string?, number?, (() => void)?][];
+  hasTitle: boolean;
   isFixed?: boolean;
+  legend?: React.ReactNode;
 }
 
 function extractKids (children: React.ReactNode): [boolean, React.ReactNode] {
@@ -30,14 +32,16 @@ function extractKids (children: React.ReactNode): [boolean, React.ReactNode] {
   return [isEmpty, isEmpty ? null : kids];
 }
 
-function Table ({ children, className = '', empty, emptySpinner, filter, footer, header, isFixed }: TableProps): React.ReactElement<TableProps> {
+function Table ({ children, className = '', empty, emptySpinner, filter, footer, hasTitle = true, header, isFixed, legend }: TableProps): React.ReactElement<TableProps> {
   const [isEmpty, kids] = extractKids(children);
 
   return (
     <div className={`ui--Table ${className}`}>
+      {legend}
       <table className={`${(isFixed && !isEmpty) ? 'isFixed' : 'isNotFixed'} highlight--bg-faint`}>
         <Head
           filter={filter}
+          hasTitle={hasTitle}
           header={header}
           isEmpty={isEmpty}
         />

@@ -1,4 +1,4 @@
-// Copyright 2017-2020 @polkadot/react-components authors & contributors
+// Copyright 2017-2021 @polkadot/react-components authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 // Robots lovingly delivered by Robohash.org
@@ -10,10 +10,11 @@
 // The Cats/"set4" were created by David Revoy, used under CC-BY-4.0 https://www.peppercarrot.com/en/article391/cat-avatar-generator
 // The avatars used in "set5" were created by Pablo Stanley, for https://avataaars.com/ They are "Free for personal and commercial use. 😇"
 
-import { ThemeProps } from '../../types';
+import type { ThemeProps } from '../../types';
 
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
+
 import { blake2AsU8a } from '@polkadot/util-crypto';
 
 import backgrounds from './backgrounds';

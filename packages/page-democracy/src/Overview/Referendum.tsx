@@ -1,16 +1,17 @@
-// Copyright 2017-2020 @polkadot/app-democracy authors & contributors
+// Copyright 2017-2021 @polkadot/app-democracy authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { DeriveReferendumExt } from '@polkadot/api-derive/types';
-import { Balance, BlockNumber } from '@polkadot/types/interfaces';
+import type { DeriveReferendumExt } from '@polkadot/api-derive/types';
+import type { Balance, BlockNumber } from '@polkadot/types/interfaces';
 
 import BN from 'bn.js';
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
+
 import { Badge, Button, Icon, LinkExternal } from '@polkadot/react-components';
 import { useAccounts, useApi, useCall } from '@polkadot/react-hooks';
 import { BlockToTime } from '@polkadot/react-query';
-import { formatNumber, isBoolean } from '@polkadot/util';
+import { BN_ONE, formatNumber, isBoolean } from '@polkadot/util';
 
 import { useTranslation } from '../translate';
 import useChangeCalc from '../useChangeCalc';
@@ -81,7 +82,7 @@ function Referendum ({ className = '', value: { allAye, allNay, image, imageHash
   }
 
   const enactBlock = status.end.add(status.delay);
-  const remainBlock = status.end.sub(bestNumber).subn(1);
+  const remainBlock = status.end.sub(bestNumber).isub(BN_ONE);
 
   return (
     <tr className={className}>

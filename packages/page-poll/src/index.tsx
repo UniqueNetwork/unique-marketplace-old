@@ -1,17 +1,19 @@
-// Copyright 2017-2020 @polkadot/app-poll authors & contributors
+// Copyright 2017-2021 @polkadot/app-poll authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { Approvals, Balance, BlockNumber } from '@polkadot/types/interfaces';
-import { ITuple } from '@polkadot/types/types';
+import type { ThemeProps } from '@polkadot/react-components/types';
+import type { Approvals, Balance, BlockNumber } from '@polkadot/types/interfaces';
+import type { ITuple } from '@polkadot/types/types';
 
 import BN from 'bn.js';
 import React, { useEffect, useRef, useState } from 'react';
 import { Trans } from 'react-i18next';
 import styled from 'styled-components';
+
 import { Button, Columar, InputAddress, Progress, Spinner, Tabs, Toggle, TxButton } from '@polkadot/react-components';
 import { useApi, useCall } from '@polkadot/react-hooks';
-import { FormatBalance, BlockToTime } from '@polkadot/react-query';
-import { BN_ONE, BN_ZERO, bnMax, formatBalance, formatNumber } from '@polkadot/util';
+import { BlockToTime, FormatBalance } from '@polkadot/react-query';
+import { BN_MILLION, BN_ONE, BN_ZERO, bnMax, formatBalance, formatNumber } from '@polkadot/util';
 
 import { useTranslation } from './translate';
 
@@ -24,8 +26,6 @@ interface Turnout {
   percentage: number;
   voted: BN;
 }
-
-const DIV = new BN(1_000_000);
 
 function PollApp ({ basePath, className }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
@@ -51,7 +51,7 @@ function PollApp ({ basePath, className }: Props): React.ReactElement<Props> {
     if (totalIssuance && totals) {
       const max = bnMax(BN_ONE, ...totals);
 
-      setProgress(totals.map((total) => total.mul(DIV).div(max)));
+      setProgress(totals.map((total) => total.mul(BN_MILLION).div(max)));
 
       api.query.poll.voteOf
         .entries<ITuple<[Approvals, Balance]>>()
@@ -178,7 +178,7 @@ function PollApp ({ basePath, className }: Props): React.ReactElement<Props> {
                   isDisabled={!hasValue}
                   label={t('Vote')}
                   params={[[opt10m, opt100m, opt1b, opt10b]]}
-                  tx='poll.vote'
+                  tx={api.tx.poll.vote}
                 />
               </Button.Group>
             </>
@@ -201,7 +201,7 @@ function PollApp ({ basePath, className }: Props): React.ReactElement<Props> {
   );
 }
 
-export default React.memo(styled(PollApp)`
+export default React.memo(styled(PollApp)(({ theme }: ThemeProps) => `
   .pollActions {
     opacity: 0.75;
   }
@@ -256,7 +256,7 @@ export default React.memo(styled(PollApp)`
 
     .optionName {
       font-size: 1.2rem;
-      font-weight: 400;
+      font-weight: ${theme.fontWeightNormal};
       line-height: 1;
       margin-bottom: 0.75rem;
     }
@@ -286,7 +286,7 @@ export default React.memo(styled(PollApp)`
 
     .ui--FormatBalance {
       font-size: 1.2rem;
-      font-weight: 400;
+      font-weight: ${theme.fontWeightNormal};
       line-height: 1;
     }
 
@@ -294,4 +294,4 @@ export default React.memo(styled(PollApp)`
       margin: 0.75rem;
     }
   }
-`);
+`));

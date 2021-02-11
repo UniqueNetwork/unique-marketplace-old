@@ -1,10 +1,11 @@
-// Copyright 2017-2020 @polkadot/react-components authors & contributors
+// Copyright 2017-2021 @polkadot/react-components authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { ThemeProps } from '../types';
+import type { ThemeProps } from '../types';
 
 import React from 'react';
 import styled from 'styled-components';
+
 import { isString } from '@polkadot/util';
 
 import Spinner from '../Spinner';
@@ -81,6 +82,15 @@ export default React.memo(styled(Body)(({ theme }: ThemeProps) => `
       > * {
         vertical-align: middle;
       }
+
+      .ui--Toggle {
+        display: inline-block;
+        white-space: nowrap;
+
+        label {
+          display: inline-block !important;
+        }
+      }
     }
 
     &.combined {
@@ -98,13 +108,21 @@ export default React.memo(styled(Body)(({ theme }: ThemeProps) => `
     }
 
     &.hash {
-      font-family: ${theme.fontMono};
+      font: ${theme.fontMono};
     }
 
     &.links {
       padding: 0.5rem 0.75rem;
       text-align: center;
       width: 0;
+    }
+
+    &.no-pad-left {
+      padding-left: 0.125rem;
+    }
+
+    &.no-pad-right {
+      padding-right: 0.125rem;
     }
 
     &.number {
@@ -119,6 +137,10 @@ export default React.memo(styled(Body)(({ theme }: ThemeProps) => `
       max-width: 0;
       overflow: hidden;
       text-overflow: ellipsis;
+    }
+
+    &.start {
+      text-align: left;
     }
 
     &.together {
@@ -155,11 +177,8 @@ export default React.memo(styled(Body)(({ theme }: ThemeProps) => `
   }
 
   tr {
-    // &:nth-child(odd) {
-    //   background: #faf8f6;
-    // }
-
-    &:nth-child(odd) {
+    &:nth-child(odd):not(.isEven),
+    &:nth-child(even).isOdd {
       background: ${theme.bgTable};
     }
 

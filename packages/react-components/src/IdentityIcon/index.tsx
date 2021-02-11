@@ -1,14 +1,16 @@
-// Copyright 2017-2020 @polkadot/react-components authors & contributors
+// Copyright 2017-2021 @polkadot/react-components authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { IdentityProps } from '@polkadot/react-identicon/types';
+import type { IdentityProps } from '@polkadot/react-identicon/types';
 
 import React, { useCallback, useContext } from 'react';
 import styled from 'styled-components';
-import { getSystemIcon } from '@polkadot/apps-config/ui';
+
+import { getSystemIcon } from '@polkadot/apps-config';
+import { ThemeProps } from '@polkadot/react-components/types';
 import { useApi } from '@polkadot/react-hooks';
 import BaseIdentityIcon from '@polkadot/react-identicon';
-import uiSettings from '@polkadot/ui-settings';
+import { settings } from '@polkadot/ui-settings';
 
 import StatusContext from '../Status/Context';
 import { useTranslation } from '../translate';
@@ -23,7 +25,7 @@ interface Props {
 }
 
 export function getIdentityTheme (systemName: string): 'substrate' {
-  return ((uiSettings.icon === 'default' && getSystemIcon(systemName)) || uiSettings.icon) as 'substrate';
+  return ((settings.icon === 'default' && getSystemIcon(systemName)) || settings.icon) as 'substrate';
 }
 
 function IdentityIcon ({ className = '', prefix, size = 24, theme, value }: Props): React.ReactElement<Props> {
@@ -58,9 +60,19 @@ function IdentityIcon ({ className = '', prefix, size = 24, theme, value }: Prop
   );
 }
 
-export default React.memo(styled(IdentityIcon)`
-  border: 1px solid #ddd;
-  border-radius: 50%;
-  display: inline-block;
-  overflow: hidden;
-`);
+export default React.memo(styled(IdentityIcon)(({ theme }: ThemeProps) => `
+
+    ${theme.theme === 'dark'
+    ? `
+        circle:first-child {
+            fill: #282829;
+        }
+    `
+    : ''}
+
+    border: 1px solid ${theme.theme === 'dark' ? 'transparent' : '#ddd'};
+    border-radius: 50%;
+    display: inline-block;
+    overflow: hidden;
+
+`));

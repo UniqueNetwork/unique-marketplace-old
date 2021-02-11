@@ -1,8 +1,8 @@
-// Copyright 2017-2020 @polkadot/apps-routing authors & contributors
+// Copyright 2017-2021 @polkadot/apps-routing authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { TFunction } from 'i18next';
-import { Route } from './types';
+import type { TFunction } from 'i18next';
+import type { Route } from './types';
 
 import Component from '@polkadot/app-parachains';
 
@@ -11,7 +11,8 @@ export default function create (t: TFunction): Route {
     Component,
     display: {
       needsApi: [
-        ['query.parachains.code', 'query.parachainUpgrade.didUpdateVFPs']
+        // children - parachainInfo.arachainId / parachainUpgrade.didSetValidationCode
+        ['query.paras.parachains']
       ]
     },
     group: 'network',

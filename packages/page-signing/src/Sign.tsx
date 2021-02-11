@@ -1,15 +1,16 @@
-// Copyright 2017-2020 @polkadot/app-signing authors & contributors
+// Copyright 2017-2021 @polkadot/app-signing authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { Signer } from '@polkadot/api/types';
-import { KeyringPair } from '@polkadot/keyring/types';
+import type { Signer } from '@polkadot/api/types';
+import type { KeyringPair } from '@polkadot/keyring/types';
 
 import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
+
 import { web3FromSource } from '@polkadot/extension-dapp';
 import { Button, Input, InputAddress, Output, Static } from '@polkadot/react-components';
 import { useToggle } from '@polkadot/react-hooks';
-import keyring from '@polkadot/ui-keyring';
+import { keyring } from '@polkadot/ui-keyring';
 import { hexToU8a, isFunction, isHex, stringToHex, stringToU8a, u8aToHex } from '@polkadot/util';
 
 import { useTranslation } from './translate';
@@ -37,7 +38,7 @@ interface SignerState {
 
 function Sign ({ className = '' }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
-  const [currentPair, setCurrentPair] = useState<KeyringPair | null>(keyring.getPairs()[0] || null);
+  const [currentPair, setCurrentPair] = useState<KeyringPair | null>(() => keyring.getPairs()[0] || null);
   const [{ data, isHexData }, setData] = useState<DataState>({ data: '', isHexData: false });
   const [{ isInjected }, setAccountState] = useState<AccountState>({ isExternal: false, isHardware: false, isInjected: false });
   const [isLocked, setIsLocked] = useState(false);
@@ -74,7 +75,7 @@ function Sign ({ className = '' }: Props): React.ReactElement<Props> {
   }, [currentPair]);
 
   const _onChangeAccount = useCallback(
-    (accountId: string | null) => setCurrentPair(keyring.getPair(accountId || '')),
+    (accountId: string | null) => accountId && setCurrentPair(keyring.getPair(accountId)),
     []
   );
 

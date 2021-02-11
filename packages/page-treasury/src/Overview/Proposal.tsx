@@ -1,9 +1,10 @@
-// Copyright 2017-2020 @polkadot/app-treasury authors & contributors
+// Copyright 2017-2021 @polkadot/app-treasury authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { DeriveTreasuryProposal } from '@polkadot/api-derive/types';
+import type { DeriveTreasuryProposal } from '@polkadot/api-derive/types';
 
 import React, { useMemo } from 'react';
+
 import { AddressMini, AddressSmall, LinkExternal } from '@polkadot/react-components';
 import { FormatBalance } from '@polkadot/react-query';
 import { formatNumber } from '@polkadot/util';
@@ -15,7 +16,6 @@ interface Props {
   className?: string;
   isMember: boolean;
   members: string[];
-  onRespond: () => void;
   proposal: DeriveTreasuryProposal;
   withSend: boolean;
 }

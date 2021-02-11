@@ -1,15 +1,17 @@
-// Copyright 2017-2020 @polkadot/react-signer authors & contributors
+// Copyright 2017-2021 @polkadot/react-signer authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { QueueTx } from '@polkadot/react-components/Status/types';
+import type { QueueTx } from '@polkadot/react-components/Status/types';
+import type { ThemeProps } from '@polkadot/react-components/types';
 
 import BN from 'bn.js';
 import React from 'react';
 import styled from 'styled-components';
+
 import { Call, Expander, Modal } from '@polkadot/react-components';
 
-import { useTranslation } from './translate';
 import PaymentInfo from './PaymentInfo';
+import { useTranslation } from './translate';
 
 interface Props {
   className?: string;
@@ -60,7 +62,7 @@ function Transaction ({ className, currentItem: { accountId, extrinsic, isUnsign
   );
 }
 
-export default React.memo(styled(Transaction)`
+export default React.memo(styled(Transaction)(({ theme }: ThemeProps) => `
   .tx-details {
     .ui--Expander-summary {
       font-size: 1.1rem;
@@ -68,7 +70,7 @@ export default React.memo(styled(Transaction)`
     }
 
     .highlight {
-      font-weight: 400;
+      font-weight: ${theme.fontWeightNormal};
     }
 
     .meta {
@@ -80,4 +82,4 @@ export default React.memo(styled(Transaction)`
       opacity: 0.6;
     }
   }
-`);
+`));

@@ -1,9 +1,10 @@
-// Copyright 2017-2020 @polkadot/app-society authors & contributors
+// Copyright 2017-2021 @polkadot/app-society authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { DeriveSocietyMember } from '@polkadot/api-derive/types';
+import type { DeriveSocietyMember } from '@polkadot/api-derive/types';
 
 import React, { useEffect, useRef, useState } from 'react';
+
 import { AddressSmall, Icon, Modal, Tag } from '@polkadot/react-components';
 import { useApi, useToggle } from '@polkadot/react-hooks';
 
@@ -25,7 +26,7 @@ function Member ({ className = '', isHead, value: { accountId, strikes } }: Prop
   const { t } = useTranslation();
   const { api } = useApi();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const [canInk] = useState(api.genesisHash.eq('0xb0a8d493285c2df73290dfb7e61f870f17b41801197a149ca93654499ea3dafe'));
+  const [canInk] = useState(() => api.genesisHash.eq('0xb0a8d493285c2df73290dfb7e61f870f17b41801197a149ca93654499ea3dafe'));
   const [isInkShowing, toggleInk] = useToggle();
 
   useEffect((): void => {

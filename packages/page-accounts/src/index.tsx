@@ -1,17 +1,18 @@
-// Copyright 2017-2020 @polkadot/app-accounts authors & contributors
+// Copyright 2017-2021 @polkadot/app-accounts authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { AppProps as Props } from '@polkadot/react-components/types';
+import type { AppProps as Props } from '@polkadot/react-components/types';
 
 import React, { useRef } from 'react';
 import { Route, Switch } from 'react-router';
-import { useAccounts, useIpfs } from '@polkadot/react-hooks';
+
 import { HelpOverlay, Tabs } from '@polkadot/react-components';
+import { useAccounts, useIpfs } from '@polkadot/react-hooks';
 
 import basicMd from './md/basic.md';
+import Accounts from './Accounts';
 import { useTranslation } from './translate';
 import useCounter from './useCounter';
-import Accounts from './Accounts';
 import Vanity from './Vanity';
 
 export { useCounter };
@@ -23,7 +24,7 @@ function AccountsApp ({ basePath, onStatusChange }: Props): React.ReactElement<P
   const { hasAccounts } = useAccounts();
   const { isIpfs } = useIpfs();
 
-  const itemsRef = useRef([
+  const tabsRef = useRef([
     {
       isRoot: true,
       name: 'overview',
@@ -42,7 +43,7 @@ function AccountsApp ({ basePath, onStatusChange }: Props): React.ReactElement<P
         <Tabs
           basePath={basePath}
           hidden={(hasAccounts && !isIpfs) ? undefined : HIDDEN_ACC}
-          items={itemsRef.current}
+          items={tabsRef.current}
         />
       </header>
       <Switch>

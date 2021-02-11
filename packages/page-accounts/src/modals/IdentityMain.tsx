@@ -1,14 +1,15 @@
-// Copyright 2017-2020 @polkadot/app-accounts authors & contributors
+// Copyright 2017-2021 @polkadot/app-accounts authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { Registration } from '@polkadot/types/interfaces';
+import type { Data, Option } from '@polkadot/types';
+import type { Registration } from '@polkadot/types/interfaces';
 
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
+
 import { Input, InputBalance, Modal, Toggle, TxButton } from '@polkadot/react-components';
 import { getAddressMeta } from '@polkadot/react-components/util';
 import { useApi, useCall } from '@polkadot/react-hooks';
-import { Data, Option } from '@polkadot/types';
 import { u8aToString } from '@polkadot/util';
 
 import { useTranslation } from '../translate';
@@ -79,17 +80,13 @@ function IdentityMain ({ address, className = '', onClose }: Props): React.React
   const identityOpt = useCall<Option<Registration>>(api.query.identity.identityOf, [address]);
   const [{ info, okAll, okDisplay, okEmail, okLegal, okRiot, okTwitter, okWeb }, setInfo] = useState<ValueState>({ info: {}, okAll: false });
   const [hasEmail, setHasEmail] = useState(false);
-  // const [hasImg, setHasImg] = useState(false);
   const [hasLegal, setHasLegal] = useState(false);
-  // const [hasPgp, setHasPgp] = useState(false);
   const [hasRiot, setHasRiot] = useState(false);
   const [hasTwitter, setHasTwitter] = useState(false);
   const [hasWeb, setHasWeb] = useState(false);
-  const [valDisplay, setValDisplay] = useState((getAddressMeta(address).name || '').replace(/\(.*\)/, '').trim());
+  const [valDisplay, setValDisplay] = useState(() => (getAddressMeta(address).name || '').replace(/\(.*\)/, '').trim());
   const [valEmail, setValEmail] = useState('');
-  // const [{ errImg, valImg }, setValImg] = useState<{ errImg: boolean; valImg: string }>({ errImg: true, valImg: '' });
   const [valLegal, setValLegal] = useState('');
-  // const [{ errPgp, valPgp }, setValPgp] = useState<{ errPgp: boolean; valPgp: string }>({ errPgp: true, valPgp: '' });
   const [valRiot, setValRiot] = useState('');
   const [valTwitter, setValTwitter] = useState('');
   const [valWeb, setValWeb] = useState('');
@@ -134,8 +131,6 @@ function IdentityMain ({ address, className = '', onClose }: Props): React.React
         riot: { [okRiot && hasRiot ? 'raw' : 'none']: okRiot && hasRiot ? valRiot : null },
         twitter: { [okTwitter && hasTwitter ? 'raw' : 'none']: okTwitter && hasTwitter ? valTwitter : null },
         web: { [okWeb && hasWeb ? 'raw' : 'none']: okWeb && hasWeb ? valWeb : null }
-        // image: { [hasImg ? 'sha256' : 'none']: hasImg ? valImg : null },
-        // pgpFingerprint: hasPgp ? valPgp : null
       },
       okAll: okDisplay && okEmail && okLegal && okRiot && okTwitter && okWeb,
       okDisplay,
@@ -145,7 +140,6 @@ function IdentityMain ({ address, className = '', onClose }: Props): React.React
       okTwitter,
       okWeb
     });
-    //  errImg, errPgp, hasImg, hasPgp, valImg, valPgp,
   }, [hasEmail, hasLegal, hasRiot, hasTwitter, hasWeb, valDisplay, valEmail, valLegal, valRiot, valTwitter, valWeb]);
 
   return (
@@ -252,8 +246,7 @@ function IdentityMain ({ address, className = '', onClose }: Props): React.React
           isDisabled={!gotPreviousIdentity}
           label={t<string>('Clear Identity')}
           onStart={onClose}
-          params={[]}
-          tx='identity.clearIdentity'
+          tx={api.tx.identity.clearIdentity}
         />
         <TxButton
           accountId={address}
@@ -261,7 +254,7 @@ function IdentityMain ({ address, className = '', onClose }: Props): React.React
           label={t<string>('Set Identity')}
           onStart={onClose}
           params={[info]}
-          tx='identity.setIdentity'
+          tx={api.tx.identity.setIdentity}
         />
       </Modal.Actions>
     </Modal>

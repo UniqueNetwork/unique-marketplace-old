@@ -1,25 +1,28 @@
-// Copyright 2017-2020 @polkadot/react-signer authors & contributors
+// Copyright 2017-2021 @polkadot/react-signer authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { Signer, SignerResult } from '@polkadot/api/types';
-import { SignerPayloadJSON } from '@polkadot/types/types';
-
-import { getLedger, registry } from '@polkadot/react-api';
+import type { Signer, SignerResult } from '@polkadot/api/types';
+import type { Registry, SignerPayloadJSON } from '@polkadot/types/types';
+import type { Ledger } from '@polkadot/ui-keyring';
 
 let id = 0;
 
 export default class LedgerSigner implements Signer {
-  #accountOffset: number;
-  #addressOffset: number;
+  readonly #accountOffset: number;
+  readonly #addressOffset: number;
+  readonly #getLedger: () => Ledger;
+  readonly #registry: Registry;
 
-  constructor (accountOffset: number, addressOffset: number) {
+  constructor (registry: Registry, getLedger: () => Ledger, accountOffset: number, addressOffset: number) {
     this.#accountOffset = accountOffset;
     this.#addressOffset = addressOffset;
+    this.#getLedger = getLedger;
+    this.#registry = registry;
   }
 
   public async signPayload (payload: SignerPayloadJSON): Promise<SignerResult> {
-    const raw = registry.createType('ExtrinsicPayload', payload, { version: payload.version });
-    const { signature } = await getLedger().sign(raw.toU8a(true), this.#accountOffset, this.#addressOffset);
+    const raw = this.#registry.createType('ExtrinsicPayload', payload, { version: payload.version });
+    const { signature } = await this.#getLedger().sign(raw.toU8a(true), this.#accountOffset, this.#addressOffset);
 
     return { id: ++id, signature };
   }

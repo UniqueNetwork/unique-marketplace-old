@@ -1,17 +1,18 @@
-// Copyright 2017-2020 @polkadot/app-addresses authors & contributors
+// Copyright 2017-2021 @polkadot/app-addresses authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { DeriveAccountInfo, DeriveBalancesAll } from '@polkadot/api-derive/types';
-import { KeyringAddress } from '@polkadot/ui-keyring/types';
-import { ActionStatus } from '@polkadot/react-components/Status/types';
-import { ThemeDef } from '@polkadot/react-components/types';
+import type { DeriveAccountInfo, DeriveBalancesAll } from '@polkadot/api-derive/types';
+import type { ActionStatus } from '@polkadot/react-components/Status/types';
+import type { ThemeDef } from '@polkadot/react-components/types';
+import type { KeyringAddress } from '@polkadot/ui-keyring/types';
 
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import styled, { ThemeContext } from 'styled-components';
+
 import Transfer from '@polkadot/app-accounts/modals/Transfer';
-import { AddressSmall, AddressInfo, Button, ChainLock, Icon, LinkExternal, Forget, Menu, Popup, Tags } from '@polkadot/react-components';
+import { AddressInfo, AddressSmall, Button, ChainLock, Forget, Icon, LinkExternal, Menu, Popup, Tags } from '@polkadot/react-components';
 import { useApi, useCall } from '@polkadot/react-hooks';
-import keyring from '@polkadot/ui-keyring';
+import { keyring } from '@polkadot/ui-keyring';
 import { BN_ZERO, formatNumber } from '@polkadot/util';
 
 import { useTranslation } from '../translate';
@@ -226,13 +227,16 @@ function Address ({ address, className = '', filter, isFavorite, toggleFavorite 
             >
               {t<string>('Forget this address')}
             </Menu.Item>
-            <Menu.Divider />
-            <ChainLock
-              className='addresses--network-toggle'
-              genesisHash={genesisHash}
-              isDisabled={!isEditable || api.isDevelopment}
-              onChange={_onGenesisChange}
-            />
+            {isEditable && !api.isDevelopment && (
+              <>
+                <Menu.Divider />
+                <ChainLock
+                  className='addresses--network-toggle'
+                  genesisHash={genesisHash}
+                  onChange={_onGenesisChange}
+                />
+              </>
+            )}
           </Menu>
         </Popup>
       </td>

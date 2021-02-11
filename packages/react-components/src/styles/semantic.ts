@@ -1,7 +1,7 @@
-// Copyright 2017-2020 @polkadot/react-components authors & contributors
+// Copyright 2017-2021 @polkadot/react-components authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { ThemeDef } from '../types';
+import type { ThemeDef } from '../types';
 
 export default (theme: ThemeDef): string => `
   .ui.hidden.divider {
@@ -24,7 +24,8 @@ export default (theme: ThemeDef): string => `
   .ui.selection.dropdown > input {
     background: ${theme.bgInput};
     color: ${theme.color};
-    font-family: ${theme.fontSans};
+    font: ${theme.fontSans};
+    font-size: 1rem;
 
     &:focus {
       background: ${theme.bgInput};
@@ -116,7 +117,7 @@ export default (theme: ThemeDef): string => `
 
   .ui.label {
     background: transparent;
-    font-weight: 400;
+    font-weight: ${theme.fontWeightNormal};
     position: relative;
     z-index: 1;
   }
@@ -125,7 +126,7 @@ export default (theme: ThemeDef): string => `
     background: ${theme.bgPage};
     box-shadow: none;
     color: ${theme.color};
-    font-family: ${theme.fontSans};
+    font: ${theme.fontSans};
 
     > .actions,
     > .content {
@@ -143,9 +144,9 @@ export default (theme: ThemeDef): string => `
       background: transparent;
       border-bottom: none;
       color: ${theme.colorSummary};
-      font-family: ${theme.fontSans};
+      font: ${theme.fontSans};
       font-size: 1.75rem;
-      font-weight: 400;
+      font-weight: ${theme.fontWeightNormal};
       line-height: 1.25rem;
       padding: 1.5rem 1.75rem 0;
       text-transform: lowercase;
@@ -157,7 +158,7 @@ export default (theme: ThemeDef): string => `
 
     .description {
       margin: 1.5em 0;
-      font-weight: 400;
+      font-weight: ${theme.fontWeightNormal};
     }
   }
 
@@ -171,6 +172,10 @@ export default (theme: ThemeDef): string => `
 
     .ui.text.menu .item {
       color: ${theme.color};
+    }
+
+    &&::before {
+      background: ${theme.bgMenu};
     }
   }
 

@@ -1,17 +1,18 @@
-// Copyright 2017-2020 @polkadot/react-components authors & contributors
+// Copyright 2017-2021 @polkadot/react-components authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { ThemeProps } from './types';
+import type { UInt } from '@polkadot/types';
+import type { ThemeProps } from './types';
 
 import BN from 'bn.js';
 import React from 'react';
 import styled from 'styled-components';
-import { UInt } from '@polkadot/types';
-import { formatNumber, isUndefined } from '@polkadot/util';
 
-import Progress from './Progress';
-import Labelled from './Labelled';
 import { BlockToTime } from '@polkadot/react-query';
+import { BN_HUNDRED, formatNumber, isUndefined } from '@polkadot/util';
+
+import Labelled from './Labelled';
+import Progress from './Progress';
 
 interface ProgressProps {
   hideValue?: boolean;
@@ -42,7 +43,7 @@ function CardSummary ({ children, className = '', help, label, progress }: Props
         }`
         : (
           progress.isPercent
-            ? value.muln(100).div(total).toString()
+            ? value.mul(BN_HUNDRED).div(total).toString()
             : formatNumber(value)
         )
     )
@@ -138,7 +139,7 @@ export default React.memo(styled(CardSummary)(({ theme }: ThemeProps) => `
 
     .isSecondary {
       font-size: 1rem;
-      font-weight: 400;
+      font-weight: ${theme.fontWeightNormal};
 
       .timer {
         min-width: 8rem;

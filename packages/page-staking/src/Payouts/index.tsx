@@ -1,14 +1,15 @@
-// Copyright 2017-2020 @polkadot/app-staking authors & contributors
+// Copyright 2017-2021 @polkadot/app-staking authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import type { TFunction } from 'i18next';
-import { DeriveStakerReward } from '@polkadot/api-derive/types';
-import { StakerState } from '@polkadot/react-hooks/types';
-import { PayoutStash, PayoutValidator } from './types';
+import type { DeriveStakerReward } from '@polkadot/api-derive/types';
+import type { StakerState } from '@polkadot/react-hooks/types';
+import type { PayoutStash, PayoutValidator } from './types';
 
 import BN from 'bn.js';
 import React, { useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
+
 import { ApiPromise } from '@polkadot/api';
 import { Button, Table, ToggleGroup } from '@polkadot/react-components';
 import { useApi, useCall, useOwnEraRewards } from '@polkadot/react-hooks';
@@ -17,9 +18,9 @@ import { BN_ZERO, isFunction } from '@polkadot/util';
 
 import ElectionBanner from '../ElectionBanner';
 import { useTranslation } from '../translate';
-import useStakerPayouts from './useStakerPayouts';
 import PayButton from './PayButton';
 import Stash from './Stash';
+import useStakerPayouts from './useStakerPayouts';
 import Validator from './Validator';
 
 interface Props {
@@ -152,8 +153,8 @@ function getOptions (api: ApiPromise, eraLength: BN | undefined, historyDepth: B
 function Payouts ({ className = '', isInElection, ownValidators }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const { api } = useApi();
-  const [hasOwnValidators] = useState(ownValidators.length !== 0);
-  const [myStashesIndex, setMyStashesIndex] = useState((api.tx.staking.payoutStakers && hasOwnValidators) ? 0 : 1);
+  const [hasOwnValidators] = useState(() => ownValidators.length !== 0);
+  const [myStashesIndex, setMyStashesIndex] = useState(() => (api.tx.staking.payoutStakers && hasOwnValidators) ? 0 : 1);
   const [eraSelectionIndex, setEraSelectionIndex] = useState(0);
   const eraLength = useCall<BN>(api.derive.session.eraLength);
   const historyDepth = useCall<BN>(api.query.staking.historyDepth);

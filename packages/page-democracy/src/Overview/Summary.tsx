@@ -1,11 +1,12 @@
-// Copyright 2017-2020 @polkadot/app-democracy authors & contributors
+// Copyright 2017-2021 @polkadot/app-democracy authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import BN from 'bn.js';
 import React from 'react';
-import { SummaryBox, CardSummary } from '@polkadot/react-components';
+
+import { CardSummary, SummaryBox } from '@polkadot/react-components';
 import { useApi, useCall } from '@polkadot/react-hooks';
-import { formatNumber } from '@polkadot/util';
+import { BN_ONE, formatNumber } from '@polkadot/util';
 
 import { useTranslation } from '../translate';
 
@@ -45,7 +46,7 @@ function Summary ({ referendumCount }: Props): React.ReactElement<Props> {
             label={t<string>('launch period')}
             progress={{
               total: api.consts.democracy.launchPeriod,
-              value: bestNumber.mod(api.consts.democracy.launchPeriod).addn(1),
+              value: bestNumber.mod(api.consts.democracy.launchPeriod).iadd(BN_ONE),
               withTime: true
             }}
           />
