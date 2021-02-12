@@ -16,6 +16,6 @@ export default function create (t: TFunction): Route {
     group: 'nft',
     icon: 'users',
     name: 'market',
-    text: t<string>('nav.nftMarket', 'Market', { ns: 'apps-routing' }),
+    text: t<string>('nav.nftMarket', 'Market', { ns: 'apps-routing' })
   };
 }
