@@ -5,7 +5,7 @@
 import { TFunction } from 'i18next';
 import { Route } from './types';
 
-import Component  from '@polkadot/app-nft-mint';
+import Component from '@polkadot/app-nft-mint';
 
 export default function create (t: TFunction): Route {
   return {

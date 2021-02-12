@@ -5,7 +5,7 @@
 import { TFunction } from 'i18next';
 import { Route } from './types';
 
-import Component  from '@polkadot/app-nft-market';
+import Component from '@polkadot/app-nft-market';
 
 export default function create (t: TFunction): Route {
   return {

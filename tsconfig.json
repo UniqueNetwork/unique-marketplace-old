@@ -10,6 +10,9 @@
     "paths": {
       "@polkadot/apps/*": ["packages/apps/src/*"],
       "@polkadot/apps": ["packages/apps/src"],
+      "@polkadot/app-nft-market": ["packages/page-nft-market/src"],
+      "@polkadot/app-nft-mint": [ "packages/page-nft-mint/src" ],
+      "@polkadot/app-nft-wallet": [ "packages/page-nft-wallet/src" ],
       "@polkadot/apps-config": [ "packages/apps-config/src" ],
       "@polkadot/apps-config/*": [ "packages/apps-config/src/*" ],
       "@polkadot/apps-routing": [ "packages/apps-routing/src" ],
