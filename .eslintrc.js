@@ -24,6 +24,7 @@ module.exports = {
   },
   rules: {
     ...base.rules,
+    'no-void': 'off',
     // needs to be switched on at some point
     '@typescript-eslint/no-explicit-any': 'off',
     // this seems very broken atm, false positives

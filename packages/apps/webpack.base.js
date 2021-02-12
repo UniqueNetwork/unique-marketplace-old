@@ -41,6 +41,22 @@ function createWebpack (context, mode = 'production') {
     module: {
       rules: [
         {
+          exclude: /(node_modules)/,
+          test: /\.(s[ac]|c)ss$/,
+          use: [
+            mode === 'production'
+              ? MiniCssExtractPlugin.loader
+              : require.resolve('style-loader'),
+            {
+              loader: require.resolve('css-loader'),
+              options: {
+                importLoaders: 1
+              }
+            },
+            'sass-loader'
+          ]
+        },
+        {
           include: /node_modules/,
           test: /\.css$/,
           use: [
