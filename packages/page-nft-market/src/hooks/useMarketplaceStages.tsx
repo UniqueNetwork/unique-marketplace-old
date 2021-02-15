@@ -1,12 +1,14 @@
-// Copyright 2020 @polkadot/app-nft authors & contributors
+// Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
+// SPDX-License-Identifier: Apache-2.0
 
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useMachine } from '@xstate/react';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+
+import { StatusContext } from '@polkadot/react-components/Status';
 // import BN from 'bn.js';
-import { useCollections, TokenInfo, useNftContract, useApi, useBalance, marketContractAddress, decimals } from '@polkadot/react-hooks';
+import { decimals, marketContractAddress, useApi, useBalance, useCollections, useNftContract } from '@polkadot/react-hooks';
 
 import marketplaceStateMachine from './stateMachine';
-import { StatusContext } from '@polkadot/react-components/Status';
 
 type UserActionType = 'BUY' | 'CANCEL' | 'SALE' | 'REVERT_UNUSED_MONEY';
 
@@ -41,7 +43,7 @@ interface MarketplaceStagesInterface {
 const useMarketplaceStages = (account: string, collectionId: string, tokenId: string): MarketplaceStagesInterface => {
   const { api } = useApi();
   const [state, send] = useMachine(marketplaceStateMachine);
-  const [tokenInfo, setTokenInfo] = useState<TokenInfo | null | undefined>();
+  const [tokenInfo, setTokenInfo] = useState<any | null | undefined>();
   const { getDetailedTokenInfo, getDetailedRefungibleTokenInfo } = useCollections();
   const { abi, getDepositor, getUserDeposit, getTokenAsk, isContractReady } = useNftContract(account);
   const { balance } = useBalance(account);
