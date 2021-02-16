@@ -4,6 +4,7 @@
 import './styles.scss';
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Route, Switch } from 'react-router-dom';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid/Grid';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header/Header';
 
@@ -15,8 +16,6 @@ import CollectionSearch from '../../components/CollectionSearch';
 import FormatBalance from '../../components/FormatBalance';
 import NftCollectionCard from '../../components/NftCollectionCard';
 import TokenDetailsModal from '../../components/TokenDetailsModal/';
-// local imports and components
-import TransferModal from '../../components/TransferModal/';
 
 interface NftWalletProps {
   className?: string;
@@ -25,7 +24,6 @@ interface NftWalletProps {
 function NftWallet ({ className }: NftWalletProps): React.ReactElement<NftWalletProps> {
   const collectionsStorage: NftCollectionInterface[] = JSON.parse(localStorage.getItem('tokenCollections') || '[]') as NftCollectionInterface[];
   const [openDetailedInformation, setOpenDetailedInformation] = useState<{ collection: NftCollectionInterface, tokenId: string } | null>(null);
-  const [openTransfer, setOpenTransfer] = useState<{ collection: NftCollectionInterface, tokenId: string, balance: number } | null>(null);
   const [account, setAccount] = useState<string | null>(null);
   const [shouldUpdateTokens, setShouldUpdateTokens] = useState<number | null>(null);
   const [collections, setCollections] = useState<NftCollectionInterface[]>(collectionsStorage);
@@ -51,10 +49,6 @@ function NftWallet ({ className }: NftWalletProps): React.ReactElement<NftWallet
 
   const openTransferModal = useCallback((collection, tokenId, balance) => {
     setOpenTransfer({ balance, collection, tokenId });
-  }, []);
-
-  const closeTransferModal = useCallback(() => {
-    setOpenTransfer(null);
   }, []);
 
   const openDetailedInformationModal = useCallback((collection: NftCollectionInterface, tokenId: string) => {
@@ -130,23 +124,17 @@ function NftWallet ({ className }: NftWalletProps): React.ReactElement<NftWallet
           </tr>
         ))}
       </Table>
-      { openDetailedInformation && (
-        <TokenDetailsModal
-          closeModal={closeDetailedInformationModal}
-          collection={openDetailedInformation.collection}
-          tokenId={openDetailedInformation.tokenId}
-        />
-      )}
-      { openTransfer && openTransfer.tokenId && openTransfer.collection && (
-        <TransferModal
-          account={account}
-          balance={openTransfer.balance}
-          canTransferTokens={canTransferTokens}
-          closeModal={closeTransferModal}
-          collection={openTransfer.collection}
-          tokenId={openTransfer.tokenId}
-          updateTokens={updateTokens}
-        />
+      { account && (
+        <Switch>
+          <Route
+            key='TokenDetailsModal'
+            path='*/token-details'
+          >
+            <TokenDetailsModal
+              closeModal={closeDetailedInformationModal}
+            />
+          </Route>
+        </Switch>
       )}
     </div>
   );

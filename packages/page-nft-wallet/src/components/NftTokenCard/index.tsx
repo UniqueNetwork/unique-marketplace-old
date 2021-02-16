@@ -22,39 +22,8 @@ interface Props {
   token: string;
 }
 
-function NftTokenCard ({ account, canTransferTokens, collection, openDetailedInformationModal, openTransferModal, shouldUpdateTokens, token }: Props): React.ReactElement<Props> {
-  const [balance, setBalance] = useState<number>(0);
-  const { attributes, collectionInfo, tokenUrl, tokenDetails } = useSchema(collection.id, token);
-
-  console.log('tokenDetails', tokenDetails, 'tokenUrl', tokenUrl);
-
-  const getTokenDetails = useCallback(() => {
-    try {
-      if (tokenDetails?.Owner) {
-        if (collectionInfo?.Mode.isReFungible) {
-          const owner = tokenDetails.Owner.find((item: { fraction: BN, owner: string }) => item.owner.toString() === account) as { fraction: BN, owner: string } | undefined;
-
-          if (typeof collection.DecimalPoints === 'number') {
-            const balance = owner && owner.fraction.toNumber() / Math.pow(10, collection.DecimalPoints);
-
-            setBalance(balance || 0);
-          }
-        }
-      }
-    } catch (e) {
-      console.error('token balance calculation error', e);
-    }
-  }, [tokenDetails]);
-
-  useEffect(() => {
-    if (shouldUpdateTokens && shouldUpdateTokens === collection.id) {
-      getTokenDetails();
-    }
-  }, [collection.id, getTokenDetails, shouldUpdateTokens]);
-
-  useEffect(() => {
-    getTokenDetails();
-  }, [getTokenDetails]);
+function NftTokenCard ({ account, collection, openDetailedInformationModal, token }: Props): React.ReactElement<Props> {
+  const { attributes, balance, tokenUrl } = useSchema(account, collection.id, token);
 
   if (!balance && collection && collection.Mode.isReFungible) {
     return <></>;
@@ -87,15 +56,6 @@ function NftTokenCard ({ account, canTransferTokens, collection, openDetailedInf
           Attributes: {Object.keys(attributes).map((attrKey) => (<span key={attrKey}>{attrKey}: {attributes[attrKey]}</span>))}
         </td>
       )}
-      <td className='token-actions'>
-        <Button
-          disabled={!canTransferTokens}
-          onClick={openTransferModal.bind(null, collection, token, balance)}
-          primary
-        >
-          Transfer token
-        </Button>
-      </td>
     </tr>
   );
 }

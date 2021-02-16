@@ -1,47 +1,28 @@
 // Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import type { TokenAttribute, TokenDetailsInterface } from '@polkadot/react-hooks/useCollections';
+
+import BN from 'bn.js';
 import { useCallback, useEffect, useState } from 'react';
 
 import { MetadataType, NftCollectionInterface, useCollections } from '@polkadot/react-hooks';
-import { TokenDetailsInterface } from '@polkadot/react-hooks/useCollections';
 
 import useDecoder from './useDecoder';
 
-/*
-    {
-        [
-            {"Trait 1":
-                {
-                    "type": "enum",
-                    "size": 1,
-                    "values": ["Black Lipstick","Red Lipstick","Smile","Teeth Smile","Purple Lipstick","Nose Ring","Asian Eyes","Sun Glasses","Red Glasses","Round Eyes","Left Earring","Right Earring","Two Earrings","Brown Beard","Mustache-Beard","Mustache","Regular Beard","Up Hair","Down Hair","Mahawk","Red Mahawk","Orange Hair","Bubble Hair","Emo Hair","Thin Hair","Bald","Blonde Hair","Caret Hair","Pony Tails","Cigar","Pipe"]
-                }
-            }
-        ]
-    }
-*/
-
-export type TokenAttribute = {
-  [key: string]: {
-    type: number | string | 'enum';
-    size: number;
-    values: string[];
-  }
-}
-
 export type Attributes = TokenAttribute[];
 
-export default function useSchema (collectionId: string | number, tokenId: string | number) {
+export default function useSchema (account: string, collectionId: string | number, tokenId: string | number) {
   const [collectionInfo, setCollectionInfo] = useState<NftCollectionInterface>();
+  const [balance, setBalance] = useState<number>(0);
   const [tokenUrl, setTokenUrl] = useState<string>('');
-  const [attributesConst, setAttributesConst] = useState<{ [key: string]: string }>();
-  const [attributesVar, setAttributesVar] = useState<{ [key: string]: string }>();
+  const [attributesConst, setAttributesConst] = useState<TokenAttribute>();
+  const [attributesVar, setAttributesVar] = useState<TokenAttribute>();
   const [attributes, setAttributes] = useState<{ [key: string]: string }>();
   const [tokenDetails, setTokenDetails] = useState<TokenDetailsInterface>();
   const [tokenVarData, setTokenVarData] = useState<string>();
   const [tokenConstData, setTokenConstData] = useState<string>();
-  const { getDetailedCollectionInfo, getDetailedTokenInfo, getDetailedReFungibleTokenInfo } = useCollections();
+  const { getDetailedCollectionInfo, getDetailedReFungibleTokenInfo, getDetailedTokenInfo } = useCollections();
   const { collectionName8Decoder } = useDecoder();
 
   const tokenImageUrl = useCallback((tokenId: string, urlString: string): string => {
@@ -52,10 +33,10 @@ export default function useSchema (collectionId: string | number, tokenId: strin
     return '';
   }, []);
 
-  const convertOnChainMetadata = useCallback((data: string) => {
+  const convertOnChainMetadata = useCallback((data: string): TokenAttribute => {
     try {
       if (data && data.length) {
-        return JSON.parse(data) as { [key: string]: string };
+        return JSON.parse(data) as TokenAttribute;
       }
     } catch (e) {
       console.log('schema json parse error', e);
@@ -63,6 +44,24 @@ export default function useSchema (collectionId: string | number, tokenId: strin
 
     return {};
   }, []);
+
+  const getReFungibleDetails = useCallback(() => {
+    try {
+      if (tokenDetails?.Owner) {
+        if (collectionInfo?.Mode.isReFungible) {
+          const owner = tokenDetails.Owner.find((item: { fraction: BN, owner: string }) => item.owner.toString() === account) as { fraction: BN, owner: string } | undefined;
+
+          if (typeof collectionInfo.DecimalPoints === 'number') {
+            const balance = owner && owner.fraction.toNumber() / Math.pow(10, collectionInfo.DecimalPoints);
+
+            setBalance(balance || 0);
+          }
+        }
+      }
+    } catch (e) {
+      console.error('token balance calculation error', e);
+    }
+  }, [account, collectionInfo?.DecimalPoints, collectionInfo?.Mode.isReFungible, tokenDetails?.Owner]);
 
   const setUnique = useCallback(async (collectionInfo: NftCollectionInterface) => {
     const dataUrl = tokenImageUrl((collectionInfo.OffchainSchema as MetadataType).metadata, tokenId.toString());
@@ -124,14 +123,14 @@ export default function useSchema (collectionId: string | number, tokenId: strin
     }
   }, [collectionId, collectionInfo, collectionName8Decoder, getDetailedTokenInfo, getDetailedReFungibleTokenInfo, tokenId]);
 
-  const mergeData = useCallback((attrs: {[key: string]: { type: string, values: { [key: string]: string } }}, data: string) => {
+  const mergeData = useCallback(({ attr, data }: { attr?: TokenAttribute, data?: string }) => {
     const tokenAttributes: {[key: string]: any} = {};
 
-    if (attrs && data && Object.keys(attrs).length) {
-      Object.keys(attrs).forEach((attrKey) => {
-        if (attrs[attrKey].type === 'enum') {
-          tokenAttributes[attrKey] = attrs[attrKey].values[data];
-        } else if (attrs[attrKey].type === 'number' || attrs[attrKey].type === 'string') {
+    if (attr && data && Object.keys(attr).length) {
+      Object.keys(attr).forEach((attrKey) => {
+        if (attr[attrKey].type === 'enum') {
+          tokenAttributes[attrKey] = attr[attrKey].values[parseInt(data, 10)];
+        } else if (attr[attrKey].type === 'number' || attr[attrKey].type === 'string') {
           tokenAttributes[attrKey] = data;
         }
       });
@@ -142,8 +141,8 @@ export default function useSchema (collectionId: string | number, tokenId: strin
 
   const mergeTokenAttributes = useCallback(() => {
     const tokenAttributes = {
-      ...mergeData(attributesConst, tokenConstData),
-      ...mergeData(attributesVar, tokenVarData)
+      ...mergeData({ attr: attributesConst, data: tokenConstData }),
+      ...mergeData({ attr: attributesVar, data: tokenVarData })
     };
 
     setAttributes(tokenAttributes);
@@ -164,10 +163,15 @@ export default function useSchema (collectionId: string | number, tokenId: strin
     mergeTokenAttributes();
   }, [mergeTokenAttributes]);
 
+  useEffect(() => {
+    void getReFungibleDetails();
+  }, [getReFungibleDetails]);
+
   return {
     attributes,
     attributesConst,
     attributesVar,
+    balance,
     collectionInfo,
     tokenConstData,
     tokenDetails,

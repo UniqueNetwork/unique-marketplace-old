@@ -10,6 +10,14 @@ export type MetadataType = {
   metadata: string;
 }
 
+export type TokenAttribute = {
+  [key: string]: {
+    type: number | string | 'enum';
+    size: number;
+    values: string[];
+  }
+}
+
 export interface NftCollectionInterface {
   Access?: 'Normal'
   id: number;
@@ -35,8 +43,8 @@ export interface NftCollectionInterface {
     TokenLimit: string;
     SponsorTimeout: string;
   },
-  VariableOnChainSchema: any;
-  ConstOnChainSchema: any;
+  VariableOnChainSchema: string;
+  ConstOnChainSchema: string;
 }
 
 export interface TokenDetailsInterface {
