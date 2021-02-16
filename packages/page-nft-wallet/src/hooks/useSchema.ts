@@ -1,11 +1,12 @@
-// Copyright 2017-2021 @polkadot/react-hooks, useTech authors & contributors
-// This software may be modified and distributed under the terms
-// of the Apache-2.0 license. See the LICENSE file for details.
+// Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
+// SPDX-License-Identifier: Apache-2.0
 
-import { useEffect, useState, useCallback } from 'react';
-import { useCollections, NftCollectionInterface, MetadataType } from '@polkadot/react-hooks';
-import useDecoder from './useDecoder';
+import { useCallback, useEffect, useState } from 'react';
+
+import { MetadataType, NftCollectionInterface, useCollections } from '@polkadot/react-hooks';
 import { TokenDetailsInterface } from '@polkadot/react-hooks/useCollections';
+
+import useDecoder from './useDecoder';
 
 /*
     {
@@ -34,9 +35,9 @@ export type Attributes = TokenAttribute[];
 export default function useSchema (collectionId: string | number, tokenId: string | number) {
   const [collectionInfo, setCollectionInfo] = useState<NftCollectionInterface>();
   const [tokenUrl, setTokenUrl] = useState<string>('');
-  const [attributesConst, setAttributesConst] = useState<any>();
-  const [attributesVar, setAttributesVar] = useState<any>();
-  const [attributes, setAttributes] = useState<any>();
+  const [attributesConst, setAttributesConst] = useState<{ [key: string]: string }>();
+  const [attributesVar, setAttributesVar] = useState<{ [key: string]: string }>();
+  const [attributes, setAttributes] = useState<{ [key: string]: string }>();
   const [tokenDetails, setTokenDetails] = useState<TokenDetailsInterface>();
   const [tokenVarData, setTokenVarData] = useState<string>();
   const [tokenConstData, setTokenConstData] = useState<string>();
@@ -54,27 +55,31 @@ export default function useSchema (collectionId: string | number, tokenId: strin
   const convertOnChainMetadata = useCallback((data: string) => {
     try {
       if (data && data.length) {
-        return JSON.parse(data);
-      } else {
-        return {};
+        return JSON.parse(data) as { [key: string]: string };
       }
     } catch (e) {
       console.log('schema json parse error', e);
     }
+
+    return {};
   }, []);
 
-  const setSchema = useCallback(async () => {
+  const setUnique = useCallback(async (collectionInfo: NftCollectionInterface) => {
+    const dataUrl = tokenImageUrl((collectionInfo.OffchainSchema as MetadataType).metadata, tokenId.toString());
+    const urlResponse = await fetch(dataUrl);
+    const jsonData = await urlResponse.json() as { image: string };
 
+    setTokenUrl(jsonData.image);
+  }, [tokenId, tokenImageUrl]);
+
+  const setSchema = useCallback(() => {
     if (collectionInfo) {
       switch (collectionInfo.SchemaVersion) {
         case 'ImageURL':
           setTokenUrl(tokenImageUrl(collectionInfo.OffchainSchema as string, tokenId.toString()));
           break;
         case 'Unique':
-          const dataUrl = tokenImageUrl((collectionInfo.OffchainSchema as MetadataType).metadata, tokenId.toString());
-          const urlResponse = await fetch(dataUrl);
-          const jsonData = await urlResponse.json() as { image: string };
-          setTokenUrl(jsonData.image);
+          void setUnique(collectionInfo);
           break;
         default:
           break;
@@ -83,7 +88,7 @@ export default function useSchema (collectionId: string | number, tokenId: strin
       setAttributesConst(convertOnChainMetadata(collectionInfo.ConstOnChainSchema));
       setAttributesVar(convertOnChainMetadata(collectionInfo.VariableOnChainSchema));
     }
-  }, [collectionInfo]);
+  }, [collectionInfo, convertOnChainMetadata, setUnique, tokenId, tokenImageUrl]);
 
   const getCollectionInfo = useCallback(async () => {
     if (collectionId) {
@@ -92,31 +97,36 @@ export default function useSchema (collectionId: string | number, tokenId: strin
       setCollectionInfo({
         ...info,
         ConstOnChainSchema: collectionName8Decoder(info.ConstOnChainSchema),
-        VariableOnChainSchema: collectionName8Decoder(info.VariableOnChainSchema),
+        VariableOnChainSchema: collectionName8Decoder(info.VariableOnChainSchema)
       });
     }
-  }, []);
+  }, [collectionId, collectionName8Decoder, getDetailedCollectionInfo]);
 
   const getTokenDetails = useCallback(async () => {
     if (collectionId && tokenId && collectionInfo) {
       let tokenDetailsData: TokenDetailsInterface = {};
+
       if (collectionInfo.Mode.isNft) {
-        tokenDetailsData = (await getDetailedTokenInfo(collectionId.toString(), tokenId.toString())) as TokenDetailsInterface;
+        tokenDetailsData = await getDetailedTokenInfo(collectionId.toString(), tokenId.toString());
       } else if (collectionInfo.Mode.isReFungible) {
-        tokenDetailsData = (await getDetailedReFungibleTokenInfo(collectionId.toString(), tokenId.toString())) as TokenDetailsInterface;
+        tokenDetailsData = await getDetailedReFungibleTokenInfo(collectionId.toString(), tokenId.toString());
       }
+
       setTokenDetails(tokenDetailsData);
+
       if (tokenDetailsData.ConstData) {
         setTokenConstData(collectionName8Decoder(tokenDetailsData.ConstData));
       }
+
       if (tokenDetailsData.VariableData) {
         setTokenVarData(collectionName8Decoder(tokenDetailsData.VariableData));
       }
     }
-  }, [collectionId, collectionInfo, getDetailedTokenInfo, getDetailedReFungibleTokenInfo, tokenId]);
+  }, [collectionId, collectionInfo, collectionName8Decoder, getDetailedTokenInfo, getDetailedReFungibleTokenInfo, tokenId]);
 
-  const mergeData = useCallback((attrs, data) => {
+  const mergeData = useCallback((attrs: {[key: string]: { type: string, values: { [key: string]: string } }}, data: string) => {
     const tokenAttributes: {[key: string]: any} = {};
+
     if (attrs && data && Object.keys(attrs).length) {
       Object.keys(attrs).forEach((attrKey) => {
         if (attrs[attrKey].type === 'enum') {
@@ -124,8 +134,9 @@ export default function useSchema (collectionId: string | number, tokenId: strin
         } else if (attrs[attrKey].type === 'number' || attrs[attrKey].type === 'string') {
           tokenAttributes[attrKey] = data;
         }
-      })
+      });
     }
+
     return tokenAttributes;
   }, []);
 
@@ -134,8 +145,9 @@ export default function useSchema (collectionId: string | number, tokenId: strin
       ...mergeData(attributesConst, tokenConstData),
       ...mergeData(attributesVar, tokenVarData)
     };
+
     setAttributes(tokenAttributes);
-  }, [attributesConst, attributesVar, tokenConstData, tokenVarData]);
+  }, [attributesConst, attributesVar, mergeData, tokenConstData, tokenVarData]);
 
   useEffect(() => {
     if (collectionInfo) {
@@ -157,9 +169,9 @@ export default function useSchema (collectionId: string | number, tokenId: strin
     attributesConst,
     attributesVar,
     collectionInfo,
-    tokenUrl,
     tokenConstData,
     tokenDetails,
+    tokenUrl,
     tokenVarData
   };
 }

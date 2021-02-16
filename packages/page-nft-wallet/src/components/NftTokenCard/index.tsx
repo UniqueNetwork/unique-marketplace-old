@@ -1,11 +1,16 @@
-// Copyright 2020 UseTech authors & contributors
+// Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
+// SPDX-License-Identifier: Apache-2.0
+
+import './NftTokenCard.scss';
+
+import BN from 'bn.js';
 import React, { useCallback, useEffect, useState } from 'react';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 import Item from 'semantic-ui-react/dist/commonjs/views/Item';
+
 import { NftCollectionInterface } from '@polkadot/react-hooks';
 
-import './NftTokenCard.scss';
-import useSchema from "../../hooks/useSchema";
+import useSchema from '../../hooks/useSchema';
 
 interface Props {
   account: string;
@@ -17,7 +22,7 @@ interface Props {
   token: string;
 }
 
-function NftTokenCard({ account, canTransferTokens, collection, openTransferModal, openDetailedInformationModal, shouldUpdateTokens, token }: Props): React.ReactElement<Props> {
+function NftTokenCard ({ account, canTransferTokens, collection, openDetailedInformationModal, openTransferModal, shouldUpdateTokens, token }: Props): React.ReactElement<Props> {
   const [balance, setBalance] = useState<number>(0);
   const { attributes, collectionInfo, tokenUrl, tokenDetails } = useSchema(collection.id, token);
 
@@ -27,10 +32,12 @@ function NftTokenCard({ account, canTransferTokens, collection, openTransferModa
     try {
       if (tokenDetails?.Owner) {
         if (collectionInfo?.Mode.isReFungible) {
-          const owner = tokenDetails.Owner.find((item: any) => item.owner.toString() === account);
+          const owner = tokenDetails.Owner.find((item: { fraction: BN, owner: string }) => item.owner.toString() === account) as { fraction: BN, owner: string } | undefined;
+
           if (typeof collection.DecimalPoints === 'number') {
-            const balance = owner.fraction.toNumber() / Math.pow(10, collection.DecimalPoints);
-            setBalance(balance);
+            const balance = owner && owner.fraction.toNumber() / Math.pow(10, collection.DecimalPoints);
+
+            setBalance(balance || 0);
           }
         }
       }
@@ -43,21 +50,27 @@ function NftTokenCard({ account, canTransferTokens, collection, openTransferModa
     if (shouldUpdateTokens && shouldUpdateTokens === collection.id) {
       getTokenDetails();
     }
-  }, [shouldUpdateTokens]);
+  }, [collection.id, getTokenDetails, shouldUpdateTokens]);
 
   useEffect(() => {
     getTokenDetails();
-  }, [tokenDetails]);
+  }, [getTokenDetails]);
 
   if (!balance && collection && collection.Mode.isReFungible) {
     return <></>;
   }
 
   return (
-    <tr className='token-row' key={token}>
+    <tr
+      className='token-row'
+      key={token}
+    >
       <td className='token-image'>
         <a onClick={openDetailedInformationModal.bind(null, collection, token)}>
-          <Item.Image size='mini' src={tokenUrl} />
+          <Item.Image
+            size='mini'
+            src={tokenUrl}
+          />
         </a>
       </td>
       <td className='token-name'>
@@ -70,14 +83,21 @@ function NftTokenCard({ account, canTransferTokens, collection, openTransferModa
       )}
       { attributes && Object.values(attributes).length > 0 && (
         <td className='token-balance'>
-          Attributes: {Object.keys(attributes).map((attrKey) => (<span>{attrKey}: {attributes[attrKey]}</span>))}
+          {/* eslint-disable-next-line @typescript-eslint/no-unsafe-member-access */}
+          Attributes: {Object.keys(attributes).map((attrKey) => (<span key={attrKey}>{attrKey}: {attributes[attrKey]}</span>))}
         </td>
       )}
       <td className='token-actions'>
-        <Button disabled={!canTransferTokens} onClick={openTransferModal.bind(null, collection, token, balance)} primary>Transfer token</Button>
+        <Button
+          disabled={!canTransferTokens}
+          onClick={openTransferModal.bind(null, collection, token, balance)}
+          primary
+        >
+          Transfer token
+        </Button>
       </td>
     </tr>
-  )
+  );
 }
 
 export default React.memo(NftTokenCard);

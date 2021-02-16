@@ -1,4 +1,5 @@
-// Copyright 2020-2021 UseTech authors & contributors
+// Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
+// SPDX-License-Identifier: Apache-2.0
 
 import BN from 'bn.js';
 
@@ -13,7 +14,13 @@ export interface BalanceInterface {
   reserved: BN;
 }
 
-export default function useBalance (accountId: string | null) {
+export interface UseBalanceInterface {
+  balance: BalanceInterface | null;
+  balanceError: boolean;
+  existentialDeposit: BN | null;
+}
+
+export function useBalance (accountId: string | null): UseBalanceInterface {
   const { api } = useApi();
   const [balance, setBalance] = useState<BalanceInterface | null>(null);
   const [balanceError, setBalanceError] = useState<boolean>(false);

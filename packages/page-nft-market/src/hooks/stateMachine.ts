@@ -11,70 +11,70 @@ const marketplaceStateMachine = Machine({
     },
     loadingTokenInfo: {
       on: {
-        SALE: 'sale',
-        NO_OFFER_PLACED: 'idle',
-        CANCEL: 'cancelSale',
         BUY: 'buy',
-        REVERT_UNUSED_MONEY: 'revertMoney'
+        CANCEL: 'cancelSale',
+        NO_OFFER_PLACED: 'idle',
+        REVERT_UNUSED_MONEY: 'revertMoney',
+        SALE: 'sale'
       }
     },
     revertMoney: {
       on: {
-        WITHDRAW_SUCCESS: 'loadingTokenInfo',
-        WITHDRAW_ERROR: 'loadingTokenInfo'
+        WITHDRAW_ERROR: 'loadingTokenInfo',
+        WITHDRAW_SUCCESS: 'loadingTokenInfo'
       }
     },
     cancelSale: {
       on: {
-        CANCEL_SALE_SUCCESS: 'loadingTokenInfo',
-        CANCEL_SALE_FAIL: 'loadingTokenInfo'
+        CANCEL_SALE_FAIL: 'loadingTokenInfo',
+        CANCEL_SALE_SUCCESS: 'loadingTokenInfo'
       }
     },
     sale: {
       on: {
-        TRANSFER_NFT_TO_CONTRACT_SUCCESS: 'registerDeposit',
-        TRANSFER_NFT_TO_CONTRACT_FAIL: 'loadingTokenInfo'
+        TRANSFER_NFT_TO_CONTRACT_FAIL: 'loadingTokenInfo',
+        TRANSFER_NFT_TO_CONTRACT_SUCCESS: 'registerDeposit'
       }
     },
     registerDeposit: {
       on: {
-        REGISTER_DEPOSIT_SUCCESS: 'getDepositReady',
+        REGISTER_DEPOSIT_SUCCESS: 'getDepositReady'
       }
     },
     getDepositReady: {
       on: {
-        NFT_DEPOSIT_READY: 'askPrice',
-        NFT_DEPOSIT_FAIL: 'registerDeposit'
+        NFT_DEPOSIT_FAIL: 'registerDeposit',
+        NFT_DEPOSIT_READY: 'askPrice'
       }
     },
     askPrice: {
       on: {
-        ASK_PRICE_SUCCESS: 'registerSale',
-        ASK_PRICE_FAIL: 'askPrice'
+        ASK_PRICE_FAIL: 'askPrice',
+        ASK_PRICE_SUCCESS: 'registerSale'
       }
     },
     registerSale: {
       on: {
-        REGISTER_SALE_SUCCESS: 'loadingTokenInfo',
-        REGISTER_SALE_FAIL: 'askPrice'
+        REGISTER_SALE_FAIL: 'askPrice',
+        REGISTER_SALE_SUCCESS: 'loadingTokenInfo'
       }
     },
     buy: {
       on: {
-        SEND_MONEY_SUCCESS: 'checkDepositReady',
-        SEND_MONEY_FAIL: 'loadingTokenInfo'
+        SEND_MONEY_FAIL: 'loadingTokenInfo',
+        SEND_MONEY_SUCCESS: 'checkDepositReady'
       }
     },
     checkDepositReady: {
       on: {
-        DEPOSIT_SUCCESS: 'sentTokenToNewOwner',
         DEPOSIT_FAIL: 'checkDepositReady',
+        DEPOSIT_SUCCESS: 'sentTokenToNewOwner'
       }
     },
     sentTokenToNewOwner: {
       on: {
-        SEND_TOKEN_SUCCESS: 'loadingTokenInfo',
-        SEND_TOKEN_FAIL: 'loadingTokenInfo'
+        SEND_TOKEN_FAIL: 'loadingTokenInfo',
+        SEND_TOKEN_SUCCESS: 'loadingTokenInfo'
       }
     }
   }

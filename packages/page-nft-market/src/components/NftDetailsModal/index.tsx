@@ -1,42 +1,40 @@
 // Copyright 2020 UseTech authors & contributors
 
+import './styles.scss';
+
 import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import Modal from 'semantic-ui-react/dist/commonjs/modules/Modal/Modal';
 
-import { Button, Input} from '@polkadot/react-components';
+import { Button, Input } from '@polkadot/react-components';
 import { NftCollectionInterface, useCollections } from '@polkadot/react-hooks';
-import useMarketplaceStages from '../../hooks/useMarketplaceStages';
 
+import useMarketplaceStages from '../../hooks/useMarketplaceStages';
 import BuySteps from '../BuySteps';
 import SaleSteps from '../SaleSteps';
-
-import './styles.scss';
 
 interface Props {
   account: string;
 }
 
-function NftDetailsModal({ account }: Props): React.ReactElement<Props> {
+function NftDetailsModal ({ account }: Props): React.ReactElement<Props> {
   // const [accessories, setAccessories] = useState<Array<string>>([]);
   const [accessories] = useState<Array<string>>([]);
   const query = new URLSearchParams(useLocation().search);
   const tokenId = query.get('tokenId') || '0';
   const collectionId = query.get('collectionId') || '';
-  const { getTokenImageUrl, getDetailedCollectionInfo } = useCollections();
+  const { getDetailedCollectionInfo, getTokenImageUrl } = useCollections();
   const [collectionInfo, setCollectionInfo] = useState<NftCollectionInterface | null | undefined>();
   // if tokenContractInfo is not empty - token is on contract (ready to buy)
-  const {
-    deposited,
+  const { deposited,
+    readyToAskPrice,
     sendCurrentUserAction,
     setPrice,
-    transferStep,
-    tokenInfo,
     tokenContractInfo,
-    readyToAskPrice
-  } = useMarketplaceStages(account, collectionId, tokenId);
+    tokenInfo,
+    transferStep } = useMarketplaceStages(account, collectionId, tokenId);
   // const [isOwner, setIsOwner] = useState<boolean>(false);
   const [tokenPriceForSale, setTokenPriceForSale] = useState<string>('');
 
@@ -91,7 +89,10 @@ function NftDetailsModal({ account }: Props): React.ReactElement<Props> {
   // "metadata": "https://ipfs-gateway.usetech.com/ipns/QmaMtDqE9nhMX9RQLTpaCboqg7bqkb6Gi67iCKMe8NDpCE/metadata/token{id}"
 
   return (
-    <Modal className="nft-details" size='large' open onClose={closeModal}>
+    <Modal className='nft-details'
+      onClose={closeModal}
+      open
+      size='large'>
       <Modal.Header>NFT Token Details</Modal.Header>
       <Modal.Content>
         { collectionInfo && (
@@ -111,34 +112,34 @@ function NftDetailsModal({ account }: Props): React.ReactElement<Props> {
           { !!(!uOwnIt && tokenInfo) && (
             <p><strong>The owner is </strong>{tokenInfo.Owner.toString()}</p>
           )}
-          {/*{ !!(!uOwnIt && tokenContractInfo) &&(
+          {/* { !!(!uOwnIt && tokenContractInfo) &&(
             <Button
               icon='shopping-cart'
               label='Buy it'
               onClick={onBuy}
             />
-          )}*/}
-          {/*{ uOwnIt && (
+          )} */}
+          {/* { uOwnIt && (
             <Button
               icon='dollar-sign'
               label='Sale it'
               onClick={onSale}
             />
-          )}*/}
-          {/*{ (tokenContractInfo && tokenContractInfo.owner === account) && (
+          )} */}
+          {/* { (tokenContractInfo && tokenContractInfo.owner === account) && (
             <Button
               icon='window-close'
               label='Cancel sale'
               onClick={onCancel}
             />
-          )}*/}
-          {/*{ !!(deposited && deposited > 0) && (
+          )} */}
+          {/* { !!(deposited && deposited > 0) && (
             <Button
               icon='history'
               label='Withdraw'
               onClick={onWithdraw}
             />
-          )}*/}
+          )} */}
           <Button
             icon='shopping-cart'
             label='Buy it'
@@ -164,7 +165,9 @@ function NftDetailsModal({ account }: Props): React.ReactElement<Props> {
           <SaleSteps step={transferStep} />
         )}
         { readyToAskPrice && (
-          <Grid className='ask-price-form' verticalAlign='middle' centered>
+          <Grid centered
+            className='ask-price-form'
+            verticalAlign='middle'>
             <Grid.Row>
               <Grid.Column width={4}>
                 <Input
@@ -200,7 +203,7 @@ function NftDetailsModal({ account }: Props): React.ReactElement<Props> {
         />
       </Modal.Actions>
     </Modal>
-  )
+  );
 }
 
 export default React.memo(NftDetailsModal);

@@ -87,14 +87,14 @@ const useMarketplaceStages = (account: string, collectionId: string, tokenId: st
     }, 1000);
     // checkBalance(nft, owner) - is nft on balance/ is balance > fee?
     // deposit nft to contract
-    /*queueTransaction(
+    /* queueTransaction(
       api.tx.nft
         .transfer(marketContractAddress, collectionId, tokenId, 0),
       'TRANSFER_NFT_TO_CONTRACT_FAIL',
       'deposit nft to contract start',
       'TRANSFER_NFT_TO_CONTRACT_SUCCESS',
       'deposit nft to contract update'
-    )*/
+    ) */
   }, [api, queueTransaction]);
 
   const buy = useCallback(async () => {
@@ -104,10 +104,11 @@ const useMarketplaceStages = (account: string, collectionId: string, tokenId: st
     }, 1000);
     // send deposit to contract
     // Check if KSM deposit is needed and deposit
-    /*if (!tokenContractInfo) {
+    /* if (!tokenContractInfo) {
       console.error('tokenContractInfo is undefined');
       return;
     }
+    deposit = await this.contractInstance.call('rpc', 'get_balance', value, maxgas, 2).send(addr);
     if (!deposited) {
       console.error('deposited is undefined');
       return;
@@ -130,13 +131,13 @@ const useMarketplaceStages = (account: string, collectionId: string, tokenId: st
         'SEND_MONEY_SUCCESS',
         'transfer update'
       );
-    }*/
+    } */
     // buyStep3
   }, [account, api, getFee, getUserDeposit, queueTransaction, send, tokenInfo]);
 
   const checkDepositReady = useCallback(() => {
     setTimeout(() => {
-      send('SEND_MONEY_SUCCESS');
+      send('DEPOSIT_SUCCESS');
     }, 1000);
   }, [send]);
 
@@ -276,11 +277,14 @@ const useMarketplaceStages = (account: string, collectionId: string, tokenId: st
 
   const loadCancelSaleStage = useCallback(async (token) => {
     const isContractOwner = token.Owner === marketContractAddress;
+
     if (isContractOwner) {
       const ask = await getTokenAsk(collectionId, tokenId);
-      console.log("ask: ", ask);
+
+      console.log('ask: "', ask);
+
       if (ask) {
-        setTokenContractInfo(ask)
+        setTokenContractInfo(ask);
       }
     }
   }, [setTokenContractInfo, getTokenAsk]);

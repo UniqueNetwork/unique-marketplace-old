@@ -1,24 +1,24 @@
-// Copyright 2020 UseTech authors & contributors
+// Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
+// SPDX-License-Identifier: Apache-2.0
 
-// global app props and types
-import { NftCollectionInterface, useApi, useCollections } from '@polkadot/react-hooks';
+import './styles.scss';
 
 // external imports
-import React, { memo, ReactElement, useCallback, useEffect, useState, useMemo } from 'react';
-import { Route, Switch } from 'react-router-dom';
+import React, { memo, ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { useHistory } from 'react-router';
-import List from 'semantic-ui-react/dist/commonjs/elements/List';
-import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
-import Dropdown from 'semantic-ui-react/dist/commonjs/modules/Dropdown';
-import { AccountSelector, Input } from '@polkadot/react-components';
+import { Route, Switch } from 'react-router-dom';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
+import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
+import List from 'semantic-ui-react/dist/commonjs/elements/List';
+import Dropdown from 'semantic-ui-react/dist/commonjs/modules/Dropdown';
+
+import { AccountSelector, Input } from '@polkadot/react-components';
+import { NftCollectionInterface, useCollections } from '@polkadot/react-hooks';
 
 // local imports and components
 import NftDetailsModal from '../../components/NftDetailsModal';
 import NftTokenCard from '../../components/NftTokenCard';
-
 import { filterOptions } from './filterOptions';
-import './styles.scss';
 
 const BuyTokens = (): ReactElement => {
   const history = useHistory();
@@ -37,17 +37,17 @@ const BuyTokens = (): ReactElement => {
     if (collections && collections.length) {
       setCollectionsAvailable(collections);
     }
-  }, []);
+  }, [presetTokensCollections]);
 
   const selectCollection = useCallback(async (collection: NftCollectionInterface) => {
-    const collectionInfo: NftCollectionInterface = await getDetailedCollectionInfo(collection.id);
+    const collectionInfo: NftCollectionInterface = await getDetailedCollectionInfo(collection.id) as NftCollectionInterface;
 
     setSelectedCollection(collectionInfo);
   }, [getDetailedCollectionInfo, setSelectedCollection]);
 
-  const openDetailedInformationModal = useCallback((collection: NftCollectionInterface, tokenId) => {
-    history.push(`/store/token-details?collectionId=${collection.id}&tokenId=${tokenId}`)
-  }, []);
+  const openDetailedInformationModal = useCallback((collection: NftCollectionInterface, tokenId: string) => {
+    history.push(`/store/token-details?collectionId=${collection.id}&tokenId=${tokenId}`);
+  }, [history]);
 
   const setTokensList = useCallback(async () => {
     if (selectedCollection && account) {
@@ -93,7 +93,9 @@ const BuyTokens = (): ReactElement => {
           <Grid.Column width={6}>
             <Input
               className='explorer--query input-search'
-              help={<span>Find and select your token collection. For example, you can find tokens from <a href='https://ipfs-gateway.usetech.com/ipns/QmaMtDqE9nhMX9RQLTpaCboqg7bqkb6Gi67iCKMe8NDpCE/' target='_blank' rel='noopener noreferrer'>SubstraPunks</a></span>}
+              help={<span>Find and select your token collection. For example, you can find tokens from <a href='https://ipfs-gateway.usetech.com/ipns/QmaMtDqE9nhMX9RQLTpaCboqg7bqkb6Gi67iCKMe8NDpCE/'
+                rel='noopener noreferrer'
+                target='_blank'>SubstraPunks</a></span>}
               isDisabled={!collectionsAvailable.length}
               label={'Find collection'}
               onChange={setCollectionSearchString}
@@ -130,16 +132,16 @@ const BuyTokens = (): ReactElement => {
                     isDisabled={!collectionsAvailable.length}
                     label={'Find token'}
                     onChange={setTokenSearchString}
-                    value={tokenSearchString}
                     placeholder='Search...'
+                    value={tokenSearchString}
                     withLabel
                   />
                 </Grid.Column>
                 <Grid.Column width={4}>
                   <Dropdown
-                    placeholder='Filter'
                     fluid
                     multiple
+                    placeholder='Filter'
                   >
                     <Dropdown.Menu>
                       {filterOptions.map((group) => (
@@ -184,8 +186,7 @@ const BuyTokens = (): ReactElement => {
         </Switch>
       )}
     </div>
-  )
+  );
 };
 
 export default memo(BuyTokens);
-

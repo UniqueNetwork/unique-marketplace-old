@@ -1,23 +1,22 @@
-// Copyright 2020 UseTech authors & contributors
+// Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
+// SPDX-License-Identifier: Apache-2.0
 
-// global app props and types
+import './styles.scss';
 
-// external imports
-import React, { useCallback, useEffect, useState, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid/Grid';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header/Header';
-import { Table, LabelHelp } from '@polkadot/react-components';
-import { NftCollectionInterface } from '@polkadot/react-hooks';
 
-// local imports and components
-import useBalance, { BalanceInterface } from '@polkadot/react-hooks/useBalance';
-import TransferModal from '../../components/TransferModal/';
-import TokenDetailsModal from '../../components/TokenDetailsModal/';
-import NftCollectionCard from '../../components/NftCollectionCard';
-import CollectionSearch from '../../components/CollectionSearch';
+import { LabelHelp, Table } from '@polkadot/react-components';
+import { BalanceInterface, NftCollectionInterface, useBalance } from '@polkadot/react-hooks';
+
 import AccountSelector from '../../components/AccountSelector';
+import CollectionSearch from '../../components/CollectionSearch';
 import FormatBalance from '../../components/FormatBalance';
-import './styles.scss';
+import NftCollectionCard from '../../components/NftCollectionCard';
+import TokenDetailsModal from '../../components/TokenDetailsModal/';
+// local imports and components
+import TransferModal from '../../components/TransferModal/';
 
 interface NftWalletProps {
   className?: string;
