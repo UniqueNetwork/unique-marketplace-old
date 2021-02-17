@@ -6,13 +6,11 @@ import type { TokenAttribute, TokenDetailsInterface } from '@polkadot/react-hook
 import BN from 'bn.js';
 import { useCallback, useEffect, useState } from 'react';
 
-import { MetadataType, NftCollectionInterface, useCollections } from '@polkadot/react-hooks';
-
-import useDecoder from './useDecoder';
+import { MetadataType, NftCollectionInterface, useCollections, useDecoder } from '@polkadot/react-hooks';
 
 export type Attributes = TokenAttribute[];
 
-export default function useSchema (account: string, collectionId: string | number, tokenId: string | number) {
+export function useSchema (account: string, collectionId: string | number, tokenId: string | number) {
   const [collectionInfo, setCollectionInfo] = useState<NftCollectionInterface>();
   const [balance, setBalance] = useState<number>(0);
   const [tokenUrl, setTokenUrl] = useState<string>('');
@@ -173,6 +171,7 @@ export default function useSchema (account: string, collectionId: string | numbe
     attributesVar,
     balance,
     collectionInfo,
+    getCollectionInfo,
     tokenConstData,
     tokenDetails,
     tokenUrl,

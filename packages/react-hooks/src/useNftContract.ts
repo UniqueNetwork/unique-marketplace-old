@@ -12,6 +12,7 @@ import { formatBalance } from '@polkadot/util';
 
 export const marketContractAddress = '5CYN9j3YvRkqxewoxeSvRbhAym4465C57uMmX5j4yz99L5H6';
 export const decimals = 12; // kusamaDecimals
+export const vaultAddress = '5CYN9j3YvRkqxewoxeSvRbhAym4465C57uMmX5j4yz99L5H6';
 
 const value = 0;
 const maxgas = 1000000000000;
@@ -33,6 +34,7 @@ export function useNftContract (account: string) {
   const { api } = useApi();
   const [contractInstance, setContractInstance] = useState<ContractPromise | null>(null);
   const [abi, setAbi] = useState<Abi | null>();
+  const [contractAddress, setContractAddress] = useState<string>('5CYN9j3YvRkqxewoxeSvRbhAym4465C57uMmX5j4yz99L5H6');
 
   // get offers
   // if connection ID not specified, returns 30 last token sale offers
@@ -120,6 +122,10 @@ export function useNftContract (account: string) {
   const isContractReady = useMemo(() => {
     return !!(abi && contractInstance);
   }, [abi, contractInstance]);
+
+  const deployContract = useCallback(() => {
+
+  }, []);
 
   useEffect(() => {
     initAbi();

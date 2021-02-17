@@ -3,12 +3,10 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import Modal from 'semantic-ui-react/dist/commonjs/modules/Modal/Modal';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form/Form';
-import { Button, Input } from '@polkadot/react-components';
-import { TxButton } from '@polkadot/react-components';
-import { NftCollectionInterface } from '@polkadot/react-hooks';
+import { Button, Input, TxButton } from '@polkadot/react-components';
+import { NftCollectionInterface, useBalance } from '@polkadot/react-hooks';
 
-import './transferModal.scss';
-import useBalance from '@polkadot/react-hooks/useBalance';
+import './styles.scss';
 
 interface Props {
   account: string | null;
@@ -20,7 +18,7 @@ interface Props {
   updateTokens: (collectionId: number) => void;
 }
 
-function TransferModal({ account, balance, canTransferTokens, collection, closeModal, tokenId, updateTokens }: Props): React.ReactElement<Props> {
+function TransferModal ({ account, balance, canTransferTokens, collection, closeModal, tokenId, updateTokens }: Props): React.ReactElement<Props> {
   const [recipient, setRecipient] = useState<string | null>(null);
   const [tokenPart, setTokenPart] = useState<number>(0);
   const [isAddressError, setIsAddressError] = useState<boolean>(false);
@@ -40,16 +38,19 @@ function TransferModal({ account, balance, canTransferTokens, collection, closeM
 
   const setTokenPartToTransfer = useCallback((value) => {
     const numberValue = parseFloat(value);
+
     if (!numberValue) {
       console.log('token part error');
     }
+
     if (numberValue > balance || numberValue > 1 || numberValue < (1 / Math.pow(10, collection.decimalPoints))) {
       setIsError(true);
     } else {
       setIsError(false);
     }
+
     setTokenPart(parseFloat(value));
-  }, []);
+  }, [balance, collection.decimalPoints]);
 
   useEffect(() => {
     const { balanceError } = balanceInfo;
@@ -77,9 +78,9 @@ function TransferModal({ account, balance, canTransferTokens, collection, closeM
             <Form.Field>
               <Input
                 className='label-small'
-                min={1 / (collection.decimalPoints * 10)}
                 isError={isError}
                 label={`Please enter part of token you want to transfer, your token balance is: ${balance}`}
+                min={1 / (collection.decimalPoints * 10)}
                 onChange={setTokenPartToTransfer}
                 placeholder='Part of re-fungible address'
                 type='number'
@@ -102,7 +103,7 @@ function TransferModal({ account, balance, canTransferTokens, collection, closeM
           onStart={closeModal}
           onSuccess={updateTokens.bind(null, collection.id)}
           params={[recipient, collection.id, tokenId, (tokenPart * Math.pow(10, collection.decimalPoints))]}
-          tx='nft.transfer'
+          tx={api.tx.nft.transfer}
         />
       </Modal.Actions>
     </Modal>

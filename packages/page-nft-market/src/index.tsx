@@ -1,7 +1,7 @@
-// Copyright 2020 UseTech authors & contributors
+// Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
+// SPDX-License-Identifier: Apache-2.0
 
-// global app props and types
-import { AppProps as Props } from '@polkadot/react-components/types';
+import './styles.scss';
 
 // external imports
 import React, { useMemo } from 'react';
@@ -9,8 +9,9 @@ import { Route, Switch } from 'react-router';
 
 // local imports and components
 import Tabs from '@polkadot/react-components/Tabs';
+import { AppProps as Props } from '@polkadot/react-components/types';
+
 import NftMarket from './containers/NftMarket';
-import './styles.scss';
 
 function App ({ basePath }: Props): React.ReactElement<Props> {
 

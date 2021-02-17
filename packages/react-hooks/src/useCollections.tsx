@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import BN from 'bn.js';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 
-import { useApi } from '@polkadot/react-hooks';
+import { useApi, useFetch, ErrorType } from '@polkadot/react-hooks';
 
 export type MetadataType = {
   metadata: string;
@@ -53,8 +53,26 @@ export interface TokenDetailsInterface {
   VariableData?: number[];
 }
 
+export type OfferType = {
+  collectionId: string;
+  price: BN;
+  seller: string;
+  tokenId: string;
+  metadata: any;
+}
+
+export type TradeType = {
+  buyer: string;
+  offer: OfferType;
+  tradeDate: string;
+}
+
 export function useCollections () {
   const { api } = useApi();
+  const { fetchData } = useFetch();
+  const [error, setError] = useState<ErrorType>();
+  const [offers, setOffers] = useState<OfferType[]>();
+  const [trades, setTrades] = useState<TradeType[]>();
 
   const getTokensOfCollection = useCallback(async (collectionId: number, ownerId: string) => {
     if (!api) {
@@ -112,6 +130,32 @@ export function useCollections () {
     }
   }, [api]);
 
+  /**
+   * Return the list of token sale offers
+   */
+  const getOffers = useCallback(() => {
+    fetchData<OfferType[]>('/api/offers/').subscribe((result: OfferType[] | ErrorType) => {
+      if ('error' in result) {
+        setError(result);
+      } else {
+        setOffers(result);
+      }
+    });
+  }, [fetchData]);
+
+  /**
+   * Return the list of token trades
+   */
+  const getTrades = useCallback(() => {
+    fetchData<TradeType[]>('/api/trades/').subscribe((result: TradeType[] | ErrorType) => {
+      if ('error' in result) {
+        setError(result);
+      } else {
+        setTrades(result);
+      }
+    });
+  }, [fetchData]);
+
   const presetTokensCollections = useCallback(async () => {
     if (!api) {
       return [];
@@ -138,10 +182,15 @@ export function useCollections () {
   }, [api, getDetailedCollectionInfo]);
 
   return {
+    error,
     getDetailedCollectionInfo,
     getDetailedReFungibleTokenInfo,
     getDetailedTokenInfo,
+    getOffers,
     getTokensOfCollection,
-    presetTokensCollections
+    getTrades,
+    offers,
+    presetTokensCollections,
+    trades
   };
 }

@@ -1,6 +1,8 @@
 // Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import type { SubmittableExtrinsic } from '@polkadot/api/promise/types';
+
 import { useMachine } from '@xstate/react';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
@@ -10,9 +12,9 @@ import { decimals, marketContractAddress, useApi, useBalance, useCollections, us
 
 import marketplaceStateMachine from './stateMachine';
 
-type UserActionType = 'BUY' | 'CANCEL' | 'SALE' | 'REVERT_UNUSED_MONEY';
+type UserActionType = 'BUY' | 'CANCEL' | 'SALE' | 'REVERT_UNUSED_MONEY' | 'UPDATE_TOKEN_STATE';
 
-interface MarketplaceStagesInterface {
+export interface MarketplaceStagesInterface {
   cancelSale: () => void;
   deposited: number | undefined;
   error: string | null;
@@ -40,7 +42,7 @@ interface MarketplaceStagesInterface {
 
 // type saleStage = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | '10';
 
-const useMarketplaceStages = (account: string, collectionId: string, tokenId: string): MarketplaceStagesInterface => {
+export const useMarketplaceStages = (account: string, collectionId: string, tokenId: string): MarketplaceStagesInterface => {
   const { api } = useApi();
   const [state, send] = useMachine(marketplaceStateMachine);
   const [tokenInfo, setTokenInfo] = useState<any | null | undefined>();
@@ -62,13 +64,19 @@ const useMarketplaceStages = (account: string, collectionId: string, tokenId: st
     setDeposited(parseFloat(await getUserDeposit() || ''));
   }, [getUserDeposit, setDeposited]);
 
-  const getFee = useCallback((price) => {
-    if (price <= 0.001) return 0;
-    // if (fee < 0.01) fee = 0.01;
+  const getFee = useCallback((price: number): number => {
+    if (price <= 0.001) {
+      return 0;
+    }
+
+    if (price < 0.01) {
+      return price + 0.01;
+    }
+
     return price * 0.02;
   }, []);
 
-  const queueTransaction = useCallback((transaction, fail: string, start: string, success: string, update: string) => {
+  const queueTransaction = useCallback((transaction: SubmittableExtrinsic, fail: string, start: string, success: string, update: string) => {
     queueExtrinsic({
       accountId: account && account.toString(),
       extrinsic: transaction,
@@ -78,37 +86,35 @@ const useMarketplaceStages = (account: string, collectionId: string, tokenId: st
       txSuccessCb: () => send(success),
       txUpdateCb: () => send(update)
     });
-  }, [account, queueExtrinsic]);
+  }, [account, queueExtrinsic, send]);
 
-  /**********user actions*************/
+  /** user actions **/
   const sale = useCallback(() => {
-    setTimeout(() => {
-      send('TRANSFER_NFT_TO_CONTRACT_SUCCESS');
-    }, 1000);
     // checkBalance(nft, owner) - is nft on balance/ is balance > fee?
     // deposit nft to contract
-    /* queueTransaction(
+    queueTransaction(
       api.tx.nft
         .transfer(marketContractAddress, collectionId, tokenId, 0),
       'TRANSFER_NFT_TO_CONTRACT_FAIL',
       'deposit nft to contract start',
       'TRANSFER_NFT_TO_CONTRACT_SUCCESS',
       'deposit nft to contract update'
-    ) */
-  }, [api, queueTransaction]);
+    );
+  }, [api.tx.nft, collectionId, queueTransaction, tokenId]);
 
   const buy = useCallback(async () => {
     console.log('buy');
-    setTimeout(() => {
-      send('SEND_MONEY_SUCCESS');
-    }, 1000);
+
     // send deposit to contract
     // Check if KSM deposit is needed and deposit
-    /* if (!tokenContractInfo) {
+    if (!tokenContractInfo) {
       console.error('tokenContractInfo is undefined');
+
       return;
     }
-    deposit = await this.contractInstance.call('rpc', 'get_balance', value, maxgas, 2).send(addr);
+
+    const deposited = await this.contractInstance.call('rpc', 'get_balance', value, maxgas, 2).send(addr);
+
     if (!deposited) {
       console.error('deposited is undefined');
       return;
@@ -116,22 +122,26 @@ const useMarketplaceStages = (account: string, collectionId: string, tokenId: st
     const price = parseFloat(tokenContractInfo.price);
     const feeFull = getFee(price);
     const feePaid = getFee(deposited);
+
     if (deposited < price) {
       const fee = feeFull - feePaid;
       const needed = price + fee - deposited;
-      if (balance < needed) {
-        setError(`Your KSM balance is too low: ${balance}. You need at least: ${needed} KSM`);
+
+      if (balance?.free.ltn(needed)) {
+        setError(`Your KSM balance is too low: ${balance?.free.toNumber()}. You need at least: ${needed} KSM`);
+
         return;
       }
+
       queueTransaction(
         api.tx.balances
-          .transfer(config.vaultAddress, needed),
+          .transfer(vaultAddress, needed),
         'SEND_MONEY_FAIL',
         'transfer start',
         'SEND_MONEY_SUCCESS',
         'transfer update'
       );
-    } */
+    }
     // buyStep3
   }, [account, api, getFee, getUserDeposit, queueTransaction, send, tokenInfo]);
 
@@ -363,8 +373,6 @@ const useMarketplaceStages = (account: string, collectionId: string, tokenId: st
     transferStep,
     readyToAskPrice,
     setTokenPriceForSale,
-    submitTokenPrice,
-  }
+    submitTokenPrice
+  };
 };
-
-export default useMarketplaceStages;

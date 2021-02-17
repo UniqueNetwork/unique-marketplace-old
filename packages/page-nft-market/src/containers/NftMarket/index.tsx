@@ -12,11 +12,10 @@ import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import List from 'semantic-ui-react/dist/commonjs/elements/List';
 import Dropdown from 'semantic-ui-react/dist/commonjs/modules/Dropdown';
 
-import { AccountSelector, Input } from '@polkadot/react-components';
+import { AccountSelector, Input, NftDetailsModal } from '@polkadot/react-components';
 import { NftCollectionInterface, useCollections } from '@polkadot/react-hooks';
 
 // local imports and components
-import NftDetailsModal from '../../components/NftDetailsModal';
 import NftTokenCard from '../../components/NftTokenCard';
 import { filterOptions } from './filterOptions';
 
@@ -27,7 +26,6 @@ const BuyTokens = (): ReactElement => {
   const [collectionsAvailable, setCollectionsAvailable] = useState<Array<NftCollectionInterface>>([]);
   const [collectionSearchString, setCollectionSearchString] = useState<string>('');
   const [tokenSearchString, setTokenSearchString] = useState<string>('');
-  // const [selectedCollection, setSelectedCollection] = useState<NftCollectionBigInterface>();
   const [selectedCollection, setSelectedCollection] = useState<NftCollectionInterface | null>(null);
   const [tokensListForTrade, setTokensListForTrade] = useState<Array<string>>([]);
 

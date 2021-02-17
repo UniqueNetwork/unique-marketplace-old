@@ -10,7 +10,7 @@ import Item from 'semantic-ui-react/dist/commonjs/views/Item';
 
 import { NftCollectionInterface } from '@polkadot/react-hooks';
 
-import useSchema from '../../hooks/useSchema';
+import useSchema from '@polkadot/react-hooks/useSchema';
 
 interface Props {
   account: string;
@@ -22,7 +22,7 @@ interface Props {
   token: string;
 }
 
-function NftTokenCard ({ account, collection, openDetailedInformationModal, token }: Props): React.ReactElement<Props> {
+function NftTokenCard ({ account, canTransferTokens, collection, openDetailedInformationModal, openTransferModal, token }: Props): React.ReactElement<Props> {
   const { attributes, balance, tokenUrl } = useSchema(account, collection.id, token);
 
   if (!balance && collection && collection.Mode.isReFungible) {
@@ -56,6 +56,15 @@ function NftTokenCard ({ account, collection, openDetailedInformationModal, toke
           Attributes: {Object.keys(attributes).map((attrKey) => (<span key={attrKey}>{attrKey}: {attributes[attrKey]}</span>))}
         </td>
       )}
+      <td className='token-actions'>
+        <Button
+          disabled={!canTransferTokens}
+          onClick={openTransferModal.bind(null, collection, token, balance)}
+          primary
+        >
+          Transfer token
+        </Button>
+      </td>
     </tr>
   );
 }
