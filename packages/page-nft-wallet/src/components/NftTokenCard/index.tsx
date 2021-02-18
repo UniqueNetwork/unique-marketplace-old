@@ -3,27 +3,29 @@
 
 import './NftTokenCard.scss';
 
-import BN from 'bn.js';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback } from 'react';
+import { useHistory } from 'react-router';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 import Item from 'semantic-ui-react/dist/commonjs/views/Item';
 
-import { NftCollectionInterface } from '@polkadot/react-hooks';
-
-import useSchema from '@polkadot/react-hooks/useSchema';
+import { NftCollectionInterface, useSchema } from '@polkadot/react-hooks';
 
 interface Props {
   account: string;
   canTransferTokens: boolean;
   collection: NftCollectionInterface;
   openTransferModal: (collection: NftCollectionInterface, tokenId: string, balance: number) => void;
-  openDetailedInformationModal: (collection: NftCollectionInterface, tokenId: string) => void;
   shouldUpdateTokens: number | null;
   token: string;
 }
 
-function NftTokenCard ({ account, canTransferTokens, collection, openDetailedInformationModal, openTransferModal, token }: Props): React.ReactElement<Props> {
+function NftTokenCard ({ account, canTransferTokens, collection, openTransferModal, token }: Props): React.ReactElement<Props> {
   const { attributes, balance, tokenUrl } = useSchema(account, collection.id, token);
+  const history = useHistory();
+
+  const openDetailedInformationModal = useCallback((collectionId: string | number, tokenId: string) => {
+    history.push(`/wallet/token-details?collectionId=${collectionId}&tokenId=${tokenId}`);
+  }, [history]);
 
   if (!balance && collection && collection.Mode.isReFungible) {
     return <></>;
@@ -35,7 +37,7 @@ function NftTokenCard ({ account, canTransferTokens, collection, openDetailedInf
       key={token}
     >
       <td className='token-image'>
-        <a onClick={openDetailedInformationModal.bind(null, collection, token)}>
+        <a onClick={openDetailedInformationModal.bind(null, collection.id, token)}>
           <Item.Image
             size='mini'
             src={tokenUrl}

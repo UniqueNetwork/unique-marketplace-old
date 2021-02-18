@@ -47,7 +47,7 @@ function NftWallet ({ className }: NftWalletProps): React.ReactElement<NftWallet
     setCollections(collections.filter((item: NftCollectionInterface) => item.id !== collectionToRemove));
   }, [collections, selectedCollection]);
 
-  const openTransferModal = useCallback((collection, tokenId, balance) => {
+  const openTransferModal = useCallback((collection: NftCollectionInterface, tokenId: string, balance: number) => {
     setOpenTransfer({ balance, collection, tokenId });
   }, []);
 
@@ -76,7 +76,10 @@ function NftWallet ({ className }: NftWalletProps): React.ReactElement<NftWallet
             { balance && (
               <div className='balance-block'>
                 <label>Your account balance is:</label>
-                <FormatBalance value={balance.free} className='balance' />
+                <FormatBalance
+                  className='balance'
+                  value={balance.free}
+                />
               </div>
             )}
           </Grid.Column>

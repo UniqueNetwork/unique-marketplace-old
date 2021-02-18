@@ -1,11 +1,15 @@
-// Copyright 2020 UseTech authors & contributors
+// Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
+// SPDX-License-Identifier: Apache-2.0
+
+import './NftCollectionCard.scss';
+
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
-import { Expander } from '@polkadot/react-components';
 
-import { useCollections, NftCollectionInterface } from '@polkadot/react-hooks';
+import { Expander } from '@polkadot/react-components';
+import { NftCollectionInterface, useCollections } from '@polkadot/react-hooks';
+
 import NftTokenCard from '../NftTokenCard';
-import './NftCollectionCard.scss';
 
 interface Props {
   account: string | null;
@@ -13,12 +17,11 @@ interface Props {
   collection: NftCollectionInterface;
   removeCollection: (collection: number) => void;
   openTransferModal: (collection: NftCollectionInterface, tokenId: string, balance: number) => void;
-  openDetailedInformationModal: (collection: NftCollectionInterface, tokenId: string) => void;
   setShouldUpdateTokens: (collectionId: number | null) => void;
   shouldUpdateTokens: number | null;
 }
 
-function NftCollectionCard ({ account, canTransferTokens, collection, openDetailedInformationModal, openTransferModal, removeCollection, setShouldUpdateTokens, shouldUpdateTokens }: Props): React.ReactElement<Props> {
+function NftCollectionCard ({ account, canTransferTokens, collection, openTransferModal, removeCollection, setShouldUpdateTokens, shouldUpdateTokens }: Props): React.ReactElement<Props> {
   const [opened, setOpened] = useState(false);
   const [tokensOfCollection, setTokensOfCollection] = useState<Array<string>>([]);
   const { getTokensOfCollection } = useCollections();
@@ -33,9 +36,7 @@ function NftCollectionCard ({ account, canTransferTokens, collection, openDetail
       return;
     }
 
-    const tokensOfCollection = (await getTokensOfCollection(collection.id, account)) as any;
-
-    console.log('tokensOfCollection', tokensOfCollection);
+    const tokensOfCollection = (await getTokensOfCollection(collection.id, account)) as string[];
 
     setTokensOfCollection(tokensOfCollection);
   }, [account, collection, getTokensOfCollection]);
@@ -88,7 +89,6 @@ function NftCollectionCard ({ account, canTransferTokens, collection, openDetail
               canTransferTokens={canTransferTokens}
               collection={collection}
               key={token}
-              openDetailedInformationModal={openDetailedInformationModal}
               openTransferModal={openTransferModal}
               shouldUpdateTokens={shouldUpdateTokens}
               token={token}
