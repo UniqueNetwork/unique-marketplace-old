@@ -11,7 +11,7 @@ import { Button, Dropdown, InputAddress, InputBalance, InputFile, MarkError, Mod
 import { useAccountId, useApi, useNonEmptyString, useNonZeroBn, useStepper } from '@polkadot/react-hooks';
 import { Available } from '@polkadot/react-query';
 import { keyring } from '@polkadot/ui-keyring';
-import { isNull, isWasm } from '@polkadot/util';
+import { isFunction, isNull, isWasm } from '@polkadot/util';
 
 import { ENDOWMENT } from '../constants';
 import { ABI, InputMegaGas, InputName, MessageSignature, Params } from '../shared';
@@ -161,6 +161,9 @@ function Upload ({ onClose }: Props): React.ReactElement {
               onRemove={onRemoveAbi}
               withWasm
             />
+            {!hasBatchDeploy && (
+              <MarkError content={t<string>('Your environment does not support the latest instantiateWithCode contracts call, nor does it have utility.batch functionality available. This operation is not available.')} />
+            )}
             {!invalidAbi && contractAbi && (
               <>
                 {!contractAbi.project.source.wasm.length && (
@@ -218,7 +221,7 @@ function Upload ({ onClose }: Props): React.ReactElement {
           ? (
             <Button
               icon='step-forward'
-              isDisabled={!code || !contractAbi}
+              isDisabled={!code || !contractAbi || !hasBatchDeploy}
               label={t<string>('Next')}
               onClick={nextStep}
             />

@@ -13,7 +13,7 @@ import List from 'semantic-ui-react/dist/commonjs/elements/List';
 import Dropdown from 'semantic-ui-react/dist/commonjs/modules/Dropdown';
 
 import { AccountSelector, Input, NftDetailsModal } from '@polkadot/react-components';
-import { NftCollectionInterface, useCollections } from '@polkadot/react-hooks';
+import { NftCollectionInterface, useCollections, useDecoder } from '@polkadot/react-hooks';
 
 // local imports and components
 import NftTokenCard from '../../components/NftTokenCard';
@@ -28,6 +28,7 @@ const BuyTokens = (): ReactElement => {
   const [tokenSearchString, setTokenSearchString] = useState<string>('');
   const [selectedCollection, setSelectedCollection] = useState<NftCollectionInterface | null>(null);
   const [tokensListForTrade, setTokensListForTrade] = useState<Array<string>>([]);
+  const { collectionName16Decoder } = useDecoder();
 
   const getCollections = useCallback(async () => {
     const collections = await presetTokensCollections();
@@ -57,7 +58,9 @@ const BuyTokens = (): ReactElement => {
   }, [account, selectedCollection, getTokensOfCollection]);
 
   const collectionsFiltered = useMemo(() => {
-    return collectionsAvailable.filter((item: NftCollectionInterface) => item.Name.toLowerCase().indexOf(collectionSearchString) !== -1);
+    console.log('collectionsAvailable!!', collectionsAvailable);
+
+    return collectionsAvailable.filter((item: NftCollectionInterface) => collectionName16Decoder(item.Name).toLowerCase().indexOf(collectionSearchString) !== -1);
   }, [collectionsAvailable, collectionSearchString]);
 
   const tokensFiltered = useMemo(() => {
@@ -77,6 +80,8 @@ const BuyTokens = (): ReactElement => {
       void selectCollection(collectionsAvailable[0]);
     }
   }, [collectionsAvailable, selectCollection, selectedCollection]);
+
+  console.log('collectionsAvailable', collectionsAvailable);
 
   return (
     <div className='nft-market'>
@@ -112,8 +117,8 @@ const BuyTokens = (): ReactElement => {
                     onClick={selectCollection.bind(null, collection)}
                   >
                     <List.Content>
-                      <List.Header as='a'>{collection.Name}</List.Header>
-                      <List.Description as='a'>{collection.Description}</List.Description>
+                      <List.Header as='a'>{collectionName16Decoder(collection.Name)}</List.Header>
+                      <List.Description as='a'>{collectionName16Decoder(collection.Description)}</List.Description>
                     </List.Content>
                   </List.Item>
                 ))}

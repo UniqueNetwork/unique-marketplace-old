@@ -19,7 +19,7 @@ interface Props {
   shouldUpdateTokens: number | null;
 }
 
-function Index({ account, canTransferTokens, collection, openTransferModal, openDetailedInformationModal, shouldUpdateTokens }: Props): React.ReactElement<Props> {
+function NftCollectionCardForSale ({ account, canTransferTokens, collection, openTransferModal, openDetailedInformationModal, shouldUpdateTokens }: Props): React.ReactElement<Props> {
   const [opened, setOpened] = useState(true);
   // @ts-ignore
   const [tokensOfCollection, setTokensOfCollection] = useState<Array<string>>([]);
@@ -122,5 +122,5 @@ function Index({ account, canTransferTokens, collection, openTransferModal, open
   )
 }
 
-export default React.memo(Index);
+export default React.memo(NftCollectionCardForSale);
 

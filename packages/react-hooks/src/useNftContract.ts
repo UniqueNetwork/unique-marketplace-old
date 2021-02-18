@@ -5,6 +5,7 @@ import BN from 'bn.js';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { Abi, ContractPromise } from '@polkadot/api-contract';
+import { DEFAULT_DECIMALS } from '@polkadot/react-api';
 import { getContractAbi } from '@polkadot/react-components/util';
 import { useApi } from '@polkadot/react-hooks';
 import keyring from '@polkadot/ui-keyring';
@@ -38,7 +39,7 @@ export function useNftContract (account: string): useNftContractInterface {
   const [contractInstance, setContractInstance] = useState<ContractPromise | null>(null);
   const [abi, setAbi] = useState<Abi>();
   const [deposited, setDeposited] = useState<BN>();
-  const [contractAddress, setContractAddress] = useState<string>('5CYN9j3YvRkqxewoxeSvRbhAym4465C57uMmX5j4yz99L5H6');
+  const [contractAddress] = useState<string>('5DgdtKSx5okmPb42hgfNbkEdu3zhZ8k8nSWzbCtKKK9iKduJ');
 
   // get offers
   // if connection ID not specified, returns 30 last token sale offers
@@ -82,6 +83,7 @@ export function useNftContract (account: string): useNftContractInterface {
   }, [contractInstance, maxGas, value]);
 
   const initAbi = useCallback(() => {
+    console.log('contractAddress', contractAddress);
     const jsonAbi = getContractAbi(contractAddress) as Abi;
     const newContractInstance = new ContractPromise(api, jsonAbi, contractAddress);
 
@@ -94,6 +96,8 @@ export function useNftContract (account: string): useNftContractInterface {
   const getTokenAsk = useCallback(async (collectionId: string, tokenId: string) => {
     if (contractInstance) {
       const askIdResult = await contractInstance.read('get_ask_id_by_token', value, maxGas, collectionId, tokenId).send(contractAddress) as unknown as { output: BN };
+
+      console.log('askIdResult', askIdResult);
 
       if (askIdResult.output) {
         const askId = askIdResult.output.toNumber();
@@ -121,10 +125,11 @@ export function useNftContract (account: string): useNftContractInterface {
     return !!(abi && contractInstance);
   }, [abi, contractInstance]);
 
-  const fetchSystemProperties = useCallback(() => {
-    const properties = api.rpc.system.properties();
+  const fetchSystemProperties = useCallback(async () => {
+    const properties = await api.rpc.system.properties();
+    const tokenDecimals = properties.tokenDecimals.unwrapOr([DEFAULT_DECIMALS]);
 
-    console.log('properties', properties);
+    setDecimals(tokenDecimals[0].toNumber());
   }, [api]);
 
   useEffect(() => {
@@ -136,7 +141,7 @@ export function useNftContract (account: string): useNftContractInterface {
   }, [getUserDeposit]);
 
   useEffect(() => {
-    fetchSystemProperties();
+    void fetchSystemProperties();
   }, [fetchSystemProperties]);
 
   return {
