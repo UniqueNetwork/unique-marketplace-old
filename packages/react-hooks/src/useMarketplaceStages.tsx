@@ -4,11 +4,11 @@
 import type { SubmittableExtrinsic } from '@polkadot/api/promise/types';
 
 import { useMachine } from '@xstate/react';
+import BN from 'bn.js';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 import { StatusContext } from '@polkadot/react-components/Status';
-// import BN from 'bn.js';
-import { decimals, marketContractAddress, useApi, useBalance, useCollections, useNftContract } from '@polkadot/react-hooks';
+import { useApi, useBalance, useCollections, useNftContract } from '@polkadot/react-hooks';
 
 import marketplaceStateMachine from './stateMachine';
 
@@ -47,22 +47,17 @@ export const useMarketplaceStages = (account: string, collectionId: string, toke
   const [state, send] = useMachine(marketplaceStateMachine);
   const [tokenInfo, setTokenInfo] = useState<any | null | undefined>();
   const { getDetailedTokenInfo, getDetailedRefungibleTokenInfo } = useCollections();
-  const { abi, getDepositor, getUserDeposit, getTokenAsk, isContractReady } = useNftContract(account);
+  const { abi, contractInstance, decimals, deposited, getDepositor, getTokenAsk, isContractReady, marketContractAddress, maxGas, value, vaultAddress } = useNftContract(account);
   const { balance } = useBalance(account);
   const [error, setError] = useState<string | null>(null);
   const { queueExtrinsic } = useContext(StatusContext);
   const [readyToAskPrice, setReadyToAskPrice] = useState<boolean>(false);
-  const [deposited, setDeposited] = useState<number>();
   const [tokenPriceForSale, setTokenPriceForSale] = useState<number>();
   const [tokenContractInfo, setTokenContractInfo] = useState<{ owner: string, price: string }>();
 
   const sendCurrentUserAction = useCallback((userAction: UserActionType) => {
     send(userAction);
   }, [send]);
-
-  const getDeposited = useCallback(async () => {
-    setDeposited(parseFloat(await getUserDeposit() || ''));
-  }, [getUserDeposit, setDeposited]);
 
   const getFee = useCallback((price: number): number => {
     if (price <= 0.001) {
@@ -102,7 +97,7 @@ export const useMarketplaceStages = (account: string, collectionId: string, toke
     );
   }, [api.tx.nft, collectionId, queueTransaction, tokenId]);
 
-  const buy = useCallback(async () => {
+  const buy = useCallback(() => {
     console.log('buy');
 
     // send deposit to contract
@@ -113,19 +108,20 @@ export const useMarketplaceStages = (account: string, collectionId: string, toke
       return;
     }
 
-    const deposited = await this.contractInstance.call('rpc', 'get_balance', value, maxgas, 2).send(addr);
-
     if (!deposited) {
       console.error('deposited is undefined');
+
       return;
     }
-    const price = parseFloat(tokenContractInfo.price);
-    const feeFull = getFee(price);
-    const feePaid = getFee(deposited);
 
-    if (deposited < price) {
+    const price = parseFloat(tokenContractInfo.price);
+    const depositedNumber = deposited.toNumber();
+    const feeFull = getFee(price);
+    const feePaid = getFee(depositedNumber);
+
+    if (depositedNumber < price) {
       const fee = feeFull - feePaid;
-      const needed = price + fee - deposited;
+      const needed = price + fee - depositedNumber;
 
       if (balance?.free.ltn(needed)) {
         setError(`Your KSM balance is too low: ${balance?.free.toNumber()}. You need at least: ${needed} KSM`);
@@ -143,7 +139,7 @@ export const useMarketplaceStages = (account: string, collectionId: string, toke
       );
     }
     // buyStep3
-  }, [account, api, getFee, getUserDeposit, queueTransaction, send, tokenInfo]);
+  }, [api.tx.balances, balance?.free, deposited, getFee, queueTransaction, tokenContractInfo]);
 
   const checkDepositReady = useCallback(() => {
     setTimeout(() => {
@@ -157,58 +153,55 @@ export const useMarketplaceStages = (account: string, collectionId: string, toke
       send('DEPOSIT_SUCCESS');
     }, 1000);
     // tokenId, newOwner (account)
-    /*if (abi) {
+
+    if (abi) {
       queueTransaction(
         api.tx.contracts
-          .call(config.marketContractAddress, config.value, config.maxgas, abi.messages.buy(collectionId, tokenId)),
+          .call(marketContractAddress, value, maxGas, contractInstance?.abi.messages.buy(collectionId, tokenId)),
         'SEND_TOKEN_FAIL',
         'send token to account start',
         'SEND_TOKEN_SUCCESS',
         'send token to account update'
       );
-    }*/
+    }
   }, [account, abi, api, queueTransaction]);
 
   const revertMoney = useCallback(async () => {
     setTimeout(() => {
       send('TRANSFER_NFT_TO_CONTRACT_SUCCESS');
     }, 1000);
-    /*
-    При исполнении сделки, нужно посылать только сумму, указанную в withdraw.
+    /* При исполнении сделки, нужно посылать только сумму, указанную в withdraw.
     При снятии неиспользованных средств нужно также возмещать комиссию marketplace за вычетом комиссии сети Kusama (0.0027 KSM).
+     */
 
-    const deposited = parseFloat(await getUserDeposit() || '');
     const expectedCommission = new BN(10).pow(decimals);
     const balance = new BN(deposited);
     const balanceToSend = balance.iadd(expectedCommission).integerValue(BN.ROUND_DOWN);
-     */
-    /* queueExtrinsic({
+
+    queueExtrinsic({
       accountId: account && account.toString(),
       extrinsic: api.tx.contracts
-        .call(config.marketContractAddress, config.value, config.maxgas, abi.messages.withdraw(2, deposited)),
+        .call(marketContractAddress, value, maxgas, abi.messages.withdraw(2, deposited)),
       isUnsigned: false,
       txFailedCb: () => send('TRANSFER_NFT_TO_CONTRACT_FAIL'),
       txStartCb: () => console.log('deposit nft to contract start'),
       txSuccessCb: () => send('TRANSFER_NFT_TO_CONTRACT_SUCCESS'),
       txUpdateCb: () => console.log('deposit nft to contract update')
-    }); */
-  }, [account, abi, api]);
+    });
+  }, [deposited, queueExtrinsic, account, api.tx.contracts, value, abi.messages, send]);
 
   const registerDeposit = useCallback(async () => {
-    setTimeout(() => {
-      send('REGISTER_DEPOSIT_SUCCESS');
-    }, 1000);
-    /*const address = await getDepositor(collectionId, tokenId, account);
+    const address = await getDepositor(collectionId, tokenId, account);
+
     console.log('address', address);
+
     if (address === account) {
       // depositor is me
       send('NFT_DEPOSIT_READY');
     } else {
-      setTimeout(() => {
-        send('NFT_DEPOSIT_FAIL');
-      }, 6000)
-    }*/
-  }, [account, collectionId, getDepositor, tokenId]);
+      send('NFT_DEPOSIT_FAIL');
+    }
+  }, [account, collectionId, getDepositor, send, tokenId]);
 
   const getDepositReady = useCallback(async () => {
     setTimeout(() => {
@@ -217,11 +210,11 @@ export const useMarketplaceStages = (account: string, collectionId: string, toke
   }, [send]);
 
   const submitTokenPrice = useCallback(() => {
-   /* if (tokenPriceForSale && ((tokenPriceForSale < 0.01) || (tokenPriceForSale > 10000)))`
+    /* if (tokenPriceForSale && ((tokenPriceForSale < 0.01) || (tokenPriceForSale > 10000)))`
       Sorry, price should be in the range between 0.01 and 10000 KSM. You have input: ${price}
-    `;*/
+    `; */
     send('ASK_PRICE_SUCCESS');
-  }, []);
+  }, [send]);
 
   const askPrice = useCallback(() => {
     setReadyToAskPrice(true);
@@ -354,6 +347,7 @@ export const useMarketplaceStages = (account: string, collectionId: string, toke
 
   useEffect(() => {
     console.log('isContractReady', isContractReady);
+
     if (isContractReady) {
       send('UPDATE_TOKEN_STATE');
     }

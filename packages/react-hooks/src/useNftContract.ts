@@ -8,61 +8,59 @@ import { Abi, ContractPromise } from '@polkadot/api-contract';
 import { getContractAbi } from '@polkadot/react-components/util';
 import { useApi } from '@polkadot/react-hooks';
 import keyring from '@polkadot/ui-keyring';
-import { formatBalance } from '@polkadot/util';
-
-export const marketContractAddress = '5CYN9j3YvRkqxewoxeSvRbhAym4465C57uMmX5j4yz99L5H6';
-export const decimals = 12; // kusamaDecimals
-export const vaultAddress = '5CYN9j3YvRkqxewoxeSvRbhAym4465C57uMmX5j4yz99L5H6';
-
-const value = 0;
-const maxgas = 1000000000000;
 
 export interface AskOutputInterface {
   output: [string, string, string, BN, string]
 }
 
-export interface NftTokenInterface {
-  collectionId: string;
-  data: any;
-  price: string;
-  sellerAddress: string;
-  tokenId: string;
+export interface useNftContractInterface {
+  abi: Abi | undefined;
+  contractAddress: string;
+  contractInstance: ContractPromise | null;
+  decimals: number;
+  deposited: BN | undefined;
+  getDepositor: (collectionId: string, tokenId: string, readerAddress: string) => Promise<string | null>;
+  getTokenAsk: (collectionId: string, tokenId: string) => Promise<{ owner: string, price: BN } | null>;
+  getUserDeposit: () => void;
+  isContractReady: boolean;
+  maxGas: number;
+  value: number;
+  vaultAddress: string;
 }
 
 // https://docs.google.com/document/d/1WED9VP8Yj52Un4qmkGDpzjesQTzwwoDgYMk1Ty8yftQ/edit
-export function useNftContract (account: string) {
+export function useNftContract (account: string): useNftContractInterface {
   const { api } = useApi();
+  const [value] = useState(0);
+  const [maxGas] = useState(200000000000);
+  const [decimals, setDecimals] = useState(15);
+  const [vaultAddress] = useState('5CYN9j3YvRkqxewoxeSvRbhAym4465C57uMmX5j4yz99L5H6');
   const [contractInstance, setContractInstance] = useState<ContractPromise | null>(null);
-  const [abi, setAbi] = useState<Abi | null>();
+  const [abi, setAbi] = useState<Abi>();
+  const [deposited, setDeposited] = useState<BN>();
   const [contractAddress, setContractAddress] = useState<string>('5CYN9j3YvRkqxewoxeSvRbhAym4465C57uMmX5j4yz99L5H6');
 
   // get offers
   // if connection ID not specified, returns 30 last token sale offers
-  const getUserDeposit = useCallback(async (): Promise<string | null> => {
-    console.log('contractInstance', contractInstance);
-
+  const getUserDeposit = useCallback(async () => {
     try {
       if (contractInstance) {
-        const result = await contractInstance.read('get_balance', value, maxgas, 2).send(account);
-
-        console.log('result', result);
+        const result = await contractInstance.read('get_balance', value, maxGas, 2).send(account) as unknown as { output: BN };
 
         if (result.output) {
-          return formatBalance(result.output as unknown as BN);
+          setDeposited(result.output);
         }
       }
     } catch (e) {
       console.log('getUserDeposit Error: ', e);
     }
-
-    return null;
-  }, [account, contractInstance]);
+  }, [account, contractInstance, maxGas, value]);
 
   const getDepositor = useCallback(async (collectionId: string, tokenId: string, readerAddress: string) => {
     try {
       if (contractInstance) {
         // const keyring = new keyring({ type: 'sr25519' });
-        const result = await contractInstance.read('get_nft_deposit', value, maxgas, collectionId, tokenId).send(readerAddress);
+        const result = await contractInstance.read('get_nft_deposit', value, maxGas, collectionId, tokenId).send(readerAddress);
 
         console.log('result!!!', result);
 
@@ -81,27 +79,27 @@ export function useNftContract (account: string) {
     }
 
     return null;
-  }, [contractInstance]);
+  }, [contractInstance, maxGas, value]);
 
   const initAbi = useCallback(() => {
-    const jsonAbi = getContractAbi(marketContractAddress);
-    const newContractInstance = new ContractPromise(api, jsonAbi, marketContractAddress);
+    const jsonAbi = getContractAbi(contractAddress) as Abi;
+    const newContractInstance = new ContractPromise(api, jsonAbi, contractAddress);
 
     console.log('newContractInstance', newContractInstance);
 
     setAbi(jsonAbi);
     setContractInstance(newContractInstance);
-  }, [api]);
+  }, [api, contractAddress]);
 
-  const getTokenAsk = useCallback(async (collectionId, tokenId) => {
+  const getTokenAsk = useCallback(async (collectionId: string, tokenId: string) => {
     if (contractInstance) {
-      const askIdResult = await contractInstance.read('get_ask_id_by_token', value, maxgas, collectionId, tokenId).send(marketContractAddress) as unknown as { output: BN };
+      const askIdResult = await contractInstance.read('get_ask_id_by_token', value, maxGas, collectionId, tokenId).send(contractAddress) as unknown as { output: BN };
 
       if (askIdResult.output) {
         const askId = askIdResult.output.toNumber();
 
         console.log('Token Ask ID: ', askId);
-        const askResult = await contractInstance.read('get_ask_by_id', value, maxgas, askId).send(marketContractAddress) as unknown as AskOutputInterface;
+        const askResult = await contractInstance.read('get_ask_by_id', value, maxGas, askId).send(contractAddress) as unknown as AskOutputInterface;
 
         if (askResult.output) {
           const askOwnerAddress = keyring.encodeAddress(askResult.output[4].toString());
@@ -110,32 +108,49 @@ export function useNftContract (account: string) {
 
           return {
             owner: askOwnerAddress,
-            price: askResult.output[3].toString()
+            price: askResult.output[3]
           };
         }
       }
     }
 
     return null;
-  }, [contractInstance]);
+  }, [contractAddress, contractInstance, maxGas, value]);
 
   const isContractReady = useMemo(() => {
     return !!(abi && contractInstance);
   }, [abi, contractInstance]);
 
-  const deployContract = useCallback(() => {
+  const fetchSystemProperties = useCallback(() => {
+    const properties = api.rpc.system.properties();
 
-  }, []);
+    console.log('properties', properties);
+  }, [api]);
 
   useEffect(() => {
     initAbi();
   }, [initAbi]);
 
+  useEffect(() => {
+    void getUserDeposit();
+  }, [getUserDeposit]);
+
+  useEffect(() => {
+    fetchSystemProperties();
+  }, [fetchSystemProperties]);
+
   return {
     abi,
+    contractAddress,
+    contractInstance,
+    decimals,
+    deposited,
     getDepositor,
     getTokenAsk,
     getUserDeposit,
-    isContractReady
+    isContractReady,
+    maxGas,
+    value,
+    vaultAddress
   };
 }

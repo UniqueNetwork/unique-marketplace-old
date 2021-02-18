@@ -8,14 +8,14 @@ import { Route, Switch } from 'react-router-dom';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid/Grid';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header/Header';
 
-import { LabelHelp, Table, NftDetailsModal } from '@polkadot/react-components';
+import { LabelHelp, NftDetailsModal, Table } from '@polkadot/react-components';
 import { BalanceInterface, NftCollectionInterface, useBalance } from '@polkadot/react-hooks';
 
-import TransferModal from '../../components/TransferModal/';
 import AccountSelector from '../../components/AccountSelector';
 import CollectionSearch from '../../components/CollectionSearch';
 import FormatBalance from '../../components/FormatBalance';
 import NftCollectionCard from '../../components/NftCollectionCard';
+import TransferModal from '../../components/TransferModal/';
 
 interface NftWalletProps {
   className?: string;
@@ -123,7 +123,7 @@ function NftWallet ({ className }: NftWalletProps): React.ReactElement<NftWallet
           account={account}
           balance={openTransfer.balance}
           canTransferTokens={canTransferTokens}
-          closeModal={closeTransferModal}
+          closeModal={setOpenTransfer.bind(null, null)}
           collection={openTransfer.collection}
           tokenId={openTransfer.tokenId}
           updateTokens={updateTokens}

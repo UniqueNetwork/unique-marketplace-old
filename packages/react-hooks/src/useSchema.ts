@@ -12,7 +12,7 @@ export type Attributes = TokenAttribute[];
 
 export function useSchema (account: string, collectionId: string | number, tokenId: string | number) {
   const [collectionInfo, setCollectionInfo] = useState<NftCollectionInterface>();
-  const [balance, setBalance] = useState<number>(0);
+  const [reFungibleBalance, setReFungibleBalance] = useState<number>(0);
   const [tokenUrl, setTokenUrl] = useState<string>('');
   const [attributesConst, setAttributesConst] = useState<TokenAttribute>();
   const [attributesVar, setAttributesVar] = useState<TokenAttribute>();
@@ -52,7 +52,7 @@ export function useSchema (account: string, collectionId: string | number, token
           if (typeof collectionInfo.DecimalPoints === 'number') {
             const balance = owner && owner.fraction.toNumber() / Math.pow(10, collectionInfo.DecimalPoints);
 
-            setBalance(balance || 0);
+            setReFungibleBalance(balance || 0);
           }
         }
       }
@@ -169,9 +169,9 @@ export function useSchema (account: string, collectionId: string | number, token
     attributes,
     attributesConst,
     attributesVar,
-    balance,
     collectionInfo,
     getCollectionInfo,
+    reFungibleBalance,
     tokenConstData,
     tokenDetails,
     tokenUrl,

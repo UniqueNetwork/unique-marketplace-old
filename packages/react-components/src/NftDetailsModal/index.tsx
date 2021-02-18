@@ -1,17 +1,18 @@
-// Copyright 2020 UseTech authors & contributors
+// Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
+// SPDX-License-Identifier: Apache-2.0
 
 import './styles.scss';
 
 import BN from 'bn.js';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
+import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import Modal from 'semantic-ui-react/dist/commonjs/modules/Modal/Modal';
-import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
 
-import { Button, Input, TxButton, InputBalance } from '@polkadot/react-components';
-import { NftCollectionInterface, useBalance, useCollections, useMarketplaceStages, useApi, useSchema } from '@polkadot/react-hooks';
+import { Button, Input, InputBalance,TxButton } from '@polkadot/react-components';
+import {BalanceInterface, useApi, useBalance, useMarketplaceStages, useSchema} from '@polkadot/react-hooks';
 
 import BuySteps from './BuySteps';
 import SaleSteps from './SaleSteps';
@@ -30,8 +31,8 @@ function NftDetailsModal ({ account }: Props): React.ReactElement<Props> {
   const [tokenOfferPrice, setTokenOfferPrice] = useState<number>();
   const [isAddressError, setIsAddressError] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
-  const balanceInfo = useBalance(account);
-  const { attributes, balance, collectionInfo, getCollectionInfo, tokenDetails, tokenUrl } = useSchema(account, collectionId, tokenId);
+  const { balance } = useBalance(account);
+  const { attributes, collectionInfo, getCollectionInfo, reFungibleBalance, tokenDetails, tokenUrl } = useSchema(account, collectionId, tokenId);
 
   const uOwnIt = tokenDetails?.Owner?.toString() === account;
   const decimalPoints = collectionInfo?.DecimalPoints instanceof BN ? collectionInfo?.DecimalPoints.toNumber() : 1;
@@ -47,14 +48,14 @@ function NftDetailsModal ({ account }: Props): React.ReactElement<Props> {
       console.log('token part error');
     }
 
-    if (numberValue > balance || numberValue > 1 || numberValue < (1 / Math.pow(10, decimalPoints))) {
+    if (numberValue > reFungibleBalance || numberValue > 1 || numberValue < (1 / Math.pow(10, decimalPoints))) {
       setIsError(true);
     } else {
       setIsError(false);
     }
 
     setTokenPart(parseFloat(value));
-  }, [balance, decimalPoints]);
+  }, [decimalPoints, reFungibleBalance]);
 
   const closeModal = useCallback(() => {
     history.back();
@@ -137,7 +138,7 @@ function NftDetailsModal ({ account }: Props): React.ReactElement<Props> {
           <Form className='transfer-form'>
             <Form.Field>
               <Input
-                className='label-small'
+                className='small'
                 isError={isAddressError}
                 label='Please enter an address you want to transfer'
                 onChange={setRecipientAddress}
@@ -147,9 +148,9 @@ function NftDetailsModal ({ account }: Props): React.ReactElement<Props> {
             { collectionInfo?.Mode.isReFungible && (
               <Form.Field>
                 <Input
-                  className='label-small'
+                  className='small'
                   isError={isError}
-                  label={`Please enter part of token you want to transfer, your token balance is: ${balance}`}
+                  label={`Please enter part of token you want to transfer, your token balance is: ${reFungibleBalance}`}
                   min={1 / (decimalPoints * 10)}
                   onChange={setTokenPartToTransfer}
                   placeholder='Part of re-fungible address'

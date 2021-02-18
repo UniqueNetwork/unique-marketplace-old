@@ -1,12 +1,15 @@
-// Copyright 2020 UseTech authors & contributors
-
-import React, { useState, useCallback, useEffect } from 'react';
-import Modal from 'semantic-ui-react/dist/commonjs/modules/Modal/Modal';
-import Form from 'semantic-ui-react/dist/commonjs/collections/Form/Form';
-import { Button, Input, TxButton } from '@polkadot/react-components';
-import { NftCollectionInterface, useBalance } from '@polkadot/react-hooks';
+// Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
+// SPDX-License-Identifier: Apache-2.0
 
 import './styles.scss';
+
+import BN from 'bn.js';
+import React, { useCallback, useEffect, useState } from 'react';
+import Form from 'semantic-ui-react/dist/commonjs/collections/Form/Form';
+import Modal from 'semantic-ui-react/dist/commonjs/modules/Modal/Modal';
+
+import { Button, Input, TxButton } from '@polkadot/react-components';
+import { NftCollectionInterface, useApi, useBalance } from '@polkadot/react-hooks';
 
 interface Props {
   account: string | null;
@@ -18,21 +21,25 @@ interface Props {
   updateTokens: (collectionId: number) => void;
 }
 
-function TransferModal ({ account, balance, canTransferTokens, collection, closeModal, tokenId, updateTokens }: Props): React.ReactElement<Props> {
+function TransferModal ({ account, balance, canTransferTokens, closeModal, collection, tokenId, updateTokens }: Props): React.ReactElement<Props> {
+  const { api } = useApi();
   const [recipient, setRecipient] = useState<string | null>(null);
   const [tokenPart, setTokenPart] = useState<number>(0);
   const [isAddressError, setIsAddressError] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
   const balanceInfo = useBalance(recipient);
+  const decimalPoints = collection?.DecimalPoints instanceof BN ? collection?.DecimalPoints.toNumber() : 1;
 
-  const setRecipientAddress = useCallback((value) => {
+  const setRecipientAddress = useCallback((value: string) => {
     // setRecipient
     if (!value) {
       setIsAddressError(true);
     }
-    if(value.length !== '5D73wtH5pqN99auP4b6KQRQAbketaSj4StkBJxACPBUAUdiq'.length) {
+
+    if (value.length !== '5D73wtH5pqN99auP4b6KQRQAbketaSj4StkBJxACPBUAUdiq'.length) {
       setIsAddressError(true);
     }
+
     setRecipient(value);
   }, [setIsAddressError, setRecipient]);
 
@@ -43,23 +50,28 @@ function TransferModal ({ account, balance, canTransferTokens, collection, close
       console.log('token part error');
     }
 
-    if (numberValue > balance || numberValue > 1 || numberValue < (1 / Math.pow(10, collection.decimalPoints))) {
+    if (numberValue > balance || numberValue > 1 || numberValue < (1 / Math.pow(10, decimalPoints))) {
       setIsError(true);
     } else {
       setIsError(false);
     }
 
     setTokenPart(parseFloat(value));
-  }, [balance, collection.decimalPoints]);
+  }, [balance, decimalPoints]);
 
   useEffect(() => {
     const { balanceError } = balanceInfo;
+
     setIsAddressError(balanceError);
   }, [balanceInfo]);
 
   // @todo address validation
   return (
-    <Modal size='tiny' open onClose={closeModal}>
+    <Modal
+      onClose={closeModal}
+      open
+      size='tiny'
+    >
       <Modal.Header>
         <h2>Transfer NFT Token</h2>
       </Modal.Header>
@@ -74,13 +86,13 @@ function TransferModal ({ account, balance, canTransferTokens, collection, close
               placeholder='Recipient address'
             />
           </Form.Field>
-          { collection.isReFungible && (
+          { collection.Mode.isReFungible && (
             <Form.Field>
               <Input
                 className='label-small'
                 isError={isError}
                 label={`Please enter part of token you want to transfer, your token balance is: ${balance}`}
-                min={1 / (collection.decimalPoints * 10)}
+                min={1 / (decimalPoints * 10)}
                 onChange={setTokenPartToTransfer}
                 placeholder='Part of re-fungible address'
                 type='number'
@@ -102,12 +114,12 @@ function TransferModal ({ account, balance, canTransferTokens, collection, close
           label='Submit'
           onStart={closeModal}
           onSuccess={updateTokens.bind(null, collection.id)}
-          params={[recipient, collection.id, tokenId, (tokenPart * Math.pow(10, collection.decimalPoints))]}
+          params={[recipient, collection.id, tokenId, (tokenPart * Math.pow(10, decimalPoints))]}
           tx={api.tx.nft.transfer}
         />
       </Modal.Actions>
     </Modal>
-  )
+  );
 }
 
 export default React.memo(TransferModal);
