@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import type { SubmittableExtrinsic } from '@polkadot/api/promise/types';
+import type { TokenDetailsInterface } from '@polkadot/react-hooks/useCollections';
 
 import { useMachine } from '@xstate/react';
 import BN from 'bn.js';
@@ -95,7 +96,7 @@ export const useMarketplaceStages = (account: string, collectionId: string, toke
       'TRANSFER_NFT_TO_CONTRACT_SUCCESS',
       'deposit nft to contract update'
     );
-  }, [api.tx.nft, collectionId, queueTransaction, tokenId]);
+  }, [api.tx.nft, collectionId, contractAddress, queueTransaction, tokenId]);
 
   const buy = useCallback(() => {
     console.log('buy');
@@ -164,7 +165,7 @@ export const useMarketplaceStages = (account: string, collectionId: string, toke
         'send token to account update'
       );
     }
-  }, [account, abi, api, queueTransaction]);
+  }, [abi, send, queueTransaction, api.tx.contracts, contractAddress, value, maxGas, contractInstance?.abi.messages, collectionId, tokenId]);
 
   const revertMoney = useCallback(async () => {
     setTimeout(() => {
@@ -188,7 +189,7 @@ export const useMarketplaceStages = (account: string, collectionId: string, toke
       txSuccessCb: () => send('TRANSFER_NFT_TO_CONTRACT_SUCCESS'),
       txUpdateCb: () => console.log('deposit nft to contract update')
     });
-  }, [deposited, queueExtrinsic, account, api.tx.contracts, value, contractInstance?.abi.messages, send]);
+  }, [decimals, deposited, queueExtrinsic, account, api.tx.contracts, contractAddress, value, maxGas, contractInstance?.abi.messages, send]);
 
   const registerDeposit = useCallback(async () => {
     const address = await getDepositor(collectionId, tokenId, account);
@@ -221,12 +222,8 @@ export const useMarketplaceStages = (account: string, collectionId: string, toke
   }, [setReadyToAskPrice]);
 
   const registerSale = useCallback(() => {
-    setTimeout(() => {
-      send('REGISTER_SALE_SUCCESS');
-    }, 1000);
-    //  // Transaction #2: Invoke ask method on market contract to set the price
-    //     await this.askAsync(punkId, priceBN.toString(), ownerAddress);
-    /*queueExtrinsic({
+    // Transaction #2: Invoke ask method on market contract to set the price
+    queueExtrinsic({
       accountId: account && account.toString(),
       extrinsic: api.tx.contracts
         .call(contractAddress, value, maxGas, contractInstance?.abi.messages.ask(collectionId, tokenId, 2, tokenPriceForSale)),
@@ -235,15 +232,11 @@ export const useMarketplaceStages = (account: string, collectionId: string, toke
       txStartCb: () => console.log('registerSale start'),
       txSuccessCb: () => send('REGISTER_SALE_SUCCESS'),
       txUpdateCb: () => console.log('registerSale update')
-    });*/
-  }, [account, api, collectionId, tokenId]);
+    });
+  }, [account, api.tx.contracts, collectionId, contractAddress, contractInstance?.abi.messages, maxGas, queueExtrinsic, send, tokenId, tokenPriceForSale, value]);
 
   const cancelSale = useCallback(() => {
-    setTimeout(() => {
-      send('CANCEL_SALE_SUCCESS');
-    }, 1000);
-    // cancelAsync(punkId, punk.owner)
-    /* queueExtrinsic({
+    queueExtrinsic({
       accountId: account && account.toString(),
       extrinsic: api.tx.contracts
         .call(contractAddress, value, maxGas, contractInstance?.abi.messages.cancel(collectionId, tokenId)),
@@ -252,8 +245,8 @@ export const useMarketplaceStages = (account: string, collectionId: string, toke
       txStartCb: () => console.log('cancelSale start'),
       txSuccessCb: () => send('CANCEL_SALE_SUCCESS'),
       txUpdateCb: () => console.log('cancelSale update')
-    }); */
-  }, [account, api, collectionId, tokenId]);
+    });
+  }, [account, api.tx.contracts, collectionId, contractAddress, contractInstance?.abi.messages, maxGas, queueExtrinsic, send, tokenId, value]);
 
   const setPrice = useCallback((price) => {
     setTokenPriceForSale(price);
@@ -278,10 +271,11 @@ export const useMarketplaceStages = (account: string, collectionId: string, toke
     }
   }, [state.value]);
 
-  const loadCancelSaleStage = useCallback(async (token) => {
-    const isContractOwner = token.Owner === contractAddress;
+  const loadCancelSaleStage = useCallback(async (token: TokenDetailsInterface) => {
+    const isContractOwner = token?.Owner?.toString() === contractAddress;
 
     if (isContractOwner) {
+      console.log('loadCancelSaleStage', token, token?.Owner?.toString());
       const ask = await getTokenAsk(collectionId, tokenId);
 
       console.log('ask: "', ask);
@@ -289,6 +283,21 @@ export const useMarketplaceStages = (account: string, collectionId: string, toke
       if (ask) {
         setTokenContractInfo(ask);
       }
+
+      /*
+      if (ask) {
+          punk.owner = ask.owner;
+          punk.price = ask.price;
+          pageState = 4;
+        }
+        else {
+          // Get the owner from the deposit
+          punk.owner = await n.getDepositor(punkId);
+          if (punk.owner) pageState = 3; - ask price
+          else pageState = 2;
+          registerTxObserver
+        }
+       */
     }
   }, [contractAddress, getTokenAsk, collectionId, tokenId]);
 
@@ -346,7 +355,7 @@ export const useMarketplaceStages = (account: string, collectionId: string, toke
       default:
         break;
     }
-  }, [state.value, loadingTokenInfo]);
+  }, [state.value, loadingTokenInfo, state, buy, sale, sentTokenToAccount, registerDeposit, getDepositReady, askPrice, registerSale, revertMoney, checkDepositReady, cancelSale]);
 
   useEffect(() => {
     console.log('isContractReady', isContractReady);

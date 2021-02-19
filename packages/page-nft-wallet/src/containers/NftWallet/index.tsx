@@ -17,11 +17,7 @@ import FormatBalance from '../../components/FormatBalance';
 import NftCollectionCard from '../../components/NftCollectionCard';
 import TransferModal from '../../components/TransferModal/';
 
-interface NftWalletProps {
-  className?: string;
-}
-
-function NftWallet ({ className }: NftWalletProps): React.ReactElement<NftWalletProps> {
+function NftWallet (): React.ReactElement {
   const collectionsStorage: NftCollectionInterface[] = JSON.parse(localStorage.getItem('tokenCollections') || '[]') as NftCollectionInterface[];
   const [openTransfer, setOpenTransfer] = useState<{ collection: NftCollectionInterface, tokenId: string, balance: number } | null>(null);
   const [account, setAccount] = useState<string | null>(null);

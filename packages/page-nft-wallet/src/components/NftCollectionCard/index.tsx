@@ -7,7 +7,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 
 import { Expander } from '@polkadot/react-components';
-import { NftCollectionInterface, useCollections } from '@polkadot/react-hooks';
+import { NftCollectionInterface, useCollections, useDecoder } from '@polkadot/react-hooks';
 
 import NftTokenCard from '../NftTokenCard';
 
@@ -26,6 +26,7 @@ function NftCollectionCard ({ account, canTransferTokens, collection, openTransf
   const [tokensOfCollection, setTokensOfCollection] = useState<Array<string>>([]);
   const { getTokensOfCollection } = useCollections();
   const currentAccount = useRef<string | null | undefined>();
+  const { collectionName16Decoder } = useDecoder();
 
   const openCollection = useCallback((isOpen) => {
     setOpened(isOpen);
@@ -64,6 +65,8 @@ function NftCollectionCard ({ account, canTransferTokens, collection, openTransf
     }
   }, [opened, updateTokens]);
 
+  console.log('collection', collection);
+
   return (
     <Expander
       className='nft-collection-item'
@@ -71,10 +74,10 @@ function NftCollectionCard ({ account, canTransferTokens, collection, openTransf
       onClick={openCollection}
       summary={
         <>
-          <strong>{collection.Name}</strong>
-          {collection.Description &&
-          <span> {collection.Description}</span>
-          }
+          <strong>{collectionName16Decoder(collection.Name)}</strong>
+          { collection.Description && (
+            <span> {collectionName16Decoder(collection.Description)}</span>
+          )}
           { collection.Mode.isReFungible &&
             <strong>, re-fungible</strong>
           }

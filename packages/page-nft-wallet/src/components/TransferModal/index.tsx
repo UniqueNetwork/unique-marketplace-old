@@ -68,6 +68,7 @@ function TransferModal ({ account, balance, canTransferTokens, closeModal, colle
   // @todo address validation
   return (
     <Modal
+      className='unique-modal'
       onClose={closeModal}
       open
       size='tiny'
@@ -79,7 +80,7 @@ function TransferModal ({ account, balance, canTransferTokens, closeModal, colle
         <Form className='transfer-form'>
           <Form.Field>
             <Input
-              className='label-small'
+              className='isSmall'
               isError={isAddressError}
               label='Please enter an address you want to transfer'
               onChange={setRecipientAddress}
@@ -89,7 +90,7 @@ function TransferModal ({ account, balance, canTransferTokens, closeModal, colle
           { collection.Mode.isReFungible && (
             <Form.Field>
               <Input
-                className='label-small'
+                className='isSmall'
                 isError={isError}
                 label={`Please enter part of token you want to transfer, your token balance is: ${balance}`}
                 min={1 / (decimalPoints * 10)}
