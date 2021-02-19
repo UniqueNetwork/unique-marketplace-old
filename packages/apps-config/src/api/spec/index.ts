@@ -35,6 +35,7 @@ import jupiter from './jupiter';
 import kilt from './kilt';
 import kulupu from './kulupu';
 import laminar from './laminar';
+import litentry from './litentry';
 import moonbeam from './moonbeam';
 import nodle from './nodle';
 import phala from './phala';
@@ -44,6 +45,7 @@ import plasmParachain from './plasm-parachain';
 import polkabtc from './polkabtc';
 import polkadex from './polkadex';
 import robonomics from './robonomics';
+import sgc from './sgc';
 import soraSubstrate from './soraSubstrate';
 import stafi from './stafi';
 import subdao from './subdao';
@@ -91,6 +93,7 @@ const spec: Record<string, OverrideBundleDefinition> = {
   'kilt-parachain': kilt,
   kulupu,
   laminar,
+  litentry,
   mandala: acala,
   'mashnet-node': kilt,
   'moonbase-alphanet': moonbeam,
@@ -104,6 +107,7 @@ const spec: Record<string, OverrideBundleDefinition> = {
   plasm,
   'plasm-parachain': plasmParachain,
   robonomics,
+  sgc,
   'sora-substrate': soraSubstrate,
   stafi,
   subdao,

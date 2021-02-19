@@ -20,7 +20,7 @@ import BountyStatusView from './BountyStatusView';
 import Curator from './Curator';
 import DueBlocks from './DueBlocks';
 import { useBountyStatus } from './hooks';
-import { bountyBorderColor, bountyLabelColor } from './theme';
+import { bountyLabelColor } from './theme';
 import { useTranslation } from './translate';
 import VotersColumn from './VotersColumn';
 
@@ -142,7 +142,7 @@ function Bounty ({ bestNumber, bounty, className = '', description, index, propo
               status={status}
             />
             <div className='table-column-icon'
-              onClick={handleOnIconClick}>
+                 onClick={handleOnIconClick}>
               <Icon icon={
                 isExpanded
                   ? 'caret-up'
@@ -245,7 +245,7 @@ export default React.memo(styled(Bounty)(({ theme }: ThemeProps) => `
       justify-content: center;
       width: 1.7rem;
       height: 1.7rem;
-      border: 1px solid ${bountyBorderColor[theme.theme]};
+      border: 1px solid ${theme.borderTable};
       border-radius: 4px;
       cursor: pointer;
     }

@@ -130,6 +130,7 @@ function Upload ({ onClose }: Props): React.ReactElement {
 
   const isSubmittable = !!accountId && (!isNull(name) && isNameValid) && isWasmValid && isAbiSupplied && isAbiValid && !!uploadTx && step === 2;
   const invalidAbi = isAbiError || !isAbiSupplied;
+  const hasBatchDeploy = isFunction(api.tx.contracts.instantiateWithCode) || isFunction(api.tx.utility?.batch);
 
   return (
     <Modal header={t('Upload & deploy code {{info}}', { replace: { info: `${step}/2` } })}>
