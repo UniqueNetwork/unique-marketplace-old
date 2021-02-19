@@ -17,8 +17,8 @@ import democracy from './democracy';
 import explorer from './explorer';
 import extrinsics from './extrinsics';
 import js from './js';
-import nftMarket from './nft-market';
-import nftMint from './nft-mint';
+// import nftMarket from './nft-market';
+// import nftMint from './nft-mint';
 import nftWallet from './nft-wallet';
 import parachains from './parachains';
 import poll from './poll';
@@ -36,8 +36,8 @@ import treasury from './treasury';
 export default function create (t: TFunction): Routes {
   return [
     nftWallet(t),
-    nftMint(t),
-    nftMarket(t),
+    // nftMint(t),
+    // nftMarket(t),
     accounts(t),
     addresses(t),
     explorer(t),
