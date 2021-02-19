@@ -4,7 +4,7 @@ import { useCallback } from 'react';
 
 interface UseDecoderInterface {
   collectionName16Decoder: (name: number[]) => string;
-  collectionName8Decoder: (name: string) => string;
+  collectionName8Decoder: (name: number[]) => string;
 }
 
 export function useDecoder (): UseDecoderInterface {
@@ -16,7 +16,7 @@ export function useDecoder (): UseDecoderInterface {
     return String.fromCharCode(...collectionNameArr);
   }, []);
 
-  const collectionName8Decoder = useCallback((name: string) => {
+  const collectionName8Decoder = useCallback((name: number[]) => {
     const collectionNameArr = Array.prototype.slice.call(name);
 
     collectionNameArr.splice(-1, 1);
