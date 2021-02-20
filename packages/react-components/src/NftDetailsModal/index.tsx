@@ -12,7 +12,7 @@ import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import Modal from 'semantic-ui-react/dist/commonjs/modules/Modal/Modal';
 
 import { Button, Input, InputBalance,TxButton } from '@polkadot/react-components';
-import {BalanceInterface, useApi, useBalance, useMarketplaceStages, useSchema} from '@polkadot/react-hooks';
+import { BalanceInterface, useApi, useBalance, useMarketplaceStages, useSchema } from '@polkadot/react-hooks';
 
 import BuySteps from './BuySteps';
 import SaleSteps from './SaleSteps';
@@ -38,7 +38,7 @@ function NftDetailsModal ({ account }: Props): React.ReactElement<Props> {
   const decimalPoints = collectionInfo?.DecimalPoints instanceof BN ? collectionInfo?.DecimalPoints.toNumber() : 1;
 
   // if tokenContractInfo is not empty - token is on contract (ready to buy)
-  const { deposited, readyToAskPrice, sendCurrentUserAction, setPrice, tokenContractInfo, tokenInfo, transferStep } = useMarketplaceStages(account, collectionId, tokenId);
+  const { deposited, readyToAskPrice, sendCurrentUserAction, saleFee, setPrice, transferStep } = useMarketplaceStages(account, collectionId, tokenId);
   const [tokenPriceForSale, setTokenPriceForSale] = useState<string>('');
 
   const setTokenPartToTransfer = useCallback((value) => {
@@ -90,7 +90,8 @@ function NftDetailsModal ({ account }: Props): React.ReactElement<Props> {
   const showOfferPrice = true;
 
   return (
-    <Modal className='nft-details'
+    <Modal
+      className='unique-modal'
       onClose={closeModal}
       open
       size='large'>
@@ -111,7 +112,7 @@ function NftDetailsModal ({ account }: Props): React.ReactElement<Props> {
             <p><strong>You own it!</strong> (address: {account})</p>
           )}
           { !!(!uOwnIt && tokenDetails) && (
-            <p><strong>The owner is </strong>{tokenDetails.Owner}</p>
+            <p><strong>The owner is </strong>{tokenDetails.Owner.toString()}</p>
           )}
           <Button
             icon='shopping-cart'
@@ -134,11 +135,14 @@ function NftDetailsModal ({ account }: Props): React.ReactElement<Props> {
             onClick={sendCurrentUserAction.bind(null, 'CANCEL')}
           />
         </div>
+        { saleFee && !balance?.free.gte(saleFee) && (
+          <span className='text-warning'>Your balance is too low to pay fees</span>
+        )}
         { showTransferForm && (
           <Form className='transfer-form'>
             <Form.Field>
               <Input
-                className='small'
+                className='isSmall'
                 isError={isAddressError}
                 label='Please enter an address you want to transfer'
                 onChange={setRecipientAddress}
@@ -148,7 +152,7 @@ function NftDetailsModal ({ account }: Props): React.ReactElement<Props> {
             { collectionInfo?.Mode.isReFungible && (
               <Form.Field>
                 <Input
-                  className='small'
+                  className='isSmall'
                   isError={isError}
                   label={`Please enter part of token you want to transfer, your token balance is: ${reFungibleBalance}`}
                   min={1 / (decimalPoints * 10)}
@@ -175,7 +179,7 @@ function NftDetailsModal ({ account }: Props): React.ReactElement<Props> {
           <Form className='transfer-form'>
             <Form.Field>
               <InputBalance
-                className='small'
+                className='isSmall'
                 defaultValue={new BN(0)}
                 isFull
                 isZeroable
@@ -210,7 +214,7 @@ function NftDetailsModal ({ account }: Props): React.ReactElement<Props> {
             <Grid.Row>
               <Grid.Column width={4}>
                 <Input
-                  className='explorer--query input-search'
+                  className='input-search'
                   help={<span>Set nft token price</span>}
                   label={'Set price'}
                   onChange={setTokenPriceForSale}

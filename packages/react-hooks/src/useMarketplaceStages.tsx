@@ -13,16 +13,16 @@ import { useApi, useBalance, useCollections, useNftContract } from '@polkadot/re
 
 import marketplaceStateMachine from './stateMachine';
 
-type UserActionType = 'BUY' | 'CANCEL' | 'SALE' | 'REVERT_UNUSED_MONEY' | 'UPDATE_TOKEN_STATE';
+type UserActionType = 'BUY' | 'CANCEL' | 'SALE' | 'REVERT_UNUSED_MONEY' | 'UPDATE_TOKEN_STATE' | 'OFFER_TRANSACTION_FAIL' | 'SUBMIT_OFFER' | 'OFFER_TRANSACTION_SUCCESS';
 
 export interface MarketplaceStagesInterface {
   cancelSale: () => void;
-  deposited: number | undefined;
+  deposited: BN | undefined;
   error: string | null;
+  saleFee: BN | undefined;
   sendCurrentUserAction: (action: UserActionType) => void;
   setPrice: (price: string) => void;
-  tokenInfo: any;
-  tokenContractInfo: { price: string; owner: string } | undefined;
+  tokenInfo: TokenDetailsInterface | undefined;
   tokenPriceForSale: number | undefined;
   transferStep: number;
   readyToAskPrice: boolean;
@@ -46,15 +46,15 @@ export interface MarketplaceStagesInterface {
 export const useMarketplaceStages = (account: string, collectionId: string, tokenId: string): MarketplaceStagesInterface => {
   const { api } = useApi();
   const [state, send] = useMachine(marketplaceStateMachine);
-  const [tokenInfo, setTokenInfo] = useState<any | null | undefined>();
+  const [tokenInfo, setTokenInfo] = useState<TokenDetailsInterface>();
+  const [saleFee, setSaleFee] = useState<BN>();
   const { getDetailedTokenInfo, getDetailedRefungibleTokenInfo } = useCollections();
-  const { abi, contractAddress, contractInstance, decimals, deposited, getDepositor, getTokenAsk, isContractReady, maxGas, value, vaultAddress } = useNftContract(account);
+  const { abi, contractAddress, contractInstance, decimals, deposited, findCallMethodByName, getDepositor, getTokenAsk, getUserDeposit, isContractReady, maxGas, tokenAsk, value, vaultAddress } = useNftContract(account);
   const { balance } = useBalance(account);
   const [error, setError] = useState<string | null>(null);
   const { queueExtrinsic } = useContext(StatusContext);
   const [readyToAskPrice, setReadyToAskPrice] = useState<boolean>(false);
   const [tokenPriceForSale, setTokenPriceForSale] = useState<number>();
-  const [tokenContractInfo, setTokenContractInfo] = useState<{ owner: string, price: string }>();
 
   const sendCurrentUserAction = useCallback((userAction: UserActionType) => {
     send(userAction);
@@ -84,26 +84,51 @@ export const useMarketplaceStages = (account: string, collectionId: string, toke
     });
   }, [account, queueExtrinsic, send]);
 
+  const getSaleFee = useCallback(async () => {
+    const fee = await api.tx.nft.transfer(contractAddress, collectionId, tokenId, 0).paymentInfo(account) as { partialFee: BN };
+
+    if (fee) {
+      setSaleFee(fee.partialFee);
+      console.log('fee', fee);
+    }
+  }, [account, api.tx.nft, collectionId, contractAddress, tokenId]);
+
   /** user actions **/
-  const sale = useCallback(() => {
-    // checkBalance(nft, owner) - is nft on balance/ is balance > fee?
-    // deposit nft to contract
-    queueTransaction(
-      api.tx.nft
-        .transfer(contractAddress, collectionId, tokenId, 0),
-      'TRANSFER_NFT_TO_CONTRACT_FAIL',
-      'deposit nft to contract start',
-      'TRANSFER_NFT_TO_CONTRACT_SUCCESS',
-      'deposit nft to contract update'
-    );
-  }, [api.tx.nft, collectionId, contractAddress, queueTransaction, tokenId]);
+  const sale = useCallback(async () => {
+    // check balance to have enough fee
+    await getSaleFee();
+
+    if (saleFee && balance?.free.gte(saleFee)) {
+      queueTransaction(
+        api.tx.nft
+          .transfer(contractAddress, collectionId, tokenId, 0),
+        'TRANSFER_NFT_TO_CONTRACT_FAIL',
+        'deposit nft to contract start',
+        'TRANSFER_NFT_TO_CONTRACT_SUCCESS',
+        'deposit nft to contract update'
+      );
+    }
+  }, [api.tx.nft, balance?.free, collectionId, contractAddress, getSaleFee, queueTransaction, saleFee, tokenId]);
+
+  const waitForDeposit = useCallback(async () => {
+    const address = await getDepositor(collectionId, tokenId, account);
+
+    console.log('depositor address', address);
+
+    if (address === account) {
+      // depositor is me
+      send('NFT_DEPOSIT_READY');
+    } else {
+      send('NFT_DEPOSIT_FAIL');
+    }
+  }, [account, collectionId, getDepositor, send, tokenId]);
 
   const buy = useCallback(() => {
     console.log('buy');
 
     // send deposit to contract
     // Check if KSM deposit is needed and deposit
-    if (!tokenContractInfo) {
+    if (!tokenAsk) {
       console.error('tokenContractInfo is undefined');
 
       return;
@@ -115,7 +140,7 @@ export const useMarketplaceStages = (account: string, collectionId: string, toke
       return;
     }
 
-    const price = parseFloat(tokenContractInfo.price);
+    const price = tokenAsk.price.toNumber();
     const depositedNumber = deposited.toNumber();
     const feeFull = getFee(price);
     const feePaid = getFee(depositedNumber);
@@ -168,9 +193,6 @@ export const useMarketplaceStages = (account: string, collectionId: string, toke
   }, [abi, send, queueTransaction, api.tx.contracts, contractAddress, value, maxGas, contractInstance?.abi.messages, collectionId, tokenId]);
 
   const revertMoney = useCallback(async () => {
-    setTimeout(() => {
-      send('TRANSFER_NFT_TO_CONTRACT_SUCCESS');
-    }, 1000);
     /* При исполнении сделки, нужно посылать только сумму, указанную в withdraw.
     При снятии неиспользованных средств нужно также возмещать комиссию marketplace за вычетом комиссии сети Kusama (0.0027 KSM).
      */
@@ -179,30 +201,25 @@ export const useMarketplaceStages = (account: string, collectionId: string, toke
     const balance = deposited || new BN(0);
     const balanceToSend = balance.iadd(expectedCommission).integerValue(BN.ROUND_DOWN);
 
-    queueExtrinsic({
-      accountId: account && account.toString(),
-      extrinsic: api.tx.contracts
-        .call(contractAddress, value, maxGas, contractInstance?.abi.messages.withdraw(2, deposited)),
-      isUnsigned: false,
-      txFailedCb: () => send('TRANSFER_NFT_TO_CONTRACT_FAIL'),
-      txStartCb: () => console.log('deposit nft to contract start'),
-      txSuccessCb: () => send('TRANSFER_NFT_TO_CONTRACT_SUCCESS'),
-      txUpdateCb: () => console.log('deposit nft to contract update')
-    });
-  }, [decimals, deposited, queueExtrinsic, account, api.tx.contracts, contractAddress, value, maxGas, contractInstance?.abi.messages, send]);
+    const message = findCallMethodByName('withdraw');
 
-  const registerDeposit = useCallback(async () => {
-    const address = await getDepositor(collectionId, tokenId, account);
+    if (message && contractInstance) {
+      const extrinsic = contractInstance.exec(message, {
+        gasLimit: maxGas,
+        value: 0
+      }, 2, deposited);
 
-    console.log('address', address);
-
-    if (address === account) {
-      // depositor is me
-      send('NFT_DEPOSIT_READY');
-    } else {
-      send('NFT_DEPOSIT_FAIL');
+      queueExtrinsic({
+        accountId: account && account.toString(),
+        extrinsic,
+        isUnsigned: false,
+        txFailedCb: () => send('TRANSFER_NFT_TO_CONTRACT_FAIL'),
+        txStartCb: () => console.log('deposit nft to contract start'),
+        txSuccessCb: () => send('TRANSFER_NFT_TO_CONTRACT_SUCCESS'),
+        txUpdateCb: () => console.log('deposit nft to contract update')
+      });
     }
-  }, [account, collectionId, getDepositor, send, tokenId]);
+  }, [decimals, deposited, queueExtrinsic, account, api.tx.contracts, contractAddress, value, maxGas, contractInstance?.abi.messages, send]);
 
   const getDepositReady = useCallback(async () => {
     setTimeout(() => {
@@ -222,31 +239,40 @@ export const useMarketplaceStages = (account: string, collectionId: string, toke
   }, [setReadyToAskPrice]);
 
   const registerSale = useCallback(() => {
-    // Transaction #2: Invoke ask method on market contract to set the price
-    queueExtrinsic({
-      accountId: account && account.toString(),
-      extrinsic: api.tx.contracts
-        .call(contractAddress, value, maxGas, contractInstance?.abi.messages.ask(collectionId, tokenId, 2, tokenPriceForSale)),
-      isUnsigned: false,
-      txFailedCb: () => send('REGISTER_SALE_FAIL'),
-      txStartCb: () => console.log('registerSale start'),
-      txSuccessCb: () => send('REGISTER_SALE_SUCCESS'),
-      txUpdateCb: () => console.log('registerSale update')
-    });
-  }, [account, api.tx.contracts, collectionId, contractAddress, contractInstance?.abi.messages, maxGas, queueExtrinsic, send, tokenId, tokenPriceForSale, value]);
+    const message = findCallMethodByName('ask');
+
+    if (message && contractInstance) {
+      const extrinsic = contractInstance.exec(message, { gasLimit: maxGas, value: 0 }, collectionId, tokenId, 2, tokenPriceForSale);
+
+      queueExtrinsic({
+        accountId: account && account.toString(),
+        extrinsic: extrinsic,
+        isUnsigned: false,
+        txFailedCb: () => send('REGISTER_SALE_FAIL'),
+        txStartCb: () => console.log('registerSale start'),
+        txSuccessCb: () => send('REGISTER_SALE_SUCCESS'),
+        txUpdateCb: () => console.log('registerSale update')
+      });
+    }
+  }, [account, collectionId, contractInstance, findCallMethodByName, maxGas, queueExtrinsic, send, tokenId, tokenPriceForSale]);
 
   const cancelSale = useCallback(() => {
-    queueExtrinsic({
-      accountId: account && account.toString(),
-      extrinsic: api.tx.contracts
-        .call(contractAddress, value, maxGas, contractInstance?.abi.messages.cancel(collectionId, tokenId)),
-      isUnsigned: false,
-      txFailedCb: () => send('CANCEL_SALE_FAIL'),
-      txStartCb: () => console.log('cancelSale start'),
-      txSuccessCb: () => send('CANCEL_SALE_SUCCESS'),
-      txUpdateCb: () => console.log('cancelSale update')
-    });
-  }, [account, api.tx.contracts, collectionId, contractAddress, contractInstance?.abi.messages, maxGas, queueExtrinsic, send, tokenId, value]);
+    const message = findCallMethodByName('cancel');
+
+    if (message && contractInstance) {
+      const extrinsic = contractInstance.exec(message, { gasLimit: maxGas, value: 0 }, collectionId, tokenId);
+
+      queueExtrinsic({
+        accountId: account && account.toString(),
+        extrinsic,
+        isUnsigned: false,
+        txFailedCb: () => send('CANCEL_SALE_FAIL'),
+        txStartCb: () => console.log('cancelSale start'),
+        txSuccessCb: () => send('CANCEL_SALE_SUCCESS'),
+        txUpdateCb: () => console.log('cancelSale update')
+      });
+    }
+  }, [account, collectionId, contractInstance, findCallMethodByName, maxGas, queueExtrinsic, send, tokenId]);
 
   const setPrice = useCallback((price) => {
     setTokenPriceForSale(price);
@@ -258,7 +284,7 @@ export const useMarketplaceStages = (account: string, collectionId: string, toke
     switch (state.value) {
       case 'sale':
         return 1;
-      case 'registerDeposit':
+      case 'waitForDeposit':
         return 2;
       case 'getDepositReady':
         return 3;
@@ -271,50 +297,14 @@ export const useMarketplaceStages = (account: string, collectionId: string, toke
     }
   }, [state.value]);
 
-  const loadCancelSaleStage = useCallback(async (token: TokenDetailsInterface) => {
-    const isContractOwner = token?.Owner?.toString() === contractAddress;
-
-    if (isContractOwner) {
-      console.log('loadCancelSaleStage', token, token?.Owner?.toString());
-      const ask = await getTokenAsk(collectionId, tokenId);
-
-      console.log('ask: "', ask);
-
-      if (ask) {
-        setTokenContractInfo(ask);
-      }
-
-      /*
-      if (ask) {
-          punk.owner = ask.owner;
-          punk.price = ask.price;
-          pageState = 4;
-        }
-        else {
-          // Get the owner from the deposit
-          punk.owner = await n.getDepositor(punkId);
-          if (punk.owner) pageState = 3; - ask price
-          else pageState = 2;
-          registerTxObserver
-        }
-       */
-    }
-  }, [contractAddress, getTokenAsk, collectionId, tokenId]);
-
   const loadingTokenInfo = useCallback(async () => {
     // for re-fungible await getDetailedRefungibleTokenInfo(collectionId, tokenId);
     const tokenInfo = await getDetailedTokenInfo(collectionId, tokenId);
 
     setTokenInfo(tokenInfo);
-
-    await loadCancelSaleStage(tokenInfo);
-
-    await registerDeposit();
-  }, [getDetailedTokenInfo, collectionId, tokenId, loadCancelSaleStage, registerDeposit]);
-
-  useEffect(() => {
-    void getTokenAsk(collectionId, tokenId);
-  }, [getTokenAsk, collectionId, tokenId]);
+    getTokenAsk(collectionId, tokenId);
+    await waitForDeposit();
+  }, [getDetailedTokenInfo, collectionId, tokenId, waitForDeposit, getTokenAsk]);
 
   useEffect(() => {
     switch (true) {
@@ -331,8 +321,8 @@ export const useMarketplaceStages = (account: string, collectionId: string, toke
       case state.matches('sentTokenToNewOwner'):
         void sentTokenToAccount();
         break;
-      case state.matches('registerDeposit'):
-        void registerDeposit();
+      case state.matches('waitForDeposit'):
+        void waitForDeposit();
         break;
       case state.matches('getDepositReady'):
         void getDepositReady();
@@ -355,7 +345,7 @@ export const useMarketplaceStages = (account: string, collectionId: string, toke
       default:
         break;
     }
-  }, [state.value, loadingTokenInfo, state, buy, sale, sentTokenToAccount, registerDeposit, getDepositReady, askPrice, registerSale, revertMoney, checkDepositReady, cancelSale]);
+  }, [state.value, loadingTokenInfo, state, buy, sale, sentTokenToAccount, waitForDeposit, getDepositReady, askPrice, registerSale, revertMoney, checkDepositReady, cancelSale]);
 
   useEffect(() => {
     console.log('isContractReady', isContractReady);
@@ -366,19 +356,22 @@ export const useMarketplaceStages = (account: string, collectionId: string, toke
   }, [send, isContractReady]);
 
   console.log('state.value', state.value);
+  console.log('contractInstance?.abi.messages', contractInstance);
+  console.log('deposited', deposited);
+  console.log('tokenAsk', tokenAsk);
 
   return {
     cancelSale,
     deposited,
     error,
+    readyToAskPrice,
+    saleFee,
     sendCurrentUserAction,
     setPrice,
-    tokenInfo,
-    tokenContractInfo,
-    tokenPriceForSale,
-    transferStep,
-    readyToAskPrice,
     setTokenPriceForSale,
-    submitTokenPrice
+    submitTokenPrice,
+    tokenInfo,
+    tokenPriceForSale,
+    transferStep
   };
 };

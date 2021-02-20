@@ -93,11 +93,11 @@ export function useSchema (account: string, collectionId: string | number, token
 
       setCollectionInfo({
         ...info,
-        ConstOnChainSchema: collectionName8Decoder(info.ConstOnChainSchema),
-        VariableOnChainSchema: collectionName8Decoder(info.VariableOnChainSchema)
+        ConstOnChainSchema: info.ConstOnChainSchema,
+        VariableOnChainSchema: info.VariableOnChainSchema
       });
     }
-  }, [collectionId, collectionName8Decoder, getDetailedCollectionInfo]);
+  }, [collectionId, getDetailedCollectionInfo]);
 
   const getTokenDetails = useCallback(async () => {
     if (collectionId && tokenId && collectionInfo) {

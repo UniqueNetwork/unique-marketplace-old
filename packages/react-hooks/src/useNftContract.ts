@@ -4,11 +4,12 @@
 import BN from 'bn.js';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { Abi, ContractPromise } from '@polkadot/api-contract';
+import {Abi, ContractPromise as Contract, ContractPromise} from '@polkadot/api-contract';
 import { DEFAULT_DECIMALS } from '@polkadot/react-api';
 import { getContractAbi } from '@polkadot/react-components/util';
 import { useApi } from '@polkadot/react-hooks';
 import keyring from '@polkadot/ui-keyring';
+import {AbiMessage} from "@polkadot/api-contract/types";
 
 export interface AskOutputInterface {
   output: [string, string, string, BN, string]
@@ -20,11 +21,13 @@ export interface useNftContractInterface {
   contractInstance: ContractPromise | null;
   decimals: number;
   deposited: BN | undefined;
+  findCallMethodByName: (methodName: string) => AbiMessage | null;
   getDepositor: (collectionId: string, tokenId: string, readerAddress: string) => Promise<string | null>;
-  getTokenAsk: (collectionId: string, tokenId: string) => Promise<{ owner: string, price: BN } | null>;
+  getTokenAsk: (collectionId: string, tokenId: string) => void;
   getUserDeposit: () => void;
   isContractReady: boolean;
   maxGas: number;
+  tokenAsk: { owner: string, price: BN } | undefined;
   value: number;
   vaultAddress: string;
 }
@@ -39,7 +42,16 @@ export function useNftContract (account: string): useNftContractInterface {
   const [contractInstance, setContractInstance] = useState<ContractPromise | null>(null);
   const [abi, setAbi] = useState<Abi>();
   const [deposited, setDeposited] = useState<BN>();
-  const [contractAddress] = useState<string>('5DgdtKSx5okmPb42hgfNbkEdu3zhZ8k8nSWzbCtKKK9iKduJ');
+  const [tokenAsk, setTokenAsk] = useState<{ owner: string, price: BN }>();
+  const [contractAddress] = useState<string>('5F7HdoCMynZKjnp6e2784SaJyCPdbymJ54ozPeFTmZvg9X34');
+
+  const findCallMethodByName = useCallback((methodName: string): AbiMessage | null => {
+    const message = contractInstance && Object.values(contractInstance.abi.messages).find((message) => message.identifier === methodName);
+
+    console.log('message!!!', message);
+
+    return message || null;
+  }, [contractInstance]);
 
   // get offers
   // if connection ID not specified, returns 30 last token sale offers
@@ -97,23 +109,17 @@ export function useNftContract (account: string): useNftContractInterface {
     if (contractInstance) {
       const askIdResult = await contractInstance.read('get_ask_id_by_token', value, maxGas, collectionId, tokenId).send(contractAddress) as unknown as { output: BN };
 
-      console.log('askIdResult', askIdResult);
-
       if (askIdResult.output) {
         const askId = askIdResult.output.toNumber();
-
-        console.log('Token Ask ID: ', askId);
         const askResult = await contractInstance.read('get_ask_by_id', value, maxGas, askId).send(contractAddress) as unknown as AskOutputInterface;
 
         if (askResult.output) {
           const askOwnerAddress = keyring.encodeAddress(askResult.output[4].toString());
 
-          console.log('Ask owner: ', askOwnerAddress);
-
-          return {
+          setTokenAsk({
             owner: askOwnerAddress,
             price: askResult.output[3]
-          };
+          });
         }
       }
     }
@@ -150,11 +156,13 @@ export function useNftContract (account: string): useNftContractInterface {
     contractInstance,
     decimals,
     deposited,
+    findCallMethodByName,
     getDepositor,
     getTokenAsk,
     getUserDeposit,
     isContractReady,
     maxGas,
+    tokenAsk,
     value,
     vaultAddress
   };

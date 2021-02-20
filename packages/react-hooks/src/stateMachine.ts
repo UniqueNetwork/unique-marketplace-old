@@ -4,6 +4,12 @@ const marketplaceStateMachine = Machine({
   id: 'marketplace',
   initial: 'idle',
   states: {
+    askPrice: {
+      on: {
+        ASK_PRICE_FAIL: 'askPrice',
+        ASK_PRICE_SUCCESS: 'registerSale'
+      }
+    },
     idle: {
       on: {
         UPDATE_TOKEN_STATE: 'loadingTokenInfo'
@@ -13,6 +19,7 @@ const marketplaceStateMachine = Machine({
       on: {
         BUY: 'buy',
         CANCEL: 'cancelSale',
+        NFT_DEPOSIT_READY: 'askPrice',
         NO_OFFER_PLACED: 'idle',
         REVERT_UNUSED_MONEY: 'revertMoney',
         SALE: 'sale'
@@ -33,24 +40,13 @@ const marketplaceStateMachine = Machine({
     sale: {
       on: {
         TRANSFER_NFT_TO_CONTRACT_FAIL: 'loadingTokenInfo',
-        TRANSFER_NFT_TO_CONTRACT_SUCCESS: 'registerDeposit'
+        TRANSFER_NFT_TO_CONTRACT_SUCCESS: 'waitForDeposit'
       }
     },
-    registerDeposit: {
+    waitForDeposit: {
       on: {
-        REGISTER_DEPOSIT_SUCCESS: 'getDepositReady'
-      }
-    },
-    getDepositReady: {
-      on: {
-        NFT_DEPOSIT_FAIL: 'registerDeposit',
+        NFT_DEPOSIT_FAIL: 'waitForDeposit',
         NFT_DEPOSIT_READY: 'askPrice'
-      }
-    },
-    askPrice: {
-      on: {
-        ASK_PRICE_FAIL: 'askPrice',
-        ASK_PRICE_SUCCESS: 'registerSale'
       }
     },
     registerSale: {
