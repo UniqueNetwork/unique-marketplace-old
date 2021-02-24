@@ -7,11 +7,10 @@ import BN from 'bn.js';
 import React, { useCallback, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
-import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import Modal from 'semantic-ui-react/dist/commonjs/modules/Modal/Modal';
 
-import { Button, Input, InputBalance, TxButton } from '@polkadot/react-components';
+import { Button, Input, TxButton } from '@polkadot/react-components';
 import { useApi, useBalance, useMarketplaceStages, useSchema } from '@polkadot/react-hooks';
 
 import BuySteps from './BuySteps';
@@ -28,7 +27,7 @@ function NftDetailsModal ({ account }: Props): React.ReactElement<Props> {
   const collectionId = query.get('collectionId') || '';
   const [recipient, setRecipient] = useState<string | null>(null);
   const [tokenPart, setTokenPart] = useState<number>(0);
-  const [tokenOfferPrice, setTokenOfferPrice] = useState<number>();
+  const [showTransferForm, setShowTransferForm] = useState<boolean>(false);
   const [isAddressError, setIsAddressError] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
   const { balance } = useBalance(account);
@@ -77,9 +76,6 @@ function NftDetailsModal ({ account }: Props): React.ReactElement<Props> {
     setPrice(tokenPriceForSale);
   }, [setPrice, tokenPriceForSale]);
 
-  const showTransferForm = true;
-  const showOfferPrice = true;
-
   return (
     <Modal
       className='unique-modal'
@@ -124,6 +120,13 @@ function NftDetailsModal ({ account }: Props): React.ReactElement<Props> {
               icon='dollar-sign'
               label='Sale it'
               onClick={sendCurrentUserAction.bind(null, 'SALE')}
+            />
+          )}
+          { uOwnIt && (
+            <Button
+              icon='paper-plane'
+              label='Transfer'
+              onClick={setShowTransferForm.bind(null, true)}
             />
           )}
           { uSaleIt && (
@@ -174,64 +177,31 @@ function NftDetailsModal ({ account }: Props): React.ReactElement<Props> {
             </Form.Field>
           </Form>
         )}
-        { showOfferPrice && (
+        { readyToAskPrice && (
           <Form className='transfer-form'>
             <Form.Field>
-              <InputBalance
-                className='isSmall'
-                defaultValue={new BN(0)}
-                isFull
-                isZeroable
-                maxValue={balance?.free || new BN(0)}
-                onChange={setTokenOfferPrice}
-                withMax
+              <Input
+                className='input-search'
+                help={<span>Set nft token price</span>}
+                label={'Set price'}
+                onChange={setTokenPriceForSale}
+                placeholder=''
+                type='number'
+                value={tokenPriceForSale}
+                withLabel
               />
             </Form.Field>
             <Form.Field>
-              <TxButton
-                accountId={account}
-                isDisabled={!tokenOfferPrice || tokenOfferPrice.lte(new BN(0))}
-                label='Create offer'
-                onFailed={sendCurrentUserAction.bind(null, 'OFFER_TRANSACTION_FAIL')}
-                onStart={sendCurrentUserAction.bind(null, 'SUBMIT_OFFER')}
-                onSuccess={sendCurrentUserAction.bind(null, 'OFFER_TRANSACTION_SUCCESS')}
-                params={[collectionId, tokenId, tokenOfferPrice]}
-                tx={api.tx?.artGalleryPallet?.createOffer}
+              <Button
+                icon='save'
+                label='Set price'
+                onClick={onSavePrice}
               />
             </Form.Field>
           </Form>
         )}
         { transferStep !== 0 && (
           <SaleSteps step={transferStep} />
-        )}
-        { readyToAskPrice && (
-          <Grid
-            centered
-            className='ask-price-form'
-            verticalAlign='middle'
-          >
-            <Grid.Row>
-              <Grid.Column width={4}>
-                <Input
-                  className='input-search'
-                  help={<span>Set nft token price</span>}
-                  label={'Set price'}
-                  onChange={setTokenPriceForSale}
-                  placeholder=''
-                  type='number'
-                  value={tokenPriceForSale}
-                  withLabel
-                />
-              </Grid.Column>
-              <Grid.Column width={4}>
-                <Button
-                  icon='save'
-                  label='Set price'
-                  onClick={onSavePrice}
-                />
-              </Grid.Column>
-            </Grid.Row>
-          </Grid>
         )}
         { transferStep !== 0 && (
           <BuySteps step={transferStep} />
