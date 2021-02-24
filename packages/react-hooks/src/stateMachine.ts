@@ -1,3 +1,6 @@
+// Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
+// SPDX-License-Identifier: Apache-2.0
+
 import { Machine } from 'xstate';
 
 const marketplaceStateMachine = Machine({
@@ -10,25 +13,10 @@ const marketplaceStateMachine = Machine({
         ASK_PRICE_SUCCESS: 'registerSale'
       }
     },
-    idle: {
+    buy: {
       on: {
-        UPDATE_TOKEN_STATE: 'loadingTokenInfo'
-      }
-    },
-    loadingTokenInfo: {
-      on: {
-        BUY: 'buy',
-        CANCEL: 'cancelSale',
-        NFT_DEPOSIT_READY: 'askPrice',
-        NO_OFFER_PLACED: 'idle',
-        REVERT_UNUSED_MONEY: 'revertMoney',
-        SALE: 'sale'
-      }
-    },
-    revertMoney: {
-      on: {
-        WITHDRAW_ERROR: 'loadingTokenInfo',
-        WITHDRAW_SUCCESS: 'loadingTokenInfo'
+        SEND_MONEY_FAIL: 'loadingTokenInfo',
+        SEND_MONEY_SUCCESS: 'checkDepositReady'
       }
     },
     cancelSale: {
@@ -37,16 +25,25 @@ const marketplaceStateMachine = Machine({
         CANCEL_SALE_SUCCESS: 'loadingTokenInfo'
       }
     },
-    sale: {
+    checkDepositReady: {
       on: {
-        TRANSFER_NFT_TO_CONTRACT_FAIL: 'loadingTokenInfo',
-        TRANSFER_NFT_TO_CONTRACT_SUCCESS: 'waitForDeposit'
+        DEPOSIT_FAIL: 'checkDepositReady',
+        DEPOSIT_SUCCESS: 'sentTokenToNewOwner'
       }
     },
-    waitForDeposit: {
+    idle: {
       on: {
-        NFT_DEPOSIT_FAIL: 'waitForDeposit',
-        NFT_DEPOSIT_READY: 'askPrice'
+        BUY: 'buy',
+        CANCEL: 'cancelSale',
+        REVERT_UNUSED_MONEY: 'revertMoney',
+        SALE: 'sale',
+        UPDATE_TOKEN_STATE: 'loadingTokenInfo'
+      }
+    },
+    loadingTokenInfo: {
+      on: {
+        WAIT_FOR_DEPOSIT: 'waitForDeposit',
+        WAIT_FOR_USER_ACTION: 'idle'
       }
     },
     registerSale: {
@@ -55,22 +52,29 @@ const marketplaceStateMachine = Machine({
         REGISTER_SALE_SUCCESS: 'loadingTokenInfo'
       }
     },
-    buy: {
+    revertMoney: {
       on: {
-        SEND_MONEY_FAIL: 'loadingTokenInfo',
-        SEND_MONEY_SUCCESS: 'checkDepositReady'
+        WITHDRAW_ERROR: 'loadingTokenInfo',
+        WITHDRAW_SUCCESS: 'loadingTokenInfo'
       }
     },
-    checkDepositReady: {
+    sale: {
       on: {
-        DEPOSIT_FAIL: 'checkDepositReady',
-        DEPOSIT_SUCCESS: 'sentTokenToNewOwner'
+        TRANSFER_NFT_TO_CONTRACT_FAIL: 'loadingTokenInfo',
+        TRANSFER_NFT_TO_CONTRACT_SUCCESS: 'waitForDeposit'
       }
     },
     sentTokenToNewOwner: {
       on: {
         SEND_TOKEN_FAIL: 'loadingTokenInfo',
         SEND_TOKEN_SUCCESS: 'loadingTokenInfo'
+      }
+    },
+    waitForDeposit: {
+      on: {
+        NFT_DEPOSIT_FAIL: 'waitForDeposit',
+        NFT_DEPOSIT_OTHER: 'loadingTokenInfo',
+        NFT_DEPOSIT_READY: 'askPrice'
       }
     }
   }

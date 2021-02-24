@@ -10,7 +10,7 @@ import { MetadataType, NftCollectionInterface, useCollections, useDecoder } from
 
 export type Attributes = TokenAttribute[];
 
-export function useSchema (account: string, collectionId: string | number, tokenId: string | number) {
+export function useSchema (account: string, collectionId: string, tokenId: string | number) {
   const [collectionInfo, setCollectionInfo] = useState<NftCollectionInterface>();
   const [reFungibleBalance, setReFungibleBalance] = useState<number>(0);
   const [tokenUrl, setTokenUrl] = useState<string>('');
@@ -94,7 +94,8 @@ export function useSchema (account: string, collectionId: string | number, token
       setCollectionInfo({
         ...info,
         ConstOnChainSchema: info.ConstOnChainSchema,
-        VariableOnChainSchema: info.VariableOnChainSchema
+        VariableOnChainSchema: info.VariableOnChainSchema,
+        id: collectionId
       });
     }
   }, [collectionId, getDetailedCollectionInfo]);

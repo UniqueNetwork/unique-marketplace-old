@@ -4,15 +4,15 @@
 import './styles.scss';
 
 import BN from 'bn.js';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import Modal from 'semantic-ui-react/dist/commonjs/modules/Modal/Modal';
 
-import { Button, Input, InputBalance,TxButton } from '@polkadot/react-components';
-import { BalanceInterface, useApi, useBalance, useMarketplaceStages, useSchema } from '@polkadot/react-hooks';
+import { Button, Input, InputBalance, TxButton } from '@polkadot/react-components';
+import { useApi, useBalance, useMarketplaceStages, useSchema } from '@polkadot/react-hooks';
 
 import BuySteps from './BuySteps';
 import SaleSteps from './SaleSteps';
@@ -24,7 +24,7 @@ interface Props {
 function NftDetailsModal ({ account }: Props): React.ReactElement<Props> {
   const { api } = useApi();
   const query = new URLSearchParams(useLocation().search);
-  const tokenId = query.get('tokenId') || '0';
+  const tokenId = query.get('tokenId') || '';
   const collectionId = query.get('collectionId') || '';
   const [recipient, setRecipient] = useState<string | null>(null);
   const [tokenPart, setTokenPart] = useState<number>(0);
@@ -32,14 +32,13 @@ function NftDetailsModal ({ account }: Props): React.ReactElement<Props> {
   const [isAddressError, setIsAddressError] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
   const { balance } = useBalance(account);
-  const { attributes, collectionInfo, getCollectionInfo, reFungibleBalance, tokenDetails, tokenUrl } = useSchema(account, collectionId, tokenId);
+  const { attributes, collectionInfo, reFungibleBalance, tokenDetails, tokenUrl } = useSchema(account, collectionId, tokenId);
+  const [tokenPriceForSale, setTokenPriceForSale] = useState<string>('');
+  const { deposited, depositor, readyToAskPrice, saleFee, sendCurrentUserAction, setPrice, transferStep } = useMarketplaceStages(account, collectionInfo, tokenId);
 
   const uOwnIt = tokenDetails?.Owner?.toString() === account;
+  const uSaleIt = depositor === account;
   const decimalPoints = collectionInfo?.DecimalPoints instanceof BN ? collectionInfo?.DecimalPoints.toNumber() : 1;
-
-  // if tokenContractInfo is not empty - token is on contract (ready to buy)
-  const { deposited, readyToAskPrice, sendCurrentUserAction, saleFee, setPrice, transferStep } = useMarketplaceStages(account, collectionId, tokenId);
-  const [tokenPriceForSale, setTokenPriceForSale] = useState<string>('');
 
   const setTokenPartToTransfer = useCallback((value) => {
     const numberValue = parseFloat(value);
@@ -74,17 +73,9 @@ function NftDetailsModal ({ account }: Props): React.ReactElement<Props> {
     setRecipient(value);
   }, [setIsAddressError, setRecipient]);
 
-  const loadCollectionInfo = useCallback(() => {
-    void getCollectionInfo();
-  }, [getCollectionInfo]);
-
   const onSavePrice = useCallback(() => {
     setPrice(tokenPriceForSale);
   }, [setPrice, tokenPriceForSale]);
-
-  useEffect(() => {
-    void loadCollectionInfo();
-  }, [loadCollectionInfo]);
 
   const showTransferForm = true;
   const showOfferPrice = true;
@@ -112,28 +103,36 @@ function NftDetailsModal ({ account }: Props): React.ReactElement<Props> {
             <p><strong>You own it!</strong> (address: {account})</p>
           )}
           { !!(!uOwnIt && tokenDetails) && (
-            <p><strong>The owner is </strong>{tokenDetails.Owner.toString()}</p>
+            <p><strong>The owner is </strong>{tokenDetails?.Owner?.toString()}</p>
           )}
-          <Button
-            icon='shopping-cart'
-            label='Buy it'
-            onClick={sendCurrentUserAction.bind(null, 'BUY')}
-          />
-          <Button
-            icon='history'
-            label='Withdraw'
-            onClick={sendCurrentUserAction.bind(null, 'REVERT_UNUSED_MONEY')}
-          />
-          <Button
-            icon='dollar-sign'
-            label='Sale it'
-            onClick={sendCurrentUserAction.bind(null, 'SALE')}
-          />
-          <Button
-            icon='window-close'
-            label='Cancel sale'
-            onClick={sendCurrentUserAction.bind(null, 'CANCEL')}
-          />
+          { !uOwnIt && (
+            <Button
+              icon='shopping-cart'
+              label='Buy it'
+              onClick={sendCurrentUserAction.bind(null, 'BUY')}
+            />
+          )}
+          { deposited && (
+            <Button
+              icon='history'
+              label='Withdraw'
+              onClick={sendCurrentUserAction.bind(null, 'REVERT_UNUSED_MONEY')}
+            />
+          )}
+          { uOwnIt && (
+            <Button
+              icon='dollar-sign'
+              label='Sale it'
+              onClick={sendCurrentUserAction.bind(null, 'SALE')}
+            />
+          )}
+          { uSaleIt && (
+            <Button
+              icon='window-close'
+              label='Cancel sale'
+              onClick={sendCurrentUserAction.bind(null, 'CANCEL')}
+            />
+          )}
         </div>
         { saleFee && !balance?.free.gte(saleFee) && (
           <span className='text-warning'>Your balance is too low to pay fees</span>

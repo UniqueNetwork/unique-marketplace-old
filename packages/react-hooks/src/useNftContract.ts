@@ -1,15 +1,16 @@
 // Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import type { AbiMessage } from '@polkadot/api-contract/types';
+
 import BN from 'bn.js';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import {Abi, ContractPromise as Contract, ContractPromise} from '@polkadot/api-contract';
+import { Abi, ContractPromise } from '@polkadot/api-contract';
 import { DEFAULT_DECIMALS } from '@polkadot/react-api';
 import { getContractAbi } from '@polkadot/react-components/util';
 import { useApi } from '@polkadot/react-hooks';
 import keyring from '@polkadot/ui-keyring';
-import {AbiMessage} from "@polkadot/api-contract/types";
 
 export interface AskOutputInterface {
   output: [string, string, string, BN, string]
@@ -19,10 +20,12 @@ export interface useNftContractInterface {
   abi: Abi | undefined;
   contractAddress: string;
   contractInstance: ContractPromise | null;
-  decimals: number;
+  decimals: BN;
   deposited: BN | undefined;
+  depositor: string | undefined;
+  escrowAddress: string;
   findCallMethodByName: (methodName: string) => AbiMessage | null;
-  getDepositor: (collectionId: string, tokenId: string, readerAddress: string) => Promise<string | null>;
+  getDepositor: (collectionId: string, tokenId: string) => void;
   getTokenAsk: (collectionId: string, tokenId: string) => void;
   getUserDeposit: () => void;
   isContractReady: boolean;
@@ -37,10 +40,12 @@ export function useNftContract (account: string): useNftContractInterface {
   const { api } = useApi();
   const [value] = useState(0);
   const [maxGas] = useState(200000000000);
-  const [decimals, setDecimals] = useState(15);
+  const [decimals, setDecimals] = useState(new BN(15));
+  const [escrowAddress] = useState('5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty');
   const [vaultAddress] = useState('5CYN9j3YvRkqxewoxeSvRbhAym4465C57uMmX5j4yz99L5H6');
   const [contractInstance, setContractInstance] = useState<ContractPromise | null>(null);
   const [abi, setAbi] = useState<Abi>();
+  const [depositor, setDepositor] = useState<string>();
   const [deposited, setDeposited] = useState<BN>();
   const [tokenAsk, setTokenAsk] = useState<{ owner: string, price: BN }>();
   const [contractAddress] = useState<string>('5F7HdoCMynZKjnp6e2784SaJyCPdbymJ54ozPeFTmZvg9X34');
@@ -58,7 +63,9 @@ export function useNftContract (account: string): useNftContractInterface {
   const getUserDeposit = useCallback(async () => {
     try {
       if (contractInstance) {
-        const result = await contractInstance.read('get_balance', value, maxGas, 2).send(account) as unknown as { output: BN };
+        const result = await contractInstance.read('getBalance', value, maxGas, 2).send(account) as unknown as { output: BN };
+
+        console.log('result getUserDeposit balance', result);
 
         if (result.output) {
           setDeposited(result.output);
@@ -69,30 +76,19 @@ export function useNftContract (account: string): useNftContractInterface {
     }
   }, [account, contractInstance, maxGas, value]);
 
-  const getDepositor = useCallback(async (collectionId: string, tokenId: string, readerAddress: string) => {
+  const getDepositor = useCallback(async (collectionId: string, tokenId: string) => {
     try {
       if (contractInstance) {
-        // const keyring = new keyring({ type: 'sr25519' });
-        const result = await contractInstance.read('get_nft_deposit', value, maxGas, collectionId, tokenId).send(readerAddress);
-
-        console.log('result!!!', result);
+        const result = await contractInstance.read('getNftDeposit', { gasLimit: maxGas, value }, collectionId, tokenId).send(account);
 
         if (result.output) {
-          const address = keyring.encodeAddress(result.output.toString());
-
-          console.log('Deposit address: ', address);
-
-          return address;
+          setDepositor(keyring.encodeAddress(result.output.toString()));
         }
       }
-
-      return null;
     } catch (e) {
       console.log('getDepositor Error: ', e);
     }
-
-    return null;
-  }, [contractInstance, maxGas, value]);
+  }, [account, contractInstance, maxGas, value]);
 
   const initAbi = useCallback(() => {
     console.log('contractAddress', contractAddress);
@@ -107,11 +103,11 @@ export function useNftContract (account: string): useNftContractInterface {
 
   const getTokenAsk = useCallback(async (collectionId: string, tokenId: string) => {
     if (contractInstance) {
-      const askIdResult = await contractInstance.read('get_ask_id_by_token', value, maxGas, collectionId, tokenId).send(contractAddress) as unknown as { output: BN };
+      const askIdResult = await contractInstance.read('getAskIdByToken', value, maxGas, collectionId, tokenId).send(contractAddress) as unknown as { output: BN };
 
       if (askIdResult.output) {
         const askId = askIdResult.output.toNumber();
-        const askResult = await contractInstance.read('get_ask_by_id', value, maxGas, askId).send(contractAddress) as unknown as AskOutputInterface;
+        const askResult = await contractInstance.read('getAskById', value, maxGas, askId).send(contractAddress) as unknown as AskOutputInterface;
 
         if (askResult.output) {
           const askOwnerAddress = keyring.encodeAddress(askResult.output[4].toString());
@@ -135,16 +131,12 @@ export function useNftContract (account: string): useNftContractInterface {
     const properties = await api.rpc.system.properties();
     const tokenDecimals = properties.tokenDecimals.unwrapOr([DEFAULT_DECIMALS]);
 
-    setDecimals(tokenDecimals[0].toNumber());
+    setDecimals(tokenDecimals[0]);
   }, [api]);
 
   useEffect(() => {
     initAbi();
   }, [initAbi]);
-
-  useEffect(() => {
-    void getUserDeposit();
-  }, [getUserDeposit]);
 
   useEffect(() => {
     void fetchSystemProperties();
@@ -156,6 +148,8 @@ export function useNftContract (account: string): useNftContractInterface {
     contractInstance,
     decimals,
     deposited,
+    depositor,
+    escrowAddress,
     findCallMethodByName,
     getDepositor,
     getTokenAsk,

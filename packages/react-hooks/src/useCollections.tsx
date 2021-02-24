@@ -4,7 +4,7 @@
 import BN from 'bn.js';
 import { useCallback, useState } from 'react';
 
-import { useApi, useFetch, ErrorType } from '@polkadot/react-hooks';
+import { ErrorType, useApi, useFetch } from '@polkadot/react-hooks';
 
 export type MetadataType = {
   metadata: string;
@@ -20,7 +20,7 @@ export type TokenAttribute = {
 
 export interface NftCollectionInterface {
   Access?: 'Normal'
-  id: number;
+  id: string;
   DecimalPoints: BN | number;
   Description: BN[];
   TokenPrefix: number | string;
@@ -169,7 +169,7 @@ export function useCollections () {
         const collectionInf = await getDetailedCollectionInfo(i) as unknown as NftCollectionInterface;
 
         if (collectionInf && collectionInf.Owner && collectionInf.Owner.toString() !== '5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM') {
-          collections.push({ ...collectionInf, id: i });
+          collections.push({ ...collectionInf, id: i.toString() });
         }
       }
 
