@@ -34,7 +34,7 @@ function NftDetailsModal ({ account, setShouldUpdateTokens }: Props): React.Reac
   const { balance } = useBalance(account);
   const { attributes, collectionInfo, reFungibleBalance, tokenDetails, tokenUrl } = useSchema(account, collectionId, tokenId);
   const [tokenPriceForSale, setTokenPriceForSale] = useState<string>('');
-  const { deposited, depositor, readyToAskPrice, saleFee, sendCurrentUserAction, setPrice, tokenAsk, transferStep } = useMarketplaceStages(account, collectionInfo, tokenId);
+  const { deposited, readyToAskPrice, saleFee, sendCurrentUserAction, setPrice, tokenAsk, transferStep } = useMarketplaceStages(account, collectionInfo, tokenId);
 
   const uOwnIt = tokenDetails?.Owner?.toString() === account || (tokenAsk && tokenAsk.owner === account);
   const uSellIt = tokenAsk && tokenAsk.owner === account;
@@ -123,7 +123,7 @@ function NftDetailsModal ({ account, setShouldUpdateTokens }: Props): React.Reac
               onClick={sendCurrentUserAction.bind(null, 'BUY')}
             />
           )}
-          { deposited && (
+          { (deposited && deposited.gtn(0)) && (
             <Button
               icon='history'
               label='Withdraw'
@@ -134,7 +134,7 @@ function NftDetailsModal ({ account, setShouldUpdateTokens }: Props): React.Reac
             <Button
               icon='dollar-sign'
               label='Sale it'
-              onClick={sendCurrentUserAction.bind(null, 'SALE')}
+              onClick={sendCurrentUserAction.bind(null, 'SELL')}
             />
           )}
           { (uOwnIt && !uSellIt) && (
