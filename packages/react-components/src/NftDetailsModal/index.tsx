@@ -200,9 +200,10 @@ function NftDetailsModal ({ account }: Props): React.ReactElement<Props> {
             </Form.Field>
           </Form>
         )}
-        { transferStep !== 0 && (
+        {/* { transferStep !== 0 && (
           <SaleSteps step={transferStep} />
-        )}
+        )} */}
+        <SaleSteps step={transferStep} />
         { transferStep !== 0 && (
           <BuySteps step={transferStep} />
         )}

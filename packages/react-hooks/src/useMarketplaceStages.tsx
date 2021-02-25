@@ -283,12 +283,14 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
         return 1;
       case 'waitForDeposit':
         return 2;
-      case 'getDepositReady':
-        return 3;
       case 'askPrice':
+        return 3;
+      case 'buy':
         return 4;
-      case 'registerSale':
+      case 'checkDepositReady':
         return 5;
+      case 'sentTokenToNewOwner':
+        return 6;
       default:
         return 0;
     }
