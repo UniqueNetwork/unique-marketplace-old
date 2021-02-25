@@ -48,7 +48,7 @@ const SaleSteps: React.FC<StepProps> = ({ step }) => {
         </Step>
       </Step.Group>
     </div>
-  )
+  );
 };
 
 export default memo(SaleSteps);

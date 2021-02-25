@@ -105,6 +105,8 @@ export function useNftContract (account: string): useNftContractInterface {
     if (contractInstance) {
       const askIdResult = await contractInstance.read('getAskIdByToken', value, maxGas, collectionId, tokenId).send(contractAddress) as unknown as { output: BN };
 
+      console.log('askIdResult', askIdResult);
+
       if (askIdResult.output) {
         const askId = askIdResult.output.toNumber();
         const askResult = await contractInstance.read('getAskById', value, maxGas, askId).send(contractAddress) as unknown as AskOutputInterface;

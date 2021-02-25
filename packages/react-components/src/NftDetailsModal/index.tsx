@@ -34,10 +34,10 @@ function NftDetailsModal ({ account, setShouldUpdateTokens }: Props): React.Reac
   const { balance } = useBalance(account);
   const { attributes, collectionInfo, reFungibleBalance, tokenDetails, tokenUrl } = useSchema(account, collectionId, tokenId);
   const [tokenPriceForSale, setTokenPriceForSale] = useState<string>('');
-  const { deposited, depositor, readyToAskPrice, saleFee, sendCurrentUserAction, setPrice, transferStep } = useMarketplaceStages(account, collectionInfo, tokenId);
+  const { deposited, depositor, readyToAskPrice, saleFee, sendCurrentUserAction, setPrice, tokenAsk, transferStep } = useMarketplaceStages(account, collectionInfo, tokenId);
 
-  const uOwnIt = tokenDetails?.Owner?.toString() === account;
-  const uSaleIt = depositor === account;
+  const uOwnIt = tokenDetails?.Owner?.toString() === account || (tokenAsk && tokenAsk.owner === account);
+  const uSellIt = tokenAsk && tokenAsk.owner === account;
   const decimalPoints = collectionInfo?.DecimalPoints instanceof BN ? collectionInfo?.DecimalPoints.toNumber() : 1;
 
   const setTokenPartToTransfer = useCallback((value) => {
@@ -74,6 +74,9 @@ function NftDetailsModal ({ account, setShouldUpdateTokens }: Props): React.Reac
   }, [setIsAddressError, setRecipient]);
 
   const onSavePrice = useCallback(() => {
+    /* if (tokenPriceForSale && ((tokenPriceForSale < 0.01) || (tokenPriceForSale > 10000)))`
+      Sorry, price should be in the range between 0.01 and 10000 KSM. You have input: ${price}
+    `; */
     setPrice(tokenPriceForSale);
   }, [setPrice, tokenPriceForSale]);
 
@@ -104,13 +107,16 @@ function NftDetailsModal ({ account, setShouldUpdateTokens }: Props): React.Reac
           { attributes && Object.values(attributes).length > 0 && (
             <span>Attributes: {Object.keys(attributes).map((attrKey) => (<span key={attrKey}>{attrKey}: {attributes[attrKey]}</span>))}</span>
           )}
-          { uOwnIt && (
+          { (uOwnIt && !uSellIt) && (
             <p><strong>You own it!</strong> (address: {account})</p>
+          )}
+          { uSellIt && (
+            <p><strong>You selling it!</strong> (price: {tokenAsk?.price.toString()})</p>
           )}
           { !!(!uOwnIt && tokenDetails) && (
             <p><strong>The owner is </strong>{tokenDetails?.Owner?.toString()}</p>
           )}
-          { !uOwnIt && (
+          { (!uOwnIt && !transferStep) && (
             <Button
               icon='shopping-cart'
               label='Buy it'
@@ -124,21 +130,21 @@ function NftDetailsModal ({ account, setShouldUpdateTokens }: Props): React.Reac
               onClick={sendCurrentUserAction.bind(null, 'REVERT_UNUSED_MONEY')}
             />
           )}
-          { uOwnIt && (
+          { (uOwnIt && !uSellIt) && (
             <Button
               icon='dollar-sign'
               label='Sale it'
               onClick={sendCurrentUserAction.bind(null, 'SALE')}
             />
           )}
-          { uOwnIt && (
+          { (uOwnIt && !uSellIt) && (
             <Button
               icon='paper-plane'
               label='Transfer'
               onClick={setShowTransferForm.bind(null, !showTransferForm)}
             />
           )}
-          { uSaleIt && (
+          { (uSellIt && !transferStep) && (
             <Button
               icon='window-close'
               label='Cancel sale'
@@ -178,7 +184,6 @@ function NftDetailsModal ({ account, setShouldUpdateTokens }: Props): React.Reac
                 accountId={account}
                 isDisabled={!recipient || isError}
                 label='Submit'
-                onStart={closeModal}
                 onSuccess={onTransferSuccess}
                 params={[recipient, collectionId, tokenId, (tokenPart * Math.pow(10, decimalPoints))]}
                 tx={api.tx.nft.transfer}
@@ -186,11 +191,17 @@ function NftDetailsModal ({ account, setShouldUpdateTokens }: Props): React.Reac
             </Form.Field>
           </Form>
         )}
+        { !!(transferStep && transferStep <= 3) && (
+          <SaleSteps step={transferStep} />
+        )}
+        { !!(transferStep && transferStep >= 4) && (
+          <BuySteps step={transferStep} />
+        )}
         { readyToAskPrice && (
           <Form className='transfer-form'>
             <Form.Field>
               <Input
-                className='input-search'
+                className='isSmall'
                 help={<span>Set nft token price</span>}
                 label={'Set price'}
                 onChange={setTokenPriceForSale}
@@ -208,12 +219,6 @@ function NftDetailsModal ({ account, setShouldUpdateTokens }: Props): React.Reac
               />
             </Form.Field>
           </Form>
-        )}
-        { !!(transferStep && transferStep <= 3) && (
-          <SaleSteps step={transferStep} />
-        )}
-        { !!(transferStep && transferStep >= 4) && (
-          <BuySteps step={transferStep} />
         )}
       </Modal.Content>
       <Modal.Actions>

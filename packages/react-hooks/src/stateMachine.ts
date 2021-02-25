@@ -36,7 +36,7 @@ const marketplaceStateMachine = Machine({
         BUY: 'buy',
         CANCEL: 'cancelSale',
         REVERT_UNUSED_MONEY: 'revertMoney',
-        SALE: 'sale',
+        SELL: 'sell',
         UPDATE_TOKEN_STATE: 'loadingTokenInfo'
       }
     },
@@ -58,10 +58,10 @@ const marketplaceStateMachine = Machine({
         WITHDRAW_SUCCESS: 'loadingTokenInfo'
       }
     },
-    sale: {
+    sell: {
       on: {
-        TRANSFER_NFT_TO_CONTRACT_FAIL: 'loadingTokenInfo',
-        TRANSFER_NFT_TO_CONTRACT_SUCCESS: 'waitForDeposit'
+        TRANSACTION_READY: 'waitForSignTransfer',
+        TRANSFER_FAIL: 'loadingTokenInfo'
       }
     },
     sentTokenToNewOwner: {
@@ -75,6 +75,12 @@ const marketplaceStateMachine = Machine({
         NFT_DEPOSIT_FAIL: 'waitForDeposit',
         NFT_DEPOSIT_OTHER: 'loadingTokenInfo',
         NFT_DEPOSIT_READY: 'askPrice'
+      }
+    },
+    waitForSignTransfer: {
+      on: {
+        TRANSFER_FAIL: 'loadingTokenInfo',
+        TRANSFER_SUCCESS: 'waitForDeposit'
       }
     }
   }

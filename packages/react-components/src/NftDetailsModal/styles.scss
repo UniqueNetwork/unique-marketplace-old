@@ -15,8 +15,17 @@
     width: 100%;
 
     &.ui.ordered {
-      .step.completed:before, .ui.steps .step.completed .icon:before {
-        color: #a2dd18;
+
+      .step {
+        &.active {
+          .title {
+            color: #000219;
+          }
+        }
+
+        &.completed:before, .ui.steps .step.completed .icon:before {
+          color: #77903b;
+        }
       }
     }
   }
