@@ -1,4 +1,7 @@
 .ui.modal.unique-modal {
+  .transfer-form {
+    margin: 1rem 0;
+  }
   .actions {
     padding: 1rem !important;
   }
@@ -6,6 +9,7 @@
 
 .buy-steps, .sale-steps {
   width: 100%;
+  margin: 1rem 0;
 
   .steps {
     width: 100%;
@@ -16,4 +20,10 @@
       }
     }
   }
+}
+
+.text-warning {
+  display: block;
+  margin: 1rem 0;
+  color: #f2711c;
 }

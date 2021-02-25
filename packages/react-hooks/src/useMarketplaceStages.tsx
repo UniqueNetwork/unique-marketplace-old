@@ -78,10 +78,10 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
       accountId: account && account.toString(),
       extrinsic: transaction,
       isUnsigned: false,
-      txFailedCb: () => send(fail),
-      txStartCb: () => send(start),
-      txSuccessCb: () => send(success),
-      txUpdateCb: () => send(update)
+      txFailedCb: () => { console.log(fail); send(fail); },
+      txStartCb: () => { console.log(start); send(start); },
+      txSuccessCb: () => { console.log(success); send(success); },
+      txUpdateCb: () => { console.log(update); send(update); }
     });
   }, [account, queueExtrinsic, send]);
 
@@ -178,11 +178,6 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
 
   const sentTokenToAccount = useCallback(() => {
     console.log('sentTokenToNewOwner');
-    setTimeout(() => {
-      send('DEPOSIT_SUCCESS');
-    }, 1000);
-    // tokenId, newOwner (account)
-
     const message = findCallMethodByName('buy');
 
     if (message && contractInstance && collectionInfo) {
@@ -194,12 +189,12 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
       queueTransaction(
         extrinsic,
         'SEND_TOKEN_FAIL',
-        'send token to account start',
+        'buy start',
         'SEND_TOKEN_SUCCESS',
-        'send token to account update'
+        'buy update'
       );
     }
-  }, [findCallMethodByName, contractInstance, send, maxGas, collectionInfo, tokenId, queueTransaction]);
+  }, [findCallMethodByName, contractInstance, maxGas, collectionInfo, tokenId, queueTransaction]);
 
   const revertMoney = useCallback(() => {
     /* При исполнении сделки, нужно посылать только сумму, указанную в withdraw.
@@ -208,7 +203,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
 
     const expectedCommission = new BN(10).pow(decimals);
     const balance = deposited || new BN(0);
-    const balanceToSend = balance.iadd(expectedCommission).integerValue(BN.ROUND_DOWN);
+    const balanceToSend = balance.mul(expectedCommission);
 
     const message = findCallMethodByName('withdraw');
 
@@ -220,10 +215,10 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
 
       queueTransaction(
         extrinsic,
-        'TRANSFER_NFT_TO_CONTRACT_FAIL',
-        'deposit nft to contract start',
-        'TRANSFER_NFT_TO_CONTRACT_SUCCESS',
-        'deposit nft to contract update'
+        'WITHDRAW_FAIL',
+        'withdraw start',
+        'WITHDRAW_SUCCESS',
+        'withdraw update'
       );
     }
   }, [decimals, deposited, findCallMethodByName, contractInstance, maxGas, queueTransaction]);

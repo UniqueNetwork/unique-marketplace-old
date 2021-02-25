@@ -22,7 +22,7 @@ export interface NftCollectionInterface {
   Access?: 'Normal'
   id: string;
   DecimalPoints: BN | number;
-  Description: BN[];
+  Description: number[];
   TokenPrefix: number | string;
   MintMode?: boolean;
   Mode: {
@@ -31,7 +31,7 @@ export interface NftCollectionInterface {
     isReFungible: boolean;
     isInvalid: boolean;
   };
-  Name: BN[];
+  Name: number[];
   OffchainSchema: string | MetadataType;
   Owner?: string;
   SchemaVersion: 'ImageURL' | 'Unique';
@@ -74,7 +74,7 @@ export function useCollections () {
   const [offers, setOffers] = useState<OfferType[]>();
   const [trades, setTrades] = useState<TradeType[]>();
 
-  const getTokensOfCollection = useCallback(async (collectionId: number, ownerId: string) => {
+  const getTokensOfCollection = useCallback(async (collectionId: string, ownerId: string) => {
     if (!api || !collectionId || !ownerId) {
       return [];
     }

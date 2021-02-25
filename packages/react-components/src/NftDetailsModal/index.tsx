@@ -18,9 +18,10 @@ import SaleSteps from './SaleSteps';
 
 interface Props {
   account: string;
+  setShouldUpdateTokens?: (collectionId: string) => void;
 }
 
-function NftDetailsModal ({ account }: Props): React.ReactElement<Props> {
+function NftDetailsModal ({ account, setShouldUpdateTokens }: Props): React.ReactElement<Props> {
   const { api } = useApi();
   const query = new URLSearchParams(useLocation().search);
   const tokenId = query.get('tokenId') || '';
@@ -76,6 +77,11 @@ function NftDetailsModal ({ account }: Props): React.ReactElement<Props> {
     setPrice(tokenPriceForSale);
   }, [setPrice, tokenPriceForSale]);
 
+  const onTransferSuccess = useCallback(() => {
+    sendCurrentUserAction.bind(null, 'UPDATE_TOKEN_STATE');
+    setShouldUpdateTokens && setShouldUpdateTokens(collectionId);
+  }, [collectionId, sendCurrentUserAction, setShouldUpdateTokens]);
+
   return (
     <Modal
       className='unique-modal'
@@ -86,7 +92,10 @@ function NftDetailsModal ({ account }: Props): React.ReactElement<Props> {
       <Modal.Content>
         { collectionInfo && (
           <div className='token-image'>
-            <img src={tokenUrl} />
+            <img
+              alt='token-image'
+              src={tokenUrl}
+            />
           </div>
         )}
         <div className='token-info'>
@@ -126,7 +135,7 @@ function NftDetailsModal ({ account }: Props): React.ReactElement<Props> {
             <Button
               icon='paper-plane'
               label='Transfer'
-              onClick={setShowTransferForm.bind(null, true)}
+              onClick={setShowTransferForm.bind(null, !showTransferForm)}
             />
           )}
           { uSaleIt && (
@@ -137,7 +146,7 @@ function NftDetailsModal ({ account }: Props): React.ReactElement<Props> {
             />
           )}
         </div>
-        { saleFee && !balance?.free.gte(saleFee) && (
+        { (saleFee && !balance?.free.gte(saleFee)) && (
           <span className='text-warning'>Your balance is too low to pay fees</span>
         )}
         { showTransferForm && (
@@ -170,7 +179,7 @@ function NftDetailsModal ({ account }: Props): React.ReactElement<Props> {
                 isDisabled={!recipient || isError}
                 label='Submit'
                 onStart={closeModal}
-                onSuccess={sendCurrentUserAction.bind(null, 'UPDATE_TOKEN_STATE')}
+                onSuccess={onTransferSuccess}
                 params={[recipient, collectionId, tokenId, (tokenPart * Math.pow(10, decimalPoints))]}
                 tx={api.tx.nft.transfer}
               />
@@ -200,11 +209,10 @@ function NftDetailsModal ({ account }: Props): React.ReactElement<Props> {
             </Form.Field>
           </Form>
         )}
-        {/* { transferStep !== 0 && (
+        { !!(transferStep && transferStep <= 3) && (
           <SaleSteps step={transferStep} />
-        )} */}
-        <SaleSteps step={transferStep} />
-        { transferStep !== 0 && (
+        )}
+        { !!(transferStep && transferStep >= 4) && (
           <BuySteps step={transferStep} />
         )}
       </Modal.Content>

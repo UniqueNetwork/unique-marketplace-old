@@ -21,7 +21,7 @@ function NftWallet (): React.ReactElement {
   const collectionsStorage: NftCollectionInterface[] = JSON.parse(localStorage.getItem('tokenCollections') || '[]') as NftCollectionInterface[];
   const [openTransfer, setOpenTransfer] = useState<{ collection: NftCollectionInterface, tokenId: string, balance: number } | null>(null);
   const [account, setAccount] = useState<string | null>(null);
-  const [shouldUpdateTokens, setShouldUpdateTokens] = useState<number | null>(null);
+  const [shouldUpdateTokens, setShouldUpdateTokens] = useState<string>();
   const [collections, setCollections] = useState<NftCollectionInterface[]>(collectionsStorage);
   const [selectedCollection, setSelectedCollection] = useState<NftCollectionInterface | null>(null);
   const [canTransferTokens] = useState<boolean>(true);
@@ -107,7 +107,6 @@ function NftWallet (): React.ReactElement {
                 collection={collection}
                 openTransferModal={openTransferModal}
                 removeCollection={removeCollection}
-                setShouldUpdateTokens={setShouldUpdateTokens}
                 shouldUpdateTokens={shouldUpdateTokens}
               />
             </td>
@@ -131,7 +130,10 @@ function NftWallet (): React.ReactElement {
             key='TokenDetailsModal'
             path='*/token-details'
           >
-            <NftDetailsModal account={account} />
+            <NftDetailsModal
+              account={account}
+              setShouldUpdateTokens={setShouldUpdateTokens}
+            />
           </Route>
         </Switch>
       )}

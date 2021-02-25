@@ -42,13 +42,13 @@ export function useNftContract (account: string): useNftContractInterface {
   const [maxGas] = useState(200000000000);
   const [decimals, setDecimals] = useState(new BN(15));
   const [escrowAddress] = useState('5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty');
-  const [vaultAddress] = useState('5CYN9j3YvRkqxewoxeSvRbhAym4465C57uMmX5j4yz99L5H6');
+  const [vaultAddress] = useState('5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty');
   const [contractInstance, setContractInstance] = useState<ContractPromise | null>(null);
   const [abi, setAbi] = useState<Abi>();
   const [depositor, setDepositor] = useState<string>();
   const [deposited, setDeposited] = useState<BN>();
   const [tokenAsk, setTokenAsk] = useState<{ owner: string, price: BN }>();
-  const [contractAddress] = useState<string>('5F7HdoCMynZKjnp6e2784SaJyCPdbymJ54ozPeFTmZvg9X34');
+  const [contractAddress] = useState<string>('5Gd65LFXGhf3xU8csaLsmK2nYmpvrBqc568KsBtMNTC4oUs7');
 
   const findCallMethodByName = useCallback((methodName: string): AbiMessage | null => {
     const message = contractInstance && Object.values(contractInstance.abi.messages).find((message) => message.identifier === methodName);

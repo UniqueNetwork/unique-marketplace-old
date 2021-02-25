@@ -4,6 +4,7 @@
 import './styles.scss';
 
 import React, { memo } from 'react';
+import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import Step from 'semantic-ui-react/dist/commonjs/elements/Step';
 
 interface StepProps {
@@ -16,7 +17,7 @@ const SaleSteps: React.FC<StepProps> = ({ step }) => {
       className='sale-steps'
       id='sale-steps'
     >
-      <h3 id='tradeTitle'>Selling this NFT</h3>
+      <Header as='h3'>Selling this NFT</Header>
       <Step.Group ordered>
         <Step
           active={step === 1}

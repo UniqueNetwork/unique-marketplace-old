@@ -15,13 +15,12 @@ interface Props {
   account: string | null;
   canTransferTokens: boolean;
   collection: NftCollectionInterface;
-  removeCollection: (collection: number) => void;
+  removeCollection: (collection: string) => void;
   openTransferModal: (collection: NftCollectionInterface, tokenId: string, balance: number) => void;
-  setShouldUpdateTokens: (collectionId: number | null) => void;
-  shouldUpdateTokens: number | null;
+  shouldUpdateTokens: string | undefined;
 }
 
-function NftCollectionCard ({ account, canTransferTokens, collection, openTransferModal, removeCollection, setShouldUpdateTokens, shouldUpdateTokens }: Props): React.ReactElement<Props> {
+function NftCollectionCard ({ account, canTransferTokens, collection, openTransferModal, removeCollection, shouldUpdateTokens }: Props): React.ReactElement<Props> {
   const [opened, setOpened] = useState(false);
   const [tokensOfCollection, setTokensOfCollection] = useState<Array<string>>([]);
   const { getTokensOfCollection } = useCollections();
@@ -38,6 +37,7 @@ function NftCollectionCard ({ account, canTransferTokens, collection, openTransf
     }
 
     const tokensOfCollection = (await getTokensOfCollection(collection.id, account)) as string[];
+    console.log('tokensOfCollection', tokensOfCollection);
 
     setTokensOfCollection(tokensOfCollection);
   }, [account, collection, getTokensOfCollection]);
@@ -53,11 +53,10 @@ function NftCollectionCard ({ account, canTransferTokens, collection, openTransf
   }, [account, currentAccount, setOpened, setTokensOfCollection]);
 
   useEffect(() => {
-    if (shouldUpdateTokens && shouldUpdateTokens === collection.id) {
+    if (shouldUpdateTokens === collection.id && opened) {
       void updateTokens();
-      setShouldUpdateTokens(null);
     }
-  }, [collection.id, setShouldUpdateTokens, shouldUpdateTokens, updateTokens]);
+  }, [collection.id, opened, shouldUpdateTokens, updateTokens]);
 
   useEffect(() => {
     if (opened) {
@@ -65,7 +64,7 @@ function NftCollectionCard ({ account, canTransferTokens, collection, openTransf
     }
   }, [opened, updateTokens]);
 
-  console.log('collection', collection);
+  console.log('shouldUpdateTokens', shouldUpdateTokens, 'collection.id', collection.id, 'opened', opened);
 
   return (
     <Expander

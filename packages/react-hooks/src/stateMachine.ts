@@ -54,7 +54,7 @@ const marketplaceStateMachine = Machine({
     },
     revertMoney: {
       on: {
-        WITHDRAW_ERROR: 'loadingTokenInfo',
+        WITHDRAW_FAIL: 'loadingTokenInfo',
         WITHDRAW_SUCCESS: 'loadingTokenInfo'
       }
     },
