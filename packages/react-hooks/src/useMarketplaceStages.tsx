@@ -66,8 +66,6 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
   }, [collectionInfo, getDetailedReFungibleTokenInfo, getDetailedTokenInfo, tokenId]);
 
   const loadingTokenInfo = useCallback(async () => {
-    console.log('loadingTokenInfo');
-
     if (!collectionInfo) {
       return;
     }
@@ -76,14 +74,11 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
 
     // the token is mine
     if (info?.Owner?.toString() === escrowAddress) {
-
       // check the token price and user deposit
       const ask = await getTokenAsk(collectionInfo.id, tokenId);
 
       if (!ask || !ask.price) {
         const tokenDepositor = await getDepositor(collectionInfo.id, tokenId);
-
-        console.log('tokenDepositor', tokenDepositor);
 
         if (tokenDepositor === account) {
           // the token is in escrow - waiting for deposit
