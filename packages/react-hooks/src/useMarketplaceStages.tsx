@@ -75,33 +75,27 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
     const info = await getTokenInfo();
 
     // the token is mine
-    if (info?.Owner?.toString() === account) {
-      send('WAIT_FOR_USER_ACTION');
-    } else if (info?.Owner?.toString() === escrowAddress) {
-      // if we have ask - wait for action
-      if (tokenAsk && tokenAsk.price) {
-        send('WAIT_FOR_USER_ACTION');
-      } else {
-        // check the token price and user deposit
-        const ask = await getTokenAsk(collectionInfo.id, tokenId);
+    if (info?.Owner?.toString() === escrowAddress) {
 
-        if (ask && ask.price) {
-          send('WAIT_FOR_USER_ACTION');
-        } else {
-          const tokenDepositor = await getDepositor(collectionInfo.id, tokenId);
+      // check the token price and user deposit
+      const ask = await getTokenAsk(collectionInfo.id, tokenId);
 
-          console.log('tokenDepositor', tokenDepositor);
+      if (!ask || !ask.price) {
+        const tokenDepositor = await getDepositor(collectionInfo.id, tokenId);
 
+        console.log('tokenDepositor', tokenDepositor);
+
+        if (tokenDepositor === account) {
           // the token is in escrow - waiting for deposit
           send('WAIT_FOR_DEPOSIT');
         }
       }
-    } else {
-      send('WAIT_FOR_USER_ACTION');
     }
 
     await getUserDeposit();
-  }, [collectionInfo, getTokenInfo, account, escrowAddress, getUserDeposit, send, tokenAsk, getTokenAsk, tokenId, getDepositor]);
+
+    send('WAIT_FOR_USER_ACTION');
+  }, [collectionInfo, getTokenInfo, account, escrowAddress, getUserDeposit, send, getTokenAsk, tokenId, getDepositor]);
 
   const getFee = useCallback((price: number): number => {
     if (price <= 0.001) {
@@ -416,11 +410,6 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
       send('UPDATE_TOKEN_STATE');
     }
   }, [send, isContractReady]);
-
-  console.log('state.value', state.value);
-  console.log('contractInstance?.abi.messages', contractInstance);
-  console.log('deposited', deposited);
-  console.log('tokenAsk', tokenAsk);
 
   return {
     deposited,
