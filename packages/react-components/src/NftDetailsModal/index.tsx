@@ -147,7 +147,7 @@ function NftDetailsModal ({ account, setShouldUpdateTokens }: Props): React.Reac
           { (uSellIt && !transferStep) && (
             <Button
               icon='window-close'
-              label='Cancel sale'
+              label='Cancel sell'
               onClick={sendCurrentUserAction.bind(null, 'CANCEL')}
             />
           )}

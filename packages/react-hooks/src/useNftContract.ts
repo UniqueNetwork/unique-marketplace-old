@@ -25,9 +25,9 @@ export interface useNftContractInterface {
   depositor: string | undefined;
   escrowAddress: string;
   findCallMethodByName: (methodName: string) => AbiMessage | null;
-  getDepositor: (collectionId: string, tokenId: string) => void;
-  getTokenAsk: (collectionId: string, tokenId: string) => void;
-  getUserDeposit: () => void;
+  getDepositor: (collectionId: string, tokenId: string) => Promise<string | null>;
+  getTokenAsk: (collectionId: string, tokenId: string) => Promise<{ owner: string, price: BN } | null>;
+  getUserDeposit: () => Promise<BN | null>;
   isContractReady: boolean;
   maxGas: number;
   tokenAsk: { owner: string, price: BN } | undefined;
@@ -48,7 +48,7 @@ export function useNftContract (account: string): useNftContractInterface {
   const [depositor, setDepositor] = useState<string>();
   const [deposited, setDeposited] = useState<BN>();
   const [tokenAsk, setTokenAsk] = useState<{ owner: string, price: BN }>();
-  const [contractAddress] = useState<string>('5Gd65LFXGhf3xU8csaLsmK2nYmpvrBqc568KsBtMNTC4oUs7');
+  const [contractAddress] = useState<string>('5HT6XeXfwh6uCmNntuRhZ6Pj2TxPGrCesFwB4Wyr8WeSJ9KF');
 
   const findCallMethodByName = useCallback((methodName: string): AbiMessage | null => {
     const message = contractInstance && Object.values(contractInstance.abi.messages).find((message) => message.identifier === methodName);
@@ -60,7 +60,7 @@ export function useNftContract (account: string): useNftContractInterface {
 
   // get offers
   // if connection ID not specified, returns 30 last token sale offers
-  const getUserDeposit = useCallback(async () => {
+  const getUserDeposit = useCallback(async (): Promise<BN | null> => {
     try {
       if (contractInstance) {
         const result = await contractInstance.read('getBalance', value, maxGas, 2).send(account) as unknown as { output: BN };
@@ -69,24 +69,38 @@ export function useNftContract (account: string): useNftContractInterface {
 
         if (result.output) {
           setDeposited(result.output);
+
+          return result.output;
         }
       }
+
+      return null;
     } catch (e) {
       console.log('getUserDeposit Error: ', e);
+
+      return null;
     }
   }, [account, contractInstance, maxGas, value]);
 
-  const getDepositor = useCallback(async (collectionId: string, tokenId: string) => {
+  const getDepositor = useCallback(async (collectionId: string, tokenId: string): Promise<string> => {
     try {
       if (contractInstance) {
         const result = await contractInstance.read('getNftDeposit', { gasLimit: maxGas, value }, collectionId, tokenId).send(account);
 
         if (result.output) {
-          setDepositor(keyring.encodeAddress(result.output.toString()));
+          const depositorResult = keyring.encodeAddress(result.output.toString());
+
+          setDepositor(depositorResult);
+
+          return depositorResult;
         }
       }
+
+      return null;
     } catch (e) {
       console.log('getDepositor Error: ', e);
+
+      return null;
     }
   }, [account, contractInstance, maxGas, value]);
 
@@ -113,11 +127,14 @@ export function useNftContract (account: string): useNftContractInterface {
 
         if (askResult.output) {
           const askOwnerAddress = keyring.encodeAddress(askResult.output[4].toString());
-
-          setTokenAsk({
+          const ask = {
             owner: askOwnerAddress,
             price: askResult.output[3]
-          });
+          };
+
+          setTokenAsk(ask);
+
+          return ask;
         }
       }
     }
