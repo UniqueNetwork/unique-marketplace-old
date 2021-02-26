@@ -68,7 +68,7 @@ const marketplaceStateMachine = Machine({
     sentTokenToNewOwner: {
       on: {
         SIGN_FAIL: 'loadingTokenInfo',
-        SIGN_SUCCESS: 'waitForSignMoneyTransfer'
+        SIGN_SUCCESS: 'waitForSignTokenBuy'
       }
     },
     waitForDeposit: {

@@ -32,7 +32,7 @@ function NftDetailsModal ({ account, setShouldUpdateTokens }: Props): React.Reac
   const [isAddressError, setIsAddressError] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
   const { balance } = useBalance(account);
-  const { attributes, collectionInfo, reFungibleBalance, tokenDetails, tokenUrl } = useSchema(account, collectionId, tokenId);
+  const { attributes, collectionInfo, getTokenDetails, reFungibleBalance, tokenDetails, tokenUrl } = useSchema(account, collectionId, tokenId);
   const [tokenPriceForSale, setTokenPriceForSale] = useState<string>('');
   const { deposited, readyToAskPrice, saleFee, sendCurrentUserAction, setPrice, tokenAsk, transferStep } = useMarketplaceStages(account, collectionInfo, tokenId);
 
@@ -83,7 +83,8 @@ function NftDetailsModal ({ account, setShouldUpdateTokens }: Props): React.Reac
   const onTransferSuccess = useCallback(() => {
     sendCurrentUserAction.bind(null, 'UPDATE_TOKEN_STATE');
     setShouldUpdateTokens && setShouldUpdateTokens(collectionId);
-  }, [collectionId, sendCurrentUserAction, setShouldUpdateTokens]);
+    void getTokenDetails();
+  }, [collectionId, getTokenDetails, sendCurrentUserAction, setShouldUpdateTokens]);
 
   return (
     <Modal
@@ -116,7 +117,7 @@ function NftDetailsModal ({ account, setShouldUpdateTokens }: Props): React.Reac
           { !!(!uOwnIt && tokenDetails) && (
             <p><strong>The owner is </strong>{tokenDetails?.Owner?.toString()}</p>
           )}
-          { (!uOwnIt && !transferStep) && (
+          { (!uOwnIt && !transferStep && tokenAsk) && (
             <Button
               icon='shopping-cart'
               label='Buy it'
@@ -184,6 +185,7 @@ function NftDetailsModal ({ account, setShouldUpdateTokens }: Props): React.Reac
                 accountId={account}
                 isDisabled={!recipient || isError}
                 label='Submit'
+                onStart={setShowTransferForm.bind(null, false)}
                 onSuccess={onTransferSuccess}
                 params={[recipient, collectionId, tokenId, (tokenPart * Math.pow(10, decimalPoints))]}
                 tx={api.tx.nft.transfer}

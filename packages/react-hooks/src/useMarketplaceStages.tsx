@@ -147,6 +147,8 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
   }, [api.tx.nft, balance?.free, collectionInfo, escrowAddress, getSaleFee, queueTransaction, send, tokenId]);
 
   const waitForDeposit = useCallback(() => {
+    console.log('waitForDeposit', depositor);
+
     // we selling it, price was set
     if (depositor === account) {
       // depositor is me
@@ -343,12 +345,15 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
       case 'waitForDeposit':
         return 2;
       case 'askPrice':
+      case 'registerSale':
         return 3;
       case 'buy':
+      case 'waitForSignMoneyTransfer':
         return 4;
       case 'checkDepositReady':
         return 5;
       case 'sentTokenToNewOwner':
+      case 'waitForSignTokenBuy':
         return 6;
       default:
         return 0;
@@ -405,6 +410,8 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
       send('UPDATE_TOKEN_STATE');
     }
   }, [send, isContractReady]);
+
+  console.log('state', state.value);
 
   return {
     deposited,

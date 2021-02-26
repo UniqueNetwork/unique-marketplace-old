@@ -172,6 +172,7 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
     attributesVar,
     collectionInfo,
     getCollectionInfo,
+    getTokenDetails,
     reFungibleBalance,
     tokenConstData,
     tokenDetails,
