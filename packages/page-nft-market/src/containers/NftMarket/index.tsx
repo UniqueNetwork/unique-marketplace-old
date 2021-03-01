@@ -3,188 +3,107 @@
 
 import './styles.scss';
 
+import type { OfferType } from '@polkadot/react-hooks/useCollections';
+
 // external imports
-import React, { memo, ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { memo, ReactElement, useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Route, Switch } from 'react-router-dom';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
-import List from 'semantic-ui-react/dist/commonjs/elements/List';
-import Dropdown from 'semantic-ui-react/dist/commonjs/modules/Dropdown';
 
-import { AccountSelector, Input, NftDetailsModal } from '@polkadot/react-components';
-import { NftCollectionInterface, useCollections, useDecoder } from '@polkadot/react-hooks';
+import { AccountSelector, FormatBalance, Input, NftDetailsModal } from '@polkadot/react-components';
+import { useBalance, useCollections } from '@polkadot/react-hooks';
 
 // local imports and components
 import NftTokenCard from '../../components/NftTokenCard';
-import { filterOptions } from './filterOptions';
 
 const BuyTokens = (): ReactElement => {
   const history = useHistory();
   const [account, setAccount] = useState<string | null>(null);
-  const { getDetailedCollectionInfo, getTokensOfCollection, presetTokensCollections } = useCollections();
-  const [collectionsAvailable, setCollectionsAvailable] = useState<Array<NftCollectionInterface>>([]);
-  const [collectionSearchString, setCollectionSearchString] = useState<string>('');
-  const [tokenSearchString, setTokenSearchString] = useState<string>('');
-  const [selectedCollection, setSelectedCollection] = useState<NftCollectionInterface | null>(null);
-  const [tokensListForTrade, setTokensListForTrade] = useState<Array<string>>([]);
-  const { collectionName16Decoder } = useDecoder();
+  const [shouldUpdateTokens, setShouldUpdateTokens] = useState<string | undefined>('all');
+  const { getOffers, offers } = useCollections();
+  const [searchString, setSearchString] = useState<string>('');
+  const [filteredOffers, setFilteredOffers] = useState<OfferType[]>([]);
+  const { balance } = useBalance(account);
 
-  const getCollections = useCallback(async () => {
-    const collections = await presetTokensCollections();
-
-    if (collections && collections.length) {
-      setCollectionsAvailable(collections);
-    }
-  }, [presetTokensCollections]);
-
-  const selectCollection = useCallback(async (collection: NftCollectionInterface) => {
-    const collectionInfo: NftCollectionInterface = await getDetailedCollectionInfo(collection.id) as NftCollectionInterface;
-
-    setSelectedCollection(collectionInfo);
-  }, [getDetailedCollectionInfo, setSelectedCollection]);
-
-  const openDetailedInformationModal = useCallback((collection: NftCollectionInterface, tokenId: string) => {
-    history.push(`/store/token-details?collectionId=${collection.id}&tokenId=${tokenId}`);
+  const openDetailedInformationModal = useCallback((collectionId: string, tokenId: string) => {
+    history.push(`/market/token-details?collectionId=${collectionId}&tokenId=${tokenId}`);
   }, [history]);
 
-  const setTokensList = useCallback(async () => {
-    if (selectedCollection && account) {
-      const tokensOfCollection = (await getTokensOfCollection(selectedCollection.id, account)) as any;
+  useEffect(() => {
+    setFilteredOffers(offers && offers.length ? offers.filter((item: OfferType) => item.collectionId.toLowerCase().includes(searchString.toLowerCase()) || item.tokenId.toLowerCase().includes(searchString.toLowerCase())) : []);
+  }, [offers, searchString]);
 
-      console.log('tokensOfCollection', tokensOfCollection);
-      setTokensListForTrade(tokensOfCollection);
+  useEffect(() => {
+    if (shouldUpdateTokens) {
+      void getOffers();
+      setShouldUpdateTokens(undefined);
     }
-  }, [account, selectedCollection, getTokensOfCollection]);
-
-  const collectionsFiltered = useMemo(() => {
-    console.log('collectionsAvailable!!', collectionsAvailable);
-
-    return collectionsAvailable.filter((item: NftCollectionInterface) => collectionName16Decoder(item.Name).toLowerCase().indexOf(collectionSearchString) !== -1);
-  }, [collectionsAvailable, collectionSearchString]);
-
-  const tokensFiltered = useMemo(() => {
-    return tokensListForTrade.filter((item: string) => item.toLowerCase().indexOf(tokenSearchString) !== -1);
-  }, [tokensListForTrade, tokenSearchString]);
-
-  useEffect(() => {
-    void getCollections();
-  }, [getCollections]);
-
-  useEffect(() => {
-    void setTokensList();
-  }, [setTokensList]);
-
-  useEffect(() => {
-    if (!selectedCollection && collectionsAvailable.length) {
-      void selectCollection(collectionsAvailable[0]);
-    }
-  }, [collectionsAvailable, selectCollection, selectedCollection]);
-
-  console.log('collectionsAvailable', collectionsAvailable);
+  }, [getOffers, shouldUpdateTokens]);
 
   return (
     <div className='nft-market'>
       <Header as='h2'>Nft Tokens</Header>
       <Grid className='account-selector'>
         <Grid.Row>
-          <Grid.Column width={6}>
+          <Grid.Column width={12}>
             <AccountSelector onChange={setAccount} />
+          </Grid.Column>
+          <Grid.Column width={4}>
+            { balance && (
+              <div className='balance-block'>
+                <label>Your account balance is:</label>
+                <FormatBalance
+                  className='balance'
+                  value={balance.free}
+                />
+              </div>
+            )}
           </Grid.Column>
         </Grid.Row>
         <Grid.Row>
-          <Grid.Column width={6}>
+          <Grid.Column width={16}>
             <Input
-              className='explorer--query input-search'
-              help={<span>Find and select your token collection. For example, you can find tokens from <a href='https://ipfs-gateway.usetech.com/ipns/QmaMtDqE9nhMX9RQLTpaCboqg7bqkb6Gi67iCKMe8NDpCE/'
-                rel='noopener noreferrer'
-                target='_blank'>SubstraPunks</a></span>}
-              isDisabled={!collectionsAvailable.length}
-              label={'Find collection'}
-              onChange={setCollectionSearchString}
+              className='isSmall'
+              help={<span>Find and select your token collection.</span>}
+              isDisabled={!offers || !offers.length}
+              label={'Find token by name or collection'}
+              onChange={setSearchString}
               placeholder='Search...'
-              value={collectionSearchString}
+              value={searchString}
               withLabel
             />
-            <div className='nft-collections'>
-              <List
-                divided
-                relaxed
-              >
-                { collectionsFiltered.map((collection: NftCollectionInterface) => (
-                  <List.Item
-                    key={collection.id}
-                    onClick={selectCollection.bind(null, collection)}
-                  >
-                    <List.Content>
-                      <List.Header as='a'>{collectionName16Decoder(collection.Name)}</List.Header>
-                      <List.Description as='a'>{collectionName16Decoder(collection.Description)}</List.Description>
-                    </List.Content>
-                  </List.Item>
-                ))}
-              </List>
-            </div>
           </Grid.Column>
-          <Grid.Column width={8}>
-            <Grid>
-              <Grid.Row>
-                <Grid.Column width={12}>
-                  <Input
-                    className='explorer--query input-search'
-                    help={<span>Find your token. For example, 1</span>}
-                    isDisabled={!collectionsAvailable.length}
-                    label={'Find token'}
-                    onChange={setTokenSearchString}
-                    placeholder='Search...'
-                    value={tokenSearchString}
-                    withLabel
+        </Grid.Row>
+        <Grid.Row>
+          <Grid.Column width={16}>
+            <div className='market-pallet'>
+              <div className='nft-tokens'>
+                { account && filteredOffers.map((token) => (
+                  <NftTokenCard
+                    account={account}
+                    collectionId={token.collectionId}
+                    key={token.tokenId}
+                    openDetailedInformationModal={openDetailedInformationModal}
+                    token={token}
                   />
-                </Grid.Column>
-                <Grid.Column width={4}>
-                  <Dropdown
-                    fluid
-                    multiple
-                    placeholder='Filter'
-                  >
-                    <Dropdown.Menu>
-                      {filterOptions.map((group) => (
-                        <React.Fragment key={group.key}>
-                          <Dropdown.Header content={`Filter by ${group.name}`} />
-                          <Dropdown.Divider />
-                          { group.items.map((item) => (
-                            <Dropdown.Item key={item.key}>{item.text}</Dropdown.Item>
-                          ))}
-                        </React.Fragment>
-                      ))}
-                    </Dropdown.Menu>
-                  </Dropdown>
-                </Grid.Column>
-              </Grid.Row>
-              <Grid.Row>
-                <div className='nft-tokens'>
-                  { account && selectedCollection && tokensFiltered.map((token) => (
-                    <NftTokenCard
-                      account={account}
-                      canTransferTokens={true}
-                      collection={selectedCollection}
-                      key={token}
-                      openDetailedInformationModal={openDetailedInformationModal}
-                      token={token}
-                    />
-                  )) }
-                </div>
-              </Grid.Row>
-            </Grid>
+                )) }
+              </div>
+            </div>
           </Grid.Column>
         </Grid.Row>
       </Grid>
-      { account && selectedCollection && (
+      { account && (
         <Switch>
           <Route
             key='TokenDetailsModal'
             path='*/token-details'
           >
-            <NftDetailsModal account={account} />
+            <NftDetailsModal
+              account={account}
+              setShouldUpdateTokens={setShouldUpdateTokens}
+            />
           </Route>
         </Switch>
       )}

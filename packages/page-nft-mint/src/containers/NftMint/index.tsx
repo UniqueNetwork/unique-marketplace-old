@@ -74,7 +74,7 @@ function NftMint (): React.ReactElement {
             <Grid.Column width={16}>
               <Form.Field>
                 <Input
-                  className='explorer--query label-small'
+                  className='isSmall'
                   label={<span>Enter your token name</span>}
                   onChange={onChangeString}
                   // value={searchString}

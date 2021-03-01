@@ -3,7 +3,7 @@
 
 import './NftCollectionCard.scss';
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 
 import { Expander } from '@polkadot/react-components';
@@ -24,7 +24,6 @@ function NftCollectionCard ({ account, canTransferTokens, collection, openTransf
   const [opened, setOpened] = useState(false);
   const [tokensOfCollection, setTokensOfCollection] = useState<Array<string>>([]);
   const { getTokensOfCollection } = useCollections();
-  const currentAccount = useRef<string | null | undefined>();
   const { collectionName16Decoder } = useDecoder();
 
   const openCollection = useCallback((isOpen) => {
@@ -37,34 +36,15 @@ function NftCollectionCard ({ account, canTransferTokens, collection, openTransf
     }
 
     const tokensOfCollection = (await getTokensOfCollection(collection.id, account)) as string[];
-    console.log('tokensOfCollection', tokensOfCollection);
 
     setTokensOfCollection(tokensOfCollection);
   }, [account, collection, getTokensOfCollection]);
-
-  // clear search results if account changed
-  useEffect(() => {
-    if (currentAccount.current && currentAccount.current !== account) {
-      setOpened(false);
-      setTokensOfCollection([]);
-    }
-
-    currentAccount.current = account;
-  }, [account, currentAccount, setOpened, setTokensOfCollection]);
-
-  useEffect(() => {
-    if (shouldUpdateTokens === collection.id && opened) {
-      void updateTokens();
-    }
-  }, [collection.id, opened, shouldUpdateTokens, updateTokens]);
 
   useEffect(() => {
     if (opened) {
       void updateTokens();
     }
-  }, [opened, updateTokens]);
-
-  console.log('shouldUpdateTokens', shouldUpdateTokens, 'collection.id', collection.id, 'opened', opened);
+  }, [account, opened, updateTokens]);
 
   return (
     <Expander

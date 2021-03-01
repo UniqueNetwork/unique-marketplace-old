@@ -1,66 +1,56 @@
-// Copyright 2020 UseTech authors & contributors
-import React, { useCallback, useEffect, useState } from 'react';
-import Card from 'semantic-ui-react/dist/commonjs/views/Card';
-import Image from 'semantic-ui-react/dist/commonjs/elements/Image';
-import { NftCollectionInterface, useCollections } from '@polkadot/react-hooks';
+// Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
+// SPDX-License-Identifier: Apache-2.0
 
 import './styles.scss';
 
+import type { OfferType } from '@polkadot/react-hooks/useCollections';
+
+import React from 'react';
+import Image from 'semantic-ui-react/dist/commonjs/elements/Image';
+import Card from 'semantic-ui-react/dist/commonjs/views/Card';
+import { useSchema } from '@polkadot/react-hooks';
+
 interface Props {
   account: string;
-  canTransferTokens: boolean;
-  collection: NftCollectionInterface;
-  openDetailedInformationModal: (collection: NftCollectionInterface, tokenId: string) => void;
-  token: string;
+  collectionId: string;
+  openDetailedInformationModal: (collectionId: string, tokenId: string) => void;
+  token: OfferType;
 }
 
-function NftTokenCard({ account, canTransferTokens, collection, openDetailedInformationModal, token }: Props): React.ReactElement<Props> {
-  const { getDetailedRefungibleTokenInfo, getTokenImageUrl } = useCollections();
-  const [balance, setBalance] = useState<number>(0);
-
-  const getTokenDetails = useCallback(async () => {
-    try {
-      const tokenDetails = (await getDetailedRefungibleTokenInfo(collection.id, token)) as any;
-      const owner = tokenDetails.Owner.find((item: any) => item.owner.toString() === account);
-      if (!owner) {
-        return;
-      }
-      const balance = owner.fraction.toNumber() / Math.pow(10, collection.decimalPoints);
-      setBalance(balance);
-    } catch (e) {
-      console.error('token balance calculation error', e);
-    }
-  }, []);
-
-  useEffect(() => {
-    void getTokenDetails();
-  }, []);
-
-  if (!balance && collection.isReFungible) {
-    return <></>;
-  }
+const NftTokenCard = ({ account, collectionId, openDetailedInformationModal, token }: Props): React.ReactElement<Props> => {
+  const { attributes, tokenUrl } = useSchema(account, collectionId, token.tokenId);
 
   return (
-    <Card onClick={openDetailedInformationModal.bind(null, collection, token)} className='token-card' key={token}>
-      <Image src={getTokenImageUrl(collection, token)} wrapped ui={false} />
-      <Card.Content>
-        <Card.Header>{collection.prefix} #{token.toString()}</Card.Header>
-        <Card.Meta>
-          <span className='date'>Some token info</span>
-        </Card.Meta>
-        <Card.Description>
-          Some token description
-        </Card.Description>
-      </Card.Content>
-      <Card.Content extra>
-        { collection.isReFungible && (
-          <a> className='token-balance'>
-            Balance: {balance}
-          </a>
-        )}
-      </Card.Content>
+    <Card
+      className='token-card'
+      key={token.tokenId}
+      onClick={openDetailedInformationModal.bind(null, collectionId, token.tokenId)}
+    >
+      { token && (
+        <Image
+          src={tokenUrl}
+          ui={false}
+          wrapped
+        />
+      )}
+      { token && (
+        <Card.Content>
+          <Card.Header>{collectionId} #{token.tokenId}</Card.Header>
+          <Card.Meta>
+            { attributes && Object.values(attributes).length > 0 && (
+              <p className='token-balance'>
+                {/* eslint-disable-next-line @typescript-eslint/no-unsafe-member-access */}
+                Attributes: {Object.keys(attributes).map((attrKey) => (<span key={attrKey}>{attrKey}: {attributes[attrKey]}</span>))}
+              </p>
+            )}
+          </Card.Meta>
+          <Card.Description>
+            Seller: {token.seller}
+          </Card.Description>
+        </Card.Content>
+      )}
     </Card>
-  )
-}
+  );
+};
 
 export default React.memo(NftTokenCard);

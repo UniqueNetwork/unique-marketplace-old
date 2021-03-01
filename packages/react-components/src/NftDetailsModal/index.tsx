@@ -10,8 +10,9 @@ import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import Modal from 'semantic-ui-react/dist/commonjs/modules/Modal/Modal';
 
-import { Button, Input, TxButton } from '@polkadot/react-components';
+import { Button, Input, InputBalance, TxButton } from '@polkadot/react-components';
 import { useApi, useBalance, useMarketplaceStages, useSchema } from '@polkadot/react-hooks';
+import { formatBalance } from '@polkadot/util';
 
 import BuySteps from './BuySteps';
 import SaleSteps from './SaleSteps';
@@ -28,13 +29,14 @@ function NftDetailsModal ({ account, setShouldUpdateTokens }: Props): React.Reac
   const collectionId = query.get('collectionId') || '';
   const [recipient, setRecipient] = useState<string | null>(null);
   const [tokenPart, setTokenPart] = useState<number>(0);
+  const [readyToWithdraw, setReadyToWithdraw] = useState<boolean>(false);
   const [showTransferForm, setShowTransferForm] = useState<boolean>(false);
   const [isAddressError, setIsAddressError] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
   const { balance } = useBalance(account);
   const { attributes, collectionInfo, getTokenDetails, reFungibleBalance, tokenDetails, tokenUrl } = useSchema(account, collectionId, tokenId);
   const [tokenPriceForSale, setTokenPriceForSale] = useState<string>('');
-  const { deposited, readyToAskPrice, saleFee, sendCurrentUserAction, setPrice, tokenAsk, transferStep } = useMarketplaceStages(account, collectionInfo, tokenId);
+  const { deposited, readyToAskPrice, saleFee, sendCurrentUserAction, setPrice, setWithdrawAmount, tokenAsk, transferStep, withdrawAmount } = useMarketplaceStages(account, collectionInfo, tokenId);
 
   const uOwnIt = tokenDetails?.Owner?.toString() === account || (tokenAsk && tokenAsk.owner === account);
   const uSellIt = tokenAsk && tokenAsk.owner === account;
@@ -86,6 +88,10 @@ function NftDetailsModal ({ account, setShouldUpdateTokens }: Props): React.Reac
     void getTokenDetails();
   }, [collectionId, getTokenDetails, sendCurrentUserAction, setShouldUpdateTokens]);
 
+  const onConfirmWithdraw = useCallback(() => {
+    sendCurrentUserAction('REVERT_UNUSED_MONEY');
+  }, [sendCurrentUserAction]);
+
   return (
     <Modal
       className='unique-modal'
@@ -128,7 +134,7 @@ function NftDetailsModal ({ account, setShouldUpdateTokens }: Props): React.Reac
             <Button
               icon='history'
               label='Withdraw'
-              onClick={sendCurrentUserAction.bind(null, 'REVERT_UNUSED_MONEY')}
+              onClick={setReadyToWithdraw.bind(null, !readyToWithdraw)}
             />
           )}
           { (uOwnIt && !uSellIt) && (
@@ -198,6 +204,33 @@ function NftDetailsModal ({ account, setShouldUpdateTokens }: Props): React.Reac
         )}
         { !!(transferStep && transferStep >= 4) && (
           <BuySteps step={transferStep} />
+        )}
+        { readyToWithdraw && (
+          <Form className='transfer-form'>
+            <Form.Field>
+              <InputBalance
+                autoFocus
+                help={'Type the amount you want to withdraw.'}
+                isError={!deposited || (withdrawAmount && withdrawAmount.gt(deposited))}
+                isZeroable
+                label={'amount'}
+                maxValue={deposited}
+                onChange={setWithdrawAmount}
+              />
+            </Form.Field>
+            <Form.Field>
+              <Button
+                icon='history'
+                label={`Withdraw max ${formatBalance(deposited)}`}
+                onClick={deposited ? setWithdrawAmount.bind(null, deposited) : () => null}
+              />
+              <Button
+                icon='save'
+                label='confirm withdraw'
+                onClick={onConfirmWithdraw}
+              />
+            </Form.Field>
+          </Form>
         )}
         { readyToAskPrice && (
           <Form className='transfer-form'>

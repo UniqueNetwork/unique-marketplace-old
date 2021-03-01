@@ -22,21 +22,24 @@ export interface MarketplaceStagesInterface {
   saleFee: BN | undefined;
   sendCurrentUserAction: (action: UserActionType) => void;
   setPrice: (price: string) => void;
+  setTokenPriceForSale: (price: number) => void;
+  setWithdrawAmount: (withdrawAmount: BN) => void;
   tokenAsk: { owner: string, price: BN } | undefined;
   tokenInfo: TokenDetailsInterface | undefined;
   tokenPriceForSale: number | undefined;
   transferStep: number;
   readyToAskPrice: boolean;
-  setTokenPriceForSale: (price: number) => void;
+  withdrawAmount: BN | undefined;
 }
 
 export const useMarketplaceStages = (account: string, collectionInfo: NftCollectionInterface | undefined, tokenId: string): MarketplaceStagesInterface => {
   const { api } = useApi();
   const [state, send] = useMachine(marketplaceStateMachine);
+  const [withdrawAmount, setWithdrawAmount] = useState<BN>();
   const [tokenInfo, setTokenInfo] = useState<TokenDetailsInterface>();
   const [saleFee, setSaleFee] = useState<BN>();
   const { getDetailedReFungibleTokenInfo, getDetailedTokenInfo } = useCollections();
-  const { contractInstance, decimals, deposited, depositor, escrowAddress, findCallMethodByName, getDepositor, getTokenAsk, getUserDeposit, isContractReady, maxGas, tokenAsk } = useNftContract(account);
+  const { contractInstance, deposited, depositor, escrowAddress, findCallMethodByName, getDepositor, getTokenAsk, getUserDeposit, isContractReady, maxGas, tokenAsk } = useNftContract(account);
   const { balance } = useBalance(account);
   const [error, setError] = useState<string | null>(null);
   const { queueExtrinsic } = useContext(StatusContext);
@@ -265,26 +268,13 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
   }, [findCallMethodByName, contractInstance, collectionInfo, send, maxGas, tokenId, queueTransaction]);
 
   const revertMoney = useCallback(() => {
-    /* При исполнении сделки, нужно посылать только сумму, указанную в withdraw.
-    При снятии неиспользованных средств нужно также возмещать комиссию marketplace за вычетом комиссии сети Kusama (0.0027 KSM).
-     */
-
-    /*
-    1. Адрес
-    2. Упакованные ID: collection_id * 0x100000000 + token_id
-     */
-
-    const expectedCommission = new BN(10).pow(decimals);
-    const balance = deposited || new BN(0);
-    const balanceToSend = balance.mul(expectedCommission);
-
     const message = findCallMethodByName('withdraw');
 
     if (message && contractInstance) {
       const extrinsic = contractInstance.exec(message, {
         gasLimit: maxGas,
         value: 0
-      }, 2, deposited);
+      }, 2, withdrawAmount);
 
       queueTransaction(
         extrinsic,
@@ -294,7 +284,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
         'withdraw update'
       );
     }
-  }, [decimals, deposited, findCallMethodByName, contractInstance, maxGas, queueTransaction]);
+  }, [findCallMethodByName, contractInstance, maxGas, withdrawAmount, queueTransaction]);
 
   const askPrice = useCallback(() => {
     setReadyToAskPrice(true);
@@ -422,9 +412,11 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
     sendCurrentUserAction,
     setPrice,
     setTokenPriceForSale,
+    setWithdrawAmount,
     tokenAsk,
     tokenInfo,
     tokenPriceForSale,
-    transferStep
+    transferStep,
+    withdrawAmount
   };
 };

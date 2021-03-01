@@ -51,6 +51,11 @@ function NftWallet (): React.ReactElement {
     setShouldUpdateTokens(collectionId);
   }, []);
 
+  const onSetAccount = useCallback((account: string) => {
+    setAccount(account);
+    setShouldUpdateTokens('all');
+  }, []);
+
   useEffect(() => {
     currentAccount.current = account;
   }, [account]);
@@ -66,7 +71,7 @@ function NftWallet (): React.ReactElement {
       <Grid className='account-selector'>
         <Grid.Row>
           <Grid.Column width={12}>
-            <AccountSelector onChange={setAccount} />
+            <AccountSelector onChange={onSetAccount} />
           </Grid.Column>
           <Grid.Column width={4}>
             { balance && (
