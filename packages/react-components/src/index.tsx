@@ -64,6 +64,7 @@ export { default as Label } from './Label';
 export { default as LabelHelp } from './LabelHelp';
 export { default as Labelled } from './Labelled';
 export { default as LinkExternal } from './LinkExternal';
+export { default as ListComponent } from './ListComponent';
 export { default as LockedVote } from './LockedVote';
 export { default as MarkError } from './MarkError';
 export { default as MarkWarning } from './MarkWarning';

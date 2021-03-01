@@ -80,8 +80,12 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
       // check the token price and user deposit
       const ask = await getTokenAsk(collectionInfo.id, tokenId);
 
+      console.log('aks', ask);
+
       if (!ask || !ask.price) {
         const tokenDepositor = await getDepositor(collectionInfo.id, tokenId);
+
+        console.log('tokenDepositor', tokenDepositor);
 
         if (tokenDepositor === account) {
           // the token is in escrow - waiting for deposit
@@ -149,21 +153,21 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
     }
   }, [api.tx.nft, balance?.free, collectionInfo, escrowAddress, getSaleFee, queueTransaction, send, tokenId]);
 
-  const waitForDeposit = useCallback(() => {
-    console.log('waitForDeposit', depositor);
+  const waitForDeposit = useCallback(async () => {
+    if (collectionInfo) {
+      const tokenDepositor = await getDepositor(collectionInfo.id, tokenId);
 
-    // we selling it, price was set
-    if (depositor === account) {
-      // depositor is me
-      send('NFT_DEPOSIT_READY');
-    } else if (depositor || (tokenAsk && tokenAsk.price)) {
-      send('NFT_DEPOSIT_OTHER');
-    } else {
-      setTimeout(() => {
-        waitForDeposit();
-      }, 5000);
+      if (tokenDepositor === account) {
+        send('NFT_DEPOSIT_READY');
+      } else if (tokenDepositor || (tokenAsk && tokenAsk.price)) {
+        send('NFT_DEPOSIT_OTHER');
+      } else {
+        setTimeout(() => {
+          void waitForDeposit();
+        }, 5000);
+      }
     }
-  }, [account, depositor, send, tokenAsk]);
+  }, [account, collectionInfo, getDepositor, send, tokenAsk, tokenId]);
 
   const waitForTokenRevert = useCallback(async () => {
     const info = await getTokenInfo();
