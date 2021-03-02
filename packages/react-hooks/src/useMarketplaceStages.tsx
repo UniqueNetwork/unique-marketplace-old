@@ -16,6 +16,7 @@ import marketplaceStateMachine from './stateMachine';
 type UserActionType = 'BUY' | 'CANCEL' | 'SELL' | 'REVERT_UNUSED_MONEY' | 'UPDATE_TOKEN_STATE' | 'OFFER_TRANSACTION_FAIL' | 'SUBMIT_OFFER' | 'OFFER_TRANSACTION_SUCCESS';
 
 export interface MarketplaceStagesInterface {
+  cancelStep: boolean;
   deposited: BN | undefined;
   depositor: string | undefined;
   error: string | null;
@@ -74,14 +75,12 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
     }
 
     const info = await getTokenInfo();
+    const ask = await getTokenAsk(collectionInfo.id, tokenId);
+
+    console.log('aks', ask);
 
     // the token is mine
     if (info?.Owner?.toString() === escrowAddress) {
-      // check the token price and user deposit
-      const ask = await getTokenAsk(collectionInfo.id, tokenId);
-
-      console.log('aks', ask);
-
       if (!ask || !ask.price) {
         const tokenDepositor = await getDepositor(collectionInfo.id, tokenId);
 
@@ -172,11 +171,13 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
   const waitForTokenRevert = useCallback(async () => {
     const info = await getTokenInfo();
 
+    console.log('waitForTokenRevert info', info);
+
     if (info?.Owner?.toString() === account) {
       send('TOKEN_REVERT_SUCCESS');
     } else {
       setTimeout(() => {
-        send('TOKEN_REVERT_FAIL');
+        void waitForTokenRevert();
       }, 5000);
     }
   }, [account, getTokenInfo, send]);
@@ -335,6 +336,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
   const transferStep = useMemo((): number => {
     switch (state.value) {
       case 'sell':
+      case 'waitForSignTransfer':
         return 1;
       case 'waitForDeposit':
         return 2;
@@ -353,6 +355,10 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
         return 0;
     }
   }, [state.value]);
+
+  const cancelStep = useMemo((): boolean => {
+    return state.matches('cancelSell') || state.matches('waitForTokenRevert');
+  }, [state]);
 
   useEffect(() => {
     switch (true) {
@@ -398,8 +404,6 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
   }, [state.value, loadingTokenInfo, state, buy, sell, sentTokenToAccount, waitForDeposit, askPrice, registerSale, revertMoney, checkDepositReady, cancelSell, waitForTokenRevert]);
 
   useEffect(() => {
-    console.log('isContractReady', isContractReady);
-
     if (isContractReady) {
       send('UPDATE_TOKEN_STATE');
     }
@@ -408,6 +412,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
   console.log('state', state.value);
 
   return {
+    cancelStep,
     deposited,
     depositor,
     error,

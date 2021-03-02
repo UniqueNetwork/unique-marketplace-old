@@ -8,6 +8,7 @@ import React, { useCallback, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
+import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 import Modal from 'semantic-ui-react/dist/commonjs/modules/Modal/Modal';
 
 import { Button, Input, InputBalance, TxButton } from '@polkadot/react-components';
@@ -34,11 +35,13 @@ function NftDetailsModal ({ account, setShouldUpdateTokens }: Props): React.Reac
   const [isAddressError, setIsAddressError] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
   const { balance } = useBalance(account);
-  const { attributes, collectionInfo, getTokenDetails, reFungibleBalance, tokenDetails, tokenUrl } = useSchema(account, collectionId, tokenId);
+  const { attributes, collectionInfo, reFungibleBalance, tokenUrl } = useSchema(account, collectionId, tokenId);
   const [tokenPriceForSale, setTokenPriceForSale] = useState<string>('');
-  const { deposited, readyToAskPrice, saleFee, sendCurrentUserAction, setPrice, setWithdrawAmount, tokenAsk, transferStep, withdrawAmount } = useMarketplaceStages(account, collectionInfo, tokenId);
+  const { cancelStep, deposited, readyToAskPrice, saleFee, sendCurrentUserAction, setPrice, setWithdrawAmount, tokenAsk, tokenInfo, transferStep, withdrawAmount } = useMarketplaceStages(account, collectionInfo, tokenId);
 
-  const uOwnIt = tokenDetails?.Owner?.toString() === account || (tokenAsk && tokenAsk.owner === account);
+  console.log('tokenInfo', tokenInfo, 'tokenAsk', tokenAsk);
+
+  const uOwnIt = tokenInfo?.Owner?.toString() === account || (tokenAsk && tokenAsk.owner === account);
   const uSellIt = tokenAsk && tokenAsk.owner === account;
   const decimalPoints = collectionInfo?.DecimalPoints instanceof BN ? collectionInfo?.DecimalPoints.toNumber() : 1;
 
@@ -85,8 +88,7 @@ function NftDetailsModal ({ account, setShouldUpdateTokens }: Props): React.Reac
   const onTransferSuccess = useCallback(() => {
     sendCurrentUserAction.bind(null, 'UPDATE_TOKEN_STATE');
     setShouldUpdateTokens && setShouldUpdateTokens(collectionId);
-    void getTokenDetails();
-  }, [collectionId, getTokenDetails, sendCurrentUserAction, setShouldUpdateTokens]);
+  }, [collectionId, sendCurrentUserAction, setShouldUpdateTokens]);
 
   const onConfirmWithdraw = useCallback(() => {
     sendCurrentUserAction('REVERT_UNUSED_MONEY');
@@ -120,8 +122,8 @@ function NftDetailsModal ({ account, setShouldUpdateTokens }: Props): React.Reac
           { uSellIt && (
             <p><strong>You selling it!</strong> (price: {tokenAsk?.price.toString()})</p>
           )}
-          { !!(!uOwnIt && tokenDetails) && (
-            <p><strong>The owner is </strong>{tokenDetails?.Owner?.toString()}</p>
+          { !!(!uOwnIt && tokenInfo) && (
+            <p><strong>The owner is </strong>{tokenInfo?.Owner?.toString()}</p>
           )}
           { (!uOwnIt && !transferStep && tokenAsk) && (
             <Button
@@ -198,6 +200,15 @@ function NftDetailsModal ({ account, setShouldUpdateTokens }: Props): React.Reac
               />
             </Form.Field>
           </Form>
+        )}
+        { cancelStep && (
+          <Loader
+            active
+            className='modal-loader'
+            inline='centered'
+          >
+            Cancel sale...
+          </Loader>
         )}
         { !!(transferStep && transferStep <= 3) && (
           <SaleSteps step={transferStep} />

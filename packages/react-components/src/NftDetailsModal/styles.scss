@@ -5,6 +5,14 @@
   .actions {
     padding: 1rem !important;
   }
+
+  .modal-loader {
+    color: #77903b;
+
+    &:before {
+      border-color: #77903b;
+    }
+  }
 }
 
 .buy-steps, .sale-steps {

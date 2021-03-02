@@ -48,7 +48,7 @@ export function useNftContract (account: string): useNftContractInterface {
   const [depositor, setDepositor] = useState<string>();
   const [deposited, setDeposited] = useState<BN>();
   const [tokenAsk, setTokenAsk] = useState<{ owner: string, price: BN }>();
-  const [contractAddress] = useState<string>('5HT6XeXfwh6uCmNntuRhZ6Pj2TxPGrCesFwB4Wyr8WeSJ9KF');
+  const [contractAddress] = useState<string>('5EwhiCEaGNgvsASp49xFwRGFMcgETPCtLVv34ifgFbJuRs84');
 
   const findCallMethodByName = useCallback((methodName: string): AbiMessage | null => {
     const message = contractInstance && Object.values(contractInstance.abi.messages).find((message) => message.identifier === methodName);
@@ -117,8 +117,6 @@ export function useNftContract (account: string): useNftContractInterface {
     if (contractInstance) {
       const askIdResult = await contractInstance.read('getAskIdByToken', value, maxGas, collectionId, tokenId).send(contractAddress) as unknown as { output: BN };
 
-      console.log('askIdResult', askIdResult);
-
       if (askIdResult.output) {
         const askId = askIdResult.output.toNumber();
         const askResult = await contractInstance.read('getAskById', value, maxGas, askId).send(contractAddress) as unknown as AskOutputInterface;
@@ -136,6 +134,8 @@ export function useNftContract (account: string): useNftContractInterface {
         }
       }
     }
+
+    setTokenAsk(undefined);
 
     return null;
   }, [contractAddress, contractInstance, maxGas, value]);
