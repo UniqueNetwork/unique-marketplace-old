@@ -63,7 +63,7 @@ export function useNftContract (account: string): useNftContractInterface {
   const getUserDeposit = useCallback(async (): Promise<BN | null> => {
     try {
       if (contractInstance) {
-        const result = await contractInstance.read('getBalance', value, maxGas, 2).send(account) as unknown as { output: BN };
+        const result = await contractInstance.read('getBalance', { gasLimit: maxGas, value }, 0).send(account) as unknown as { output: BN };
 
         if (result.output) {
           setDeposited(result.output);

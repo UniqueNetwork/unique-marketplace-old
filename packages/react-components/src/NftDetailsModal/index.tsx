@@ -39,8 +39,6 @@ function NftDetailsModal ({ account, setShouldUpdateTokens }: Props): React.Reac
   const [tokenPriceForSale, setTokenPriceForSale] = useState<string>('');
   const { cancelStep, deposited, readyToAskPrice, saleFee, sendCurrentUserAction, setPrice, setWithdrawAmount, tokenAsk, tokenInfo, transferStep, withdrawAmount } = useMarketplaceStages(account, collectionInfo, tokenId);
 
-  console.log('tokenInfo', tokenInfo, 'tokenAsk', tokenAsk);
-
   const uOwnIt = tokenInfo?.Owner?.toString() === account || (tokenAsk && tokenAsk.owner === account);
   const uSellIt = tokenAsk && tokenAsk.owner === account;
   const decimalPoints = collectionInfo?.DecimalPoints instanceof BN ? collectionInfo?.DecimalPoints.toNumber() : 1;
@@ -120,17 +118,24 @@ function NftDetailsModal ({ account, setShouldUpdateTokens }: Props): React.Reac
             <p><strong>You own it!</strong> (address: {account})</p>
           )}
           { uSellIt && (
-            <p><strong>You selling it!</strong> (price: {tokenAsk?.price.toString()})</p>
+            <p><strong>You selling it!</strong> (price: {formatBalance(tokenAsk?.price)})</p>
           )}
           { !!(!uOwnIt && tokenInfo) && (
             <p><strong>The owner is </strong>{tokenInfo?.Owner?.toString()}</p>
           )}
+          { deposited && (
+            <p>Your deposit is: <strong>{formatBalance(deposited)}</strong></p>
+          )}
           { (!uOwnIt && !transferStep && tokenAsk) && (
-            <Button
-              icon='shopping-cart'
-              label='Buy it'
-              onClick={sendCurrentUserAction.bind(null, 'BUY')}
-            />
+            <>
+              <p>Price <strong>{formatBalance(tokenAsk.price)}</strong> with commission (2%) <strong>{formatBalance(tokenAsk.price.muln(0.02))}</strong></p>
+              <p>Total: <strong>{formatBalance(tokenAsk.price.add(tokenAsk.price.muln(0.02)))}</strong></p>
+              <Button
+                icon='shopping-cart'
+                label='Buy it'
+                onClick={sendCurrentUserAction.bind(null, 'BUY')}
+              />
+            </>
           )}
           { (deposited && deposited.gtn(0)) && (
             <Button
@@ -221,12 +226,15 @@ function NftDetailsModal ({ account, setShouldUpdateTokens }: Props): React.Reac
             <Form.Field>
               <InputBalance
                 autoFocus
+                className='isSmall'
+                defaultValue={withdrawAmount}
                 help={'Type the amount you want to withdraw.'}
                 isError={!deposited || (withdrawAmount && withdrawAmount.gt(deposited))}
                 isZeroable
                 label={'amount'}
                 maxValue={deposited}
                 onChange={setWithdrawAmount}
+                value={withdrawAmount}
               />
             </Form.Field>
             <Form.Field>
@@ -237,6 +245,7 @@ function NftDetailsModal ({ account, setShouldUpdateTokens }: Props): React.Reac
               />
               <Button
                 icon='save'
+                isDisabled={!deposited || (withdrawAmount && withdrawAmount.gt(deposited))}
                 label='confirm withdraw'
                 onClick={onConfirmWithdraw}
               />
@@ -246,15 +255,13 @@ function NftDetailsModal ({ account, setShouldUpdateTokens }: Props): React.Reac
         { readyToAskPrice && (
           <Form className='transfer-form'>
             <Form.Field>
-              <Input
+              <InputBalance
+                autoFocus
                 className='isSmall'
                 help={<span>Set nft token price</span>}
-                label={'Set price'}
+                label={'amount'}
                 onChange={setTokenPriceForSale}
-                placeholder=''
-                type='number'
                 value={tokenPriceForSale}
-                withLabel
               />
             </Form.Field>
             <Form.Field>

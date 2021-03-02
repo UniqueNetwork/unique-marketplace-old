@@ -15,9 +15,9 @@ const marketplaceStateMachine = Machine({
     },
     buy: {
       on: {
-        DEPOSIT_ENOUGH: 'checkDepositReady',
         SIGN_FAIL: 'loadingTokenInfo',
-        SIGN_SUCCESS: 'waitForSignMoneyTransfer'
+        SIGN_SUCCESS: 'waitForSignMoneyTransfer',
+        WAIT_FOR_DEPOSIT: 'checkDepositReady'
       }
     },
     cancelSell: {
@@ -43,7 +43,7 @@ const marketplaceStateMachine = Machine({
     },
     loadingTokenInfo: {
       on: {
-        WAIT_FOR_DEPOSIT: 'waitForDeposit',
+        WAIT_FOR_DEPOSIT: 'waitForNftDeposit',
         WAIT_FOR_USER_ACTION: 'idle'
       }
     },
@@ -71,9 +71,9 @@ const marketplaceStateMachine = Machine({
         SIGN_SUCCESS: 'waitForSignTokenBuy'
       }
     },
-    waitForDeposit: {
+    waitForNftDeposit: {
       on: {
-        NFT_DEPOSIT_FAIL: 'waitForDeposit',
+        NFT_DEPOSIT_FAIL: 'waitForNftDeposit',
         NFT_DEPOSIT_OTHER: 'loadingTokenInfo',
         NFT_DEPOSIT_READY: 'askPrice'
       }
@@ -93,7 +93,7 @@ const marketplaceStateMachine = Machine({
     waitForSignTransfer: {
       on: {
         TRANSFER_FAIL: 'loadingTokenInfo',
-        TRANSFER_SUCCESS: 'waitForDeposit'
+        TRANSFER_SUCCESS: 'waitForNftDeposit'
       }
     },
     waitForTokenRevert: {

@@ -10,6 +10,7 @@ import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 import { StatusContext } from '@polkadot/react-components/Status';
 import { useApi, useBalance, useCollections, useNftContract } from '@polkadot/react-hooks';
+import { formatBalance } from '@polkadot/util';
 
 import marketplaceStateMachine from './stateMachine';
 
@@ -47,6 +48,8 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
   const [readyToAskPrice, setReadyToAskPrice] = useState<boolean>(false);
   const [tokenPriceForSale, setTokenPriceForSale] = useState<number>();
 
+  console.log('deposited', deposited);
+
   const sendCurrentUserAction = useCallback((userAction: UserActionType) => {
     send(userAction);
   }, [send]);
@@ -77,6 +80,8 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
     const info = await getTokenInfo();
     const ask = await getTokenAsk(collectionInfo.id, tokenId);
 
+    await getUserDeposit();
+
     console.log('aks', ask);
 
     // the token is mine
@@ -93,21 +98,11 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
       }
     }
 
-    await getUserDeposit();
-
     send('WAIT_FOR_USER_ACTION');
   }, [collectionInfo, getTokenInfo, account, escrowAddress, getUserDeposit, send, getTokenAsk, tokenId, getDepositor]);
 
-  const getFee = useCallback((price: number): number => {
-    if (price <= 0.001) {
-      return 0;
-    }
-
-    if (price < 0.01) {
-      return price + 0.01;
-    }
-
-    return price * 0.02;
+  const getFee = useCallback((price: BN): BN => {
+    return price.muln(0.02);
   }, []);
 
   const queueTransaction = useCallback((transaction: SubmittableExtrinsic, fail: string, start: string, success: string, update: string) => {
@@ -152,7 +147,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
     }
   }, [api.tx.nft, balance?.free, collectionInfo, escrowAddress, getSaleFee, queueTransaction, send, tokenId]);
 
-  const waitForDeposit = useCallback(async () => {
+  const waitForNftDeposit = useCallback(async () => {
     if (collectionInfo) {
       const tokenDepositor = await getDepositor(collectionInfo.id, tokenId);
 
@@ -162,7 +157,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
         send('NFT_DEPOSIT_OTHER');
       } else {
         setTimeout(() => {
-          void waitForDeposit();
+          void waitForNftDeposit();
         }, 5000);
       }
     }
@@ -182,45 +177,48 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
     }
   }, [account, getTokenInfo, send]);
 
-  const buy = useCallback(() => {
-    console.log('buy');
+  // @todo add transfer fees
+  const depositNeeded = useCallback((userDeposit: BN, tokenPrice: BN): BN => {
+    const feeFull = getFee(tokenPrice);
+    const feePaid = getFee(userDeposit);
+    const fee = feeFull.sub(feePaid);
 
-    // send deposit to contract
-    // Check if KSM deposit is needed and deposit
-    if (!tokenAsk) {
-      console.error('tokenContractInfo is undefined');
+    return tokenPrice.add(fee).sub(userDeposit);
+  }, [getFee]);
+
+  const isDepositEnough = useCallback((userDeposit: BN, tokenPrice: BN): boolean => {
+    return !depositNeeded(userDeposit, tokenPrice).gtn(0);
+  }, [depositNeeded]);
+
+  const buy = useCallback(async () => {
+    const userDeposit = await getUserDeposit();
+
+    if (!tokenAsk || !userDeposit) {
+      console.error('tokenAsk is undefined');
+
+      send('WAIT_FOR_DEPOSIT');
 
       return;
     }
 
-    if (!deposited) {
-      console.error('deposited is undefined');
+    console.log('buy', userDeposit, 'tokenAsk.price', tokenAsk.price.toString());
 
-      return;
-    }
+    if (!isDepositEnough(userDeposit, tokenAsk.price)) {
+      const needed = depositNeeded(userDeposit, tokenAsk.price);
 
-    const price = tokenAsk.price.toNumber();
-    const depositedNumber = deposited.toNumber();
-    const feeFull = getFee(price);
-    const feePaid = getFee(depositedNumber);
+      if (balance?.free.lt(needed)) {
+        const err = `Your KSM balance is too low: ${formatBalance(balance?.free)}. You need at least: ${formatBalance(needed)}`;
 
-    console.log('feeFull', feeFull);
-    console.log('feePaid', feePaid);
+        console.log(err);
 
-    if (depositedNumber < price) {
-      const fee = feeFull - feePaid;
-      const needed = price + fee - depositedNumber;
-
-      console.log('price', price);
-      console.log('needed', needed);
-
-      if (balance?.free.ltn(needed)) {
-        setError(`Your KSM balance is too low: ${balance?.free.toNumber()}. You need at least: ${needed} KSM`);
+        setError(err);
 
         return;
       }
 
       send('SIGN_SUCCESS');
+
+      console.log('transfer', formatBalance(needed));
 
       queueTransaction(
         api.tx.balances
@@ -231,22 +229,25 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
         'transfer update'
       );
     } else {
-      send('DEPOSIT_ENOUGH');
+      console.log('DEPOSIT ENOUGH');
+      send('WAIT_FOR_DEPOSIT');
     }
     // buyStep3
-  }, [api.tx.balances, balance?.free, deposited, escrowAddress, getFee, queueTransaction, send, tokenAsk]);
+  }, [api.tx.balances, balance?.free, depositNeeded, escrowAddress, getUserDeposit, isDepositEnough, queueTransaction, send, tokenAsk]);
 
   const checkDepositReady = useCallback(async () => {
     const userDeposit = await getUserDeposit();
 
-    if (userDeposit) {
+    console.log('WAIT_FOR_DEPOSIT', userDeposit);
+
+    if (userDeposit && tokenAsk && isDepositEnough(userDeposit, tokenAsk.price)) {
       send('DEPOSIT_SUCCESS');
     } else {
       setTimeout(() => {
-        send('DEPOSIT_FAIL');
+        void checkDepositReady();
       }, 5000);
     }
-  }, [getUserDeposit, send]);
+  }, [getUserDeposit, isDepositEnough, send, tokenAsk]);
 
   const sentTokenToAccount = useCallback(() => {
     console.log('sentTokenToNewOwner');
@@ -338,7 +339,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
       case 'sell':
       case 'waitForSignTransfer':
         return 1;
-      case 'waitForDeposit':
+      case 'waitForNftDeposit':
         return 2;
       case 'askPrice':
       case 'registerSale':
@@ -375,8 +376,8 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
       case state.matches('sentTokenToNewOwner'):
         void sentTokenToAccount();
         break;
-      case state.matches('waitForDeposit'):
-        void waitForDeposit();
+      case state.matches('waitForNftDeposit'):
+        void waitForNftDeposit();
         break;
       case state.matches('getDepositReady'):
         break;
@@ -401,7 +402,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
       default:
         break;
     }
-  }, [state.value, loadingTokenInfo, state, buy, sell, sentTokenToAccount, waitForDeposit, askPrice, registerSale, revertMoney, checkDepositReady, cancelSell, waitForTokenRevert]);
+  }, [state.value, loadingTokenInfo, state, buy, sell, sentTokenToAccount, waitForNftDeposit, askPrice, registerSale, revertMoney, checkDepositReady, cancelSell, waitForTokenRevert]);
 
   useEffect(() => {
     if (isContractReady) {
