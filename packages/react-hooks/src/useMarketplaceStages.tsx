@@ -48,8 +48,6 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
   const [readyToAskPrice, setReadyToAskPrice] = useState<boolean>(false);
   const [tokenPriceForSale, setTokenPriceForSale] = useState<number>();
 
-  console.log('deposited', deposited);
-
   const sendCurrentUserAction = useCallback((userAction: UserActionType) => {
     send(userAction);
   }, [send]);
@@ -82,14 +80,10 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
 
     await getUserDeposit();
 
-    console.log('aks', ask);
-
     // the token is mine
     if (info?.Owner?.toString() === escrowAddress) {
       if (!ask || !ask.price) {
         const tokenDepositor = await getDepositor(collectionInfo.id, tokenId);
-
-        console.log('tokenDepositor', tokenDepositor);
 
         if (tokenDepositor === account) {
           // the token is in escrow - waiting for deposit
@@ -110,9 +104,9 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
       accountId: account && account.toString(),
       extrinsic: transaction,
       isUnsigned: false,
-      txFailedCb: () => { console.log(fail); send(fail); },
+      txFailedCb: () => { send(fail); },
       txStartCb: () => { console.log(start); },
-      txSuccessCb: () => { console.log(success); send(success); },
+      txSuccessCb: () => { send(success); },
       txUpdateCb: () => { console.log(update); }
     });
   }, [account, queueExtrinsic, send]);
@@ -166,8 +160,6 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
   const waitForTokenRevert = useCallback(async () => {
     const info = await getTokenInfo();
 
-    console.log('waitForTokenRevert info', info);
-
     if (info?.Owner?.toString() === account) {
       send('TOKEN_REVERT_SUCCESS');
     } else {
@@ -201,15 +193,11 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
       return;
     }
 
-    console.log('buy', userDeposit, 'tokenAsk.price', tokenAsk.price.toString());
-
     if (!isDepositEnough(userDeposit, tokenAsk.price)) {
       const needed = depositNeeded(userDeposit, tokenAsk.price);
 
       if (balance?.free.lt(needed)) {
         const err = `Your KSM balance is too low: ${formatBalance(balance?.free)}. You need at least: ${formatBalance(needed)}`;
-
-        console.log(err);
 
         setError(err);
 
@@ -217,8 +205,6 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
       }
 
       send('SIGN_SUCCESS');
-
-      console.log('transfer', formatBalance(needed));
 
       queueTransaction(
         api.tx.balances
@@ -229,7 +215,6 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
         'transfer update'
       );
     } else {
-      console.log('DEPOSIT ENOUGH');
       send('WAIT_FOR_DEPOSIT');
     }
     // buyStep3
@@ -237,8 +222,6 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
 
   const checkDepositReady = useCallback(async () => {
     const userDeposit = await getUserDeposit();
-
-    console.log('WAIT_FOR_DEPOSIT', userDeposit);
 
     if (userDeposit && tokenAsk && isDepositEnough(userDeposit, tokenAsk.price)) {
       send('DEPOSIT_SUCCESS');
@@ -250,7 +233,6 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
   }, [getUserDeposit, isDepositEnough, send, tokenAsk]);
 
   const sentTokenToAccount = useCallback(() => {
-    console.log('sentTokenToNewOwner');
     const message = findCallMethodByName('buy');
 
     if (message && contractInstance && collectionInfo) {
@@ -280,7 +262,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
       const extrinsic = contractInstance.exec(message, {
         gasLimit: maxGas,
         value: 0
-      }, 2, withdrawAmount);
+      }, 0, withdrawAmount);
 
       queueTransaction(
         extrinsic,
@@ -300,7 +282,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
     const message = findCallMethodByName('ask');
 
     if (message && contractInstance && collectionInfo) {
-      const extrinsic = contractInstance.exec(message, { gasLimit: maxGas, value: 0 }, collectionInfo.id, tokenId, 2, tokenPriceForSale);
+      const extrinsic = contractInstance.exec(message, { gasLimit: maxGas, value: 0 }, collectionInfo.id, tokenId, 0, tokenPriceForSale);
 
       queueTransaction(
         extrinsic,
@@ -409,8 +391,6 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
       send('UPDATE_TOKEN_STATE');
     }
   }, [send, isContractReady]);
-
-  console.log('state', state.value);
 
   return {
     cancelStep,

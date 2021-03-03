@@ -227,7 +227,7 @@ export function useCollections () {
     getOffers,
     getTokensOfCollection,
     getTrades,
-    offers: mockedOffers,
+    offers,
     presetTokensCollections,
     trades
   };

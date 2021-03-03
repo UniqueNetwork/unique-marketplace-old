@@ -84,12 +84,13 @@ function NftDetailsModal ({ account, setShouldUpdateTokens }: Props): React.Reac
   }, [setPrice, tokenPriceForSale]);
 
   const onTransferSuccess = useCallback(() => {
-    sendCurrentUserAction.bind(null, 'UPDATE_TOKEN_STATE');
+    sendCurrentUserAction('UPDATE_TOKEN_STATE');
     setShouldUpdateTokens && setShouldUpdateTokens(collectionId);
   }, [collectionId, sendCurrentUserAction, setShouldUpdateTokens]);
 
   const onConfirmWithdraw = useCallback(() => {
     sendCurrentUserAction('REVERT_UNUSED_MONEY');
+    setReadyToWithdraw(false);
   }, [sendCurrentUserAction]);
 
   return (

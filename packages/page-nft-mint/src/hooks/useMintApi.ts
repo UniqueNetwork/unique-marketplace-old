@@ -86,8 +86,6 @@ function useMintApi (): UseMintApiInterface {
         method: 'POST'
       });
 
-      console.log('token added', response);
-
       setUploadedSuccessfully(true);
       setImgLoading(false);
       addMintedTokenToWallet();

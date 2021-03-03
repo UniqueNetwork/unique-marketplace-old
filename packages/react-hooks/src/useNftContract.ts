@@ -41,19 +41,17 @@ export function useNftContract (account: string): useNftContractInterface {
   const [value] = useState(0);
   const [maxGas] = useState(200000000000);
   const [decimals, setDecimals] = useState(new BN(15));
-  const [escrowAddress] = useState('5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty');
-  const [vaultAddress] = useState('5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty');
+  const [escrowAddress] = useState('5D73wtH5pqN99auP4b6KQRQAbketaSj4StkBJxACPBUAUdiq');
+  const [vaultAddress] = useState('5D73wtH5pqN99auP4b6KQRQAbketaSj4StkBJxACPBUAUdiq');
   const [contractInstance, setContractInstance] = useState<ContractPromise | null>(null);
   const [abi, setAbi] = useState<Abi>();
   const [depositor, setDepositor] = useState<string>();
   const [deposited, setDeposited] = useState<BN>();
   const [tokenAsk, setTokenAsk] = useState<{ owner: string, price: BN }>();
-  const [contractAddress] = useState<string>('5EwhiCEaGNgvsASp49xFwRGFMcgETPCtLVv34ifgFbJuRs84');
+  const [contractAddress] = useState<string>('5Cym1pvyNgzpy88bPXvrgZddH9WEaKHPpsEkET5pSfahKGmK');
 
   const findCallMethodByName = useCallback((methodName: string): AbiMessage | null => {
     const message = contractInstance && Object.values(contractInstance.abi.messages).find((message) => message.identifier === methodName);
-
-    console.log('message!!!', message);
 
     return message || null;
   }, [contractInstance]);
@@ -103,11 +101,8 @@ export function useNftContract (account: string): useNftContractInterface {
   }, [account, contractInstance, maxGas, value]);
 
   const initAbi = useCallback(() => {
-    console.log('contractAddress', contractAddress);
     const jsonAbi = getContractAbi(contractAddress) as Abi;
     const newContractInstance = new ContractPromise(api, jsonAbi, contractAddress);
-
-    console.log('newContractInstance', newContractInstance);
 
     setAbi(jsonAbi);
     setContractInstance(newContractInstance);
