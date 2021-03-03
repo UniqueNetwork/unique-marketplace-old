@@ -1,11 +1,11 @@
-// Copyright 2020-2021 UseTech authors & contributors
-import type { NftCollectionInterface } from '@polkadot/react-hooks';
+// Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
+// SPDX-License-Identifier: Apache-2.0
 
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { of } from 'rxjs';
 import { fromFetch } from 'rxjs/fetch';
-import { switchMap, catchError } from 'rxjs/operators';
+import { catchError, switchMap } from 'rxjs/operators';
 
 export interface ImageInterface {
   address: string;
@@ -48,7 +48,7 @@ function useMintApi (): UseMintApiInterface {
   }, []);
 
   const addMintedTokenToWallet = useCallback(() => {
-    const collections: NftCollectionInterface[] = JSON.parse(localStorage.getItem('tokenCollections') || '[]') as NftCollectionInterface[];
+    /* const collections: NftCollectionInterface[] = JSON.parse(localStorage.getItem('tokenCollections') || '[]') as NftCollectionInterface[];
 
     if (!collections.length || !collections.find((collection: NftCollectionInterface) => collection.id === 14)) {
       collections.push({
@@ -69,22 +69,22 @@ function useMintApi (): UseMintApiInterface {
         id: 14
       });
       localStorage.setItem('tokenCollections', JSON.stringify(collections));
-    }
+    } */
 
     history.push('/wallet');
   }, [history]);
 
-  const uploadImage = useCallback(async (file: ImageInterface) => {
+  const uploadImage = useCallback((file: ImageInterface) => {
     setImgLoading(true);
 
     try {
-      const response = await fetch('/api/mint', { // Your POST endpoint
+      /* const response = await fetch('/api/mint', { // Your POST endpoint
         body: JSON.stringify(file),
         headers: {
           'Content-Type': 'application/json'
         },
         method: 'POST'
-      });
+      }); */
 
       setUploadedSuccessfully(true);
       setImgLoading(false);

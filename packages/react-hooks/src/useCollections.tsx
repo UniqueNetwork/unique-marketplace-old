@@ -23,7 +23,7 @@ export interface NftCollectionInterface {
   id: string;
   DecimalPoints: BN | number;
   Description: number[];
-  TokenPrefix: number | string;
+  TokenPrefix: number[];
   MintMode?: boolean;
   Mode: {
     isNft: boolean;
@@ -32,7 +32,7 @@ export interface NftCollectionInterface {
     isInvalid: boolean;
   };
   Name: number[];
-  OffchainSchema: string | MetadataType;
+  OffchainSchema: number[];
   Owner?: string;
   SchemaVersion: 'ImageURL' | 'Unique';
   Sponsor?: string; // account
@@ -67,7 +67,7 @@ export type TradeType = {
   tradeDate: string;
 }
 
-const mockedOffers: OfferType[] = [
+/* const mockedOffers: OfferType[] = [
   {
     collectionId: '1',
     metadata: 'any',
@@ -103,7 +103,7 @@ const mockedOffers: OfferType[] = [
     seller: '5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty',
     tokenId: '5'
   }
-];
+]; */
 
 export function useCollections () {
   const { api } = useApi();

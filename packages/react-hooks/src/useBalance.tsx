@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import BN from 'bn.js';
-
 import { useCallback, useEffect, useState } from 'react';
 
 import { useApi } from '@polkadot/react-hooks';

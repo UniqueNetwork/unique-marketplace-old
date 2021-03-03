@@ -23,7 +23,7 @@ function CollectionSearch ({ account, addCollection, collections }: Props): Reac
   const [searchString, setSearchString] = useState<string>('');
   const { presetTokensCollections } = useCollections();
   const currentAccount = useRef<string | null | undefined>();
-  const { collectionName8Decoder, collectionName16Decoder } = useDecoder();
+  const { collectionName16Decoder } = useDecoder();
 
   const searchCollection = useCallback(() => {
     const filteredCollections = collectionsAvailable.filter((collection) => {
@@ -50,11 +50,11 @@ function CollectionSearch ({ account, addCollection, collections }: Props): Reac
       DecimalPoints: item.DecimalPoints,
       Description: item.Description,
       Name: item.Name,
-      OffchainSchema: collectionName8Decoder(item.OffchainSchema.toString()),
-      TokenPrefix: collectionName8Decoder(item.TokenPrefix.toString()),
+      OffchainSchema: item.OffchainSchema,
+      TokenPrefix: item.TokenPrefix,
       id: item.id
     });
-  }, [addCollection, collectionName8Decoder]);
+  }, [addCollection]);
 
   const getCollections = useCallback(async () => {
     const collections = await presetTokensCollections();

@@ -18,7 +18,7 @@ interface Props {
   collection: NftCollectionInterface;
   closeModal: () => void;
   tokenId: string;
-  updateTokens: (collectionId: number) => void;
+  updateTokens: (collectionId: string) => void;
 }
 
 function TransferModal ({ account, balance, canTransferTokens, closeModal, collection, tokenId, updateTokens }: Props): React.ReactElement<Props> {

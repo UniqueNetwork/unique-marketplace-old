@@ -62,18 +62,23 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
   }, [account, collectionInfo?.DecimalPoints, collectionInfo?.Mode.isReFungible, tokenDetails?.Owner]);
 
   const setUnique = useCallback(async (collectionInfo: NftCollectionInterface) => {
-    const dataUrl = tokenImageUrl((collectionInfo.OffchainSchema as MetadataType).metadata, tokenId.toString());
-    const urlResponse = await fetch(dataUrl);
-    const jsonData = await urlResponse.json() as { image: string };
+    try {
+      const collectionMetadata = JSON.parse(collectionName8Decoder(collectionInfo.OffchainSchema)) as MetadataType;
+      const dataUrl = tokenImageUrl(collectionMetadata.metadata, tokenId.toString());
+      const urlResponse = await fetch(dataUrl);
+      const jsonData = await urlResponse.json() as { image: string };
 
-    setTokenUrl(jsonData.image);
-  }, [tokenId, tokenImageUrl]);
+      setTokenUrl(jsonData.image);
+    } catch (e) {
+      console.error('metadata parse error', e);
+    }
+  }, [collectionName8Decoder, tokenId, tokenImageUrl]);
 
   const setSchema = useCallback(() => {
     if (collectionInfo) {
       switch (collectionInfo.SchemaVersion) {
         case 'ImageURL':
-          setTokenUrl(tokenImageUrl(collectionInfo.OffchainSchema as string, tokenId.toString()));
+          setTokenUrl(tokenImageUrl(collectionName8Decoder(collectionInfo.OffchainSchema), tokenId.toString()));
           break;
         case 'Unique':
           void setUnique(collectionInfo);
@@ -85,7 +90,7 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
       setAttributesConst(convertOnChainMetadata(collectionInfo.ConstOnChainSchema));
       setAttributesVar(convertOnChainMetadata(collectionInfo.VariableOnChainSchema));
     }
-  }, [collectionInfo, convertOnChainMetadata, setUnique, tokenId, tokenImageUrl]);
+  }, [collectionInfo, collectionName8Decoder, convertOnChainMetadata, setUnique, tokenId, tokenImageUrl]);
 
   const getCollectionInfo = useCallback(async () => {
     if (collectionId) {
