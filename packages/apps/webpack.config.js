@@ -3,6 +3,7 @@
 
 const fs = require('fs');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
 const path = require('path');
 const { merge } = require('webpack-merge');
 
@@ -16,6 +17,23 @@ module.exports = merge(
   {
     devtool: process.env.BUILD_ANALYZE ? 'source-map' : false,
     plugins: [
+      new WebpackManifestPlugin({
+        fileName: 'asset-manifest.json',
+        generate: (seed, files, entrypoints) => {
+          const manifestFiles = files.reduce((manifest, file) => {
+            manifest[file.name] = file.path;
+
+            return manifest;
+          }, seed);
+          const entrypointFiles = entrypoints.main.filter((fileName) => !fileName.endsWith('.map'));
+
+          return {
+            entrypoints: entrypointFiles,
+            files: manifestFiles
+          };
+        },
+        publicPath: ''
+      }),
       new HtmlWebpackPlugin({
         PAGE_TITLE: 'Polkadot/Substrate Portal',
         inject: true,

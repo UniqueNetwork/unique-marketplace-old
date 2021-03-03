@@ -3,13 +3,15 @@
 
 import './styles.scss';
 
+import type { BalanceInterface } from '@polkadot/react-hooks/useBalance';
+
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid/Grid';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header/Header';
 
 import { LabelHelp, NftDetailsModal, Table } from '@polkadot/react-components';
-import { BalanceInterface, NftCollectionInterface, useBalance } from '@polkadot/react-hooks';
+import { NftCollectionInterface, useBalance } from '@polkadot/react-hooks';
 
 import AccountSelector from '../../components/AccountSelector';
 import CollectionSearch from '../../components/CollectionSearch';
