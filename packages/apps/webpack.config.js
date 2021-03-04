@@ -32,7 +32,7 @@ module.exports = merge(
             files: manifestFiles
           };
         },
-        publicPath: ''
+        publicPath: 'localhost:7000'
       }),
       new HtmlWebpackPlugin({
         PAGE_TITLE: 'Polkadot/Substrate Portal',
