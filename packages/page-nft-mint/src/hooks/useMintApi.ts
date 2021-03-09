@@ -21,7 +21,7 @@ export interface UseMintApiInterface {
   uploadedSuccessfully: boolean;
 }
 
-export const collectionIdForMint = process.env.mintedCollection = '2';
+export const collectionIdForMint = process.env.mintedCollection || '2';
 
 /**
  * Get validators from server if health "connected":true
