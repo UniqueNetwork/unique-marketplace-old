@@ -41,15 +41,15 @@ export function useNftContract (account: string): useNftContractInterface {
   const [value] = useState(0);
   const [maxGas] = useState(200000000000);
   const [decimals, setDecimals] = useState(new BN(15));
-  const [escrowAddress] = useState('5D73wtH5pqN99auP4b6KQRQAbketaSj4StkBJxACPBUAUdiq');
-  const [vaultAddress] = useState('5D73wtH5pqN99auP4b6KQRQAbketaSj4StkBJxACPBUAUdiq');
+  const [escrowAddress] = useState(process.env.escrowAddress || '5D73wtH5pqN99auP4b6KQRQAbketaSj4StkBJxACPBUAUdiq');
+  const [vaultAddress] = useState(process.env.vaultAddress || '5D73wtH5pqN99auP4b6KQRQAbketaSj4StkBJxACPBUAUdiq');
   const [contractInstance, setContractInstance] = useState<ContractPromise | null>(null);
   const [abi, setAbi] = useState<Abi>();
   const [depositor, setDepositor] = useState<string>();
   const [deposited, setDeposited] = useState<BN>();
   const [tokenAsk, setTokenAsk] = useState<{ owner: string, price: BN }>();
   // local 5HpCCd2SufXC1NRANgWBvz6k3GnVCDcTceC24WNwERkBtfSk, remote 5Cym1pvyNgzpy88bPXvrgZddH9WEaKHPpsEkET5pSfahKGmK
-  const [contractAddress] = useState<string>('5Cym1pvyNgzpy88bPXvrgZddH9WEaKHPpsEkET5pSfahKGmK');
+  const [contractAddress] = useState<string>(process.env.contractAddress || '5Cym1pvyNgzpy88bPXvrgZddH9WEaKHPpsEkET5pSfahKGmK');
 
   const findCallMethodByName = useCallback((methodName: string): AbiMessage | null => {
     const message = contractInstance && Object.values(contractInstance.abi.messages).find((message) => message.identifier === methodName);
