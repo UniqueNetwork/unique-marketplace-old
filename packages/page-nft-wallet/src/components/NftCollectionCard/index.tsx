@@ -3,11 +3,13 @@
 
 import './NftCollectionCard.scss';
 
+import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollections';
+
 import React, { useCallback, useEffect, useState } from 'react';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 
 import { Expander } from '@polkadot/react-components';
-import { NftCollectionInterface, useCollections, useDecoder } from '@polkadot/react-hooks';
+import { useCollections, useDecoder } from '@polkadot/react-hooks';
 
 import NftTokenCard from '../NftTokenCard';
 

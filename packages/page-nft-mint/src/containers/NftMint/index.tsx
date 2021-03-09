@@ -1,13 +1,12 @@
-// Copyright 2020 UseTech authors & contributors
+// Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
+// SPDX-License-Identifier: Apache-2.0
 
-// global app props and types
-
-// external imports
 import './styles.scss';
+
+import type { ImageType } from 'react-images-uploading/dist/typings';
 
 import React, { useCallback, useState } from 'react';
 import ImageUploading from 'react-images-uploading';
-import type { ImageType } from 'react-images-uploading/dist/typings';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
@@ -58,7 +57,7 @@ function NftMint (): React.ReactElement {
 
       uploadImage(newToken);
     }
-  }, [imageBase64, imageName]);
+  }, [account, imageBase64, imageName, serverIsReady, uploadImage]);
 
   return (
     <main className='mint-tokens'>

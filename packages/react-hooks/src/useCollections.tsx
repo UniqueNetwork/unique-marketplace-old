@@ -126,7 +126,7 @@ export function useCollections () {
     return [];
   }, [api]);
 
-  const getDetailedCollectionInfo = useCallback(async (collectionId) => {
+  const getDetailedCollectionInfo = useCallback(async (collectionId: string) => {
     if (!api) {
       return {};
     }
@@ -172,7 +172,7 @@ export function useCollections () {
    * Return the list of token sale offers
    */
   const getOffers = useCallback(() => {
-    fetchData<OfferType[]>('/api/offers/').subscribe((result: OfferType[] | ErrorType) => {
+    fetchData<OfferType[]>('/offers/').subscribe((result: OfferType[] | ErrorType) => {
       if ('error' in result) {
         setError(result);
       } else {
@@ -185,7 +185,7 @@ export function useCollections () {
    * Return the list of token trades
    */
   const getTrades = useCallback(() => {
-    fetchData<TradeType[]>('/api/trades/').subscribe((result: TradeType[] | ErrorType) => {
+    fetchData<TradeType[]>('/trades/').subscribe((result: TradeType[] | ErrorType) => {
       if ('error' in result) {
         setError(result);
       } else {
@@ -204,7 +204,7 @@ export function useCollections () {
       const collections: Array<NftCollectionInterface> = [];
 
       for (let i = 1; i <= collectionsCount; i++) {
-        const collectionInf = await getDetailedCollectionInfo(i) as unknown as NftCollectionInterface;
+        const collectionInf = await getDetailedCollectionInfo(i.toString()) as unknown as NftCollectionInterface;
 
         if (collectionInf && collectionInf.Owner && collectionInf.Owner.toString() !== '5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM') {
           collections.push({ ...collectionInf, id: i.toString() });

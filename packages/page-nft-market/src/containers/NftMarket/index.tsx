@@ -76,23 +76,25 @@ const BuyTokens = (): ReactElement => {
             />
           </Grid.Column>
         </Grid.Row>
-        <Grid.Row>
-          <Grid.Column width={16}>
-            <div className='market-pallet'>
-              <div className='nft-tokens'>
-                { account && filteredOffers.map((token) => (
-                  <NftTokenCard
-                    account={account}
-                    collectionId={token.collectionId}
-                    key={token.tokenId}
-                    openDetailedInformationModal={openDetailedInformationModal}
-                    token={token}
-                  />
-                )) }
+        { (account && filteredOffers.length > 0) && (
+          <Grid.Row>
+            <Grid.Column width={16}>
+              <div className='market-pallet'>
+                <div className='nft-tokens'>
+                  { filteredOffers.map((token) => (
+                    <NftTokenCard
+                      account={account}
+                      collectionId={token.collectionId}
+                      key={token.tokenId}
+                      openDetailedInformationModal={openDetailedInformationModal}
+                      token={token}
+                    />
+                  )) }
+                </div>
               </div>
-            </div>
-          </Grid.Column>
-        </Grid.Row>
+            </Grid.Column>
+          </Grid.Row>
+        )}
       </Grid>
       { account && (
         <Switch>

@@ -3,13 +3,15 @@
 
 import './CollectionSearch.scss';
 
+import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollections';
+
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 
 import { Button, Input, Label, LabelHelp, Table } from '@polkadot/react-components';
-import { NftCollectionInterface, useCollections, useDecoder } from '@polkadot/react-hooks';
+import { useCollections, useDecoder } from '@polkadot/react-hooks';
 
 interface Props {
   account: string | null | undefined;

@@ -4,6 +4,7 @@
 import './styles.scss';
 
 import type { BalanceInterface } from '@polkadot/react-hooks/useBalance';
+import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollections';
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Route, Switch } from 'react-router-dom';
@@ -11,7 +12,7 @@ import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid/Grid';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header/Header';
 
 import { LabelHelp, NftDetailsModal, Table } from '@polkadot/react-components';
-import { NftCollectionInterface, useBalance } from '@polkadot/react-hooks';
+import { useBalance } from '@polkadot/react-hooks';
 
 import AccountSelector from '../../components/AccountSelector';
 import CollectionSearch from '../../components/CollectionSearch';
@@ -25,21 +26,18 @@ function NftWallet (): React.ReactElement {
   const [account, setAccount] = useState<string | null>(null);
   const [shouldUpdateTokens, setShouldUpdateTokens] = useState<string>();
   const [collections, setCollections] = useState<NftCollectionInterface[]>(collectionsStorage);
-  const [selectedCollection, setSelectedCollection] = useState<NftCollectionInterface | null>(null);
+  const [selectedCollection, setSelectedCollection] = useState<NftCollectionInterface>();
   const [canTransferTokens] = useState<boolean>(true);
   const { balance }: { balance: BalanceInterface | null } = useBalance(account);
   const currentAccount = useRef<string | null | undefined>();
 
   const addCollection = useCallback((collection: NftCollectionInterface) => {
-    setCollections([
-      ...collections,
-      collection
-    ]);
-  }, [collections]);
+    setCollections((prevCollections: NftCollectionInterface[]) => [...prevCollections, collection]);
+  }, []);
 
   const removeCollection = useCallback((collectionToRemove) => {
     if (selectedCollection && selectedCollection.id === collectionToRemove) {
-      setSelectedCollection(null);
+      setSelectedCollection(undefined);
     }
 
     setCollections(collections.filter((item: NftCollectionInterface) => item.id !== collectionToRemove));

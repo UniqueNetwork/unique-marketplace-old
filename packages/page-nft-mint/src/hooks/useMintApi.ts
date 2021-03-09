@@ -1,11 +1,12 @@
 // Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollections';
+
 import { useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { of } from 'rxjs';
-import { fromFetch } from 'rxjs/fetch';
-import { catchError, switchMap } from 'rxjs/operators';
+
+import { useCollections } from '@polkadot/react-hooks/useCollections';
 
 export interface ImageInterface {
   address: string;
@@ -20,6 +21,8 @@ export interface UseMintApiInterface {
   uploadedSuccessfully: boolean;
 }
 
+export const collectionIdForMint = process.env.mintedCollection = '2';
+
 /**
  * Get validators from server if health "connected":true
  * @return {Array<ValidatorInfo>} filtered validators from server
@@ -28,86 +31,63 @@ function useMintApi (): UseMintApiInterface {
   const [imgLoading, setImgLoading] = useState<boolean>(false);
   const [serverIsReady, setServerIsReady] = useState<boolean>(false);
   const [uploadedSuccessfully, setUploadedSuccessfully] = useState<boolean>(false);
+  const { getDetailedCollectionInfo } = useCollections();
   const history = useHistory();
 
-  const fetchData = useCallback((url: string) => {
-    return fromFetch(url).pipe(
-      switchMap((response) => {
-        if (response.ok) {
-          return response.json();
-        } else {
-          return of({ error: true, message: `Error ${response.status}` });
-        }
-      }),
-      catchError((err: { message: string }) => {
-        setServerIsReady(false);
+  const addMintedTokenToWallet = useCallback(async () => {
+    const collections: NftCollectionInterface[] = JSON.parse(localStorage.getItem('tokenCollections') || '[]') as NftCollectionInterface[];
 
-        return of({ error: true, message: err.message });
-      })
-    );
-  }, []);
+    if (!collections.length || !collections.find((collection: NftCollectionInterface) => collection.id === collectionIdForMint)) {
+      const collectionInf = await getDetailedCollectionInfo(collectionIdForMint) as unknown as NftCollectionInterface;
 
-  const addMintedTokenToWallet = useCallback(() => {
-    /* const collections: NftCollectionInterface[] = JSON.parse(localStorage.getItem('tokenCollections') || '[]') as NftCollectionInterface[];
+      collections.push({ ...collectionInf, id: collectionIdForMint });
 
-    if (!collections.length || !collections.find((collection: NftCollectionInterface) => collection.id === 14)) {
-      collections.push({
-        ConstOnChainSchema: null,
-        DecimalPoints: 0,
-        Description: 'The NFT collection for artists to mint and display their work',
-        Mode: {
-          isFungible: false,
-          isInvalid: false,
-          isNft: true,
-          isReFungible: false
-        },
-        Name: 'Unique Gallery',
-        OffchainSchema: 'https://uniqueapps.usetech.com/api/images/{id}',
-        SchemaVersion: 'ImageURL',
-        TokenPrefix: 'GAL',
-        VariableOnChainSchema: null,
-        id: 14
-      });
       localStorage.setItem('tokenCollections', JSON.stringify(collections));
-    } */
+    }
+  }, [getDetailedCollectionInfo]);
 
-    history.push('/wallet');
-  }, [history]);
-
-  const uploadImage = useCallback((file: ImageInterface) => {
+  const uploadImage = useCallback(async (file: ImageInterface) => {
     setImgLoading(true);
 
     try {
-      /* const response = await fetch('/api/mint', { // Your POST endpoint
+      const response = await fetch('/mint', { // Your POST endpoint
         body: JSON.stringify(file),
         headers: {
           'Content-Type': 'application/json'
         },
         method: 'POST'
-      }); */
+      });
+      const data: { id: string } = await response.json() as { id: string };
+
+      console.log('token minted successfully', data);
 
       setUploadedSuccessfully(true);
       setImgLoading(false);
-      addMintedTokenToWallet();
+      await addMintedTokenToWallet();
+      history.push('/wallet');
     } catch (e) {
       console.log('error uploading image', e);
       setImgLoading(false);
     }
-  }, [addMintedTokenToWallet]);
+  }, [addMintedTokenToWallet, history]);
+
+  const healthCheck = useCallback(() => {
+    void fetch('/health')
+      .then((response) => {
+        return response.json();
+      })
+      .then((data: { connected?: boolean }) => {
+        if (data && data.connected) {
+          setServerIsReady(true);
+        } else {
+          setServerIsReady(false);
+        }
+      });
+  }, []);
 
   useEffect(() => {
-    const fetchHealth = fetchData('/api/health').subscribe((result: { connected?: boolean }) => {
-      if (result && result.connected) {
-        setServerIsReady(true);
-      } else {
-        setServerIsReady(false);
-      }
-    });
-
-    return () => {
-      fetchHealth.unsubscribe();
-    };
-  }, [fetchData, setServerIsReady]);
+    healthCheck();
+  }, [healthCheck]);
 
   return { imgLoading, serverIsReady, uploadImage, uploadedSuccessfully };
 }

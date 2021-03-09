@@ -14,6 +14,20 @@ module.exports = merge(
     devServer: {
       open: false,
       port: 3000,
+      proxy: {
+        '/health': {
+          target: 'http://localhost:3003'
+        },
+        '/mint': {
+          target: 'http://localhost:3003'
+        },
+        '/offers': {
+          target: 'http://localhost:5000'
+        },
+        '/trades': {
+          target: 'http://localhost:5000'
+        }
+      },
       static: path.resolve(__dirname, 'build')
     },
     plugins: [
