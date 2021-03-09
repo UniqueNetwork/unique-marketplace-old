@@ -60,9 +60,8 @@ function useMintApi (): UseMintApiInterface {
         },
         method: 'POST'
       });
-      const data: { id: string } = await response.json() as { id: string };
 
-      console.log('token minted successfully', data);
+      console.log('token minted successfully', response);
 
       setUploadedSuccessfully(true);
       setImgLoading(false);

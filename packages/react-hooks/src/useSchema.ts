@@ -23,8 +23,6 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
   const { getDetailedCollectionInfo, getDetailedReFungibleTokenInfo, getDetailedTokenInfo } = useCollections();
   const { collectionName8Decoder } = useDecoder();
 
-  console.log('tokenUrl', tokenUrl, 'collectionInfo', collectionInfo);
-
   const tokenImageUrl = useCallback((urlString: string, tokenId: string): string => {
     if (urlString.indexOf('{id}') !== -1) {
       return urlString.replace('{id}', tokenId);
