@@ -1,12 +1,12 @@
 // Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import type { TokenAttribute, TokenDetailsInterface } from '@polkadot/react-hooks/useCollections';
+import type { MetadataType, NftCollectionInterface, TokenAttribute, TokenDetailsInterface } from '@polkadot/react-hooks/useCollections';
 
 import BN from 'bn.js';
 import { useCallback, useEffect, useState } from 'react';
 
-import { MetadataType, NftCollectionInterface, useCollections, useDecoder } from '@polkadot/react-hooks';
+import { useCollections, useDecoder } from '@polkadot/react-hooks';
 
 export type Attributes = TokenAttribute[];
 
@@ -23,7 +23,9 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
   const { getDetailedCollectionInfo, getDetailedReFungibleTokenInfo, getDetailedTokenInfo } = useCollections();
   const { collectionName8Decoder } = useDecoder();
 
-  const tokenImageUrl = useCallback((tokenId: string, urlString: string): string => {
+  console.log('tokenUrl', tokenUrl, 'collectionInfo', collectionInfo);
+
+  const tokenImageUrl = useCallback((urlString: string, tokenId: string): string => {
     if (urlString.indexOf('{id}') !== -1) {
       return urlString.replace('{id}', tokenId);
     }
@@ -76,15 +78,10 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
 
   const setSchema = useCallback(() => {
     if (collectionInfo) {
-      switch (collectionInfo.SchemaVersion) {
-        case 'ImageURL':
-          setTokenUrl(tokenImageUrl(collectionName8Decoder(collectionInfo.OffchainSchema), tokenId.toString()));
-          break;
-        case 'Unique':
-          void setUnique(collectionInfo);
-          break;
-        default:
-          break;
+      if (collectionInfo.SchemaVersion.isImageUrl) {
+        setTokenUrl(tokenImageUrl(collectionName8Decoder(collectionInfo.OffchainSchema), tokenId.toString()));
+      } else {
+        void setUnique(collectionInfo);
       }
 
       setAttributesConst(convertOnChainMetadata(collectionInfo.ConstOnChainSchema));

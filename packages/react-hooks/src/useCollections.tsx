@@ -34,7 +34,10 @@ export interface NftCollectionInterface {
   Name: number[];
   OffchainSchema: number[];
   Owner?: string;
-  SchemaVersion: 'ImageURL' | 'Unique';
+  SchemaVersion: {
+    isImageUrl: boolean;
+    isUnique: boolean;
+  };
   Sponsor?: string; // account
   SponsorConfirmed?: boolean;
   Limits?: {
@@ -205,6 +208,8 @@ export function useCollections () {
 
       for (let i = 1; i <= collectionsCount; i++) {
         const collectionInf = await getDetailedCollectionInfo(i.toString()) as unknown as NftCollectionInterface;
+
+        console.log('collectionInf', collectionInf);
 
         if (collectionInf && collectionInf.Owner && collectionInf.Owner.toString() !== '5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM') {
           collections.push({ ...collectionInf, id: i.toString() });

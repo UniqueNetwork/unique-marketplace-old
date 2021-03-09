@@ -10,6 +10,7 @@ import { useCollections } from '@polkadot/react-hooks/useCollections';
 
 export interface ImageInterface {
   address: string;
+  filename: string;
   image: string; // base64;
   name: string;
 }
@@ -48,6 +49,8 @@ function useMintApi (): UseMintApiInterface {
 
   const uploadImage = useCallback(async (file: ImageInterface) => {
     setImgLoading(true);
+
+    console.log('upload', JSON.stringify(file));
 
     try {
       const response = await fetch('/mint', { // Your POST endpoint

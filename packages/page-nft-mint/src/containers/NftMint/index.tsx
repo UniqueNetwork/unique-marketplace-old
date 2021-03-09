@@ -21,8 +21,9 @@ const maxFileSize = 5000000;
 
 function NftMint (): React.ReactElement {
   const [images, setImages] = useState<ImageType[]>([]);
-  const [imageBase64, setImageBase64] = useState<string | undefined>();
-  const [imageName, setImageName] = useState<string | undefined>();
+  const [imageBase64, setImageBase64] = useState<string>();
+  const [imageFileName, setImageFileName] = useState<string>();
+  const [imageName, setImageName] = useState<string>();
   const [account, setAccount] = useState<string | null>(null);
   const { imgLoading, serverIsReady, uploadImage } = useMintApi();
 
@@ -37,13 +38,15 @@ function NftMint (): React.ReactElement {
     const imageItem: ImageType = imageList[0];
 
     if (imageItem) {
-      const imageBase64String: string = imageItem && imageItem.dataURL ? imageItem.dataURL : '';
+      const imageFileName: string = imageItem.file ? imageItem.file.name : '';
+      const imageBase64String: string = imageItem.dataURL ? imageItem.dataURL : '';
       const indexRemoveTo: number = imageBase64String.indexOf('base64,');
       const shortBase64String = imageBase64String.length >= indexRemoveTo + 7
         ? imageBase64String.replace(imageBase64String.substring(0, indexRemoveTo + 7), '')
         : imageBase64String;
 
       setImageBase64(shortBase64String);
+      setImageFileName(imageFileName);
     }
   }, []);
 
@@ -51,13 +54,14 @@ function NftMint (): React.ReactElement {
     if (imageBase64 && imageName && serverIsReady && account) {
       const newToken: ImageInterface = {
         address: account,
+        filename: imageFileName || imageName,
         image: imageBase64,
         name: imageName
       };
 
       uploadImage(newToken);
     }
-  }, [account, imageBase64, imageName, serverIsReady, uploadImage]);
+  }, [account, imageBase64, imageFileName, imageName, serverIsReady, uploadImage]);
 
   return (
     <main className='mint-tokens'>

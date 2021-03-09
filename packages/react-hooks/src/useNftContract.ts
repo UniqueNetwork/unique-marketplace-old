@@ -48,7 +48,7 @@ export function useNftContract (account: string): useNftContractInterface {
   const [depositor, setDepositor] = useState<string>();
   const [deposited, setDeposited] = useState<BN>();
   const [tokenAsk, setTokenAsk] = useState<{ owner: string, price: BN }>();
-  const [contractAddress] = useState<string>('5Cym1pvyNgzpy88bPXvrgZddH9WEaKHPpsEkET5pSfahKGmK');
+  const [contractAddress] = useState<string>('5HpCCd2SufXC1NRANgWBvz6k3GnVCDcTceC24WNwERkBtfSk'); // 5Cym1pvyNgzpy88bPXvrgZddH9WEaKHPpsEkET5pSfahKGmK
 
   const findCallMethodByName = useCallback((methodName: string): AbiMessage | null => {
     const message = contractInstance && Object.values(contractInstance.abi.messages).find((message) => message.identifier === methodName);
