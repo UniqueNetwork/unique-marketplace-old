@@ -5,18 +5,17 @@ import BN from 'bn.js';
 import { useCallback, useState } from 'react';
 
 import { ErrorType, useApi, useFetch } from '@polkadot/react-hooks';
+import { Constructor } from '@polkadot/types/types/codec';
 
 export type MetadataType = {
   metadata: string;
 }
 
-export type TokenAttribute = {
-  [key: string]: {
-    type: number | string | 'enum';
-    size: number;
-    values: string[];
-  }
-}
+export type TokenAttribute = Record<string, Constructor | string | Record<string, string> | {
+  _enum: string[] | Record<string, string | null>;
+} | {
+  _set: Record<string, number>;
+}>;
 
 export interface NftCollectionInterface {
   Access?: 'Normal'

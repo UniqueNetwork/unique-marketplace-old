@@ -4,9 +4,12 @@
 import type { MetadataType, NftCollectionInterface, TokenAttribute, TokenDetailsInterface } from '@polkadot/react-hooks/useCollections';
 
 import BN from 'bn.js';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
+import { Metadata } from '@polkadot/metadata';
+import metaStatic from '@polkadot/metadata/static';
 import { useCollections, useDecoder } from '@polkadot/react-hooks';
+import { TypeRegistry } from '@polkadot/types';
 
 export type Attributes = TokenAttribute[];
 
@@ -77,9 +80,10 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
   const [collectionInfo, setCollectionInfo] = useState<NftCollectionInterface>();
   const [reFungibleBalance, setReFungibleBalance] = useState<number>(0);
   const [tokenUrl, setTokenUrl] = useState<string>('');
-  const [attributesConst, setAttributesConst] = useState<TokenAttribute>();
-  const [attributesVar, setAttributesVar] = useState<TokenAttribute>();
-  const [attributes, setAttributes] = useState<{ [key: string]: string }>();
+  const [attributesConst, setAttributesConst] = useState<TypeRegistry>();
+  const [attributesVar, setAttributesVar] = useState<TypeRegistry>();
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  const [attributes, setAttributes] = useState<any>();
   const [tokenDetails, setTokenDetails] = useState<TokenDetailsInterface>();
   const [tokenVarData, setTokenVarData] = useState<string>();
   const [tokenConstData, setTokenConstData] = useState<string>();
@@ -94,17 +98,31 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
     return '';
   }, []);
 
-  const convertOnChainMetadata = useCallback((data: string): TokenAttribute => {
+  const registryMeta = useMemo(() => {
+    const registry = new TypeRegistry();
+    const metadata = new Metadata(registry, metaStatic);
+
+    return metadata;
+  }, []);
+
+  const convertOnChainMetadata = useCallback((data: string): TypeRegistry => {
+    const registry = new TypeRegistry();
+
     try {
       if (data && data.length) {
-        return JSON.parse(data) as TokenAttribute;
+        registry.setMetadata(registryMeta);
+        const tokenScema = JSON.parse(data) as TokenAttribute;
+
+        registry.register(tokenScema);
+
+        return registry;
       }
     } catch (e) {
       console.log('schema json parse error', e);
     }
 
-    return {};
-  }, []);
+    return registry;
+  }, [registryMeta]);
 
   const getReFungibleDetails = useCallback(() => {
     try {
@@ -137,18 +155,23 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
     }
   }, [collectionName8Decoder, tokenId, tokenImageUrl]);
 
-  const setSchema = useCallback(() => {
+  // how to parse Off Chain Schema
+  const setOffChainSchema = useCallback(() => {
     if (collectionInfo) {
       if (collectionInfo.SchemaVersion.isImageUrl) {
         setTokenUrl(tokenImageUrl(collectionName8Decoder(collectionInfo.OffchainSchema), tokenId.toString()));
       } else {
         void setUnique(collectionInfo);
       }
+    }
+  }, [collectionInfo, collectionName8Decoder, setUnique, tokenId, tokenImageUrl]);
 
+  const setOnChainSchema = useCallback(() => {
+    if (collectionInfo) {
       setAttributesConst(convertOnChainMetadata(collectionInfo.ConstOnChainSchema));
       setAttributesVar(convertOnChainMetadata(collectionInfo.VariableOnChainSchema));
     }
-  }, [collectionInfo, collectionName8Decoder, convertOnChainMetadata, setUnique, tokenId, tokenImageUrl]);
+  }, [collectionInfo, convertOnChainMetadata]);
 
   const getCollectionInfo = useCallback(async () => {
     if (collectionId) {
@@ -185,24 +208,21 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
     }
   }, [collectionId, collectionInfo, collectionName8Decoder, getDetailedTokenInfo, getDetailedReFungibleTokenInfo, tokenId]);
 
-  const mergeData = useCallback(({ attr, data }: { attr?: TokenAttribute, data?: string }) => {
-    const tokenAttributes: {[key: string]: any} = {};
+  const mergeData = useCallback(({ attr, data }: { attr?: TypeRegistry, data?: string }): any => {
+    if (attr && data) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const decoder: any = attr.createType('Root' as any, '0x010402');
 
-    if (attr && data && Object.keys(attr).length) {
-      Object.keys(attr).forEach((attrKey) => {
-        if (attr[attrKey].type === 'enum') {
-          tokenAttributes[attrKey] = attr[attrKey].values[parseInt(data, 10)];
-        } else if (attr[attrKey].type === 'number' || attr[attrKey].type === 'string') {
-          tokenAttributes[attrKey] = data;
-        }
-      });
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-return
+      return decoder.toJSON(); // {Gender: "Female", Traits: ["Smile"]}
     }
 
-    return tokenAttributes;
+    return {};
   }, []);
 
   const mergeTokenAttributes = useCallback(() => {
-    const tokenAttributes = {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const tokenAttributes: any = {
       ...mergeData({ attr: attributesConst, data: tokenConstData }),
       ...mergeData({ attr: attributesVar, data: tokenVarData })
     };
@@ -212,10 +232,11 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
 
   useEffect(() => {
     if (collectionInfo) {
-      void setSchema();
+      void setOnChainSchema();
+      void setOffChainSchema();
       void getTokenDetails();
     }
-  }, [collectionInfo, getTokenDetails, setSchema]);
+  }, [collectionInfo, getTokenDetails, setOffChainSchema, setOnChainSchema]);
 
   useEffect(() => {
     void getCollectionInfo();
@@ -230,6 +251,7 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
   }, [getReFungibleDetails]);
 
   return {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     attributes,
     attributesConst,
     attributesVar,
