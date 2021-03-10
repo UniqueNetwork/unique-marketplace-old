@@ -93,8 +93,6 @@ function NftDetailsModal ({ account, setShouldUpdateTokens }: Props): React.Reac
     setReadyToWithdraw(false);
   }, [sendCurrentUserAction]);
 
-  console.log('attributes', attributes);
-
   return (
     <Modal
       className='unique-modal'

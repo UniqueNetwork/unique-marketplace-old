@@ -11,8 +11,11 @@ import { Route, Switch } from 'react-router-dom';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid/Grid';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header/Header';
 
-import { LabelHelp, NftDetailsModal, Table } from '@polkadot/react-components';
-import { useBalance } from '@polkadot/react-hooks';
+import CreateModal from '@polkadot/app-accounts/modals/Create';
+import ImportModal from '@polkadot/app-accounts/modals/Import';
+import Qr from '@polkadot/app-accounts/modals/Qr';
+import { Button, LabelHelp, NftDetailsModal, Table } from '@polkadot/react-components';
+import { useBalance, useIpfs, useToggle } from '@polkadot/react-hooks';
 
 import AccountSelector from '../../components/AccountSelector';
 import CollectionSearch from '../../components/CollectionSearch';
@@ -29,6 +32,10 @@ function NftWallet (): React.ReactElement {
   const [selectedCollection, setSelectedCollection] = useState<NftCollectionInterface>();
   const [canTransferTokens] = useState<boolean>(true);
   const { balance }: { balance: BalanceInterface | null } = useBalance(account);
+  const { isIpfs } = useIpfs();
+  const [isQrOpen, toggleQr] = useToggle();
+  const [isCreateOpen, toggleCreate] = useToggle();
+  const [isImportOpen, toggleImport] = useToggle();
   const currentAccount = useRef<string | null | undefined>();
 
   const addCollection = useCallback((collection: NftCollectionInterface) => {
@@ -54,6 +61,10 @@ function NftWallet (): React.ReactElement {
   const onSetAccount = useCallback((account: string) => {
     setAccount(account);
     setShouldUpdateTokens('all');
+  }, []);
+
+  const onStatusChange = useCallback(() => {
+    console.log('onStatusChange');
   }, []);
 
   useEffect(() => {
@@ -86,6 +97,25 @@ function NftWallet (): React.ReactElement {
           </Grid.Column>
         </Grid.Row>
       </Grid>
+      <Button.Group>
+        <Button
+          icon='plus'
+          isDisabled={isIpfs}
+          label='Add account'
+          onClick={toggleCreate}
+        />
+        <Button
+          icon='sync'
+          isDisabled={isIpfs}
+          label='Restore JSON'
+          onClick={toggleImport}
+        />
+        <Button
+          icon='qrcode'
+          label='Add via Qr'
+          onClick={toggleQr}
+        />
+      </Button.Group>
       <CollectionSearch
         account={account}
         addCollection={addCollection}
@@ -127,6 +157,24 @@ function NftWallet (): React.ReactElement {
           collection={openTransfer.collection}
           tokenId={openTransfer.tokenId}
           updateTokens={updateTokens}
+        />
+      )}
+      {isCreateOpen && (
+        <CreateModal
+          onClose={toggleCreate}
+          onStatusChange={onStatusChange}
+        />
+      )}
+      {isImportOpen && (
+        <ImportModal
+          onClose={toggleImport}
+          onStatusChange={onStatusChange}
+        />
+      )}
+      {isQrOpen && (
+        <Qr
+          onClose={toggleQr}
+          onStatusChange={onStatusChange}
         />
       )}
       { account && (
