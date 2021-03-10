@@ -93,6 +93,8 @@ function NftDetailsModal ({ account, setShouldUpdateTokens }: Props): React.Reac
     setReadyToWithdraw(false);
   }, [sendCurrentUserAction]);
 
+  console.log('attributes', attributes);
+
   return (
     <Modal
       className='unique-modal'
@@ -113,16 +115,19 @@ function NftDetailsModal ({ account, setShouldUpdateTokens }: Props): React.Reac
           <Header as='h3'>{collectionId} #{tokenId}</Header>
           <Header as='h4'>Accessories</Header>
           { attributes && Object.values(attributes).length > 0 && (
-            <span>Attributes: {Object.keys(attributes).map((attrKey) => (<span key={attrKey}>{attrKey}: {attributes[attrKey]}</span>))}</span>
+            <>
+              <strong>Attributes:</strong>
+              {Object.keys(attributes).map((attrKey) => (<p key={attrKey}>{attrKey}: {attributes[attrKey]}</p>))}
+            </>
           )}
           { (uOwnIt && !uSellIt) && (
-            <p><strong>You own it!</strong> (address: {account})</p>
+            <Header as='h4'>You own it! (address: {account})</Header>
           )}
           { uSellIt && (
-            <p><strong>You selling it!</strong> (price: {formatBalance(tokenAsk?.price)})</p>
+            <Header as='h4'>You selling it! (price: {formatBalance(tokenAsk?.price)})</Header>
           )}
           { !!(!uOwnIt && tokenInfo) && (
-            <p><strong>The owner is </strong>{tokenInfo?.Owner?.toString()}</p>
+            <Header as='h4'>The owner is {tokenInfo?.Owner?.toString()}</Header>
           )}
           { deposited && (
             <p>Your deposit is: <strong>{formatBalance(deposited)}</strong></p>

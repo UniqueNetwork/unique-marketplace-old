@@ -34,7 +34,7 @@ type AttributesDecoded = {
   [key: string]: string | string[],
 }
 
-/* const defaultData: RootSchemaType = {
+const defaultData: RootSchemaType = {
   Gender: {
     _enum: {
       Female: null,
@@ -92,7 +92,7 @@ type AttributesDecoded = {
       Pipe: null
     }
   }
-}; */
+};
 
 export function useSchema (account: string, collectionId: string, tokenId: string | number) {
   const [collectionInfo, setCollectionInfo] = useState<NftCollectionInterface>();
@@ -100,8 +100,7 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
   const [tokenUrl, setTokenUrl] = useState<string>('');
   const [attributesConst, setAttributesConst] = useState<TypeRegistry>();
   const [attributesVar, setAttributesVar] = useState<TypeRegistry>();
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  const [attributes, setAttributes] = useState<any>();
+  const [attributes, setAttributes] = useState<AttributesDecoded>();
   const [tokenDetails, setTokenDetails] = useState<TokenDetailsInterface>();
   const [tokenVarData, setTokenVarData] = useState<number[]>();
   const [tokenConstData, setTokenConstData] = useState<number[]>();
@@ -129,7 +128,7 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
     try {
       registry.setMetadata(registryMeta);
 
-      const tokenSchema: RootSchemaType = JSON.parse(data) as RootSchemaType;
+      const tokenSchema: RootSchemaType = (data ? JSON.parse(data) : defaultData) as RootSchemaType;
 
       registry.register(tokenSchema);
     } catch (e) {
@@ -221,13 +220,17 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
         setTokenVarData(tokenDetailsData.VariableData);
       }
     }
-  }, [collectionId, collectionInfo, getDetailedTokenInfo, getDetailedReFungibleTokenInfo, tokenId]);
+  }, [collectionId, collectionInfo, collectionName8Decoder, getDetailedTokenInfo, getDetailedReFungibleTokenInfo, tokenId]);
 
   const mergeData = useCallback(({ attr, data }: { attr?: TypeRegistry, data?: number[] }): AttributesDecoded => {
     try {
+      console.log('attr', attr);
+      console.log('data', data);
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      const decoder = attr.createType('Root', data);
+      const decoder = attr.createType('Root', '0x010402');
+
+      console.log('decoder', decoder.toJSON());
 
       return decoder.toJSON() as AttributesDecoded; // {Gender: "Female", Traits: ["Smile"]}
     } catch (e) {
@@ -268,7 +271,6 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
   }, [getReFungibleDetails]);
 
   return {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     attributes,
     attributesConst,
     attributesVar,
