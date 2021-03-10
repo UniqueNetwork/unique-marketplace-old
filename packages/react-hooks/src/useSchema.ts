@@ -13,68 +13,86 @@ import { TypeRegistry } from '@polkadot/types';
 
 export type Attributes = TokenAttribute[];
 
-/*
-const {Metadata} = require('@polkadot/metadata');
-const {TypeRegistry} = require('@polkadot/types');
-const {metaStatic} = require('@polkadot/metadata/static');
-
-const punksSchema = {
-    "Gender": {
-        "_enum": {
-            "Male": null,
-            "Female": null
-        }
-    },
-    "Trait": {
-        "_enum": {
-            "Black Lipstick": null,
-            "Red Lipstick": null,
-            "Smile": null,
-            "Teeth Smile": null,
-            "Purple Lipstick": null,
-            "Nose Ring": null,
-            "Asian Eyes": null,
-            "Sun Glasses": null,
-            "Red Glasses": null,
-            "Round Eyes": null,
-            "Left Earring": null,
-            "Right Earring": null,
-            "Two Earrings": null,
-            "Brown Beard": null,
-            "Mustache-Beard": null,
-            "Mustache": null,
-            "Regular Beard": null,
-            "Up Hair": null,
-            "Down Hair": null,
-            "Mahawk": null,
-            "Red Mahawk": null,
-            "Orange Hair": null,
-            "Bubble Hair": null,
-            "Emo Hair": null,
-            "Thin Hair": null,
-            "Bald": null,
-            "Blonde Hair": null,
-            "Caret Hair": null,
-            "Pony Tails": null,
-            "Cigar": null,
-            "Pipe": null
-        }
-    },
-    "Punk": {
-        "Gender": "Gender",
-        "Traits": "Vec<Trait>"
+type RootSchemaType = {
+  'Gender': {
+    '_enum': {
+      [key: string]: null
     }
+  },
+  'Trait': {
+    '_enum': {
+      [key: string]: null
+    }
+  },
+  'Root': {
+    'Gender': 'Gender',
+    'Traits': 'Vec<Trait>'
+  }
 };
 
-const registry = new TypeRegistry();
-const metadata = new Metadata(registry, metaStatic);
-registry.setMetadata(metadata);
+type AttributesDecoded = {
+  [key: string]: string | string[],
+}
 
-registry.register(punksSchema)
-
-const decoder = registry.createType('Punk', '0x010402')
-console.log(decoder.toJSON());
- */
+/* const defaultData: RootSchemaType = {
+  Gender: {
+    _enum: {
+      Female: null,
+      Male: null
+    }
+  },
+  Root: {
+    Gender: 'Gender',
+    Traits: 'Vec<Trait>'
+  },
+  Trait: {
+    _enum: {
+      'Black Lipstick': null,
+      'Red Lipstick': null,
+      Smile: null,
+      'Teeth Smile': null,
+      // eslint-disable-next-line sort-keys
+      'Purple Lipstick': null,
+      // eslint-disable-next-line sort-keys
+      'Nose Ring': null,
+      // eslint-disable-next-line sort-keys
+      'Asian Eyes': null,
+      'Sun Glasses': null,
+      // eslint-disable-next-line sort-keys
+      'Red Glasses': null,
+      'Round Eyes': null,
+      // eslint-disable-next-line sort-keys
+      'Left Earring': null,
+      'Right Earring': null,
+      'Two Earrings': null,
+      // eslint-disable-next-line sort-keys
+      'Brown Beard': null,
+      'Mustache-Beard': null,
+      // eslint-disable-next-line sort-keys
+      Mustache: null,
+      'Regular Beard': null,
+      'Up Hair': null,
+      // eslint-disable-next-line sort-keys
+      'Down Hair': null,
+      Mahawk: null,
+      'Red Mahawk': null,
+      // eslint-disable-next-line sort-keys
+      'Orange Hair': null,
+      // eslint-disable-next-line sort-keys
+      'Bubble Hair': null,
+      'Emo Hair': null,
+      'Thin Hair': null,
+      // eslint-disable-next-line sort-keys
+      Bald: null,
+      'Blonde Hair': null,
+      'Caret Hair': null,
+      'Pony Tails': null,
+      // eslint-disable-next-line sort-keys
+      Cigar: null,
+      Pipe: null
+    }
+  }
+}; */
 
 export function useSchema (account: string, collectionId: string, tokenId: string | number) {
   const [collectionInfo, setCollectionInfo] = useState<NftCollectionInterface>();
@@ -85,8 +103,8 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const [attributes, setAttributes] = useState<any>();
   const [tokenDetails, setTokenDetails] = useState<TokenDetailsInterface>();
-  const [tokenVarData, setTokenVarData] = useState<string>();
-  const [tokenConstData, setTokenConstData] = useState<string>();
+  const [tokenVarData, setTokenVarData] = useState<number[]>();
+  const [tokenConstData, setTokenConstData] = useState<number[]>();
   const { getDetailedCollectionInfo, getDetailedReFungibleTokenInfo, getDetailedTokenInfo } = useCollections();
   const { collectionName8Decoder } = useDecoder();
 
@@ -109,14 +127,11 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
     const registry = new TypeRegistry();
 
     try {
-      if (data && data.length) {
-        registry.setMetadata(registryMeta);
-        const tokenScema = JSON.parse(data) as TokenAttribute;
+      registry.setMetadata(registryMeta);
 
-        registry.register(tokenScema);
+      const tokenSchema: RootSchemaType = JSON.parse(data) as RootSchemaType;
 
-        return registry;
-      }
+      registry.register(tokenSchema);
     } catch (e) {
       console.log('schema json parse error', e);
     }
@@ -168,10 +183,10 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
 
   const setOnChainSchema = useCallback(() => {
     if (collectionInfo) {
-      setAttributesConst(convertOnChainMetadata(collectionInfo.ConstOnChainSchema));
-      setAttributesVar(convertOnChainMetadata(collectionInfo.VariableOnChainSchema));
+      setAttributesConst(convertOnChainMetadata(collectionName8Decoder(collectionInfo.ConstOnChainSchema)));
+      setAttributesVar(convertOnChainMetadata(collectionName8Decoder(collectionInfo.VariableOnChainSchema)));
     }
-  }, [collectionInfo, convertOnChainMetadata]);
+  }, [collectionInfo, collectionName8Decoder, convertOnChainMetadata]);
 
   const getCollectionInfo = useCallback(async () => {
     if (collectionId) {
@@ -199,22 +214,24 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
       setTokenDetails(tokenDetailsData);
 
       if (tokenDetailsData.ConstData) {
-        setTokenConstData(collectionName8Decoder(tokenDetailsData.ConstData));
+        setTokenConstData(tokenDetailsData.ConstData);
       }
 
       if (tokenDetailsData.VariableData) {
-        setTokenVarData(collectionName8Decoder(tokenDetailsData.VariableData));
+        setTokenVarData(tokenDetailsData.VariableData);
       }
     }
-  }, [collectionId, collectionInfo, collectionName8Decoder, getDetailedTokenInfo, getDetailedReFungibleTokenInfo, tokenId]);
+  }, [collectionId, collectionInfo, getDetailedTokenInfo, getDetailedReFungibleTokenInfo, tokenId]);
 
-  const mergeData = useCallback(({ attr, data }: { attr?: TypeRegistry, data?: string }): any => {
-    if (attr && data) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const decoder: any = attr.createType('Root' as any, '0x010402');
+  const mergeData = useCallback(({ attr, data }: { attr?: TypeRegistry, data?: number[] }): AttributesDecoded => {
+    try {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      const decoder = attr.createType('Root', data);
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-return
-      return decoder.toJSON(); // {Gender: "Female", Traits: ["Smile"]}
+      return decoder.toJSON() as AttributesDecoded; // {Gender: "Female", Traits: ["Smile"]}
+    } catch (e) {
+      console.log('mergeData error', e);
     }
 
     return {};

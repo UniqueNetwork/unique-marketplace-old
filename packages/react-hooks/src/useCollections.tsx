@@ -45,8 +45,8 @@ export interface NftCollectionInterface {
     TokenLimit: string;
     SponsorTimeout: string;
   },
-  VariableOnChainSchema: string;
-  ConstOnChainSchema: string;
+  VariableOnChainSchema: number[];
+  ConstOnChainSchema: number[];
 }
 
 export interface TokenDetailsInterface {
