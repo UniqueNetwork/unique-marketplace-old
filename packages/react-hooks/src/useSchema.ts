@@ -10,6 +10,69 @@ import { useCollections, useDecoder } from '@polkadot/react-hooks';
 
 export type Attributes = TokenAttribute[];
 
+/*
+const {Metadata} = require('@polkadot/metadata');
+const {TypeRegistry} = require('@polkadot/types');
+const {metaStatic} = require('@polkadot/metadata/static');
+
+const punksSchema = {
+    "Gender": {
+        "_enum": {
+            "Male": null,
+            "Female": null
+        }
+    },
+    "Trait": {
+        "_enum": {
+            "Black Lipstick": null,
+            "Red Lipstick": null,
+            "Smile": null,
+            "Teeth Smile": null,
+            "Purple Lipstick": null,
+            "Nose Ring": null,
+            "Asian Eyes": null,
+            "Sun Glasses": null,
+            "Red Glasses": null,
+            "Round Eyes": null,
+            "Left Earring": null,
+            "Right Earring": null,
+            "Two Earrings": null,
+            "Brown Beard": null,
+            "Mustache-Beard": null,
+            "Mustache": null,
+            "Regular Beard": null,
+            "Up Hair": null,
+            "Down Hair": null,
+            "Mahawk": null,
+            "Red Mahawk": null,
+            "Orange Hair": null,
+            "Bubble Hair": null,
+            "Emo Hair": null,
+            "Thin Hair": null,
+            "Bald": null,
+            "Blonde Hair": null,
+            "Caret Hair": null,
+            "Pony Tails": null,
+            "Cigar": null,
+            "Pipe": null
+        }
+    },
+    "Punk": {
+        "Gender": "Gender",
+        "Traits": "Vec<Trait>"
+    }
+};
+
+const registry = new TypeRegistry();
+const metadata = new Metadata(registry, metaStatic);
+registry.setMetadata(metadata);
+
+registry.register(punksSchema)
+
+const decoder = registry.createType('Punk', '0x010402')
+console.log(decoder.toJSON());
+ */
+
 export function useSchema (account: string, collectionId: string, tokenId: string | number) {
   const [collectionInfo, setCollectionInfo] = useState<NftCollectionInterface>();
   const [reFungibleBalance, setReFungibleBalance] = useState<number>(0);
