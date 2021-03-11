@@ -34,7 +34,7 @@ type AttributesDecoded = {
   [key: string]: string | string[],
 }
 
-const defaultData: RootSchemaType = {
+/* const defaultData: RootSchemaType = {
   Gender: {
     _enum: {
       Female: null,
@@ -92,7 +92,7 @@ const defaultData: RootSchemaType = {
       Pipe: null
     }
   }
-};
+}; */
 
 export function useSchema (account: string, collectionId: string, tokenId: string | number) {
   const [collectionInfo, setCollectionInfo] = useState<NftCollectionInterface>();
@@ -128,7 +128,7 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
     try {
       registry.setMetadata(registryMeta);
 
-      const tokenSchema: RootSchemaType = (data ? JSON.parse(data) : defaultData) as RootSchemaType;
+      const tokenSchema: RootSchemaType = JSON.parse(data) as RootSchemaType;
 
       registry.register(tokenSchema);
     } catch (e) {
@@ -220,17 +220,13 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
         setTokenVarData(tokenDetailsData.VariableData);
       }
     }
-  }, [collectionId, collectionInfo, collectionName8Decoder, getDetailedTokenInfo, getDetailedReFungibleTokenInfo, tokenId]);
+  }, [collectionId, collectionInfo, getDetailedTokenInfo, getDetailedReFungibleTokenInfo, tokenId]);
 
   const mergeData = useCallback(({ attr, data }: { attr?: TypeRegistry, data?: number[] }): AttributesDecoded => {
     try {
-      console.log('attr', attr);
-      console.log('data', data);
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      const decoder = attr.createType('Root', '0x010402');
-
-      console.log('decoder', decoder.toJSON());
+      const decoder = attr.createType('Root', data.toString());
 
       return decoder.toJSON() as AttributesDecoded; // {Gender: "Female", Traits: ["Smile"]}
     } catch (e) {
