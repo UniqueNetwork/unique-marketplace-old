@@ -3,11 +3,13 @@
 
 import './NftCollectionCard.scss';
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollections';
+
+import React, { useCallback, useEffect, useState } from 'react';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 
 import { Expander } from '@polkadot/react-components';
-import { NftCollectionInterface, useCollections, useDecoder } from '@polkadot/react-hooks';
+import { useCollections, useDecoder } from '@polkadot/react-hooks';
 
 import NftTokenCard from '../NftTokenCard';
 
@@ -15,17 +17,15 @@ interface Props {
   account: string | null;
   canTransferTokens: boolean;
   collection: NftCollectionInterface;
-  removeCollection: (collection: number) => void;
+  removeCollection: (collection: string) => void;
   openTransferModal: (collection: NftCollectionInterface, tokenId: string, balance: number) => void;
-  setShouldUpdateTokens: (collectionId: number | null) => void;
-  shouldUpdateTokens: number | null;
+  shouldUpdateTokens: string | undefined;
 }
 
-function NftCollectionCard ({ account, canTransferTokens, collection, openTransferModal, removeCollection, setShouldUpdateTokens, shouldUpdateTokens }: Props): React.ReactElement<Props> {
+function NftCollectionCard ({ account, canTransferTokens, collection, openTransferModal, removeCollection, shouldUpdateTokens }: Props): React.ReactElement<Props> {
   const [opened, setOpened] = useState(false);
   const [tokensOfCollection, setTokensOfCollection] = useState<Array<string>>([]);
   const { getTokensOfCollection } = useCollections();
-  const currentAccount = useRef<string | null | undefined>();
   const { collectionName16Decoder } = useDecoder();
 
   const openCollection = useCallback((isOpen) => {
@@ -42,30 +42,17 @@ function NftCollectionCard ({ account, canTransferTokens, collection, openTransf
     setTokensOfCollection(tokensOfCollection);
   }, [account, collection, getTokensOfCollection]);
 
-  // clear search results if account changed
-  useEffect(() => {
-    if (currentAccount.current && currentAccount.current !== account) {
-      setOpened(false);
-      setTokensOfCollection([]);
-    }
-
-    currentAccount.current = account;
-  }, [account, currentAccount, setOpened, setTokensOfCollection]);
-
   useEffect(() => {
     if (shouldUpdateTokens && shouldUpdateTokens === collection.id) {
       void updateTokens();
-      setShouldUpdateTokens(null);
     }
-  }, [collection.id, setShouldUpdateTokens, shouldUpdateTokens, updateTokens]);
+  }, [collection.id, shouldUpdateTokens, updateTokens]);
 
   useEffect(() => {
     if (opened) {
       void updateTokens();
     }
-  }, [opened, updateTokens]);
-
-  console.log('collection', collection);
+  }, [account, opened, updateTokens]);
 
   return (
     <Expander

@@ -3,13 +3,15 @@
 
 import './styles.scss';
 
+import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollections';
+
 import BN from 'bn.js';
 import React, { useCallback, useEffect, useState } from 'react';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form/Form';
 import Modal from 'semantic-ui-react/dist/commonjs/modules/Modal/Modal';
 
 import { Button, Input, TxButton } from '@polkadot/react-components';
-import { NftCollectionInterface, useApi, useBalance } from '@polkadot/react-hooks';
+import { useApi, useBalance } from '@polkadot/react-hooks';
 
 interface Props {
   account: string | null;
@@ -18,7 +20,7 @@ interface Props {
   collection: NftCollectionInterface;
   closeModal: () => void;
   tokenId: string;
-  updateTokens: (collectionId: number) => void;
+  updateTokens: (collectionId: string) => void;
 }
 
 function TransferModal ({ account, balance, canTransferTokens, closeModal, collection, tokenId, updateTokens }: Props): React.ReactElement<Props> {

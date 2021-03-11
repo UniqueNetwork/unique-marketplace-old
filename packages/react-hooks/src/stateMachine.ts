@@ -1,68 +1,29 @@
+// Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
+// SPDX-License-Identifier: Apache-2.0
+
 import { Machine } from 'xstate';
 
 const marketplaceStateMachine = Machine({
   id: 'marketplace',
   initial: 'idle',
   states: {
-    idle: {
-      on: {
-        UPDATE_TOKEN_STATE: 'loadingTokenInfo'
-      }
-    },
-    loadingTokenInfo: {
-      on: {
-        BUY: 'buy',
-        CANCEL: 'cancelSale',
-        NO_OFFER_PLACED: 'idle',
-        REVERT_UNUSED_MONEY: 'revertMoney',
-        SALE: 'sale'
-      }
-    },
-    revertMoney: {
-      on: {
-        WITHDRAW_ERROR: 'loadingTokenInfo',
-        WITHDRAW_SUCCESS: 'loadingTokenInfo'
-      }
-    },
-    cancelSale: {
-      on: {
-        CANCEL_SALE_FAIL: 'loadingTokenInfo',
-        CANCEL_SALE_SUCCESS: 'loadingTokenInfo'
-      }
-    },
-    sale: {
-      on: {
-        TRANSFER_NFT_TO_CONTRACT_FAIL: 'loadingTokenInfo',
-        TRANSFER_NFT_TO_CONTRACT_SUCCESS: 'registerDeposit'
-      }
-    },
-    registerDeposit: {
-      on: {
-        REGISTER_DEPOSIT_SUCCESS: 'getDepositReady'
-      }
-    },
-    getDepositReady: {
-      on: {
-        NFT_DEPOSIT_FAIL: 'registerDeposit',
-        NFT_DEPOSIT_READY: 'askPrice'
-      }
-    },
     askPrice: {
       on: {
         ASK_PRICE_FAIL: 'askPrice',
         ASK_PRICE_SUCCESS: 'registerSale'
       }
     },
-    registerSale: {
-      on: {
-        REGISTER_SALE_FAIL: 'askPrice',
-        REGISTER_SALE_SUCCESS: 'loadingTokenInfo'
-      }
-    },
     buy: {
       on: {
-        SEND_MONEY_FAIL: 'loadingTokenInfo',
-        SEND_MONEY_SUCCESS: 'checkDepositReady'
+        SIGN_FAIL: 'loadingTokenInfo',
+        SIGN_SUCCESS: 'waitForSignMoneyTransfer',
+        WAIT_FOR_DEPOSIT: 'checkDepositReady'
+      }
+    },
+    cancelSell: {
+      on: {
+        CANCEL_SELL_FAIL: 'loadingTokenInfo',
+        CANCEL_SELL_SUCCESS: 'waitForTokenRevert'
       }
     },
     checkDepositReady: {
@@ -71,10 +32,74 @@ const marketplaceStateMachine = Machine({
         DEPOSIT_SUCCESS: 'sentTokenToNewOwner'
       }
     },
+    idle: {
+      on: {
+        BUY: 'buy',
+        CANCEL: 'cancelSell',
+        REVERT_UNUSED_MONEY: 'revertMoney',
+        SELL: 'sell',
+        UPDATE_TOKEN_STATE: 'loadingTokenInfo'
+      }
+    },
+    loadingTokenInfo: {
+      on: {
+        WAIT_FOR_DEPOSIT: 'waitForNftDeposit',
+        WAIT_FOR_USER_ACTION: 'idle'
+      }
+    },
+    registerSale: {
+      on: {
+        REGISTER_SALE_FAIL: 'askPrice',
+        REGISTER_SALE_SUCCESS: 'loadingTokenInfo'
+      }
+    },
+    revertMoney: {
+      on: {
+        WITHDRAW_FAIL: 'loadingTokenInfo',
+        WITHDRAW_SUCCESS: 'loadingTokenInfo'
+      }
+    },
+    sell: {
+      on: {
+        TRANSACTION_READY: 'waitForSignTransfer',
+        TRANSFER_FAIL: 'loadingTokenInfo'
+      }
+    },
     sentTokenToNewOwner: {
+      on: {
+        SIGN_FAIL: 'loadingTokenInfo',
+        SIGN_SUCCESS: 'waitForSignTokenBuy'
+      }
+    },
+    waitForNftDeposit: {
+      on: {
+        NFT_DEPOSIT_FAIL: 'waitForNftDeposit',
+        NFT_DEPOSIT_OTHER: 'loadingTokenInfo',
+        NFT_DEPOSIT_READY: 'askPrice'
+      }
+    },
+    waitForSignMoneyTransfer: {
+      on: {
+        SEND_MONEY_FAIL: 'loadingTokenInfo',
+        SEND_MONEY_SUCCESS: 'checkDepositReady'
+      }
+    },
+    waitForSignTokenBuy: {
       on: {
         SEND_TOKEN_FAIL: 'loadingTokenInfo',
         SEND_TOKEN_SUCCESS: 'loadingTokenInfo'
+      }
+    },
+    waitForSignTransfer: {
+      on: {
+        TRANSFER_FAIL: 'loadingTokenInfo',
+        TRANSFER_SUCCESS: 'waitForNftDeposit'
+      }
+    },
+    waitForTokenRevert: {
+      on: {
+        TOKEN_REVERT_FAIL: 'waitForTokenRevert',
+        TOKEN_REVERT_SUCCESS: 'loadingTokenInfo'
       }
     }
   }

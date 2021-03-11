@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import BN from 'bn.js';
-
 import { useCallback, useEffect, useState } from 'react';
 
 import { useApi } from '@polkadot/react-hooks';
@@ -39,9 +38,6 @@ export function useBalance (accountId: string | null): UseBalanceInterface {
       const existentialDeposit = api.consts.balances.existentialDeposit;
 
       setExistentialDeposit(existentialDeposit);
-      // add transfer fees
-      // const transferFees = await api.tx.nft.transfer('0', '0', accountId).paymentInfo(accountId);
-      // console.log('transferFees', transferFees);
     } catch (e) {
       console.log('getAccountBalance error', e);
       setBalanceError(true);

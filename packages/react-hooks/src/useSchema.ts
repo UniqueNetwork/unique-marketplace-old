@@ -1,29 +1,113 @@
 // Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import type { TokenAttribute, TokenDetailsInterface } from '@polkadot/react-hooks/useCollections';
+import type { MetadataType, NftCollectionInterface, TokenAttribute, TokenDetailsInterface } from '@polkadot/react-hooks/useCollections';
 
 import BN from 'bn.js';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { MetadataType, NftCollectionInterface, useCollections, useDecoder } from '@polkadot/react-hooks';
+import { Metadata } from '@polkadot/metadata';
+import metaStatic from '@polkadot/metadata/static';
+import { useCollections, useDecoder } from '@polkadot/react-hooks';
+import { TypeRegistry } from '@polkadot/types';
 
 export type Attributes = TokenAttribute[];
 
-export function useSchema (account: string, collectionId: string | number, tokenId: string | number) {
+type RootSchemaType = {
+  'Gender': {
+    '_enum': {
+      [key: string]: null
+    }
+  },
+  'Trait': {
+    '_enum': {
+      [key: string]: null
+    }
+  },
+  'Root': {
+    'Gender': 'Gender',
+    'Traits': 'Vec<Trait>'
+  }
+};
+
+type AttributesDecoded = {
+  [key: string]: string | string[],
+}
+
+/* const defaultData: RootSchemaType = {
+  Gender: {
+    _enum: {
+      Female: null,
+      Male: null
+    }
+  },
+  Root: {
+    Gender: 'Gender',
+    Traits: 'Vec<Trait>'
+  },
+  Trait: {
+    _enum: {
+      'Black Lipstick': null,
+      'Red Lipstick': null,
+      Smile: null,
+      'Teeth Smile': null,
+      // eslint-disable-next-line sort-keys
+      'Purple Lipstick': null,
+      // eslint-disable-next-line sort-keys
+      'Nose Ring': null,
+      // eslint-disable-next-line sort-keys
+      'Asian Eyes': null,
+      'Sun Glasses': null,
+      // eslint-disable-next-line sort-keys
+      'Red Glasses': null,
+      'Round Eyes': null,
+      // eslint-disable-next-line sort-keys
+      'Left Earring': null,
+      'Right Earring': null,
+      'Two Earrings': null,
+      // eslint-disable-next-line sort-keys
+      'Brown Beard': null,
+      'Mustache-Beard': null,
+      // eslint-disable-next-line sort-keys
+      Mustache: null,
+      'Regular Beard': null,
+      'Up Hair': null,
+      // eslint-disable-next-line sort-keys
+      'Down Hair': null,
+      Mahawk: null,
+      'Red Mahawk': null,
+      // eslint-disable-next-line sort-keys
+      'Orange Hair': null,
+      // eslint-disable-next-line sort-keys
+      'Bubble Hair': null,
+      'Emo Hair': null,
+      'Thin Hair': null,
+      // eslint-disable-next-line sort-keys
+      Bald: null,
+      'Blonde Hair': null,
+      'Caret Hair': null,
+      'Pony Tails': null,
+      // eslint-disable-next-line sort-keys
+      Cigar: null,
+      Pipe: null
+    }
+  }
+}; */
+
+export function useSchema (account: string, collectionId: string, tokenId: string | number) {
   const [collectionInfo, setCollectionInfo] = useState<NftCollectionInterface>();
   const [reFungibleBalance, setReFungibleBalance] = useState<number>(0);
   const [tokenUrl, setTokenUrl] = useState<string>('');
-  const [attributesConst, setAttributesConst] = useState<TokenAttribute>();
-  const [attributesVar, setAttributesVar] = useState<TokenAttribute>();
-  const [attributes, setAttributes] = useState<{ [key: string]: string }>();
+  const [attributesConst, setAttributesConst] = useState<TypeRegistry>();
+  const [attributesVar, setAttributesVar] = useState<TypeRegistry>();
+  const [attributes, setAttributes] = useState<AttributesDecoded>();
   const [tokenDetails, setTokenDetails] = useState<TokenDetailsInterface>();
-  const [tokenVarData, setTokenVarData] = useState<string>();
-  const [tokenConstData, setTokenConstData] = useState<string>();
+  const [tokenVarData, setTokenVarData] = useState<number[]>();
+  const [tokenConstData, setTokenConstData] = useState<number[]>();
   const { getDetailedCollectionInfo, getDetailedReFungibleTokenInfo, getDetailedTokenInfo } = useCollections();
   const { collectionName8Decoder } = useDecoder();
 
-  const tokenImageUrl = useCallback((tokenId: string, urlString: string): string => {
+  const tokenImageUrl = useCallback((urlString: string, tokenId: string): string => {
     if (urlString.indexOf('{id}') !== -1) {
       return urlString.replace('{id}', tokenId);
     }
@@ -31,17 +115,28 @@ export function useSchema (account: string, collectionId: string | number, token
     return '';
   }, []);
 
-  const convertOnChainMetadata = useCallback((data: string): TokenAttribute => {
+  const registryMeta = useMemo(() => {
+    const registry = new TypeRegistry();
+    const metadata = new Metadata(registry, metaStatic);
+
+    return metadata;
+  }, []);
+
+  const convertOnChainMetadata = useCallback((data: string): TypeRegistry => {
+    const registry = new TypeRegistry();
+
     try {
-      if (data && data.length) {
-        return JSON.parse(data) as TokenAttribute;
-      }
+      registry.setMetadata(registryMeta);
+
+      const tokenSchema: RootSchemaType = JSON.parse(data) as RootSchemaType;
+
+      registry.register(tokenSchema);
     } catch (e) {
       console.log('schema json parse error', e);
     }
 
-    return {};
-  }, []);
+    return registry;
+  }, [registryMeta]);
 
   const getReFungibleDetails = useCallback(() => {
     try {
@@ -62,30 +157,35 @@ export function useSchema (account: string, collectionId: string | number, token
   }, [account, collectionInfo?.DecimalPoints, collectionInfo?.Mode.isReFungible, tokenDetails?.Owner]);
 
   const setUnique = useCallback(async (collectionInfo: NftCollectionInterface) => {
-    const dataUrl = tokenImageUrl((collectionInfo.OffchainSchema as MetadataType).metadata, tokenId.toString());
-    const urlResponse = await fetch(dataUrl);
-    const jsonData = await urlResponse.json() as { image: string };
+    try {
+      const collectionMetadata = JSON.parse(collectionName8Decoder(collectionInfo.OffchainSchema)) as MetadataType;
+      const dataUrl = tokenImageUrl(collectionMetadata.metadata, tokenId.toString());
+      const urlResponse = await fetch(dataUrl);
+      const jsonData = await urlResponse.json() as { image: string };
 
-    setTokenUrl(jsonData.image);
-  }, [tokenId, tokenImageUrl]);
-
-  const setSchema = useCallback(() => {
-    if (collectionInfo) {
-      switch (collectionInfo.SchemaVersion) {
-        case 'ImageURL':
-          setTokenUrl(tokenImageUrl(collectionInfo.OffchainSchema as string, tokenId.toString()));
-          break;
-        case 'Unique':
-          void setUnique(collectionInfo);
-          break;
-        default:
-          break;
-      }
-
-      setAttributesConst(convertOnChainMetadata(collectionInfo.ConstOnChainSchema));
-      setAttributesVar(convertOnChainMetadata(collectionInfo.VariableOnChainSchema));
+      setTokenUrl(jsonData.image);
+    } catch (e) {
+      console.error('metadata parse error', e);
     }
-  }, [collectionInfo, convertOnChainMetadata, setUnique, tokenId, tokenImageUrl]);
+  }, [collectionName8Decoder, tokenId, tokenImageUrl]);
+
+  // how to parse Off Chain Schema
+  const setOffChainSchema = useCallback(() => {
+    if (collectionInfo) {
+      if (collectionInfo.SchemaVersion.isImageUrl) {
+        setTokenUrl(tokenImageUrl(collectionName8Decoder(collectionInfo.OffchainSchema), tokenId.toString()));
+      } else {
+        void setUnique(collectionInfo);
+      }
+    }
+  }, [collectionInfo, collectionName8Decoder, setUnique, tokenId, tokenImageUrl]);
+
+  const setOnChainSchema = useCallback(() => {
+    if (collectionInfo) {
+      setAttributesConst(convertOnChainMetadata(collectionName8Decoder(collectionInfo.ConstOnChainSchema)));
+      setAttributesVar(convertOnChainMetadata(collectionName8Decoder(collectionInfo.VariableOnChainSchema)));
+    }
+  }, [collectionInfo, collectionName8Decoder, convertOnChainMetadata]);
 
   const getCollectionInfo = useCallback(async () => {
     if (collectionId) {
@@ -94,7 +194,8 @@ export function useSchema (account: string, collectionId: string | number, token
       setCollectionInfo({
         ...info,
         ConstOnChainSchema: info.ConstOnChainSchema,
-        VariableOnChainSchema: info.VariableOnChainSchema
+        VariableOnChainSchema: info.VariableOnChainSchema,
+        id: collectionId
       });
     }
   }, [collectionId, getDetailedCollectionInfo]);
@@ -112,33 +213,32 @@ export function useSchema (account: string, collectionId: string | number, token
       setTokenDetails(tokenDetailsData);
 
       if (tokenDetailsData.ConstData) {
-        setTokenConstData(collectionName8Decoder(tokenDetailsData.ConstData));
+        setTokenConstData(tokenDetailsData.ConstData);
       }
 
       if (tokenDetailsData.VariableData) {
-        setTokenVarData(collectionName8Decoder(tokenDetailsData.VariableData));
+        setTokenVarData(tokenDetailsData.VariableData);
       }
     }
-  }, [collectionId, collectionInfo, collectionName8Decoder, getDetailedTokenInfo, getDetailedReFungibleTokenInfo, tokenId]);
+  }, [collectionId, collectionInfo, getDetailedTokenInfo, getDetailedReFungibleTokenInfo, tokenId]);
 
-  const mergeData = useCallback(({ attr, data }: { attr?: TokenAttribute, data?: string }) => {
-    const tokenAttributes: {[key: string]: any} = {};
+  const mergeData = useCallback(({ attr, data }: { attr?: TypeRegistry, data?: number[] }): AttributesDecoded => {
+    try {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      const decoder = attr.createType('Root', data.toString());
 
-    if (attr && data && Object.keys(attr).length) {
-      Object.keys(attr).forEach((attrKey) => {
-        if (attr[attrKey].type === 'enum') {
-          tokenAttributes[attrKey] = attr[attrKey].values[parseInt(data, 10)];
-        } else if (attr[attrKey].type === 'number' || attr[attrKey].type === 'string') {
-          tokenAttributes[attrKey] = data;
-        }
-      });
+      return decoder.toJSON() as AttributesDecoded; // {Gender: "Female", Traits: ["Smile"]}
+    } catch (e) {
+      console.log('mergeData error', e);
     }
 
-    return tokenAttributes;
+    return {};
   }, []);
 
   const mergeTokenAttributes = useCallback(() => {
-    const tokenAttributes = {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const tokenAttributes: any = {
       ...mergeData({ attr: attributesConst, data: tokenConstData }),
       ...mergeData({ attr: attributesVar, data: tokenVarData })
     };
@@ -148,10 +248,11 @@ export function useSchema (account: string, collectionId: string | number, token
 
   useEffect(() => {
     if (collectionInfo) {
-      void setSchema();
+      void setOnChainSchema();
+      void setOffChainSchema();
       void getTokenDetails();
     }
-  }, [collectionInfo, getTokenDetails, setSchema]);
+  }, [collectionInfo, getTokenDetails, setOffChainSchema, setOnChainSchema]);
 
   useEffect(() => {
     void getCollectionInfo();
@@ -171,6 +272,7 @@ export function useSchema (account: string, collectionId: string | number, token
     attributesVar,
     collectionInfo,
     getCollectionInfo,
+    getTokenDetails,
     reFungibleBalance,
     tokenConstData,
     tokenDetails,

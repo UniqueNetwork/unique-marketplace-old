@@ -1,13 +1,12 @@
-// Copyright 2020 UseTech authors & contributors
+// Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
+// SPDX-License-Identifier: Apache-2.0
 
-// global app props and types
-
-// external imports
 import './styles.scss';
+
+import type { ImageType } from 'react-images-uploading/dist/typings';
 
 import React, { useCallback, useState } from 'react';
 import ImageUploading from 'react-images-uploading';
-import type { ImageType } from 'react-images-uploading/dist/typings';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
@@ -22,8 +21,9 @@ const maxFileSize = 5000000;
 
 function NftMint (): React.ReactElement {
   const [images, setImages] = useState<ImageType[]>([]);
-  const [imageBase64, setImageBase64] = useState<string | undefined>();
-  const [imageName, setImageName] = useState<string | undefined>();
+  const [imageBase64, setImageBase64] = useState<string>();
+  const [imageFileName, setImageFileName] = useState<string>();
+  const [imageName, setImageName] = useState<string>();
   const [account, setAccount] = useState<string | null>(null);
   const { imgLoading, serverIsReady, uploadImage } = useMintApi();
 
@@ -38,13 +38,15 @@ function NftMint (): React.ReactElement {
     const imageItem: ImageType = imageList[0];
 
     if (imageItem) {
-      const imageBase64String: string = imageItem && imageItem.dataURL ? imageItem.dataURL : '';
+      const imageFileName: string = imageItem.file ? imageItem.file.name : '';
+      const imageBase64String: string = imageItem.dataURL ? imageItem.dataURL : '';
       const indexRemoveTo: number = imageBase64String.indexOf('base64,');
       const shortBase64String = imageBase64String.length >= indexRemoveTo + 7
         ? imageBase64String.replace(imageBase64String.substring(0, indexRemoveTo + 7), '')
         : imageBase64String;
 
       setImageBase64(shortBase64String);
+      setImageFileName(imageFileName);
     }
   }, []);
 
@@ -52,13 +54,14 @@ function NftMint (): React.ReactElement {
     if (imageBase64 && imageName && serverIsReady && account) {
       const newToken: ImageInterface = {
         address: account,
+        filename: imageFileName || imageName,
         image: imageBase64,
         name: imageName
       };
 
       uploadImage(newToken);
     }
-  }, [imageBase64, imageName]);
+  }, [account, imageBase64, imageFileName, imageName, serverIsReady, uploadImage]);
 
   return (
     <main className='mint-tokens'>
@@ -74,7 +77,7 @@ function NftMint (): React.ReactElement {
             <Grid.Column width={16}>
               <Form.Field>
                 <Input
-                  className='explorer--query label-small'
+                  className='isSmall'
                   label={<span>Enter your token name</span>}
                   onChange={onChangeString}
                   // value={searchString}

@@ -1,6 +1,8 @@
 // Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import type { AbiMessage } from '@polkadot/api-contract/types';
+
 import BN from 'bn.js';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
@@ -18,13 +20,17 @@ export interface useNftContractInterface {
   abi: Abi | undefined;
   contractAddress: string;
   contractInstance: ContractPromise | null;
-  decimals: number;
+  decimals: BN;
   deposited: BN | undefined;
-  getDepositor: (collectionId: string, tokenId: string, readerAddress: string) => Promise<string | null>;
+  depositor: string | undefined;
+  escrowAddress: string;
+  findCallMethodByName: (methodName: string) => AbiMessage | null;
+  getDepositor: (collectionId: string, tokenId: string) => Promise<string | null>;
   getTokenAsk: (collectionId: string, tokenId: string) => Promise<{ owner: string, price: BN } | null>;
-  getUserDeposit: () => void;
+  getUserDeposit: () => Promise<BN | null>;
   isContractReady: boolean;
   maxGas: number;
+  tokenAsk: { owner: string, price: BN } | undefined;
   value: number;
   vaultAddress: string;
 }
@@ -34,60 +40,70 @@ export function useNftContract (account: string): useNftContractInterface {
   const { api } = useApi();
   const [value] = useState(0);
   const [maxGas] = useState(200000000000);
-  const [decimals, setDecimals] = useState(15);
-  const [vaultAddress] = useState('5CYN9j3YvRkqxewoxeSvRbhAym4465C57uMmX5j4yz99L5H6');
+  const [decimals, setDecimals] = useState(new BN(15));
+  const [escrowAddress] = useState(process.env.escrowAddress || '5D73wtH5pqN99auP4b6KQRQAbketaSj4StkBJxACPBUAUdiq');
+  const [vaultAddress] = useState(process.env.vaultAddress || '5D73wtH5pqN99auP4b6KQRQAbketaSj4StkBJxACPBUAUdiq');
   const [contractInstance, setContractInstance] = useState<ContractPromise | null>(null);
   const [abi, setAbi] = useState<Abi>();
+  const [depositor, setDepositor] = useState<string>();
   const [deposited, setDeposited] = useState<BN>();
-  const [contractAddress] = useState<string>('5DgdtKSx5okmPb42hgfNbkEdu3zhZ8k8nSWzbCtKKK9iKduJ');
+  const [tokenAsk, setTokenAsk] = useState<{ owner: string, price: BN }>();
+  // local 5HpCCd2SufXC1NRANgWBvz6k3GnVCDcTceC24WNwERkBtfSk, remote 5Cym1pvyNgzpy88bPXvrgZddH9WEaKHPpsEkET5pSfahKGmK
+  const [contractAddress] = useState<string>(process.env.contractAddress || '5Cym1pvyNgzpy88bPXvrgZddH9WEaKHPpsEkET5pSfahKGmK');
+
+  const findCallMethodByName = useCallback((methodName: string): AbiMessage | null => {
+    const message = contractInstance && Object.values(contractInstance.abi.messages).find((message) => message.identifier === methodName);
+
+    return message || null;
+  }, [contractInstance]);
 
   // get offers
   // if connection ID not specified, returns 30 last token sale offers
-  const getUserDeposit = useCallback(async () => {
+  const getUserDeposit = useCallback(async (): Promise<BN | null> => {
     try {
       if (contractInstance) {
-        const result = await contractInstance.read('get_balance', value, maxGas, 2).send(account) as unknown as { output: BN };
+        const result = await contractInstance.read('getBalance', { gasLimit: maxGas, value }, 0).send(account) as unknown as { output: BN };
 
         if (result.output) {
           setDeposited(result.output);
+
+          return result.output;
         }
       }
+
+      return null;
     } catch (e) {
       console.log('getUserDeposit Error: ', e);
+
+      return null;
     }
   }, [account, contractInstance, maxGas, value]);
 
-  const getDepositor = useCallback(async (collectionId: string, tokenId: string, readerAddress: string) => {
+  const getDepositor = useCallback(async (collectionId: string, tokenId: string): Promise<string | null> => {
     try {
       if (contractInstance) {
-        // const keyring = new keyring({ type: 'sr25519' });
-        const result = await contractInstance.read('get_nft_deposit', value, maxGas, collectionId, tokenId).send(readerAddress);
-
-        console.log('result!!!', result);
+        const result = await contractInstance.read('getNftDeposit', { gasLimit: maxGas, value }, collectionId, tokenId).send(account);
 
         if (result.output) {
-          const address = keyring.encodeAddress(result.output.toString());
+          const depositorResult = keyring.encodeAddress(result.output.toString());
 
-          console.log('Deposit address: ', address);
+          setDepositor(depositorResult);
 
-          return address;
+          return depositorResult;
         }
       }
 
       return null;
     } catch (e) {
       console.log('getDepositor Error: ', e);
-    }
 
-    return null;
-  }, [contractInstance, maxGas, value]);
+      return null;
+    }
+  }, [account, contractInstance, maxGas, value]);
 
   const initAbi = useCallback(() => {
-    console.log('contractAddress', contractAddress);
     const jsonAbi = getContractAbi(contractAddress) as Abi;
     const newContractInstance = new ContractPromise(api, jsonAbi, contractAddress);
-
-    console.log('newContractInstance', newContractInstance);
 
     setAbi(jsonAbi);
     setContractInstance(newContractInstance);
@@ -95,28 +111,27 @@ export function useNftContract (account: string): useNftContractInterface {
 
   const getTokenAsk = useCallback(async (collectionId: string, tokenId: string) => {
     if (contractInstance) {
-      const askIdResult = await contractInstance.read('get_ask_id_by_token', value, maxGas, collectionId, tokenId).send(contractAddress) as unknown as { output: BN };
-
-      console.log('askIdResult', askIdResult);
+      const askIdResult = await contractInstance.read('getAskIdByToken', value, maxGas, collectionId, tokenId).send(contractAddress) as unknown as { output: BN };
 
       if (askIdResult.output) {
         const askId = askIdResult.output.toNumber();
-
-        console.log('Token Ask ID: ', askId);
-        const askResult = await contractInstance.read('get_ask_by_id', value, maxGas, askId).send(contractAddress) as unknown as AskOutputInterface;
+        const askResult = await contractInstance.read('getAskById', value, maxGas, askId).send(contractAddress) as unknown as AskOutputInterface;
 
         if (askResult.output) {
           const askOwnerAddress = keyring.encodeAddress(askResult.output[4].toString());
-
-          console.log('Ask owner: ', askOwnerAddress);
-
-          return {
+          const ask = {
             owner: askOwnerAddress,
             price: askResult.output[3]
           };
+
+          setTokenAsk(ask);
+
+          return ask;
         }
       }
     }
+
+    setTokenAsk(undefined);
 
     return null;
   }, [contractAddress, contractInstance, maxGas, value]);
@@ -129,16 +144,12 @@ export function useNftContract (account: string): useNftContractInterface {
     const properties = await api.rpc.system.properties();
     const tokenDecimals = properties.tokenDecimals.unwrapOr([DEFAULT_DECIMALS]);
 
-    setDecimals(tokenDecimals[0].toNumber());
+    setDecimals(tokenDecimals[0]);
   }, [api]);
 
   useEffect(() => {
     initAbi();
   }, [initAbi]);
-
-  useEffect(() => {
-    void getUserDeposit();
-  }, [getUserDeposit]);
 
   useEffect(() => {
     void fetchSystemProperties();
@@ -150,11 +161,15 @@ export function useNftContract (account: string): useNftContractInterface {
     contractInstance,
     decimals,
     deposited,
+    depositor,
+    escrowAddress,
+    findCallMethodByName,
     getDepositor,
     getTokenAsk,
     getUserDeposit,
     isContractReady,
     maxGas,
+    tokenAsk,
     value,
     vaultAddress
   };

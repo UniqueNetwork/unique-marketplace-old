@@ -3,31 +3,33 @@
 
 import './NftTokenCard.scss';
 
+import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollections';
+
 import React, { useCallback } from 'react';
 import { useHistory } from 'react-router';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 import Item from 'semantic-ui-react/dist/commonjs/views/Item';
 
-import { NftCollectionInterface, useSchema } from '@polkadot/react-hooks';
+import { useSchema } from '@polkadot/react-hooks';
 
 interface Props {
   account: string;
   canTransferTokens: boolean;
   collection: NftCollectionInterface;
   openTransferModal: (collection: NftCollectionInterface, tokenId: string, balance: number) => void;
-  shouldUpdateTokens: number | null;
+  shouldUpdateTokens: string | undefined;
   token: string;
 }
 
 function NftTokenCard ({ account, canTransferTokens, collection, openTransferModal, token }: Props): React.ReactElement<Props> {
-  const { attributes, balance, tokenUrl } = useSchema(account, collection.id, token);
+  const { attributes, reFungibleBalance, tokenUrl } = useSchema(account, collection.id, token);
   const history = useHistory();
 
   const openDetailedInformationModal = useCallback((collectionId: string | number, tokenId: string) => {
     history.push(`/wallet/token-details?collectionId=${collectionId}&tokenId=${tokenId}`);
   }, [history]);
 
-  if (!balance && collection && collection.Mode.isReFungible) {
+  if (!reFungibleBalance && collection?.Mode?.isReFungible) {
     return <></>;
   }
 
@@ -49,7 +51,7 @@ function NftTokenCard ({ account, canTransferTokens, collection, openTransferMod
       </td>
       { collection && collection.Mode.isReFungible && (
         <td className='token-balance'>
-          Balance: {balance}
+          Balance: {reFungibleBalance}
         </td>
       )}
       { attributes && Object.values(attributes).length > 0 && (
@@ -61,7 +63,7 @@ function NftTokenCard ({ account, canTransferTokens, collection, openTransferMod
       <td className='token-actions'>
         <Button
           disabled={!canTransferTokens}
-          onClick={openTransferModal.bind(null, collection, token, balance)}
+          onClick={openTransferModal.bind(null, collection, token, reFungibleBalance)}
           primary
         >
           Transfer token

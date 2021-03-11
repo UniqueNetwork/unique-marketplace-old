@@ -12,6 +12,7 @@ import Tabs from '@polkadot/react-components/Tabs';
 import { AppProps as Props } from '@polkadot/react-components/types';
 
 import NftMarket from './containers/NftMarket';
+import TradeHistory from './containers/TradeHistory';
 
 function App ({ basePath }: Props): React.ReactElement<Props> {
 
@@ -20,6 +21,10 @@ function App ({ basePath }: Props): React.ReactElement<Props> {
       isRoot: true,
       name: 'nftMarket',
       text: 'NFT Market'
+    },
+    {
+      name: 'trade-history',
+      text: 'Trade History'
     }
   ], []);
 
@@ -32,6 +37,9 @@ function App ({ basePath }: Props): React.ReactElement<Props> {
         />
       </header>
       <Switch>
+        <Route path={`${basePath}/trade-history`}>
+          <TradeHistory />
+        </Route>
         <Route path={basePath}>
           <NftMarket />
         </Route>

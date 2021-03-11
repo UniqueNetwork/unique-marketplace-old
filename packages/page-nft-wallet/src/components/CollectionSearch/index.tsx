@@ -3,13 +3,15 @@
 
 import './CollectionSearch.scss';
 
+import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollections';
+
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 
 import { Button, Input, Label, LabelHelp, Table } from '@polkadot/react-components';
-import { NftCollectionInterface, useCollections, useDecoder } from '@polkadot/react-hooks';
+import { useCollections, useDecoder } from '@polkadot/react-hooks';
 
 interface Props {
   account: string | null | undefined;
@@ -23,7 +25,7 @@ function CollectionSearch ({ account, addCollection, collections }: Props): Reac
   const [searchString, setSearchString] = useState<string>('');
   const { presetTokensCollections } = useCollections();
   const currentAccount = useRef<string | null | undefined>();
-  const { collectionName8Decoder, collectionName16Decoder } = useDecoder();
+  const { collectionName16Decoder } = useDecoder();
 
   const searchCollection = useCallback(() => {
     const filteredCollections = collectionsAvailable.filter((collection) => {
@@ -50,11 +52,11 @@ function CollectionSearch ({ account, addCollection, collections }: Props): Reac
       DecimalPoints: item.DecimalPoints,
       Description: item.Description,
       Name: item.Name,
-      OffchainSchema: collectionName8Decoder(item.OffchainSchema.toString()),
-      TokenPrefix: collectionName8Decoder(item.TokenPrefix.toString()),
+      OffchainSchema: item.OffchainSchema,
+      TokenPrefix: item.TokenPrefix,
       id: item.id
     });
-  }, [addCollection, collectionName8Decoder]);
+  }, [addCollection]);
 
   const getCollections = useCallback(async () => {
     const collections = await presetTokensCollections();

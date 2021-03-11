@@ -4,26 +4,25 @@
 import BN from 'bn.js';
 import { useCallback, useState } from 'react';
 
-import { useApi, useFetch, ErrorType } from '@polkadot/react-hooks';
+import { ErrorType, useApi, useFetch } from '@polkadot/react-hooks';
+import { Constructor } from '@polkadot/types/types/codec';
 
 export type MetadataType = {
   metadata: string;
 }
 
-export type TokenAttribute = {
-  [key: string]: {
-    type: number | string | 'enum';
-    size: number;
-    values: string[];
-  }
-}
+export type TokenAttribute = Record<string, Constructor | string | Record<string, string> | {
+  _enum: string[] | Record<string, string | null>;
+} | {
+  _set: Record<string, number>;
+}>;
 
 export interface NftCollectionInterface {
   Access?: 'Normal'
-  id: number;
+  id: string;
   DecimalPoints: BN | number;
-  Description: BN[];
-  TokenPrefix: number | string;
+  Description: number[];
+  TokenPrefix: number[];
   MintMode?: boolean;
   Mode: {
     isNft: boolean;
@@ -31,10 +30,13 @@ export interface NftCollectionInterface {
     isReFungible: boolean;
     isInvalid: boolean;
   };
-  Name: BN[];
-  OffchainSchema: string | MetadataType;
+  Name: number[];
+  OffchainSchema: number[];
   Owner?: string;
-  SchemaVersion: 'ImageURL' | 'Unique';
+  SchemaVersion: {
+    isImageUrl: boolean;
+    isUnique: boolean;
+  };
   Sponsor?: string; // account
   SponsorConfirmed?: boolean;
   Limits?: {
@@ -43,8 +45,8 @@ export interface NftCollectionInterface {
     TokenLimit: string;
     SponsorTimeout: string;
   },
-  VariableOnChainSchema: string;
-  ConstOnChainSchema: string;
+  VariableOnChainSchema: number[];
+  ConstOnChainSchema: number[];
 }
 
 export interface TokenDetailsInterface {
@@ -67,6 +69,44 @@ export type TradeType = {
   tradeDate: string;
 }
 
+/* const mockedOffers: OfferType[] = [
+  {
+    collectionId: '1',
+    metadata: 'any',
+    price: new BN(10),
+    seller: '5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty',
+    tokenId: '1'
+  },
+  {
+    collectionId: '2',
+    metadata: 'any',
+    price: new BN(10),
+    seller: '5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty',
+    tokenId: '2'
+  },
+  {
+    collectionId: '3',
+    metadata: 'any',
+    price: new BN(10),
+    seller: '5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty',
+    tokenId: '3'
+  },
+  {
+    collectionId: '4',
+    metadata: 'any',
+    price: new BN(10),
+    seller: '5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty',
+    tokenId: '4'
+  },
+  {
+    collectionId: '5',
+    metadata: 'any',
+    price: new BN(10),
+    seller: '5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty',
+    tokenId: '5'
+  }
+]; */
+
 export function useCollections () {
   const { api } = useApi();
   const { fetchData } = useFetch();
@@ -74,7 +114,7 @@ export function useCollections () {
   const [offers, setOffers] = useState<OfferType[]>();
   const [trades, setTrades] = useState<TradeType[]>();
 
-  const getTokensOfCollection = useCallback(async (collectionId: number, ownerId: string) => {
+  const getTokensOfCollection = useCallback(async (collectionId: string, ownerId: string) => {
     if (!api || !collectionId || !ownerId) {
       return [];
     }
@@ -88,7 +128,7 @@ export function useCollections () {
     return [];
   }, [api]);
 
-  const getDetailedCollectionInfo = useCallback(async (collectionId) => {
+  const getDetailedCollectionInfo = useCallback(async (collectionId: string) => {
     if (!api) {
       return {};
     }
@@ -134,7 +174,7 @@ export function useCollections () {
    * Return the list of token sale offers
    */
   const getOffers = useCallback(() => {
-    fetchData<OfferType[]>('/api/offers/').subscribe((result: OfferType[] | ErrorType) => {
+    fetchData<OfferType[]>('/offers/').subscribe((result: OfferType[] | ErrorType) => {
       if ('error' in result) {
         setError(result);
       } else {
@@ -147,7 +187,7 @@ export function useCollections () {
    * Return the list of token trades
    */
   const getTrades = useCallback(() => {
-    fetchData<TradeType[]>('/api/trades/').subscribe((result: TradeType[] | ErrorType) => {
+    fetchData<TradeType[]>('/trades/').subscribe((result: TradeType[] | ErrorType) => {
       if ('error' in result) {
         setError(result);
       } else {
@@ -166,10 +206,12 @@ export function useCollections () {
       const collections: Array<NftCollectionInterface> = [];
 
       for (let i = 1; i <= collectionsCount; i++) {
-        const collectionInf = await getDetailedCollectionInfo(i) as unknown as NftCollectionInterface;
+        const collectionInf = await getDetailedCollectionInfo(i.toString()) as unknown as NftCollectionInterface;
+
+        console.log('collectionInf', collectionInf);
 
         if (collectionInf && collectionInf.Owner && collectionInf.Owner.toString() !== '5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM') {
-          collections.push({ ...collectionInf, id: i });
+          collections.push({ ...collectionInf, id: i.toString() });
         }
       }
 
