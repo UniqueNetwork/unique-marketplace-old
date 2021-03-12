@@ -6,6 +6,7 @@ import type { OverrideBundleDefinition } from '@polkadot/types/types';
 import acala from './acala';
 import aresParachain from './ares-parachain';
 import bifrost from './bifrost';
+import bifrostParachain from './bifrost-parachain';
 import bitcountry from './bitcountry';
 import canvas from './canvas';
 import centrifugeChain from './centrifuge-chain';
@@ -32,6 +33,7 @@ import hydrate from './hydrate';
 import idavoll from './idavoll';
 import integritee from './integritee';
 import jupiter from './jupiter';
+import jupiterRococo from './jupiter-rococo';
 import kilt from './kilt';
 import kulupu from './kulupu';
 import laminar from './laminar';
@@ -44,8 +46,10 @@ import plasm from './plasm';
 import plasmParachain from './plasm-parachain';
 import polkabtc from './polkabtc';
 import polkadex from './polkadex';
+import realis from './realis';
 import robonomics from './robonomics';
 import sgc from './sgc';
+import snowbridge from './snowbridge';
 import soraSubstrate from './soraSubstrate';
 import stafi from './stafi';
 import subdao from './subdao';
@@ -53,6 +57,7 @@ import subsocial from './subsocial';
 import ternoa from './ternoa';
 import trustbase from './trustbase';
 import uniarts from './uniarts';
+import unique from './unique';
 import zenlink from './zenlink';
 import zero from './zero';
 
@@ -63,7 +68,8 @@ const spec: Record<string, OverrideBundleDefinition> = {
   Equilibrium: equilibrium,
   acala,
   'ares-parachain': aresParachain,
-  bifrost,
+  bifrost: bifrost,
+  'bifrost-parachain': bifrostParachain,
   'bitcountry-node': bitcountry,
   'btc-parachain': polkabtc,
   canvas,
@@ -89,7 +95,8 @@ const spec: Record<string, OverrideBundleDefinition> = {
   'hydra-dx': hydrate,
   idavoll,
   'integritee-parachain': integritee,
-  jupiter,
+  'jupiter-prep': jupiter,
+  'jupiter-rococo': jupiterRococo,
   'kilt-parachain': kilt,
   kulupu,
   laminar,
@@ -99,6 +106,7 @@ const spec: Record<string, OverrideBundleDefinition> = {
   'moonbase-alphanet': moonbeam,
   moonbeam,
   'moonbeam-standalone': moonbeam,
+  nft: unique,
   'node-moonbeam': moonbeam,
   'node-polkadex': polkadex,
   'nodle-chain': nodle,
@@ -106,8 +114,10 @@ const spec: Record<string, OverrideBundleDefinition> = {
   'phala-node': phala,
   plasm,
   'plasm-parachain': plasmParachain,
+  realis,
   robonomics,
-  sgc,
+  'sgc-node': sgc,
+  snowbridge,
   'sora-substrate': soraSubstrate,
   stafi,
   subdao,

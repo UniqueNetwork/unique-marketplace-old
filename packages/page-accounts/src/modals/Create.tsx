@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import type { ActionStatus } from '@polkadot/react-components/Status/types';
-import type { ThemeProps } from '@polkadot/react-components/types';
 import type { CreateResult } from '@polkadot/ui-keyring/types';
 import type { ModalProps } from '../types';
 
@@ -17,13 +16,15 @@ import { useApi, useLedger, useStepper } from '@polkadot/react-hooks';
 import { keyring } from '@polkadot/ui-keyring';
 import { settings } from '@polkadot/ui-settings';
 import { isHex, u8aToHex } from '@polkadot/util';
-import { hdLedger, keyExtractSuri, mnemonicGenerate, mnemonicValidate, randomAsU8a } from '@polkadot/util-crypto';
+import { hdLedger, hdValidatePath, keyExtractSuri, mnemonicGenerate, mnemonicValidate, randomAsU8a } from '@polkadot/util-crypto';
 
 import { useTranslation } from '../translate';
 import CreateConfirmation from './CreateConfirmation';
 import CreateSuriLedger from './CreateSuriLedger';
 import ExternalWarning from './ExternalWarning';
 import PasswordInput from './PasswordInput';
+
+const ETH_DEFAULT_PATH = "m/44'/60'/0'/0/0";
 
 type PairType = 'ecdsa' | 'ed25519' | 'ed25519-ledger' | 'ethereum' | 'sr25519';
 
@@ -64,12 +65,14 @@ const STEPS_COUNT = 3;
 function getSuri (seed: string, derivePath: string, pairType: PairType): string {
   return pairType === 'ed25519-ledger'
     ? u8aToHex(hdLedger(seed, derivePath).secretKey.slice(0, 32))
-    : `${seed}${derivePath}`;
+    : pairType === 'ethereum'
+      ? `${seed}/${derivePath}`
+      : `${seed}${derivePath}`;
 }
 
 function deriveValidate (seed: string, seedType: SeedType, derivePath: string, pairType: PairType): DeriveValidationOutput {
   try {
-    const { password, path } = keyExtractSuri(`${seed}${derivePath}`);
+    const { password, path } = keyExtractSuri(pairType === 'ethereum' ? `${seed}/${derivePath}` : `${seed}${derivePath}`);
     let result: DeriveValidationOutput = {};
 
     // show a warning in case the password contains an unintended / character
@@ -85,6 +88,10 @@ function deriveValidate (seed: string, seedType: SeedType, derivePath: string, p
     // we don't allow password for hex seed
     if (seedType === 'raw' && password) {
       return { ...result, error: 'PASSWORD_IGNORED' };
+    }
+
+    if (pairType === 'ethereum' && !hdValidatePath(derivePath)) {
+      return { ...result, error: 'INVALID_DERIVATION_PATH' };
     }
 
     return result;
@@ -134,19 +141,18 @@ function generateSeed (_seed: string | undefined | null, derivePath: string, see
 }
 
 function updateAddress (seed: string, derivePath: string, seedType: SeedType, pairType: PairType): AddressState {
-  const deriveValidation = deriveValidate(seed, seedType, derivePath, pairType);
-
+  let address: string | null = null;
+  let deriveValidation: DeriveValidationOutput = deriveValidate(seed, seedType, derivePath, pairType);
   let isSeedValid = seedType === 'raw'
     ? rawValidate(seed)
     : mnemonicValidate(seed);
-  let address: string | null = null;
 
   if (!deriveValidation?.error && isSeedValid) {
     try {
       address = addressFromSeed(seed, derivePath, pairType);
     } catch (error) {
       console.error(error);
-
+      deriveValidation = { error: (error as Error).message ? (error as Error).message : (error as Error).toString() };
       isSeedValid = false;
     }
   }
@@ -197,7 +203,11 @@ function Create ({ className = '', onClose, onStatusChange, seed: propsSeed, typ
   const { t } = useTranslation();
   const { api, isDevelopment, isEthereum } = useApi();
   const { isLedgerEnabled } = useLedger();
-  const [{ address, derivePath, deriveValidation, isSeedValid, pairType, seed, seedType }, setAddress] = useState<AddressState>(() => generateSeed(propsSeed, '', propsSeed ? 'raw' : 'bip', isEthereum ? 'ethereum' : propsType));
+  const [{ address, derivePath, deriveValidation, isSeedValid, pairType, seed, seedType }, setAddress] = useState<AddressState>(() => generateSeed(
+    propsSeed,
+    isEthereum ? ETH_DEFAULT_PATH : '',
+    propsSeed ? 'raw' : 'bip', isEthereum ? 'ethereum' : propsType
+  ));
   const [isMnemonicSaved, setIsMnemonicSaved] = useState<boolean>(false);
   const [step, nextStep, prevStep] = useStepper();
   const [isBusy, setIsBusy] = useState(false);
@@ -208,6 +218,7 @@ function Create ({ className = '', onClose, onStatusChange, seed: propsSeed, typ
   const isValid = isFirstStepValid && isSecondStepValid;
 
   const errorIndex = useRef<Record<string, string>>({
+    INVALID_DERIVATION_PATH: t<string>('This is an invalid derivation path.'),
     PASSWORD_IGNORED: t<string>('Password are ignored for hex seed'),
     SOFT_NOT_ALLOWED: t<string>('Soft derivation paths are not allowed on ed25519'),
     WARNING_SLASH_PASSWORD: t<string>('Your password contains at least one "/" character. Disregard this warning if it is intended.')
@@ -240,9 +251,9 @@ function Create ({ className = '', onClose, onStatusChange, seed: propsSeed, typ
 
   const _onChangePairType = useCallback(
     (newPairType: PairType) => setAddress(
-      updateAddress(seed, '', seedType, newPairType)
+      updateAddress(seed, isEthereum ? ETH_DEFAULT_PATH : '', seedType, newPairType)
     ),
-    [seed, seedType]
+    [seed, seedType, isEthereum]
   );
 
   const _selectSeedType = useCallback(
@@ -381,23 +392,26 @@ function Create ({ className = '', onClose, onStatusChange, seed: propsSeed, typ
               : (
                 <Modal.Columns>
                   <Modal.Column>
-                    <Input
-                      help={t<string>('You can set a custom derivation path for this account using the following syntax "/<soft-key>//<hard-key>". The "/<soft-key>" and "//<hard-key>" may be repeated and mixed`. An optional "///<password>" can be used with a mnemonic seed, and may only be specified once.')}
+                    {(pairType !== 'ethereum' || seedType !== 'raw') && (<Input
+                      help={(pairType === 'ethereum' ? t<string>('You can set a custom derivation path for this account using the following syntax "m/<purpose>/<coin_type>/<account>/<change>/<address_index>') : t<string>('You can set a custom derivation path for this account using the following syntax "/<soft-key>//<hard-key>". The "/<soft-key>" and "//<hard-key>" may be repeated and mixed`. An optional "///<password>" can be used with a mnemonic seed, and may only be specified once.'))}
+                      isDisabled={pairType === 'ethereum' && seedType === 'raw'}
                       isError={!!deriveValidation?.error}
                       label={t<string>('secret derivation path')}
                       onChange={_onChangePath}
                       placeholder={
-                        seedType === 'raw'
-                          ? pairType === 'sr25519'
-                            ? t<string>('//hard/soft')
-                            : t<string>('//hard')
-                          : pairType === 'sr25519'
-                            ? t<string>('//hard/soft///password')
-                            : t<string>('//hard///password')
+                        pairType === 'ethereum'
+                          ? ETH_DEFAULT_PATH
+                          : seedType === 'raw'
+                            ? pairType === 'sr25519'
+                              ? t<string>('//hard/soft')
+                              : t<string>('//hard')
+                            : pairType === 'sr25519'
+                              ? t<string>('//hard/soft///password')
+                              : t<string>('//hard///password')
                       }
                       tabIndex={-1}
                       value={derivePath}
-                    />
+                    />)}
                     {deriveValidation?.error && (
                       <MarkError content={errorIndex.current[deriveValidation.error] || deriveValidation.error} />
                     )}
@@ -406,7 +420,7 @@ function Create ({ className = '', onClose, onStatusChange, seed: propsSeed, typ
                     )}
                   </Modal.Column>
                   <Modal.Column>
-                    <p>{t<string>('The derivation path allows you to create different accounts from the same base mnemonic.')}</p>
+                    <p>{pairType === 'ethereum' && seedType === 'raw' ? t<string>('The derivation path is only relevant when deriving keys from a mnemonic.') : t<string>('The derivation path allows you to create different accounts from the same base mnemonic.')}</p>
                   </Modal.Column>
                 </Modal.Columns>
               )}
@@ -509,7 +523,7 @@ function Create ({ className = '', onClose, onStatusChange, seed: propsSeed, typ
   );
 }
 
-export default React.memo(styled(Create)(({ theme }: ThemeProps) => `
+export default React.memo(styled(Create)`
   .accounts--Creator-advanced {
     margin-top: 1rem;
     overflow: visible;
@@ -537,8 +551,8 @@ export default React.memo(styled(Create)(({ theme }: ThemeProps) => `
       margin: 0.8rem 0;
 
       > label {
-          font-weight: ${theme.fontWeightNormal};
+        font-weight: var(--font-weight-normal);
       }
     }
   }
-`));
+`);
