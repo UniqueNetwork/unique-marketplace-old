@@ -47,9 +47,7 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
   }, [api]);
 
   useEffect(() => {
-    console.log('contractAddress', process.env.contractAddress);
-    console.log('escrowAddress', process.env.escrowAddress);
-    console.log('vaultAddress', process.env.vaultAddress);
+    console.log('process.env', process.env);
   }, []);
 
   return (
