@@ -58,6 +58,10 @@ export function useNftContract (account: string): useNftContractInterface {
   const [contractAddress] = useState<string>(process.env.MatcherContractAddress || '5Cym1pvyNgzpy88bPXvrgZddH9WEaKHPpsEkET5pSfahKGmK');
   const contractInfo = useCall<Option<ContractInfo>>(api.query.contracts.contractInfoOf, [contractAddress]);
 
+  console.log('contractAddress', contractAddress);
+  console.log('escrowAddress', escrowAddress);
+  console.log('vaultAddress', vaultAddress);
+
   const findCallMethodByName = useCallback((methodName: string): AbiMessage | null => {
     const message = contractInstance && Object.values(contractInstance.abi.messages).find((message) => message.identifier === methodName);
 
