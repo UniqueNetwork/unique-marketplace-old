@@ -2,15 +2,20 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import type { AbiMessage } from '@polkadot/api-contract/types';
+import type { Option } from '@polkadot/types';
+import type { ContractInfo } from '@polkadot/types/interfaces';
 
 import BN from 'bn.js';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { Abi, ContractPromise } from '@polkadot/api-contract';
 import { DEFAULT_DECIMALS } from '@polkadot/react-api';
-import { getContractAbi } from '@polkadot/react-components/util';
-import { useApi } from '@polkadot/react-hooks';
+import { useApi, useCall } from '@polkadot/react-hooks';
 import keyring from '@polkadot/ui-keyring';
+
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import metadata from './metadata.json';
 
 export interface AskOutputInterface {
   output: [string, string, string, BN, string]
@@ -48,8 +53,10 @@ export function useNftContract (account: string): useNftContractInterface {
   const [depositor, setDepositor] = useState<string>();
   const [deposited, setDeposited] = useState<BN>();
   const [tokenAsk, setTokenAsk] = useState<{ owner: string, price: BN }>();
+  const [isStored, setIsStored] = useState(false);
   // local 5HpCCd2SufXC1NRANgWBvz6k3GnVCDcTceC24WNwERkBtfSk, remote 5Cym1pvyNgzpy88bPXvrgZddH9WEaKHPpsEkET5pSfahKGmK
-  const [contractAddress] = useState<string>(process.env.contractAddress || '5Cym1pvyNgzpy88bPXvrgZddH9WEaKHPpsEkET5pSfahKGmK');
+  const [contractAddress] = useState<string>(process.env.MatcherContractAddress || '5Cym1pvyNgzpy88bPXvrgZddH9WEaKHPpsEkET5pSfahKGmK');
+  const contractInfo = useCall<Option<ContractInfo>>(api.query.contracts.contractInfoOf, [contractAddress]);
 
   const findCallMethodByName = useCallback((methodName: string): AbiMessage | null => {
     const message = contractInstance && Object.values(contractInstance.abi.messages).find((message) => message.identifier === methodName);
@@ -102,7 +109,8 @@ export function useNftContract (account: string): useNftContractInterface {
   }, [account, contractInstance, maxGas, value]);
 
   const initAbi = useCallback(() => {
-    const jsonAbi = getContractAbi(contractAddress) as Abi;
+    // const jsonAbi = getContractAbi(contractAddress) as Abi;
+    const jsonAbi = new Abi(metadata, api.registry.getChainProperties());
     const newContractInstance = new ContractPromise(api, jsonAbi, contractAddress);
 
     setAbi(jsonAbi);
@@ -147,13 +155,45 @@ export function useNftContract (account: string): useNftContractInterface {
     setDecimals(tokenDecimals[0]);
   }, [api]);
 
+  const addExistingContract = useCallback(() => {
+    try {
+      const contract = keyring.getContract(contractAddress);
+
+      if (isStored && !contract) {
+        const json = {
+          contract: {
+            abi,
+            genesisHash: api.genesisHash.toHex()
+          },
+          name: 'marketplaceContract',
+          tags: []
+        };
+
+        keyring.saveContract(contractAddress, json);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }, [abi, api, contractAddress, isStored]);
+
   useEffect(() => {
-    initAbi();
-  }, [initAbi]);
+    if (isStored) {
+      initAbi();
+    }
+  }, [initAbi, isStored]);
 
   useEffect(() => {
     void fetchSystemProperties();
   }, [fetchSystemProperties]);
+
+  useEffect((): void => {
+    setIsStored(!!contractInfo?.isSome);
+  }, [contractInfo]);
+
+  // addContract
+  useEffect(() => {
+    addExistingContract();
+  }, [addExistingContract]);
 
   return {
     abi,
