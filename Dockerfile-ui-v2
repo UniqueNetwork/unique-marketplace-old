@@ -1,0 +1,17 @@
+FROM ubuntu:18.04
+
+# Install any needed packages
+RUN apt-get update && apt-get install -y curl git gnupg
+
+# install nodejs
+RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
+RUN apt-get install -y nodejs
+
+WORKDIR /apps
+COPY . .
+
+#RUN npm install yarn -g
+RUN npm install --global yarn && \
+yarn && NODE_ENV=production yarn build:www
+
+EXPOSE 3000
