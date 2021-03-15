@@ -29,7 +29,7 @@ interface EnvWindow {
   }
 }
 
-export const collectionIdForMint = (window as EnvWindow)?.process_env?.mintedCollection || '2';
+export const collectionIdForMint = (window as EnvWindow)?.process_env?.mintedCollection || '3';
 
 /**
  * Get validators from server if health "connected":true
