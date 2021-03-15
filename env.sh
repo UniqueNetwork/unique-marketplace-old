@@ -12,7 +12,7 @@ rm -rf TARGET
 touch TARGET
 
 # Add assignment
-echo "window._env_ = {" >> ./env-config.js
+echo "window.process_env = {" >> ./env-config.js
 
 # Read each line in .env file
 # Each line represents key=value pairs
