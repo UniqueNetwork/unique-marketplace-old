@@ -24,6 +24,8 @@ export interface UseMintApiInterface {
 
 export const collectionIdForMint = process.env.mintedCollection || '2';
 
+console.log('process.env', process.env);
+
 /**
  * Get validators from server if health "connected":true
  * @return {Array<ValidatorInfo>} filtered validators from server

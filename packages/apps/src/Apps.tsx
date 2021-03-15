@@ -1,7 +1,7 @@
-// Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
+// Copyright 2017-2021 @polkadot/apps authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import type { BareProps as Props, ThemeDef, ThemeProps } from '@polkadot/react-components/types';
+import type { BareProps as Props, ThemeDef } from '@polkadot/react-components/types';
 
 import React, { useContext, useEffect, useMemo } from 'react';
 import store from 'store';
@@ -46,6 +46,10 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
     }
   }, [api]);
 
+  useEffect(() => {
+    console.log('process.env', process.env);
+  }, []);
+
   return (
     <>
       <GlobalStyle uiHighlight={uiHighlight} />
@@ -64,10 +68,10 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
   );
 }
 
-export default React.memo(styled(Apps)(({ theme }: ThemeProps) => `
-  background: ${theme.bgPage};
+export default React.memo(styled(Apps)`
+  background: var(--bg-page);
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-`));
+`);
