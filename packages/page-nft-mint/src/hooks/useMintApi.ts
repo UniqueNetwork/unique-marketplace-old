@@ -22,7 +22,14 @@ export interface UseMintApiInterface {
   uploadedSuccessfully: boolean;
 }
 
-export const collectionIdForMint = process.env.mintedCollection || '2';
+interface EnvWindow {
+  // eslint-disable-next-line camelcase
+  process_env?: {
+    mintedCollection: string;
+  }
+}
+
+export const collectionIdForMint = (window as EnvWindow)?.process_env?.mintedCollection || '2';
 
 console.log('process.env', process.env);
 
