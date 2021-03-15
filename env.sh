@@ -12,7 +12,8 @@ echo -n > $TARGET
 
 declare -a vars=(
   "WS_URL"
-  "SAMPLE"
+  "SAMPLE",
+  "MatcherContractAddress"
 )
 
 echo "window.process_env = {" >> $TARGET

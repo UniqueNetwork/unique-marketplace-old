@@ -34,8 +34,6 @@ function createWebpack (context, mode = 'production') {
     ? new CopyWebpackPlugin({ patterns: [{ from: 'public' }] })
     : [];
 
-  console.log('process.env', process.env);
-
   return {
     context,
     entry: ['@babel/polyfill', './src/index.tsx'],
