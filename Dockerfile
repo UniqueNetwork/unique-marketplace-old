@@ -18,7 +18,7 @@ CMD ["ls", "-al", "build"]
 FROM nginx:stable-alpine
 
 # The following is mainly for doc purpose to show which ENV is supported
-ENV WS_URL=
+ENV MatcherContractAddress=5Cym1pvyNgzpy88bPXvrgZddH9WEaKHPpsEkET5pSfahKGmK
 
 WORKDIR /usr/share/nginx/html
 
