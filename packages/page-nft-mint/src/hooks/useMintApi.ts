@@ -31,8 +31,6 @@ interface EnvWindow {
 
 export const collectionIdForMint = (window as EnvWindow)?.process_env?.mintedCollection || '2';
 
-console.log('process.env', process.env);
-
 /**
  * Get validators from server if health "connected":true
  * @return {Array<ValidatorInfo>} filtered validators from server
