@@ -4,7 +4,8 @@
 import type { MetadataType, NftCollectionInterface, TokenAttribute, TokenDetailsInterface } from '@polkadot/react-hooks/useCollections';
 
 import BN from 'bn.js';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import memoize from 'lodash/memoize';
+import { useCallback, useEffect, useState } from 'react';
 
 import { Metadata } from '@polkadot/metadata';
 import metaStatic from '@polkadot/metadata/static';
@@ -98,12 +99,10 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
   const [collectionInfo, setCollectionInfo] = useState<NftCollectionInterface>();
   const [reFungibleBalance, setReFungibleBalance] = useState<number>(0);
   const [tokenUrl, setTokenUrl] = useState<string>('');
-  const [attributesConst, setAttributesConst] = useState<TypeRegistry>();
-  const [attributesVar, setAttributesVar] = useState<TypeRegistry>();
+  const [attributesConst, setAttributesConst] = useState<string>();
+  const [attributesVar, setAttributesVar] = useState<string>();
   const [attributes, setAttributes] = useState<AttributesDecoded>();
   const [tokenDetails, setTokenDetails] = useState<TokenDetailsInterface>();
-  const [tokenVarData, setTokenVarData] = useState<number[]>();
-  const [tokenConstData, setTokenConstData] = useState<number[]>();
   const { getDetailedCollectionInfo, getDetailedReFungibleTokenInfo, getDetailedTokenInfo } = useCollections();
   const { collectionName8Decoder } = useDecoder();
 
@@ -115,18 +114,14 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
     return '';
   }, []);
 
-  const registryMeta = useMemo(() => {
-    const registry = new TypeRegistry();
-    const metadata = new Metadata(registry, metaStatic);
-
-    return metadata;
-  }, []);
-
-  const convertOnChainMetadata = useCallback((data: string): TypeRegistry => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment
+  const convertOnChainMetadata: (data: string) => TypeRegistry = memoize((data: string): TypeRegistry => {
     const registry = new TypeRegistry();
 
     try {
-      registry.setMetadata(registryMeta);
+      const metadata = new Metadata(registry, metaStatic);
+
+      registry.setMetadata(metadata);
 
       const tokenSchema: RootSchemaType = JSON.parse(data) as RootSchemaType;
 
@@ -136,7 +131,25 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
     }
 
     return registry;
-  }, [registryMeta]);
+  });
+
+  const mergeData = useCallback(({ attr, data }: { attr?: string, data?: number[] }): AttributesDecoded => {
+    if (attr && data) {
+      try {
+        const registry = convertOnChainMetadata(JSON.stringify(attr));
+
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        const decoder = registry.createType('Root', data);
+
+        return decoder.toJSON() as AttributesDecoded; // {Gender: "Female", Traits: ["Smile"]}
+      } catch (e) {
+        console.log('mergeData error', e);
+      }
+    }
+
+    return {};
+  }, [convertOnChainMetadata]);
 
   const getReFungibleDetails = useCallback(() => {
     try {
@@ -182,10 +195,10 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
 
   const setOnChainSchema = useCallback(() => {
     if (collectionInfo) {
-      setAttributesConst(convertOnChainMetadata(collectionName8Decoder(collectionInfo.ConstOnChainSchema)));
-      setAttributesVar(convertOnChainMetadata(collectionName8Decoder(collectionInfo.VariableOnChainSchema)));
+      setAttributesConst(collectionName8Decoder(collectionInfo.ConstOnChainSchema));
+      setAttributesVar(collectionName8Decoder(collectionInfo.VariableOnChainSchema));
     }
-  }, [collectionInfo, collectionName8Decoder, convertOnChainMetadata]);
+  }, [collectionInfo, collectionName8Decoder]);
 
   const getCollectionInfo = useCallback(async () => {
     if (collectionId) {
@@ -211,40 +224,19 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
       }
 
       setTokenDetails(tokenDetailsData);
-
-      if (tokenDetailsData.ConstData) {
-        setTokenConstData(tokenDetailsData.ConstData);
-      }
-
-      if (tokenDetailsData.VariableData) {
-        setTokenVarData(tokenDetailsData.VariableData);
-      }
     }
   }, [collectionId, collectionInfo, getDetailedTokenInfo, getDetailedReFungibleTokenInfo, tokenId]);
 
-  const mergeData = useCallback(({ attr, data }: { attr?: TypeRegistry, data?: number[] }): AttributesDecoded => {
-    try {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      const decoder = attr.createType('Root', data.toString());
-
-      return decoder.toJSON() as AttributesDecoded; // {Gender: "Female", Traits: ["Smile"]}
-    } catch (e) {
-      console.log('mergeData error', e);
-    }
-
-    return {};
-  }, []);
-
   const mergeTokenAttributes = useCallback(() => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    console.log('attributesConst', attributesConst, 'tokenDetails', tokenDetails);
+
     const tokenAttributes: any = {
-      ...mergeData({ attr: attributesConst, data: tokenConstData }),
-      ...mergeData({ attr: attributesVar, data: tokenVarData })
+      ...mergeData({ attr: attributesConst, data: tokenDetails?.ConstData }),
+      ...mergeData({ attr: attributesVar, data: tokenDetails?.VariableData })
     };
 
     setAttributes(tokenAttributes);
-  }, [attributesConst, attributesVar, mergeData, tokenConstData, tokenVarData]);
+  }, [attributesConst, attributesVar, mergeData, tokenDetails]);
 
   useEffect(() => {
     if (collectionInfo) {
@@ -259,12 +251,16 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
   }, [getCollectionInfo]);
 
   useEffect(() => {
-    mergeTokenAttributes();
-  }, [mergeTokenAttributes]);
+    if (collectionInfo && tokenDetails && !attributes) {
+      mergeTokenAttributes();
+    }
+  }, [attributes, collectionInfo, mergeTokenAttributes, tokenDetails]);
 
   useEffect(() => {
     void getReFungibleDetails();
   }, [getReFungibleDetails]);
+
+  console.log('attributes', attributes);
 
   return {
     attributes,
@@ -274,9 +270,7 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
     getCollectionInfo,
     getTokenDetails,
     reFungibleBalance,
-    tokenConstData,
     tokenDetails,
-    tokenUrl,
-    tokenVarData
+    tokenUrl
   };
 }

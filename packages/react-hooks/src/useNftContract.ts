@@ -21,6 +21,16 @@ export interface AskOutputInterface {
   output: [string, string, string, BN, string]
 }
 
+interface EnvWindow {
+  // eslint-disable-next-line camelcase
+  process_env?: {
+    escrowAddress?: string;
+    MatcherContractAddress?: string;
+    vaultAddress?: string;
+    WS_URL: string;
+  }
+}
+
 export interface useNftContractInterface {
   abi: Abi | undefined;
   contractAddress: string;
@@ -46,8 +56,8 @@ export function useNftContract (account: string): useNftContractInterface {
   const [value] = useState(0);
   const [maxGas] = useState(200000000000);
   const [decimals, setDecimals] = useState(new BN(15));
-  const [escrowAddress] = useState(process.env.escrowAddress || '5D73wtH5pqN99auP4b6KQRQAbketaSj4StkBJxACPBUAUdiq');
-  const [vaultAddress] = useState(process.env.vaultAddress || '5D73wtH5pqN99auP4b6KQRQAbketaSj4StkBJxACPBUAUdiq');
+  const [escrowAddress] = useState((window as EnvWindow)?.process_env?.escrowAddress || '5D73wtH5pqN99auP4b6KQRQAbketaSj4StkBJxACPBUAUdiq');
+  const [vaultAddress] = useState((window as EnvWindow)?.process_env?.vaultAddress || '5D73wtH5pqN99auP4b6KQRQAbketaSj4StkBJxACPBUAUdiq');
   const [contractInstance, setContractInstance] = useState<ContractPromise | null>(null);
   const [abi, setAbi] = useState<Abi>();
   const [depositor, setDepositor] = useState<string>();
@@ -55,7 +65,7 @@ export function useNftContract (account: string): useNftContractInterface {
   const [tokenAsk, setTokenAsk] = useState<{ owner: string, price: BN }>();
   const [isStored, setIsStored] = useState(false);
   // local 5HpCCd2SufXC1NRANgWBvz6k3GnVCDcTceC24WNwERkBtfSk, remote 5Cym1pvyNgzpy88bPXvrgZddH9WEaKHPpsEkET5pSfahKGmK
-  const [contractAddress] = useState<string>(process.env.MatcherContractAddress || '5Cym1pvyNgzpy88bPXvrgZddH9WEaKHPpsEkET5pSfahKGmK');
+  const [contractAddress] = useState<string>((window as EnvWindow)?.process_env?.MatcherContractAddress || '5Cym1pvyNgzpy88bPXvrgZddH9WEaKHPpsEkET5pSfahKGmK');
   const contractInfo = useCall<Option<ContractInfo>>(api.query.contracts.contractInfoOf, [contractAddress]);
 
   const findCallMethodByName = useCallback((methodName: string): AbiMessage | null => {
