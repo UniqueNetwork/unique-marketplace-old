@@ -28,7 +28,8 @@ module.exports = merge(
           target: 'http://localhost:5000'
         }
       },
-      static: path.resolve(__dirname, 'build')
+      static: path.resolve(__dirname, 'build'),
+      disableHostCheck: true
     },
     plugins: [
       new HtmlWebpackPlugin({
