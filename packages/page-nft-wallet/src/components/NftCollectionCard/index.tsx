@@ -10,6 +10,7 @@ import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 
 import { Expander } from '@polkadot/react-components';
 import { useCollections, useDecoder } from '@polkadot/react-hooks';
+import { TypeRegistry } from '@polkadot/types';
 
 import NftTokenCard from '../NftTokenCard';
 
@@ -17,12 +18,13 @@ interface Props {
   account: string | null;
   canTransferTokens: boolean;
   collection: NftCollectionInterface;
+  localRegistry?: TypeRegistry;
   removeCollection: (collection: string) => void;
   openTransferModal: (collection: NftCollectionInterface, tokenId: string, balance: number) => void;
   shouldUpdateTokens: string | undefined;
 }
 
-function NftCollectionCard ({ account, canTransferTokens, collection, openTransferModal, removeCollection, shouldUpdateTokens }: Props): React.ReactElement<Props> {
+function NftCollectionCard ({ account, canTransferTokens, collection, localRegistry, openTransferModal, removeCollection, shouldUpdateTokens }: Props): React.ReactElement<Props> {
   const [opened, setOpened] = useState(false);
   const [tokensOfCollection, setTokensOfCollection] = useState<Array<string>>([]);
   const { getTokensOfCollection } = useCollections();
@@ -79,6 +81,7 @@ function NftCollectionCard ({ account, canTransferTokens, collection, openTransf
               canTransferTokens={canTransferTokens}
               collection={collection}
               key={token}
+              localRegistry={localRegistry}
               openTransferModal={openTransferModal}
               shouldUpdateTokens={shouldUpdateTokens}
               token={token}

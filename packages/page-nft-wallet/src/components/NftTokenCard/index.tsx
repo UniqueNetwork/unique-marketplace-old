@@ -11,18 +11,20 @@ import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 import Item from 'semantic-ui-react/dist/commonjs/views/Item';
 
 import { useSchema } from '@polkadot/react-hooks';
+import { TypeRegistry } from '@polkadot/types';
 
 interface Props {
   account: string;
   canTransferTokens: boolean;
   collection: NftCollectionInterface;
+  localRegistry?: TypeRegistry;
   openTransferModal: (collection: NftCollectionInterface, tokenId: string, balance: number) => void;
   shouldUpdateTokens: string | undefined;
   token: string;
 }
 
-function NftTokenCard ({ account, canTransferTokens, collection, openTransferModal, token }: Props): React.ReactElement<Props> {
-  const { attributes, reFungibleBalance, tokenUrl } = useSchema(account, collection.id, token);
+function NftTokenCard ({ account, canTransferTokens, collection, localRegistry, openTransferModal, token }: Props): React.ReactElement<Props> {
+  const { attributes, reFungibleBalance, tokenUrl } = useSchema(account, collection.id, token, localRegistry);
   const history = useHistory();
 
   const openDetailedInformationModal = useCallback((collectionId: string | number, tokenId: string) => {

@@ -13,7 +13,7 @@ import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 
 import { AccountSelector, FormatBalance, Input, NftDetailsModal } from '@polkadot/react-components';
-import { useBalance, useCollections } from '@polkadot/react-hooks';
+import { useBalance, useCollections, useRegistry } from '@polkadot/react-hooks';
 
 // local imports and components
 import NftTokenCard from '../../components/NftTokenCard';
@@ -26,6 +26,7 @@ const BuyTokens = (): ReactElement => {
   const [searchString, setSearchString] = useState<string>('');
   const [filteredOffers, setFilteredOffers] = useState<OfferType[]>([]);
   const { balance } = useBalance(account);
+  const localRegistry = useRegistry();
 
   const openDetailedInformationModal = useCallback((collectionId: string, tokenId: string) => {
     history.push(`/market/token-details?collectionId=${collectionId}&tokenId=${tokenId}`);
@@ -86,6 +87,7 @@ const BuyTokens = (): ReactElement => {
                       account={account}
                       collectionId={token.collectionId}
                       key={token.tokenId}
+                      localRegistry={localRegistry}
                       openDetailedInformationModal={openDetailedInformationModal}
                       token={token}
                     />

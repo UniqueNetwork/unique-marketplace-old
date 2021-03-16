@@ -1,18 +1,16 @@
 // Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import type { MetadataType, NftCollectionInterface, TokenAttribute, TokenDetailsInterface } from '@polkadot/react-hooks/useCollections';
+import type { MetadataType, NftCollectionInterface, TokenDetailsInterface } from '@polkadot/react-hooks/useCollections';
 
 import BN from 'bn.js';
 import memoize from 'lodash/memoize';
 import { useCallback, useEffect, useState } from 'react';
 
-import { Metadata } from '@polkadot/metadata';
-import metaStatic from '@polkadot/metadata/static';
 import { useCollections, useDecoder } from '@polkadot/react-hooks';
 import { TypeRegistry } from '@polkadot/types';
 
-export type Attributes = TokenAttribute[];
+// export type Attributes = TokenAttribute[];
 
 type RootSchemaType = {
   'Gender': {
@@ -95,7 +93,7 @@ type AttributesDecoded = {
   }
 }; */
 
-export function useSchema (account: string, collectionId: string, tokenId: string | number) {
+export function useSchema (account: string, collectionId: string, tokenId: string | number, localRegistry?: TypeRegistry) {
   const [collectionInfo, setCollectionInfo] = useState<NftCollectionInterface>();
   const [reFungibleBalance, setReFungibleBalance] = useState<number>(0);
   const [tokenUrl, setTokenUrl] = useState<string>('');
@@ -115,22 +113,20 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
   }, []);
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment
-  const convertOnChainMetadata: (data: string) => TypeRegistry = memoize((data: string): TypeRegistry => {
-    const registry = new TypeRegistry();
+  const convertOnChainMetadata: (data: string) => TypeRegistry | null = memoize((data: string): TypeRegistry | null => {
+    if (!localRegistry) {
+      return null;
+    }
 
     try {
-      const metadata = new Metadata(registry, metaStatic);
-
-      registry.setMetadata(metadata);
-
       const tokenSchema: RootSchemaType = JSON.parse(data) as RootSchemaType;
 
-      registry.register(tokenSchema);
+      localRegistry.register(tokenSchema);
     } catch (e) {
       console.log('schema json parse error', e);
     }
 
-    return registry;
+    return localRegistry;
   });
 
   const mergeData = useCallback(({ attr, data }: { attr?: string, data?: number[] }): AttributesDecoded => {

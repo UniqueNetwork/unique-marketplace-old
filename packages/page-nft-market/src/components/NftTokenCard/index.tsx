@@ -8,17 +8,20 @@ import type { OfferType } from '@polkadot/react-hooks/useCollections';
 import React from 'react';
 import Image from 'semantic-ui-react/dist/commonjs/elements/Image';
 import Card from 'semantic-ui-react/dist/commonjs/views/Card';
+
 import { useSchema } from '@polkadot/react-hooks';
+import { TypeRegistry } from '@polkadot/types';
 
 interface Props {
   account: string;
   collectionId: string;
+  localRegistry?: TypeRegistry;
   openDetailedInformationModal: (collectionId: string, tokenId: string) => void;
   token: OfferType;
 }
 
-const NftTokenCard = ({ account, collectionId, openDetailedInformationModal, token }: Props): React.ReactElement<Props> => {
-  const { attributes, tokenUrl } = useSchema(account, collectionId, token.tokenId);
+const NftTokenCard = ({ account, collectionId, localRegistry, openDetailedInformationModal, token }: Props): React.ReactElement<Props> => {
+  const { attributes, tokenUrl } = useSchema(account, collectionId, token.tokenId, localRegistry);
 
   return (
     <Card

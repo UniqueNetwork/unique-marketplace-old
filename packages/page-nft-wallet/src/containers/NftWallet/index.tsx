@@ -15,7 +15,7 @@ import CreateModal from '@polkadot/app-accounts/modals/Create';
 import ImportModal from '@polkadot/app-accounts/modals/Import';
 import Qr from '@polkadot/app-accounts/modals/Qr';
 import { Button, LabelHelp, NftDetailsModal, Table } from '@polkadot/react-components';
-import { useBalance, useIpfs, useToggle } from '@polkadot/react-hooks';
+import { useBalance, useIpfs, useRegistry, useToggle } from '@polkadot/react-hooks';
 
 import AccountSelector from '../../components/AccountSelector';
 import CollectionSearch from '../../components/CollectionSearch';
@@ -37,6 +37,7 @@ function NftWallet (): React.ReactElement {
   const [isCreateOpen, toggleCreate] = useToggle();
   const [isImportOpen, toggleImport] = useToggle();
   const currentAccount = useRef<string | null | undefined>();
+  const localRegistry = useRegistry();
 
   const addCollection = useCallback((collection: NftCollectionInterface) => {
     setCollections((prevCollections: NftCollectionInterface[]) => [...prevCollections, collection]);
@@ -140,6 +141,7 @@ function NftWallet (): React.ReactElement {
                 account={account}
                 canTransferTokens={canTransferTokens}
                 collection={collection}
+                localRegistry={localRegistry}
                 openTransferModal={openTransferModal}
                 removeCollection={removeCollection}
                 shouldUpdateTokens={shouldUpdateTokens}
