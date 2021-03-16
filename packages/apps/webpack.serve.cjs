@@ -14,6 +14,7 @@ module.exports = merge(
     devServer: {
       open: false,
       port: 3000,
+      public: 'whitelabel.market',
       static: path.resolve(__dirname, 'build')
     },
     plugins: [
