@@ -3646,6 +3646,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/lodash.memoize@npm:^4.1.6":
+  version: 4.1.6
+  resolution: "@types/lodash.memoize@npm:4.1.6"
+  dependencies:
+    "@types/lodash": "*"
+  checksum: 54ab7a3013960018913c7ad57dc5a7d82540070fd8e36c80d2464166981b2e75a3e746e26bd478740abd8097df2bc95446e4d3275c85a64cc739b9c5095edd7e
+  languageName: node
+  linkType: hard
+
+"@types/lodash@npm:*, @types/lodash@npm:^4.14.168":
+  version: 4.14.168
+  resolution: "@types/lodash@npm:4.14.168"
+  checksum: 9a4e25f89fc035b9f0388f1f7be85e5eff49f9e6db0d93432c9a89fce0916f8a89db4e8290415f7ea02de6b00d3573826378dcb655b7b2d20530a6e8d6dd6fd0
+  languageName: node
+  linkType: hard
+
 "@types/mdast@npm:^3.0.0, @types/mdast@npm:^3.0.3":
   version: 3.0.3
   resolution: "@types/mdast@npm:3.0.3"
@@ -18602,6 +18618,8 @@ __metadata:
     "@types/chart.js": ^2.9.31
     "@types/file-saver": ^2.0.1
     "@types/jest": ^26.0.20
+    "@types/lodash": ^4.14.168
+    "@types/lodash.memoize": ^4.1.6
     "@types/react-beautiful-dnd": ^13.0.0
     "@types/react-copy-to-clipboard": ^5.0.0
     "@types/react-dom": ^17.0.2
@@ -18617,6 +18635,7 @@ __metadata:
     electron-builder: ^22.10.5
     electron-builder-notarize: ^1.2.0
     i18next-scanner: ^3.0.0
+    lodash: ^4.17.21
     react: ^17.0.1
     react-dom: ^17.0.1
     react-images-uploading: ^3.1.2
