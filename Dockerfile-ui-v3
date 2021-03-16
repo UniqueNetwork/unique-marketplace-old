@@ -1,0 +1,7 @@
+WORKDIR /apps
+COPY . .
+
+RUN npm install --global yarn && \
+    yarn && yarn build:www
+
+EXPOSE 3000
