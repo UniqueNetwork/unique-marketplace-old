@@ -1,8 +1,15 @@
 FROM node:latest
 
 WORKDIR /apps
+
+COPY package.json .
+COPY yarn.lock .
+COPY tsconfig.json .
+
+RUN yarn install
+
 COPY . .
 
-RUN yarn install && yarn build:www
+RUN yarn build:www
 
 EXPOSE 3000
