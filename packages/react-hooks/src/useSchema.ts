@@ -104,7 +104,7 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
 
         for (const attr in attributesDecoded) {
           if (attr.toLocaleLowerCase().includes('str')) {
-            attributesDecoded[attr] = hex2a(attributesDecoded[attr]);
+            attributesDecoded[attr] = hex2a(attributesDecoded[attr] as string);
           }
         }
 
@@ -115,7 +115,7 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
     }
 
     return {};
-  }, [localRegistry]);
+  }, [hex2a, localRegistry]);
 
   const getReFungibleDetails = useCallback(() => {
     try {
