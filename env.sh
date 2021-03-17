@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright 2017-2021 @polkadot/apps authors & contributors
+# Copyright 2017-2021 usetech authors & contributors
 # SPDX-License-Identifier: Apache-2.0
 
 # This script is used when the docker container starts and does the magic to
@@ -11,26 +11,9 @@ TARGET=./env-config.js
 rm -rf $TARGET
 touch $TARGET
 
-# Add assignment
-echo "window.process_env = {" >> ./env-config.js
-
-# Read each line in .env file
-# Each line represents key=value pairs
-while read -r line || [[ -n "$line" ]];
-do
-  # Split env variables by character `=`
-  if printf '%s\n' "$line" | grep -q -e '='; then
-    varname=$(printf '%s\n' "$line" | sed -e 's/=.*//')
-    varvalue=$(printf '%s\n' "$line" | sed -e 's/^[^=]*=//')
-  fi
-
-  # Read value of current variable if exists as Environment variable
-  value=$(printf '%s\n' "${!varname}")
-  # Otherwise use value from .env file
-  [[ -z $value ]] && value=${varvalue}
-
-  # Append configuration property to JS file
-  echo "  $varname: \"$value\"," >> ./env-config.js
-done < .env
-
+echo "window.process_env = {\n" >> $TARGET
+echo "escrowAddress: '$escrowAddress'," >> $TARGET
+echo "MatcherContractAddress: '$MatcherContractAddress'," >> $TARGET
+echo "mintedCollection: '$mintedCollection'," >> $TARGET
+echo "vaultAddress: '$vaultAddress'," >> $TARGET
 echo "}" >> $TARGET
