@@ -1,10 +1,12 @@
 // Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import type { ErrorType } from '@polkadot/react-hooks/useFetch';
+
 import BN from 'bn.js';
 import { useCallback, useState } from 'react';
 
-import { ErrorType, useApi, useFetch } from '@polkadot/react-hooks';
+import { useApi, useFetch } from '@polkadot/react-hooks';
 import { Constructor } from '@polkadot/types/types/codec';
 
 export type MetadataType = {

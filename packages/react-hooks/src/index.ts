@@ -16,7 +16,7 @@ export { useCallMulti } from './useCallMulti';
 export { useContracts } from './useContracts';
 export { useCollections, MetadataType } from './useCollections';
 export { useDecoder } from './useDecoder';
-export { useFetch, ErrorType } from './useFetch';
+export { useFetch } from './useFetch';
 export { useFormField } from './useFormField';
 export { useDebounce } from './useDebounce';
 export { useEventTrigger } from './useEventTrigger';
