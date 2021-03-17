@@ -187,6 +187,7 @@ function NftWallet (): React.ReactElement {
           >
             <NftDetailsModal
               account={account}
+              localRegistry={localRegistry}
               setShouldUpdateTokens={setShouldUpdateTokens}
             />
           </Route>

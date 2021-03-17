@@ -106,6 +106,7 @@ const BuyTokens = (): ReactElement => {
           >
             <NftDetailsModal
               account={account}
+              localRegistry={localRegistry}
               setShouldUpdateTokens={setShouldUpdateTokens}
             />
           </Route>

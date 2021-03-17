@@ -12,7 +12,8 @@ import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 import Modal from 'semantic-ui-react/dist/commonjs/modules/Modal/Modal';
 
 import { Button, Input, InputBalance, TxButton } from '@polkadot/react-components';
-import { useApi, useBalance, useMarketplaceStages, useSchema } from '@polkadot/react-hooks';
+import {useApi, useBalance, useDecoder, useMarketplaceStages, useSchema} from '@polkadot/react-hooks';
+import { TypeRegistry } from '@polkadot/types';
 import { formatBalance } from '@polkadot/util';
 
 import BuySteps from './BuySteps';
@@ -20,10 +21,11 @@ import SaleSteps from './SaleSteps';
 
 interface Props {
   account: string;
+  localRegistry?: TypeRegistry;
   setShouldUpdateTokens?: (collectionId: string) => void;
 }
 
-function NftDetailsModal ({ account, setShouldUpdateTokens }: Props): React.ReactElement<Props> {
+function NftDetailsModal ({ account, localRegistry, setShouldUpdateTokens }: Props): React.ReactElement<Props> {
   const { api } = useApi();
   const query = new URLSearchParams(useLocation().search);
   const tokenId = query.get('tokenId') || '';
@@ -35,7 +37,7 @@ function NftDetailsModal ({ account, setShouldUpdateTokens }: Props): React.Reac
   const [isAddressError, setIsAddressError] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
   const { balance } = useBalance(account);
-  const { attributes, collectionInfo, reFungibleBalance, tokenUrl } = useSchema(account, collectionId, tokenId);
+  const { attributes, collectionInfo, reFungibleBalance, tokenUrl } = useSchema(account, collectionId, tokenId, localRegistry);
   const [tokenPriceForSale, setTokenPriceForSale] = useState<string>('');
   const { cancelStep, deposited, readyToAskPrice, saleFee, sendCurrentUserAction, setPrice, setWithdrawAmount, tokenAsk, tokenInfo, transferStep, withdrawAmount } = useMarketplaceStages(account, collectionInfo, tokenId);
 

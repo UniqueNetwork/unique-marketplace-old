@@ -8,7 +8,7 @@ import { ErrorType, useApi, useFetch } from '@polkadot/react-hooks';
 import { Constructor } from '@polkadot/types/types/codec';
 
 export type MetadataType = {
-  metadata: string;
+  metadata?: string;
 }
 
 export type TokenAttribute = Record<string, Constructor | string | Record<string, string> | {

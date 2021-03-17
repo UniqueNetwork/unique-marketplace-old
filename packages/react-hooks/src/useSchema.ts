@@ -4,30 +4,12 @@
 import type { MetadataType, NftCollectionInterface, TokenDetailsInterface } from '@polkadot/react-hooks/useCollections';
 
 import BN from 'bn.js';
-import memoize from 'lodash/memoize';
 import { useCallback, useEffect, useState } from 'react';
 
 import { useCollections, useDecoder } from '@polkadot/react-hooks';
-import { TypeRegistry } from '@polkadot/types';
+import { Struct, TypeRegistry } from '@polkadot/types';
 
 // export type Attributes = TokenAttribute[];
-
-type RootSchemaType = {
-  'Gender': {
-    '_enum': {
-      [key: string]: null
-    }
-  },
-  'Trait': {
-    '_enum': {
-      [key: string]: null
-    }
-  },
-  'Root': {
-    'Gender': 'Gender',
-    'Traits': 'Vec<Trait>'
-  }
-};
 
 type AttributesDecoded = {
   [key: string]: string | string[],
@@ -112,40 +94,19 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
     return '';
   }, []);
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment
-  const convertOnChainMetadata: (data: string) => TypeRegistry | null = memoize((data: string): TypeRegistry | null => {
-    if (!localRegistry) {
-      return null;
-    }
-
-    try {
-      const tokenSchema: RootSchemaType = JSON.parse(data) as RootSchemaType;
-
-      localRegistry.register(tokenSchema);
-    } catch (e) {
-      console.log('schema json parse error', e);
-    }
-
-    return localRegistry;
-  });
-
-  const mergeData = useCallback(({ attr, data }: { attr?: string, data?: number[] }): AttributesDecoded => {
-    if (attr && data) {
+  const mergeData = useCallback(({ attr, data }: { attr?: any, data?: number[] }): AttributesDecoded => {
+    if (attr && data && localRegistry) {
       try {
-        const registry = convertOnChainMetadata(JSON.stringify(attr));
+        const s = new Struct(localRegistry, (JSON.parse(attr) as { root: any }).root, data);
 
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        const decoder = registry.createType('Root', data);
-
-        return decoder.toJSON() as AttributesDecoded; // {Gender: "Female", Traits: ["Smile"]}
+        return JSON.parse(s.toString()) as AttributesDecoded;
       } catch (e) {
         console.log('mergeData error', e);
       }
     }
 
     return {};
-  }, [convertOnChainMetadata]);
+  }, [localRegistry]);
 
   const getReFungibleDetails = useCallback(() => {
     try {
@@ -167,12 +128,16 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
 
   const setUnique = useCallback(async (collectionInfo: NftCollectionInterface) => {
     try {
+      // console.log('offchain', collectionName8Decoder(collectionInfo.OffchainSchema));
       const collectionMetadata = JSON.parse(collectionName8Decoder(collectionInfo.OffchainSchema)) as MetadataType;
-      const dataUrl = tokenImageUrl(collectionMetadata.metadata, tokenId.toString());
-      const urlResponse = await fetch(dataUrl);
-      const jsonData = await urlResponse.json() as { image: string };
 
-      setTokenUrl(jsonData.image);
+      if (collectionMetadata.metadata) {
+        const dataUrl = tokenImageUrl(collectionMetadata.metadata, tokenId.toString());
+        const urlResponse = await fetch(dataUrl);
+        const jsonData = await urlResponse.json() as { image: string };
+
+        setTokenUrl(jsonData.image);
+      }
     } catch (e) {
       console.error('metadata parse error', e);
     }
@@ -257,6 +222,8 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
   }, [getReFungibleDetails]);
 
   console.log('attributes', attributes);
+  console.log('attributesConst', attributesConst);
+  console.log('attributesVar', attributesVar);
 
   return {
     attributes,
