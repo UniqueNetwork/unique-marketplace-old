@@ -1,8 +1,11 @@
 FROM node:latest
 
 WORKDIR /apps
+
 COPY . .
 
-RUN bash -c ./env.sh && yarn install && yarn build:www
+CMD ["/bin/bash", "-c", "/usr/share/nginx/html/env.sh"]
+
+RUN yarn install && yarn build:www
 
 EXPOSE 3000
