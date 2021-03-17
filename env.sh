@@ -8,8 +8,8 @@
 TARGET=./env-config.js
 
 # Recreate config file
-rm -rf TARGET
-touch TARGET
+rm -rf $TARGET
+touch $TARGET
 
 # Add assignment
 echo "window.process_env = {" >> ./env-config.js
