@@ -12,7 +12,7 @@ import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 import Modal from 'semantic-ui-react/dist/commonjs/modules/Modal/Modal';
 
 import { Button, Input, InputBalance, TxButton } from '@polkadot/react-components';
-import {useApi, useBalance, useDecoder, useMarketplaceStages, useSchema} from '@polkadot/react-hooks';
+import { useApi, useBalance, useMarketplaceStages, useSchema } from '@polkadot/react-hooks';
 import { TypeRegistry } from '@polkadot/types';
 import { formatBalance } from '@polkadot/util';
 

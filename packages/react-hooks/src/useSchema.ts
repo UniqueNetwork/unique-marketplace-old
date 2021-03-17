@@ -84,7 +84,7 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
   const [attributes, setAttributes] = useState<AttributesDecoded>();
   const [tokenDetails, setTokenDetails] = useState<TokenDetailsInterface>();
   const { getDetailedCollectionInfo, getDetailedReFungibleTokenInfo, getDetailedTokenInfo } = useCollections();
-  const { collectionName8Decoder } = useDecoder();
+  const { collectionName8Decoder, hex2a } = useDecoder();
 
   const tokenImageUrl = useCallback((urlString: string, tokenId: string): string => {
     if (urlString.indexOf('{id}') !== -1) {
@@ -98,8 +98,17 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
     if (attr && data && localRegistry) {
       try {
         const s = new Struct(localRegistry, (JSON.parse(attr) as { root: any }).root, data);
+        const attributesDecoded = JSON.parse(s.toString()) as AttributesDecoded;
 
-        return JSON.parse(s.toString()) as AttributesDecoded;
+        console.log('attributesDecoded', attributesDecoded);
+
+        for (const attr in attributesDecoded) {
+          if (attr.toLocaleLowerCase().includes('str')) {
+            attributesDecoded[attr] = hex2a(attributesDecoded[attr]);
+          }
+        }
+
+        return attributesDecoded;
       } catch (e) {
         console.log('mergeData error', e);
       }
