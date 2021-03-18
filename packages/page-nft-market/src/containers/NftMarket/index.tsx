@@ -33,7 +33,7 @@ const BuyTokens = (): ReactElement => {
   }, [history]);
 
   useEffect(() => {
-    setFilteredOffers(offers && offers.length ? offers.filter((item: OfferType) => item.collectionId.toLowerCase().includes(searchString.toLowerCase()) || item.tokenId.toLowerCase().includes(searchString.toLowerCase())) : []);
+    setFilteredOffers(offers && offers.length ? offers.filter((item: OfferType) => item.collectionId.toString().includes(searchString.toLowerCase()) || item.tokenId.toLowerCase().includes(searchString.toLowerCase())) : []);
   }, [offers, searchString]);
 
   useEffect(() => {
@@ -85,7 +85,7 @@ const BuyTokens = (): ReactElement => {
                   { filteredOffers.map((token) => (
                     <NftTokenCard
                       account={account}
-                      collectionId={token.collectionId}
+                      collectionId={token.collectionId.toString()}
                       key={token.tokenId}
                       localRegistry={localRegistry}
                       openDetailedInformationModal={openDetailedInformationModal}

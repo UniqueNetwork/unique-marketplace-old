@@ -8,6 +8,7 @@ import { useCallback, useState } from 'react';
 
 import { useApi, useFetch } from '@polkadot/react-hooks';
 import { Constructor } from '@polkadot/types/types/codec';
+import { keyring } from '@polkadot/ui-keyring';
 
 export type MetadataType = {
   metadata?: string;
@@ -58,7 +59,7 @@ export interface TokenDetailsInterface {
 }
 
 export type OfferType = {
-  collectionId: string;
+  collectionId: number;
   price: BN;
   seller: string;
   tokenId: string;
@@ -180,7 +181,9 @@ export function useCollections () {
       if ('error' in result) {
         setError(result);
       } else {
-        setOffers(result);
+        if (result && result.length) {
+          setOffers(result.map((offer: OfferType) => ({ ...offer, seller: keyring.encodeAddress(offer.seller) })));
+        }
       }
     });
   }, [fetchData]);
@@ -224,6 +227,8 @@ export function useCollections () {
       return [];
     }
   }, [api, getDetailedCollectionInfo]);
+
+  console.log('offers', offers);
 
   return {
     error,
