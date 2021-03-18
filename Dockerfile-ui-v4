@@ -5,7 +5,6 @@ FROM node:latest as builder
 WORKDIR /apps
 COPY . .
 
-#RUN bash -c ./env.sh && yarn install && yarn build:www
 RUN yarn install && yarn build:www
 
 # ===========================================================
@@ -15,7 +14,6 @@ WORKDIR /usr/share/nginx/html
 
 COPY env.sh .
 
-#RUN apk add --no-cache bash; chmod +x env.sh
 
 COPY --from=builder /apps/packages/apps/build /usr/share/nginx/html
 
@@ -24,7 +22,5 @@ EXPOSE 80
 CMD chmod 777 /usr/share/nginx/html/env.sh
 
 CMD /usr/share/nginx/html/env.sh
-
-#CMD ["/bin/bash", "-c", "/usr/share/nginx/html/env.sh"]
 
 CMD ["nginx", "-g", "daemon off;"]
