@@ -73,6 +73,7 @@ function useMintApi (): UseMintApiInterface {
         history.push('/wallet');
       } else {
         setUploadingError(response.statusText);
+        setImgLoading(false);
       }
     } catch (e) {
       console.log('error uploading image', e);
