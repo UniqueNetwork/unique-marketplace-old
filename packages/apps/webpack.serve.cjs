@@ -22,10 +22,10 @@ module.exports = merge(
           target: 'http://localhost:3003'
         },
         '/offers': {
-          target: 'http://whitelabel.market'
+          target: 'http://localhost:5000'
         },
         '/trades': {
-          target: 'http://whitelabel.market'
+          target: 'http://localhost:5000'
         }
       },
       static: path.resolve(__dirname, 'build')

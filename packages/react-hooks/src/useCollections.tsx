@@ -8,7 +8,7 @@ import { useCallback, useState } from 'react';
 
 import { useApi, useFetch } from '@polkadot/react-hooks';
 import { Constructor } from '@polkadot/types/types/codec';
-import { keyring } from '@polkadot/ui-keyring';
+import { base64Decode, encodeAddress } from '@polkadot/util-crypto';
 
 export type MetadataType = {
   metadata?: string;
@@ -177,15 +177,19 @@ export function useCollections () {
    * Return the list of token sale offers
    */
   const getOffers = useCallback(() => {
-    fetchData<OfferType[]>('/offers/').subscribe((result: OfferType[] | ErrorType) => {
-      if ('error' in result) {
-        setError(result);
-      } else {
-        if (result && result.length) {
-          setOffers(result.map((offer: OfferType) => ({ ...offer, seller: keyring.encodeAddress(offer.seller) })));
+    try {
+      fetchData<OfferType[]>('/offers/').subscribe((result: OfferType[] | ErrorType) => {
+        if ('error' in result) {
+          setError(result);
+        } else {
+          if (result && result.length) {
+            setOffers(result.map((offer: OfferType) => ({ ...offer, seller: encodeAddress(base64Decode(offer.seller)) })));
+          }
         }
-      }
-    });
+      });
+    } catch (e) {
+      console.log('getOffers error', e);
+    }
   }, [fetchData]);
 
   /**

@@ -106,6 +106,7 @@
     "@types/lodash": "^4.14.168",
     "@types/lodash.memoize": "^4.1.6",
     "@xstate/react": "^1.1.0",
+    "cypress": "^6.8.0",
     "lodash": "^4.17.21",
     "react-images-uploading": "^3.1.2",
     "style-loader": "^2.0.0",
