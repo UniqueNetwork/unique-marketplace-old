@@ -77,6 +77,7 @@ function useMintApi (): UseMintApiInterface {
     } catch (e) {
       console.log('error uploading image', e);
       setImgLoading(false);
+      setUploadingError('error while uploading image');
     }
   }, [addMintedTokenToWallet, history]);
 
