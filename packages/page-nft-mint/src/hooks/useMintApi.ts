@@ -19,7 +19,7 @@ export interface UseMintApiInterface {
   imgLoading: boolean;
   serverIsReady: boolean;
   uploadImage: (image: ImageInterface) => void;
-  uploadedSuccessfully: boolean;
+  uploadingError: string | undefined;
 }
 
 interface EnvWindow {
@@ -38,7 +38,7 @@ export const collectionIdForMint = (window as EnvWindow)?.process_env?.mintedCol
 function useMintApi (): UseMintApiInterface {
   const [imgLoading, setImgLoading] = useState<boolean>(false);
   const [serverIsReady, setServerIsReady] = useState<boolean>(false);
-  const [uploadedSuccessfully, setUploadedSuccessfully] = useState<boolean>(false);
+  const [uploadingError, setUploadingError] = useState<string>();
   const { getDetailedCollectionInfo } = useCollections();
   const history = useHistory();
 
@@ -57,8 +57,6 @@ function useMintApi (): UseMintApiInterface {
   const uploadImage = useCallback(async (file: ImageInterface) => {
     setImgLoading(true);
 
-    console.log('upload', JSON.stringify(file));
-
     try {
       const response = await fetch('/mint', { // Your POST endpoint
         body: JSON.stringify(file),
@@ -68,12 +66,14 @@ function useMintApi (): UseMintApiInterface {
         method: 'POST'
       });
 
-      console.log('token minted successfully', response);
-
-      setUploadedSuccessfully(true);
-      setImgLoading(false);
-      await addMintedTokenToWallet();
-      history.push('/wallet');
+      if (response.ok) {
+        console.log('token minted successfully', response);
+        setImgLoading(false);
+        await addMintedTokenToWallet();
+        history.push('/wallet');
+      } else {
+        setUploadingError(response.statusText);
+      }
     } catch (e) {
       console.log('error uploading image', e);
       setImgLoading(false);
@@ -98,7 +98,7 @@ function useMintApi (): UseMintApiInterface {
     healthCheck();
   }, [healthCheck]);
 
-  return { imgLoading, serverIsReady, uploadImage, uploadedSuccessfully };
+  return { imgLoading, serverIsReady, uploadImage, uploadingError };
 }
 
 export default useMintApi;

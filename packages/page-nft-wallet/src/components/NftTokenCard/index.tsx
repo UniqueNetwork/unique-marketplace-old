@@ -51,17 +51,12 @@ function NftTokenCard ({ account, canTransferTokens, collection, localRegistry, 
       <td className='token-name'>
         #{token.toString()}
       </td>
-      { collection && collection.Mode.isReFungible && (
-        <td className='token-balance'>
-          Balance: {reFungibleBalance}
-        </td>
-      )}
-      { attributes && Object.values(attributes).length > 0 && (
-        <td className='token-balance'>
-          {/* eslint-disable-next-line @typescript-eslint/no-unsafe-member-access */}
-          Attributes: {Object.keys(attributes).map((attrKey) => (<span key={attrKey}>{attrKey}: {attributes[attrKey]}</span>))}
-        </td>
-      )}
+      <td className='token-balance'>
+        { collection && collection.Mode.isReFungible && <span>Balance: {reFungibleBalance}</span> }
+      </td>
+      <td className='token-balance'>
+        { attributes && Object.values(attributes).length > 0 && <span>Attributes: {Object.keys(attributes).map((attrKey) => (<span key={attrKey}>{attrKey}: {attributes[attrKey]}</span>))}</span> }
+      </td>
       <td className='token-actions'>
         <Button
           disabled={!canTransferTokens}

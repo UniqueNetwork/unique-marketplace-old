@@ -25,7 +25,7 @@ function NftMint (): React.ReactElement {
   const [imageFileName, setImageFileName] = useState<string>();
   const [imageName, setImageName] = useState<string>();
   const [account, setAccount] = useState<string | null>(null);
-  const { imgLoading, serverIsReady, uploadImage } = useMintApi();
+  const { imgLoading, serverIsReady, uploadImage, uploadingError } = useMintApi();
 
   const onChangeString = useCallback((value) => {
     setImageName(value);
@@ -139,6 +139,7 @@ function NftMint (): React.ReactElement {
                           {errors.acceptType && <span>Your selected file type is not allow</span>}
                           {errors.maxFileSize && <span>Selected file size exceed maxFileSize</span>}
                           {errors.resolution && <span>Selected file is not match your desired resolution</span>}
+                          {uploadingError && <span>{uploadingError}</span>}
                         </div>
                       )}
                     </div>

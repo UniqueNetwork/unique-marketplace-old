@@ -16,16 +16,16 @@ module.exports = merge(
       port: 3000,
       proxy: {
         '/health': {
-          target: 'http://whitelabel.market/'
+          target: 'http://localhost:3003'
         },
         '/mint': {
-          target: 'http://whitelabel.market/'
+          target: 'http://localhost:3003'
         },
         '/offers': {
-          target: 'http://whitelabel.market/'
+          target: 'http://whitelabel.market'
         },
         '/trades': {
-          target: 'http://whitelabel.market/'
+          target: 'http://whitelabel.market'
         }
       },
       static: path.resolve(__dirname, 'build')
