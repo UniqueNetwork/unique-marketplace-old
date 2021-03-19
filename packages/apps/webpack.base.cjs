@@ -174,7 +174,6 @@ function createWebpack (context, mode = 'production') {
           WS_URL: JSON.stringify(process.env.WS_URL),
           escrowAddress: JSON.stringify(process.env.escrowAddress),
           mintedCollection: JSON.stringify(process.env.mintedCollection),
-          vaultAddress: JSON.stringify(process.env.vaultAddress)
         }
       }),
       new webpack.optimize.SplitChunksPlugin(),

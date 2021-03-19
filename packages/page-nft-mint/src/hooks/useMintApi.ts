@@ -22,14 +22,7 @@ export interface UseMintApiInterface {
   uploadingError: string | undefined;
 }
 
-interface EnvWindow {
-  // eslint-disable-next-line camelcase
-  process_env?: {
-    mintedCollection: string;
-  }
-}
-
-export const collectionIdForMint = (window as EnvWindow)?.process_env?.mintedCollection || '3';
+export const collectionIdForMint = '3';
 
 /**
  * Get validators from server if health "connected":true
@@ -41,6 +34,8 @@ function useMintApi (): UseMintApiInterface {
   const [uploadingError, setUploadingError] = useState<string>();
   const { getDetailedCollectionInfo } = useCollections();
   const history = useHistory();
+
+  console.log('collectionIdForMint', collectionIdForMint);
 
   const addMintedTokenToWallet = useCallback(async () => {
     const collections: NftCollectionInterface[] = JSON.parse(localStorage.getItem('tokenCollections') || '[]') as NftCollectionInterface[];
