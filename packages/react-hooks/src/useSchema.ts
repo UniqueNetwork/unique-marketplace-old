@@ -229,10 +229,6 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
     void getReFungibleDetails();
   }, [getReFungibleDetails]);
 
-  console.log('attributes', attributes);
-  console.log('attributesConst', attributesConst);
-  console.log('attributesVar', attributesVar);
-
   return {
     attributes,
     attributesConst,

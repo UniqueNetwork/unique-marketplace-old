@@ -80,10 +80,16 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
 
     await getUserDeposit();
 
+    console.log('info?.Owner?.toString()', info?.Owner?.toString());
+
+    console.log('ask', ask);
+
     // the token is mine
     if (info?.Owner?.toString() === escrowAddress) {
       if (!ask || !ask.price) {
         const tokenDepositor = await getDepositor(collectionInfo.id, tokenId);
+
+        console.log('tokenDepositor', tokenDepositor);
 
         if (tokenDepositor === account) {
           // the token is in escrow - waiting for deposit
@@ -144,6 +150,8 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
   const waitForNftDeposit = useCallback(async () => {
     if (collectionInfo) {
       const tokenDepositor = await getDepositor(collectionInfo.id, tokenId);
+
+      console.log('tokenDepositor', tokenDepositor);
 
       if (tokenDepositor === account) {
         send('NFT_DEPOSIT_READY');
@@ -391,6 +399,8 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
       send('UPDATE_TOKEN_STATE');
     }
   }, [send, isContractReady]);
+
+  console.log('buy / sale stage', state.value);
 
   return {
     cancelStep,
