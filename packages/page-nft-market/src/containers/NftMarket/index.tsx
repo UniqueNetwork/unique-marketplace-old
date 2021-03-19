@@ -33,7 +33,7 @@ const BuyTokens = (): ReactElement => {
   }, [history]);
 
   useEffect(() => {
-    setFilteredOffers(offers && offers.length ? offers.filter((item: OfferType) => item.collectionId.toString().includes(searchString.toLowerCase()) || item.tokenId.toLowerCase().includes(searchString.toLowerCase())) : []);
+    setFilteredOffers(offers && offers.length ? offers.filter((item: OfferType) => item.collectionId.toString().includes(searchString.toLowerCase()) || item.tokenId.toString().includes(searchString.toLowerCase())) : []);
   }, [offers, searchString]);
 
   useEffect(() => {
