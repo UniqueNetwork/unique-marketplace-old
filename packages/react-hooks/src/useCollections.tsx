@@ -67,48 +67,14 @@ export type OfferType = {
 }
 
 export type TradeType = {
-  buyer: string;
-  offer: OfferType;
-  tradeDate: string;
+  buyer?: string;
+  collectionId: number;
+  metadata: string
+  price: string
+  quoteId: number;
+  seller: string;
+  tokenId: number;
 }
-
-/* const mockedOffers: OfferType[] = [
-  {
-    collectionId: '1',
-    metadata: 'any',
-    price: new BN(10),
-    seller: '5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty',
-    tokenId: '1'
-  },
-  {
-    collectionId: '2',
-    metadata: 'any',
-    price: new BN(10),
-    seller: '5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty',
-    tokenId: '2'
-  },
-  {
-    collectionId: '3',
-    metadata: 'any',
-    price: new BN(10),
-    seller: '5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty',
-    tokenId: '3'
-  },
-  {
-    collectionId: '4',
-    metadata: 'any',
-    price: new BN(10),
-    seller: '5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty',
-    tokenId: '4'
-  },
-  {
-    collectionId: '5',
-    metadata: 'any',
-    price: new BN(10),
-    seller: '5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty',
-    tokenId: '5'
-  }
-]; */
 
 export function useCollections () {
   const { api } = useApi();
