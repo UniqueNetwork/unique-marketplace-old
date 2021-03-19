@@ -92,7 +92,8 @@ export function useNftContract (account: string): useNftContractInterface {
       if (contractInstance) {
         const result = await contractInstance.read('getNftDeposit', { gasLimit: maxGas, value }, collectionId, tokenId).send(account);
 
-        if (result.output) {
+        // empty or 0 0 0 0
+        if (result.output && result.output.toString() !== '5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM') {
           const depositorResult = keyring.encodeAddress(result.output.toString());
 
           setDepositor(depositorResult);
@@ -124,18 +125,25 @@ export function useNftContract (account: string): useNftContractInterface {
 
       if (askIdResult.output) {
         const askId = askIdResult.output.toNumber();
-        const askResult = await contractInstance.read('getAskById', value, maxGas, askId).send(contractAddress) as unknown as AskOutputInterface;
 
-        if (askResult.output) {
-          const askOwnerAddress = keyring.encodeAddress(askResult.output[4].toString());
-          const ask = {
-            owner: askOwnerAddress,
-            price: askResult.output[3]
-          };
+        console.log('askId', askIdResult.output.toNumber());
 
-          setTokenAsk(ask);
+        if (askId !== 0) {
+          const askResult = await contractInstance.read('getAskById', value, maxGas, askId).send(contractAddress) as unknown as AskOutputInterface;
 
-          return ask;
+          if (askResult.output) {
+            console.log('askResult.output', askResult.output[3]);
+
+            const askOwnerAddress = keyring.encodeAddress(askResult.output[4].toString());
+            const ask = {
+              owner: askOwnerAddress,
+              price: askResult.output[3]
+            };
+
+            setTokenAsk(ask);
+
+            return ask;
+          }
         }
       }
     }

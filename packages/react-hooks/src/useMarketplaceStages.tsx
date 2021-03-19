@@ -82,7 +82,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
 
     console.log('info?.Owner?.toString()', info?.Owner?.toString());
 
-    console.log('ask', ask);
+    console.log('ask', ask, 'collectionInfo.id', collectionInfo.id, 'tokenId', tokenId);
 
     // the token is mine
     if (info?.Owner?.toString() === escrowAddress) {
