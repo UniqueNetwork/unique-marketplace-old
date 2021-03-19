@@ -137,7 +137,6 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
 
   const setUnique = useCallback(async (collectionInfo: NftCollectionInterface) => {
     try {
-      // console.log('offchain', collectionName8Decoder(collectionInfo.OffchainSchema));
       const collectionMetadata = JSON.parse(collectionName8Decoder(collectionInfo.OffchainSchema)) as MetadataType;
 
       if (collectionMetadata.metadata) {
@@ -148,7 +147,7 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
         setTokenUrl(jsonData.image);
       }
     } catch (e) {
-      console.error('metadata parse error', e);
+      console.log('image metadata parse error', e);
     }
   }, [collectionName8Decoder, tokenId, tokenImageUrl]);
 

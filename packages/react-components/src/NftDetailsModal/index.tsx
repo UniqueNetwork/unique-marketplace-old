@@ -113,7 +113,6 @@ function NftDetailsModal ({ account, localRegistry, setShouldUpdateTokens }: Pro
         )}
         <div className='token-info'>
           <Header as='h3'>{collectionId} #{tokenId}</Header>
-          <Header as='h4'>Accessories</Header>
           { attributes && Object.values(attributes).length > 0 && (
             <>
               <strong>Attributes:</strong>
