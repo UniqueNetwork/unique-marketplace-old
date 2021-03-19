@@ -11,9 +11,9 @@ TARGET=./env-config.js
 rm -rf $TARGET
 touch $TARGET
 
-echo "window.process_env = {\n" >> $TARGET
+echo "window.process_env = {" >> $TARGET
 echo "escrowAddress: '$escrowAddress'," >> $TARGET
 echo "MatcherContractAddress: '$MatcherContractAddress'," >> $TARGET
 echo "mintedCollection: '$mintedCollection'," >> $TARGET
-echo "vaultAddress: '$vaultAddress'," >> $TARGET
+echo "vaultAddress: '$vaultAddress'" >> $TARGET
 echo "}" >> $TARGET
