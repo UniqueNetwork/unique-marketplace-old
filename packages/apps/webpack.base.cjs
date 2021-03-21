@@ -173,7 +173,7 @@ function createWebpack (context, mode = 'production') {
           VERSION: JSON.stringify(pkgJson.version),
           WS_URL: JSON.stringify(process.env.WS_URL),
           escrowAddress: JSON.stringify(process.env.escrowAddress),
-          mintedCollection: JSON.stringify(process.env.mintedCollection),
+          mintedCollection: JSON.stringify(process.env.mintedCollection)
         }
       }),
       new webpack.optimize.SplitChunksPlugin(),

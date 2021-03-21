@@ -1,9 +1,11 @@
-// Copyright 2017-2021 @polkadot/apps authors & contributors
+// Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import type { BareProps as Props, ThemeDef } from '@polkadot/react-components/types';
 
 import React, { useContext, useEffect, useMemo } from 'react';
+import { NavLink } from 'react-router-dom';
+import Menu from 'semantic-ui-react/dist/commonjs/collections/Menu';
 import store from 'store';
 import styled, { ThemeContext } from 'styled-components';
 
@@ -17,7 +19,6 @@ import uiSettings from '@polkadot/ui-settings';
 import ConnectingOverlay from './overlays/Connecting';
 import Content from './Content';
 import defaultNftTypes from './defaultNftTypes';
-import Menu from './Menu';
 import WarmUp from './WarmUp';
 
 export const PORTAL_ID = 'portals';
@@ -50,11 +51,38 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
     console.log('process.env', process.env);
   }, []);
 
+  console.log('location.pathname', location.pathname);
+
   return (
     <>
       <GlobalStyle uiHighlight={uiHighlight} />
       <div className={`apps--Wrapper theme--${theme} ${className}`}>
-        <Menu />
+        <Menu tabular>
+          <Menu.Item
+            active={location.pathname === '/market'}
+            as={NavLink}
+            name='market'
+            to='/market'
+          />
+          <Menu.Item
+            active={location.pathname === '/mint'}
+            as={NavLink}
+            name='mint'
+            to='/mint'
+          />
+          <Menu.Item
+            active={location.pathname === '/my-tokens'}
+            as={NavLink}
+            name='myTokens'
+            to='/wallet'
+          />
+          <Menu.Item
+            active={location.pathname === '/trades'}
+            as={NavLink}
+            name='trades'
+            to='/trades'
+          />
+        </Menu>
         <AccountSidebar>
           <Signer>
             <Content />

@@ -10,15 +10,15 @@ import { Route, Switch } from 'react-router';
 // local imports and components
 import { AppProps as Props } from '@polkadot/react-components/types';
 
-import NftMarket from './containers/NftMarket';
+import TradeHistory from './containers/TradeHistory';
 
 function App ({ basePath }: Props): React.ReactElement<Props> {
 
   return (
     <main className='nft--App'>
       <Switch>
-        <Route path={basePath}>
-          <NftMarket />
+        <Route path={`${basePath}`}>
+          <TradeHistory />
         </Route>
       </Switch>
     </main>
