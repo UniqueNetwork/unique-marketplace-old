@@ -1,8 +1,8 @@
 {
   "metadataVersion": "0.1.0",
   "source": {
-    "hash": "0x50d6e7eca36ccadfdd8bcdee93a3d32c8e5aec4b6d1fb710e6e7728109202309",
-    "language": "ink! 3.0.0-rc2",
+    "hash": "0x891a0bd81ed66496b9e203d13d65ab2cd99e668dc256189c57d7fc813880ffc0",
+    "language": "ink! 3.0.0-rc3",
     "compiler": "rustc 1.52.0-nightly"
   },
   "contract": {
@@ -20,7 +20,7 @@
         "name": [
           "new"
         ],
-        "selector": "0xd183512b"
+        "selector": "0x9bae9d5e"
       }
     ],
     "docs": [],
@@ -166,7 +166,7 @@
           ],
           "type": 1
         },
-        "selector": "0x58e3162e"
+        "selector": "0x07fcd0b1"
       },
       {
         "args": [
@@ -189,7 +189,7 @@
         ],
         "payable": false,
         "returnType": null,
-        "selector": "0x87dc2dd3"
+        "selector": "0x798dcad5"
       },
       {
         "args": [
@@ -217,7 +217,7 @@
           ],
           "type": 11
         },
-        "selector": "0x35961d4e"
+        "selector": "0xbb42822c"
       },
       {
         "args": [
@@ -240,7 +240,7 @@
         ],
         "payable": false,
         "returnType": null,
-        "selector": "0xeec91f63"
+        "selector": "0xf3d2a6e8"
       },
       {
         "args": [
@@ -281,7 +281,7 @@
         ],
         "payable": false,
         "returnType": null,
-        "selector": "0x5eb1cb1f"
+        "selector": "0xe70cfcac"
       },
       {
         "args": [
@@ -309,7 +309,7 @@
           ],
           "type": 11
         },
-        "selector": "0x03e63792"
+        "selector": "0xea817e65"
       },
       {
         "args": [
@@ -341,7 +341,7 @@
         ],
         "payable": false,
         "returnType": null,
-        "selector": "0xb41251e9"
+        "selector": "0x410fcc9d"
       },
       {
         "args": [
@@ -382,7 +382,7 @@
         ],
         "payable": false,
         "returnType": null,
-        "selector": "0xa038f5ee"
+        "selector": "0x087c9b16"
       },
       {
         "args": [
@@ -419,7 +419,7 @@
           ],
           "type": 1
         },
-        "selector": "0x9656c0b1"
+        "selector": "0xa5c435ad"
       },
       {
         "args": [
@@ -469,7 +469,7 @@
         ],
         "payable": false,
         "returnType": null,
-        "selector": "0x7d02ceb8"
+        "selector": "0x020f741e"
       },
       {
         "args": [],
@@ -487,7 +487,7 @@
           ],
           "type": 11
         },
-        "selector": "0x9507eaf8"
+        "selector": "0x77125c55"
       },
       {
         "args": [
@@ -513,7 +513,7 @@
           "displayName": [],
           "type": 18
         },
-        "selector": "0x25cf7a9f"
+        "selector": "0xf10a2ce3"
       },
       {
         "args": [
@@ -550,7 +550,7 @@
           ],
           "type": 11
         },
-        "selector": "0xb433c6ef"
+        "selector": "0x23d17ab2"
       },
       {
         "args": [
@@ -582,7 +582,7 @@
         ],
         "payable": false,
         "returnType": null,
-        "selector": "0x898fa41a"
+        "selector": "0x9796e9a7"
       },
       {
         "args": [
@@ -614,7 +614,71 @@
         ],
         "payable": false,
         "returnType": null,
-        "selector": "0x151e67be"
+        "selector": "0x15d62801"
+      },
+      {
+        "args": [
+          {
+            "name": "quote_id",
+            "type": {
+              "displayName": [
+                "u64"
+              ],
+              "type": 8
+            }
+          },
+          {
+            "name": "user",
+            "type": {
+              "displayName": [
+                "AccountId"
+              ],
+              "type": 1
+            }
+          }
+        ],
+        "docs": [
+          " Clear deposited balance"
+        ],
+        "mutates": true,
+        "name": [
+          "clear_balance"
+        ],
+        "payable": false,
+        "returnType": null,
+        "selector": "0x240c2f19"
+      },
+      {
+        "args": [
+          {
+            "name": "collection_id",
+            "type": {
+              "displayName": [
+                "u64"
+              ],
+              "type": 8
+            }
+          },
+          {
+            "name": "token_id",
+            "type": {
+              "displayName": [
+                "u64"
+              ],
+              "type": 8
+            }
+          }
+        ],
+        "docs": [
+          " Clear deposited NFT"
+        ],
+        "mutates": true,
+        "name": [
+          "clear_nft_deposit"
+        ],
+        "payable": false,
+        "returnType": null,
+        "selector": "0xcfe4ded7"
       }
     ]
   },
@@ -1057,7 +1121,8 @@
         "composite": {
           "fields": [
             {
-              "type": 2
+              "type": 2,
+              "typeName": "[u8; 32]"
             }
           ]
         }
@@ -1087,15 +1152,18 @@
           "fields": [
             {
               "name": "last_vacant",
-              "type": 5
+              "type": 5,
+              "typeName": "Index"
             },
             {
               "name": "len",
-              "type": 5
+              "type": 5,
+              "typeName": "u32"
             },
             {
               "name": "len_entries",
-              "type": 5
+              "type": 5,
+              "typeName": "u32"
             }
           ]
         }
@@ -1119,7 +1187,8 @@
             {
               "fields": [
                 {
-                  "type": 9
+                  "type": 9,
+                  "typeName": "VacantEntry"
                 }
               ],
               "name": "Vacant"
@@ -1127,7 +1196,8 @@
             {
               "fields": [
                 {
-                  "type": 7
+                  "type": 7,
+                  "typeName": "T"
                 }
               ],
               "name": "Occupied"
@@ -1164,11 +1234,13 @@
           "fields": [
             {
               "name": "next",
-              "type": 5
+              "type": 5,
+              "typeName": "Index"
             },
             {
               "name": "prev",
-              "type": 5
+              "type": 5,
+              "typeName": "Index"
             }
           ]
         }
@@ -1186,11 +1258,13 @@
           "fields": [
             {
               "name": "value",
-              "type": 11
+              "type": 11,
+              "typeName": "V"
             },
             {
               "name": "key_index",
-              "type": 5
+              "type": 5,
+              "typeName": "KeyIndex"
             }
           ]
         }
@@ -1217,7 +1291,8 @@
             {
               "fields": [
                 {
-                  "type": 9
+                  "type": 9,
+                  "typeName": "VacantEntry"
                 }
               ],
               "name": "Vacant"
@@ -1225,7 +1300,8 @@
             {
               "fields": [
                 {
-                  "type": 8
+                  "type": 8,
+                  "typeName": "T"
                 }
               ],
               "name": "Occupied"
@@ -1250,7 +1326,8 @@
             {
               "fields": [
                 {
-                  "type": 9
+                  "type": 9,
+                  "typeName": "VacantEntry"
                 }
               ],
               "name": "Vacant"
@@ -1258,7 +1335,8 @@
             {
               "fields": [
                 {
-                  "type": 14
+                  "type": 14,
+                  "typeName": "T"
                 }
               ],
               "name": "Occupied"
@@ -1290,11 +1368,13 @@
           "fields": [
             {
               "name": "value",
-              "type": 1
+              "type": 1,
+              "typeName": "V"
             },
             {
               "name": "key_index",
-              "type": 5
+              "type": 5,
+              "typeName": "KeyIndex"
             }
           ]
         }
@@ -1316,7 +1396,8 @@
             {
               "fields": [
                 {
-                  "type": 9
+                  "type": 9,
+                  "typeName": "VacantEntry"
                 }
               ],
               "name": "Vacant"
@@ -1324,7 +1405,8 @@
             {
               "fields": [
                 {
-                  "type": 11
+                  "type": 11,
+                  "typeName": "T"
                 }
               ],
               "name": "Occupied"
@@ -1348,11 +1430,13 @@
           "fields": [
             {
               "name": "value",
-              "type": 18
+              "type": 18,
+              "typeName": "V"
             },
             {
               "name": "key_index",
-              "type": 5
+              "type": 5,
+              "typeName": "KeyIndex"
             }
           ]
         }

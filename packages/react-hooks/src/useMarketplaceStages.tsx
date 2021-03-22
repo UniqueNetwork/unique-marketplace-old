@@ -151,7 +151,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
     if (collectionInfo) {
       const tokenDepositor = await getDepositor(collectionInfo.id, tokenId);
 
-      console.log('tokenDepositor', tokenDepositor);
+      console.log('tokenNftDepositor', tokenDepositor);
 
       if (tokenDepositor === account) {
         send('NFT_DEPOSIT_READY');

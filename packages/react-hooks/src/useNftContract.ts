@@ -15,7 +15,7 @@ import keyring from '@polkadot/ui-keyring';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import metadata from './metadata.json';
+import metadata from './metadata19.03.json';
 
 export interface AskOutputInterface {
   output: [string, string, string, BN, string]
@@ -111,7 +111,6 @@ export function useNftContract (account: string): useNftContractInterface {
   }, [account, contractInstance, maxGas, value]);
 
   const initAbi = useCallback(() => {
-    // const jsonAbi = getContractAbi(contractAddress) as Abi;
     const jsonAbi = new Abi(metadata, api.registry.getChainProperties());
     const newContractInstance = new ContractPromise(api, jsonAbi, contractAddress);
 
