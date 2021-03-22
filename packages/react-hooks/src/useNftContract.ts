@@ -43,7 +43,7 @@ export interface useNftContractInterface {
 export function useNftContract (account: string): useNftContractInterface {
   const { api } = useApi();
   const [value] = useState(0);
-  const [maxGas] = useState(200000000000);
+  const [maxGas] = useState(1000000000000);
   const [decimals, setDecimals] = useState(new BN(15));
   const [escrowAddress] = useState('5FdzbgdBGRM5FDALrnSPRybWhqKv4eiy6QUpWUdBt3v3omAU');
   const [contractInstance, setContractInstance] = useState<ContractPromise | null>(null);
@@ -55,6 +55,8 @@ export function useNftContract (account: string): useNftContractInterface {
   // local 5HpCCd2SufXC1NRANgWBvz6k3GnVCDcTceC24WNwERkBtfSk, remote 5EuBcZYh47ruAjrDweHvH4Fm5BwYkiFHNpTGKWAHkA3WFsEG
   const [contractAddress] = useState<string>('5EuBcZYh47ruAjrDweHvH4Fm5BwYkiFHNpTGKWAHkA3WFsEG');
   const contractInfo = useCall<Option<ContractInfo>>(api.query.contracts.contractInfoOf, [contractAddress]);
+  // currency code
+  const quoteId = 2;
 
   console.log('escrowAddress', escrowAddress);
   console.log('contractAddress', contractAddress);
@@ -70,7 +72,7 @@ export function useNftContract (account: string): useNftContractInterface {
   const getUserDeposit = useCallback(async (): Promise<BN | null> => {
     try {
       if (contractInstance) {
-        const result = await contractInstance.read('getBalance', { gasLimit: maxGas, value }, 0).send(account) as unknown as { output: BN };
+        const result = await contractInstance.read('getBalance', { gasLimit: maxGas, value }, quoteId).send(account) as unknown as { output: BN };
 
         if (result.output) {
           setDeposited(result.output);

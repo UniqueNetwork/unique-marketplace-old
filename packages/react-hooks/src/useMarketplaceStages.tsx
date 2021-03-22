@@ -47,6 +47,8 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
   const { queueExtrinsic } = useContext(StatusContext);
   const [readyToAskPrice, setReadyToAskPrice] = useState<boolean>(false);
   const [tokenPriceForSale, setTokenPriceForSale] = useState<number>();
+  // currency code
+  const quoteId = 2;
 
   const sendCurrentUserAction = useCallback((userAction: UserActionType) => {
     send(userAction);
@@ -270,7 +272,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
       const extrinsic = contractInstance.exec(message, {
         gasLimit: maxGas,
         value: 0
-      }, 0, withdrawAmount);
+      }, quoteId, withdrawAmount);
 
       queueTransaction(
         extrinsic,
@@ -290,7 +292,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
     const message = findCallMethodByName('ask');
 
     if (message && contractInstance && collectionInfo) {
-      const extrinsic = contractInstance.exec(message, { gasLimit: maxGas, value: 0 }, collectionInfo.id, tokenId, 0, tokenPriceForSale);
+      const extrinsic = contractInstance.exec(message, { gasLimit: maxGas, value: 0 }, collectionInfo.id, tokenId, quoteId, tokenPriceForSale);
 
       queueTransaction(
         extrinsic,
