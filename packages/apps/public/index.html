@@ -6,6 +6,9 @@
     <link rel="manifest" href="manifest.json">
     <link rel="shortcut icon" href="favicon.ico">
     <title><%= htmlWebpackPlugin.options.PAGE_TITLE %></title>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@500&display=swap" rel="stylesheet">
     <!-- <script type="text/javascript" src="env-config.js"></script> -->
     <style>
       :root {
@@ -58,6 +61,26 @@
         --color-table-foot: rgba(78, 78, 78, 0.66);
         --color-table-head: rgba(78, 78, 78, 0.66);
         --color-text: #4e4e4e;
+      }
+
+      /*перестилизация*/
+      :root {
+        --bg-page: #E5E5E5;
+        --white-color: #fff;
+        --title-color: #040B1D;
+        --black-color: #000;
+        --border-color: #ECECEC;
+        --link-color: #40BCFF;
+
+        --gap: 16px;
+        --bradius: 4px;
+        --max-width: 1200px;
+
+        --font-roboto: 'Roboto', Frutiger, 'Frutiger Linotype', 'Dejavu Sans',
+        'Helvetica Neue', Arial, sans-serif;
+
+        --font-raleway: 'Raleway', Frutiger, 'Frutiger Linotype', 'Dejavu Sans',
+        'Helvetica Neue', Arial, sans-serif;
       }
     </style>
   </head>

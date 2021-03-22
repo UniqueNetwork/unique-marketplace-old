@@ -7,7 +7,7 @@ import React, { useContext, useEffect, useMemo } from 'react';
 import { NavLink } from 'react-router-dom';
 import Menu from 'semantic-ui-react/dist/commonjs/collections/Menu';
 import store from 'store';
-import styled, { ThemeContext } from 'styled-components';
+import { ThemeContext } from 'styled-components';
 
 import AccountSidebar from '@polkadot/app-accounts/Sidebar';
 import { getSystemChainColor } from '@polkadot/apps-config';
@@ -20,10 +20,12 @@ import ConnectingOverlay from './overlays/Connecting';
 import Content from './Content';
 import defaultNftTypes from './defaultNftTypes';
 import WarmUp from './WarmUp';
+import './apps.scss';
+import userIcon from '../public/icons/user.svg'
 
 export const PORTAL_ID = 'portals';
 
-function Apps ({ className = '' }: Props): React.ReactElement<Props> {
+function Apps({ className = '' }: Props): React.ReactElement<Props> {
   const { theme } = useContext<ThemeDef>(ThemeContext);
   const { api, systemChain, systemName } = useApi();
 
@@ -56,33 +58,41 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
   return (
     <>
       <GlobalStyle uiHighlight={uiHighlight} />
-      <div className={`apps--Wrapper theme--${theme} ${className}`}>
-        <Menu tabular>
-          <Menu.Item
-            active={location.pathname === '/market'}
-            as={NavLink}
-            name='market'
-            to='/market'
-          />
-          <Menu.Item
-            active={location.pathname === '/mint'}
-            as={NavLink}
-            name='mint'
-            to='/mint'
-          />
-          <Menu.Item
-            active={location.pathname === '/my-tokens'}
-            as={NavLink}
-            name='myTokens'
-            to='/wallet'
-          />
-          <Menu.Item
-            active={location.pathname === '/trades'}
-            as={NavLink}
-            name='trades'
-            to='/trades'
-          />
-        </Menu>
+      <div className={`app-wrapper theme--${theme} ${className}`}>
+        <header className='app-header'>
+          <div className='app-container'>
+            <Menu tabular>
+              <Menu.Item
+                active={location.pathname === '/market'}
+                as={NavLink}
+                name='market'
+                to='/market'
+              />
+              <Menu.Item
+                active={location.pathname === '/mint'}
+                as={NavLink}
+                name='mint'
+                to='/mint'
+              />
+              <Menu.Item
+                active={location.pathname === '/my-tokens'}
+                as={NavLink}
+                name='myTokens'
+                to='/wallet'
+              />
+              <Menu.Item
+                active={location.pathname === '/trades'}
+                as={NavLink}
+                name='trades'
+                to='/trades'
+              />
+            </Menu>
+            <a href="/" className='app-user-icon'>
+              <img src={userIcon} alt='userIcon' />
+            </a>
+          </div>
+        </header>
+
         <AccountSidebar>
           <Signer>
             <Content />
@@ -96,10 +106,4 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
   );
 }
 
-export default React.memo(styled(Apps)`
-  background: var(--bg-page);
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-`);
+export default React.memo(Apps);
