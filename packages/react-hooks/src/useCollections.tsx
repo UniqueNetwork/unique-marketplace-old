@@ -145,6 +145,8 @@ export function useCollections () {
   const getOffers = useCallback(() => {
     try {
       fetchData<OfferType[]>('/offers/').subscribe((result: OfferType[] | ErrorType) => {
+        console.log('result', result);
+
         if ('error' in result) {
           setError(result);
         } else {
@@ -197,8 +199,6 @@ export function useCollections () {
       return [];
     }
   }, [api, getDetailedCollectionInfo]);
-
-  console.log('offers', offers);
 
   return {
     error,

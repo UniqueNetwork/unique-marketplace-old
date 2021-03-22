@@ -9,7 +9,8 @@ import BN from 'bn.js';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 import { StatusContext } from '@polkadot/react-components/Status';
-import { useApi, useBalance, useCollections, useNftContract } from '@polkadot/react-hooks';
+import { useApi, useBalance, useCollections, useKusamaApi, useNftContract } from '@polkadot/react-hooks';
+import { settings } from '@polkadot/ui-settings';
 import { formatBalance } from '@polkadot/util';
 
 import marketplaceStateMachine from './stateMachine';
@@ -47,8 +48,11 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
   const { queueExtrinsic } = useContext(StatusContext);
   const [readyToAskPrice, setReadyToAskPrice] = useState<boolean>(false);
   const [tokenPriceForSale, setTokenPriceForSale] = useState<number>();
+  const { kusamaDecimals, kusamaTransfer } = useKusamaApi(account);
   // currency code
   const quoteId = 2;
+
+  console.log('settings.get', settings.get());
 
   const sendCurrentUserAction = useCallback((userAction: UserActionType) => {
     send(userAction);
@@ -81,10 +85,6 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
     const ask = await getTokenAsk(collectionInfo.id, tokenId);
 
     await getUserDeposit();
-
-    console.log('info?.Owner?.toString()', info?.Owner?.toString());
-
-    console.log('ask', ask, 'collectionInfo.id', collectionInfo.id, 'tokenId', tokenId);
 
     // the token is mine
     if (info?.Owner?.toString() === escrowAddress) {

@@ -16,6 +16,7 @@ import keyring from '@polkadot/ui-keyring';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import metadata from './metadata19.03.json';
+import { settings } from '@polkadot/ui-settings';
 
 export interface AskOutputInterface {
   output: [string, string, string, BN, string]
@@ -54,12 +55,13 @@ export function useNftContract (account: string): useNftContractInterface {
   const [isStored, setIsStored] = useState(false);
   // local 5HpCCd2SufXC1NRANgWBvz6k3GnVCDcTceC24WNwERkBtfSk, remote 5EuBcZYh47ruAjrDweHvH4Fm5BwYkiFHNpTGKWAHkA3WFsEG
   const [contractAddress] = useState<string>('5EuBcZYh47ruAjrDweHvH4Fm5BwYkiFHNpTGKWAHkA3WFsEG');
-  const contractInfo = useCall<Option<ContractInfo>>(api.query.contracts.contractInfoOf, [contractAddress]);
+  const settingsUi = settings.get();
+
+  console.log('settings', settingsUi);
+
+  const contractInfo = useCall<Option<ContractInfo>>(settingsUi.apiUrl.includes('kusama') ? undefined : api.query.contracts.contractInfoOf, [contractAddress]);
   // currency code
   const quoteId = 2;
-
-  console.log('escrowAddress', escrowAddress);
-  console.log('contractAddress', contractAddress);
 
   const findCallMethodByName = useCallback((methodName: string): AbiMessage | null => {
     const message = contractInstance && Object.values(contractInstance.abi.messages).find((message) => message.identifier === methodName);
@@ -127,14 +129,10 @@ export function useNftContract (account: string): useNftContractInterface {
       if (askIdResult.output) {
         const askId = askIdResult.output.toNumber();
 
-        console.log('askId', askIdResult.output.toNumber());
-
         if (askId !== 0) {
           const askResult = await contractInstance.read('getAskById', value, maxGas, askId).send(contractAddress) as unknown as AskOutputInterface;
 
           if (askResult.output) {
-            console.log('askResult.output', askResult.output[3]);
-
             const askOwnerAddress = keyring.encodeAddress(askResult.output[4].toString());
             const ask = {
               owner: askOwnerAddress,

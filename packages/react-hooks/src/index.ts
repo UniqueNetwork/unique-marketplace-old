@@ -25,6 +25,7 @@ export { useIncrement } from './useIncrement';
 export { calcInflation, useInflation } from './useInflation';
 export { useIpfs } from './useIpfs';
 export { useIsMountedRef } from './useIsMountedRef';
+export { useKusamaApi } from './useKusamaApi';
 export { useLedger } from './useLedger';
 export { useLoadingDelay } from './useLoadingDelay';
 export { useMarketplaceStages } from './useMarketplaceStages';
