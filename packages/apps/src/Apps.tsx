@@ -1,11 +1,14 @@
 // Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import './apps.scss';
+
 import type { BareProps as Props, ThemeDef } from '@polkadot/react-components/types';
 
 import React, { useContext, useEffect, useMemo } from 'react';
 import { NavLink } from 'react-router-dom';
 import Menu from 'semantic-ui-react/dist/commonjs/collections/Menu';
+import Image from 'semantic-ui-react/dist/commonjs/elements/Image';
 import store from 'store';
 import { ThemeContext } from 'styled-components';
 
@@ -16,16 +19,15 @@ import { useApi } from '@polkadot/react-hooks';
 import Signer from '@polkadot/react-signer';
 import uiSettings from '@polkadot/ui-settings';
 
+import userIcon from '../public/icons/user.svg';
 import ConnectingOverlay from './overlays/Connecting';
 import Content from './Content';
 import defaultNftTypes from './defaultNftTypes';
 import WarmUp from './WarmUp';
-import './apps.scss';
-import userIcon from '../public/icons/user.svg'
 
 export const PORTAL_ID = 'portals';
 
-function Apps({ className = '' }: Props): React.ReactElement<Props> {
+function Apps ({ className = '' }: Props): React.ReactElement<Props> {
   const { theme } = useContext<ThemeDef>(ThemeContext);
   const { api, systemChain, systemName } = useApi();
 
@@ -87,8 +89,12 @@ function Apps({ className = '' }: Props): React.ReactElement<Props> {
                 to='/trades'
               />
             </Menu>
-            <a href="/" className='app-user-icon'>
-              <img src={userIcon} alt='userIcon' />
+            <a className='app-user-icon'
+              href='/'
+            >
+              <Image
+                src={userIcon}
+              />
             </a>
           </div>
         </header>
