@@ -1,41 +1,20 @@
 // Copyright 2020 UseTech authors & contributors
 
 // global app props and types
-import { AppProps as Props } from '@polkadot/react-components/types';
-
-// external imports
-import React, { useMemo } from 'react';
-import { Route, Switch } from 'react-router';
-
-// local imports and components
-import Tabs from '@polkadot/react-components/Tabs';
-import NftCreator from './containers/NftMint';
+// eslint-disable-next-line header/header
 import './styles.scss';
 
-function App ({ basePath, className }: Props): React.ReactElement<Props> {
+// external imports
+import React from 'react';
 
-  const items = useMemo(() => [
-    {
-      isRoot: true,
-      name: 'nftCreator',
-      text: 'Nft Creator'
-    }
-  ], []);
+import { AppProps as Props } from '@polkadot/react-components/types';
 
+// local imports and components
+import NftCreator from './containers/NftMint';
+
+function App (): React.ReactElement<Props> {
   return (
-    <main className='nft--App'>
-      <header>
-        <Tabs
-          basePath={basePath}
-          items={items}
-        />
-      </header>
-      <Switch>
-        <Route path={basePath}>
-          <NftCreator />
-        </Route>
-      </Switch>
-    </main>
+    <NftCreator />
   );
 }
 

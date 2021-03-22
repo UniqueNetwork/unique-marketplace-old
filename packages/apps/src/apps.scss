@@ -1,3 +1,5 @@
+@import '../styles/global.scss';
+
 .app-wrapper {
   background: var(--bg-page);
   box-sizing: border-box;
@@ -8,6 +10,13 @@
 
 .app-header {
   background-color: var(--white-color);
+  margin-bottom: 0;
+  padding: var(--gap) 0;
+}
+
+.app-main {
+  padding: 44px 0;
+  flex: 1 1 auto;
 }
 
 .app-container {
@@ -16,7 +25,7 @@
   align-items: center;
   width: 100%;
   max-width: var(--max-width);
-  padding: var(--gap);
+  padding: 0 var(--gap);
   margin: 0 auto;
 
   .ui.tabular.menu {

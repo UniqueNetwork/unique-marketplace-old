@@ -98,14 +98,17 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
             </a>
           </div>
         </header>
-
-        <AccountSidebar>
-          <Signer>
-            <Content />
-          </Signer>
-          <ConnectingOverlay />
-          <div id={PORTAL_ID} />
-        </AccountSidebar>
+        <main className='app-main'>
+          <div className='app-container'>
+            <AccountSidebar>
+              <Signer>
+                <Content />
+              </Signer>
+              <ConnectingOverlay />
+              <div id={PORTAL_ID} />
+            </AccountSidebar>
+          </div>
+        </main>
       </div>
       <WarmUp />
     </>
