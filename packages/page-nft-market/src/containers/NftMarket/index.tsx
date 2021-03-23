@@ -48,42 +48,50 @@ const BuyTokens = ({ account, localRegistry, setShouldUpdateTokens, shouldUpdate
 
   return (
     <div className='nft-market'>
-      <Header as='h2'>Nft Tokens</Header>
-      <Grid className='account-selector'>
+      <Header as='h1'>Market</Header>
+      <Header as='h4'>Art gallery collections</Header>
+      <Grid>
         <Grid.Row>
-          <Grid.Column width={16}>
-            <Input
-              className='isSmall'
-              help={<span>Find and select your token collection.</span>}
-              isDisabled={!offers || !offers.length}
-              label={'Find token by name or collection'}
-              onChange={setSearchString}
-              placeholder='Search...'
-              value={searchString}
-              withLabel
-            />
+          <Grid.Column width={4}>Асайд</Grid.Column>
+          <Grid.Column width={12}>
+            <Grid>
+              <Grid.Row>
+                <Grid.Column width={16}>
+                  <Input
+                    className='isSmall'
+                    help={<span>Find and select your token collection.</span>}
+                    isDisabled={!offers || !offers.length}
+                    label={'Find token by name or collection'}
+                    onChange={setSearchString}
+                    placeholder='Search...'
+                    value={searchString}
+                    withLabel
+                  />
+                </Grid.Column>
+              </Grid.Row>
+              {(account && filteredOffers.length > 0) && (
+                <Grid.Row>
+                  <Grid.Column width={16}>
+                    <div className='market-pallet'>
+                      <div className='market-pallet__item'>
+                        {filteredOffers.map((token) => (
+                          <NftTokenCard
+                            account={account}
+                            collectionId={token.collectionId.toString()}
+                            key={token.tokenId}
+                            localRegistry={localRegistry}
+                            openDetailedInformationModal={openDetailedInformationModal}
+                            token={token}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  </Grid.Column>
+                </Grid.Row>
+              )}
+            </Grid>
           </Grid.Column>
         </Grid.Row>
-        { (account && filteredOffers.length > 0) && (
-          <Grid.Row>
-            <Grid.Column width={16}>
-              <div className='market-pallet'>
-                <div className='nft-tokens'>
-                  { filteredOffers.map((token) => (
-                    <NftTokenCard
-                      account={account}
-                      collectionId={token.collectionId.toString()}
-                      key={token.tokenId}
-                      localRegistry={localRegistry}
-                      openDetailedInformationModal={openDetailedInformationModal}
-                      token={token}
-                    />
-                  )) }
-                </div>
-              </div>
-            </Grid.Column>
-          </Grid.Row>
-        )}
       </Grid>
     </div>
   );
