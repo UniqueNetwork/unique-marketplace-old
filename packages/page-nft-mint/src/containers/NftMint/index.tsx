@@ -12,19 +12,18 @@ import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
-import { AccountSelector, Button, Input } from '@polkadot/react-components';
+import { Button, Input } from '@polkadot/react-components';
 
 // local imports and components
 import useMintApi, { ImageInterface } from '../../hooks/useMintApi';
 
 const maxFileSize = 5000000;
 
-function NftMint (): React.ReactElement {
+function NftMint ({ account }: { account?: string }): React.ReactElement {
   const [images, setImages] = useState<ImageType[]>([]);
   const [imageBase64, setImageBase64] = useState<string>();
   const [imageFileName, setImageFileName] = useState<string>();
   const [imageName, setImageName] = useState<string>();
-  const [account, setAccount] = useState<string | null>(null);
   const { imgLoading, serverIsReady, uploadImage, uploadingError } = useMintApi();
 
   const onChangeString = useCallback((value) => {
@@ -68,11 +67,6 @@ function NftMint (): React.ReactElement {
       <Header as='h1'>Mint Tokens</Header>
       <Form className='collection-search'>
         <Grid className='mint-grid'>
-          <Grid.Row>
-            <Grid.Column width={16}>
-              <AccountSelector onChange={setAccount} />
-            </Grid.Column>
-          </Grid.Row>
           <Grid.Row>
             <Grid.Column width={16}>
               <Form.Field>
