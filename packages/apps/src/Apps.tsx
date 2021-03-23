@@ -114,7 +114,7 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                         : (
                           <>
                             <header className='app-header'>
-                              <div className='app-container'>
+                              <div className='app-container app-container--header'>
                                 <Menu tabular>
                                   <Menu.Item
                                     active={location.pathname === '/market'}
@@ -141,17 +141,23 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                                     to='/trades'
                                   />
                                 </Menu>
-                                <AccountSelector onChange={setAccount} />
+                                <div className='app-user'>
+                                  <AccountSelector onChange={setAccount} />
+                                </div>
                               </div>
                             </header>
-                            <Component
-                              account={account}
-                              basePath={`/${name}`}
-                              location={location}
-                              onStatusChange={queueAction}
-                            />
-                            <ConnectingOverlay />
-                            <div id={PORTAL_ID} />
+                            <main className='app-main'>
+                              <div className='app-container'>
+                                <Component
+                                  account={account}
+                                  basePath={`/${name}`}
+                                  location={location}
+                                  onStatusChange={queueAction}
+                                />
+                                <ConnectingOverlay />
+                                <div id={PORTAL_ID} />
+                              </div>
+                            </main>
                           </>
                         )
                       }
