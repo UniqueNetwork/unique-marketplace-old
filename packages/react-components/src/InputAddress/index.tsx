@@ -6,7 +6,6 @@ import type { Option } from './types';
 
 import React from 'react';
 import store from 'store';
-import styled from 'styled-components';
 
 import { withMulti, withObservable } from '@polkadot/react-api/hoc';
 import { keyring } from '@polkadot/ui-keyring';
@@ -290,48 +289,7 @@ class InputAddress extends React.PureComponent<Props, State> {
 }
 
 const ExportedComponent = withMulti(
-  styled(InputAddress)`
-    .ui.dropdown .text {
-      width: 100%;
-    }
-
-    .ui.disabled.search {
-      pointer-events: all;
-    }
-
-    .ui.search.selection.dropdown {
-      > .text > .ui--KeyPair {
-        .ui--IdentityIcon {
-          left: -2.75rem;
-          top: -1.05rem;
-
-          > div,
-          img,
-          svg {
-            height: 32px !important;
-            width: 32px !important;
-          }
-        }
-
-        .name {
-          margin-left: 0;
-
-          > .ui--AccountName {
-            height: auto;
-          }
-        }
-      }
-
-      > .menu > div.item > .ui--KeyPair > .name  > .ui--AccountName {
-        height: auto;
-      }
-    }
-
-    &.hideAddress .ui.search.selection.dropdown > .text > .ui--KeyPair .address {
-      flex: 0;
-      max-width: 0;
-    }
-  `,
+  InputAddress,
   withObservable(keyring.keyringOption.optionsSubject, {
     propName: 'optionsAll',
     transform: (optionsAll: KeyringOptions): Record<string, (Option | React.ReactNode)[]> =>

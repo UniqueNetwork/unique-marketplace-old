@@ -14,19 +14,26 @@
   padding: var(--gap) 0;
 }
 
+.app-user {
+  width: 230px;
+}
+
 .app-main {
   padding: 44px 0;
   flex: 1 1 auto;
 }
 
 .app-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   width: 100%;
   max-width: var(--max-width);
   padding: 0 var(--gap);
   margin: 0 auto;
+
+  &--header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
 
   .ui.tabular.menu {
     display: inline-flex;
