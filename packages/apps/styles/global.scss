@@ -1,3 +1,9 @@
+hr {
+  height: 0;
+  border: 0;
+  border-top: 1px solid var(--border-color);
+}
+
 h1.ui.header {
   font: 700 36px/48px var(--font-inter);
   color: var(--title-color);
@@ -17,11 +23,11 @@ h4.ui.header {
 
   &.search {
     input {
-      padding-left: calc(var(--gap) * 2);
-      background-image: url('../public/icons/magnifying.svg') !important;;
-      background-size: 24px 24px;
-      background-repeat: no-repeat;
-      background-position: 10px 10px;
+      padding-left: calc(var(--gap) * 2.5);
+      background-image: url('../public/icons/magnifying.svg') !important;
+      background-size: 24px 24px !important;
+      background-repeat: no-repeat !important;
+      background-position: 8px !important;
     }
   }
 

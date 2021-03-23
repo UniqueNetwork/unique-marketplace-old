@@ -10,6 +10,7 @@ import React, { memo, ReactElement, useCallback, useEffect, useState } from 'rea
 import { useHistory } from 'react-router';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
+import Image from 'semantic-ui-react/dist/commonjs/elements/Image';
 
 import { Input } from '@polkadot/react-components';
 import { useCollections } from '@polkadot/react-hooks';
@@ -53,10 +54,26 @@ const BuyTokens = ({ account, localRegistry, setShouldUpdateTokens, shouldUpdate
       <Grid>
         <Grid.Row>
           <Grid.Column width={4}>
+            <Header as='h5'>Collections</Header>
             <Input
-              className='isSmall'
+              className='isSmall search'
               placeholder='Search...'
             />
+            <ul className='collections-list'>
+              <li className='collections-list__item'>
+                <div className='collections-list__img'>
+                  {/* <Image src={} /> */}
+                </div>
+                <div className='collections-list__name'>SubstraPunks</div>
+              </li>
+              <li className='collections-list__item'>
+                <div className='collections-list__img'>
+                  {/* <Image src={} /> */}
+                </div>
+                <div className='collections-list__name'>SubstraPunks</div>
+              </li>
+            </ul>
+            <hr/>
           </Grid.Column>
           <Grid.Column width={12}>
             <Grid>
