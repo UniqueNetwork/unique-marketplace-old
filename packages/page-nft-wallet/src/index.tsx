@@ -4,16 +4,38 @@
 import './styles.scss';
 
 // external imports
-import React from 'react';
+import React, { useState } from 'react';
+import { Route, Switch } from 'react-router';
 
+import { NftDetails } from '@polkadot/react-components';
 // local imports and components
 import { AppProps as Props } from '@polkadot/react-components/types';
+import { useRegistry } from '@polkadot/react-hooks';
 
 import NftWallet from './containers/NftWallet';
 
-function App ({ account }: Props): React.ReactElement<Props> {
+function App ({ account, basePath }: Props): React.ReactElement<Props> {
+  const localRegistry = useRegistry();
+  const [shouldUpdateTokens, setShouldUpdateTokens] = useState<string>();
+
   return (
-    <NftWallet account={account} />
+    <Switch>
+      <Route path={`${basePath}/token-details`}>
+        <NftDetails
+          account={account || ''}
+          localRegistry={localRegistry}
+          setShouldUpdateTokens={setShouldUpdateTokens}
+        />
+      </Route>
+      <Route path={basePath}>
+        <NftWallet
+          account={account}
+          localRegistry={localRegistry}
+          setShouldUpdateTokens={setShouldUpdateTokens}
+          shouldUpdateTokens={shouldUpdateTokens}
+        />
+      </Route>
+    </Switch>
   );
 }
 

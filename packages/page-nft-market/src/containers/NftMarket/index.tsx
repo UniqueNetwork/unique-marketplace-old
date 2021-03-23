@@ -8,23 +8,28 @@ import type { OfferType } from '@polkadot/react-hooks/useCollections';
 // external imports
 import React, { memo, ReactElement, useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
-import { Route, Switch } from 'react-router-dom';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 
-import { Input, NftDetailsModal } from '@polkadot/react-components';
-import { useCollections, useRegistry } from '@polkadot/react-hooks';
+import { Input } from '@polkadot/react-components';
+import { useCollections } from '@polkadot/react-hooks';
+import { TypeRegistry } from '@polkadot/types';
 
 // local imports and components
 import NftTokenCard from '../../components/NftTokenCard';
 
-const BuyTokens = ({ account }: { account?: string }): ReactElement => {
+interface BuyTokensProps {
+  account?: string;
+  localRegistry?: TypeRegistry;
+  setShouldUpdateTokens: (value?: string) => void;
+  shouldUpdateTokens?: string;
+}
+
+const BuyTokens = ({ account, localRegistry, setShouldUpdateTokens, shouldUpdateTokens }: BuyTokensProps): ReactElement => {
   const history = useHistory();
-  const [shouldUpdateTokens, setShouldUpdateTokens] = useState<string | undefined>('all');
   const { getOffers, offers } = useCollections();
   const [searchString, setSearchString] = useState<string>('');
   const [filteredOffers, setFilteredOffers] = useState<OfferType[]>([]);
-  const localRegistry = useRegistry();
 
   const openDetailedInformationModal = useCallback((collectionId: string, tokenId: string) => {
     history.push(`/market/token-details?collectionId=${collectionId}&tokenId=${tokenId}`);
@@ -39,7 +44,7 @@ const BuyTokens = ({ account }: { account?: string }): ReactElement => {
       void getOffers();
       setShouldUpdateTokens(undefined);
     }
-  }, [getOffers, shouldUpdateTokens]);
+  }, [getOffers, shouldUpdateTokens, setShouldUpdateTokens]);
 
   return (
     <div className='nft-market'>
@@ -80,20 +85,6 @@ const BuyTokens = ({ account }: { account?: string }): ReactElement => {
           </Grid.Row>
         )}
       </Grid>
-      { account && (
-        <Switch>
-          <Route
-            key='TokenDetailsModal'
-            path='*/token-details'
-          >
-            <NftDetailsModal
-              account={account}
-              localRegistry={localRegistry}
-              setShouldUpdateTokens={setShouldUpdateTokens}
-            />
-          </Route>
-        </Switch>
-      )}
     </div>
   );
 };

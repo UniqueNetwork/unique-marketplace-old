@@ -15,66 +15,6 @@ type AttributesDecoded = {
   [key: string]: string | string[],
 }
 
-/* const defaultData: RootSchemaType = {
-  Gender: {
-    _enum: {
-      Female: null,
-      Male: null
-    }
-  },
-  Root: {
-    Gender: 'Gender',
-    Traits: 'Vec<Trait>'
-  },
-  Trait: {
-    _enum: {
-      'Black Lipstick': null,
-      'Red Lipstick': null,
-      Smile: null,
-      'Teeth Smile': null,
-      // eslint-disable-next-line sort-keys
-      'Purple Lipstick': null,
-      // eslint-disable-next-line sort-keys
-      'Nose Ring': null,
-      // eslint-disable-next-line sort-keys
-      'Asian Eyes': null,
-      'Sun Glasses': null,
-      // eslint-disable-next-line sort-keys
-      'Red Glasses': null,
-      'Round Eyes': null,
-      // eslint-disable-next-line sort-keys
-      'Left Earring': null,
-      'Right Earring': null,
-      'Two Earrings': null,
-      // eslint-disable-next-line sort-keys
-      'Brown Beard': null,
-      'Mustache-Beard': null,
-      // eslint-disable-next-line sort-keys
-      Mustache: null,
-      'Regular Beard': null,
-      'Up Hair': null,
-      // eslint-disable-next-line sort-keys
-      'Down Hair': null,
-      Mahawk: null,
-      'Red Mahawk': null,
-      // eslint-disable-next-line sort-keys
-      'Orange Hair': null,
-      // eslint-disable-next-line sort-keys
-      'Bubble Hair': null,
-      'Emo Hair': null,
-      'Thin Hair': null,
-      // eslint-disable-next-line sort-keys
-      Bald: null,
-      'Blonde Hair': null,
-      'Caret Hair': null,
-      'Pony Tails': null,
-      // eslint-disable-next-line sort-keys
-      Cigar: null,
-      Pipe: null
-    }
-  }
-}; */
-
 export function useSchema (account: string, collectionId: string, tokenId: string | number, localRegistry?: TypeRegistry) {
   const [collectionInfo, setCollectionInfo] = useState<NftCollectionInterface>();
   const [reFungibleBalance, setReFungibleBalance] = useState<number>(0);

@@ -72,7 +72,7 @@ export { default as MarkWarning } from './MarkWarning';
 export { default as Menu } from './Menu';
 export { default as Modal } from './Modal';
 export { default as Nonce } from './Nonce';
-export { default as NftDetailsModal } from './NftDetailsModal';
+export { default as NftDetails } from './NftDetails';
 export { default as Output } from './Output';
 export { default as Password } from './Password';
 export { default as PasswordStrength } from './PasswordStrength';

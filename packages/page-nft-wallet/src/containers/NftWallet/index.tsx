@@ -6,25 +6,29 @@ import './styles.scss';
 import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollections';
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Route, Switch } from 'react-router-dom';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header/Header';
 
-import { LabelHelp, NftDetailsModal, Table } from '@polkadot/react-components';
-import { useRegistry } from '@polkadot/react-hooks';
+import { LabelHelp, Table } from '@polkadot/react-components';
+import { TypeRegistry } from '@polkadot/types';
 
 import CollectionSearch from '../../components/CollectionSearch';
 import NftCollectionCard from '../../components/NftCollectionCard';
 import TransferModal from '../../components/TransferModal/';
 
-function NftWallet ({ account }: { account?: string }): React.ReactElement {
+interface NftWalletProps {
+  account?: string;
+  localRegistry?: TypeRegistry;
+  setShouldUpdateTokens: (value: string) => void;
+  shouldUpdateTokens?: string;
+}
+
+function NftWallet ({ account, localRegistry, setShouldUpdateTokens, shouldUpdateTokens }: NftWalletProps): React.ReactElement {
   const collectionsStorage: NftCollectionInterface[] = JSON.parse(localStorage.getItem('tokenCollections') || '[]') as NftCollectionInterface[];
   const [openTransfer, setOpenTransfer] = useState<{ collection: NftCollectionInterface, tokenId: string, balance: number } | null>(null);
-  const [shouldUpdateTokens, setShouldUpdateTokens] = useState<string>();
   const [collections, setCollections] = useState<NftCollectionInterface[]>(collectionsStorage);
   const [selectedCollection, setSelectedCollection] = useState<NftCollectionInterface>();
   const [canTransferTokens] = useState<boolean>(true);
   const currentAccount = useRef<string | null | undefined>();
-  const localRegistry = useRegistry();
 
   const addCollection = useCallback((collection: NftCollectionInterface) => {
     setCollections((prevCollections: NftCollectionInterface[]) => [...prevCollections, collection]);
@@ -44,12 +48,12 @@ function NftWallet ({ account }: { account?: string }): React.ReactElement {
 
   const updateTokens = useCallback((collectionId) => {
     setShouldUpdateTokens(collectionId);
-  }, []);
+  }, [setShouldUpdateTokens]);
 
   useEffect(() => {
     currentAccount.current = account;
     setShouldUpdateTokens('all');
-  }, [account]);
+  }, [account, setShouldUpdateTokens]);
 
   useEffect(() => {
     localStorage.setItem('tokenCollections', JSON.stringify(collections));
@@ -101,20 +105,6 @@ function NftWallet ({ account }: { account?: string }): React.ReactElement {
           tokenId={openTransfer.tokenId}
           updateTokens={updateTokens}
         />
-      )}
-      { account && (
-        <Switch>
-          <Route
-            key='TokenDetailsModal'
-            path='*/token-details'
-          >
-            <NftDetailsModal
-              account={account}
-              localRegistry={localRegistry}
-              setShouldUpdateTokens={setShouldUpdateTokens}
-            />
-          </Route>
-        </Switch>
       )}
     </div>
   );
