@@ -1,0 +1,82 @@
+h1.ui.header {
+  font: 700 36px/48px var(--font-inter);
+  color: var(--title-color);
+  margin-bottom: calc(var(--gap) / 2);
+}
+
+h4.ui.header {
+  font: 400 18px/27px var(--font-roboto);
+  margin: 0;
+  color: var(--title-color);
+  letter-spacing: 0.1em;
+  margin-bottom: var(--gap);
+  min-height: 60px;
+}
+
+.ui--Labelled {
+
+  & .ui--Static {
+    margin: 0 !important;
+    background-color: var(--white-color) !important;
+  }
+
+  &:not(.isSmall) {
+    padding-left: 0 !important;
+  }
+
+  & label{
+    left: 1.55rem !important;
+  }
+
+  .ui.selection.dropdown {
+    border: 1px solid var(--border-color);
+    border-radius: calc(var(--bradius) * 2);
+  }
+}
+
+.ui.form {
+  .ui.input {
+    margin: 0;
+    input {
+      border: 1px solid var(--border-color);
+      border-radius: calc(var(--bradius) * 2);
+      height: 40px;
+      font: 400 16px/24px var(--font-roboto);
+      padding: calc(var(--gap) / 2) var(--gap);
+    }
+  }
+}
+
+.ui.grid>.row {
+  padding: 0 0 24px;
+}
+
+.ui.form .field {
+  margin: 0;
+}
+
+button.ui.button,
+.button-link {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 40px;
+  background-color: var(--link-color) !important;
+  padding: calc(var(--gap) / 2) calc(var(--gap) * 1.5) !important;
+  color: var(--white-color) !important;
+  font: 500 16px/24px var(--font-roboto) !important;
+  letter-spacing: 0.11em;
+  border-radius: var(--bradius) !important;
+}
+
+.button-link {
+  background-color: transparent !important;
+  color: var(--link-color) !important;
+
+  img {
+    width: 16px;
+    height: 16px;
+    flex: 0 0 auto;
+    margin-right: calc(var(--gap) / 2);
+  }
+}
