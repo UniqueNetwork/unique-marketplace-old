@@ -12,6 +12,8 @@ import Card from 'semantic-ui-react/dist/commonjs/views/Card';
 import { useSchema } from '@polkadot/react-hooks';
 import { TypeRegistry } from '@polkadot/types';
 
+import Arrow from '../../../../apps/public/icons/arrowRight.svg'
+
 interface Props {
   account: string;
   collectionId: string;
@@ -38,18 +40,34 @@ const NftTokenCard = ({ account, collectionId, localRegistry, openDetailedInform
       )}
       { token && (
         <Card.Content>
-          <Card.Header>{collectionId} #{token.tokenId}</Card.Header>
+          <Card.Description>
+            <div className='card-name'>
+              <div className='card-name__title'>Name</div>
+              <div className='card-name__field'>PNK-5498</div>
+            </div>
+            <div className='card-price'>
+              <div className='card-price__title'>Price</div>
+              <div className='card-price__field'>1,2 KSM</div>
+            </div>
+          </Card.Description>
           <Card.Meta>
+            <a className='link'>View
+              <Image
+                src={Arrow}
+              />
+            </a>
+          </Card.Meta>
+          {/* <Card.Header>{collectionId} #{token.tokenId}</Card.Header> */}
+          {/* <Card.Meta>
             { attributes && Object.values(attributes).length > 0 && (
               <p className='token-balance'>
-                {/* eslint-disable-next-line @typescript-eslint/no-unsafe-member-access */}
                 Attributes: {Object.keys(attributes).map((attrKey) => (<span key={attrKey}>{attrKey}: {attributes[attrKey]}</span>))}
               </p>
             )}
           </Card.Meta>
           <Card.Description>
             Seller: {token.seller}
-          </Card.Description>
+            </Card.Description> */}
         </Card.Content>
       )}
     </Card>

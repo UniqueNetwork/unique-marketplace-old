@@ -15,6 +15,16 @@ h4.ui.header {
 
 .ui--Labelled {
 
+  &.search {
+    input {
+      padding-left: calc(var(--gap) * 2);
+      background-image: url('../public/icons/magnifying.svg') !important;;
+      background-size: 24px 24px;
+      background-repeat: no-repeat;
+      background-position: 10px 10px;
+    }
+  }
+
   label {
     display: none;
   }
@@ -136,5 +146,20 @@ button.ui.button,
     height: 16px;
     flex: 0 0 auto;
     margin-right: calc(var(--gap) / 2);
+  }
+}
+
+.link {
+  display: flex;
+  align-items: center;
+  letter-spacing: 0.11em;
+  color: var(--link-color) !important;
+  font: 500 16px/24px var(--font-roboto) !important;
+
+  img {
+    width: 16px;
+    height: 16px;
+    flex: 0 0 auto;
+    margin: calc(var(--gap) / 2);
   }
 }

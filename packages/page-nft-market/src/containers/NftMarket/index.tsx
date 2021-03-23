@@ -52,13 +52,18 @@ const BuyTokens = ({ account, localRegistry, setShouldUpdateTokens, shouldUpdate
       <Header as='h4'>Art gallery collections</Header>
       <Grid>
         <Grid.Row>
-          <Grid.Column width={4}>Асайд</Grid.Column>
+          <Grid.Column width={4}>
+            <Input
+              className='isSmall'
+              placeholder='Search...'
+            />
+          </Grid.Column>
           <Grid.Column width={12}>
             <Grid>
               <Grid.Row>
                 <Grid.Column width={16}>
                   <Input
-                    className='isSmall'
+                    className='isSmall search'
                     help={<span>Find and select your token collection.</span>}
                     isDisabled={!offers || !offers.length}
                     label={'Find token by name or collection'}
