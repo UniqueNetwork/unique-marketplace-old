@@ -9,13 +9,17 @@ import React, { useCallback, useState } from 'react';
 import ImageUploading from 'react-images-uploading';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
+import Button from 'semantic-ui-react/dist/commonjs/elements/Button';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
+import Image from 'semantic-ui-react/dist/commonjs/elements/Image';
 import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
-import { Button, Input } from '@polkadot/react-components';
+import { Input } from '@polkadot/react-components';
 
-// local imports and components
+import Replace from '../../../../apps/public/icons/ArrowCounterClockwise.svg';
+import Delete from '../../../../apps/public/icons/TrashSimple.svg';
 import useMintApi, { ImageInterface } from '../../hooks/useMintApi';
+import Picture from '../../images/picture.svg';
 
 const maxFileSize = 5000000;
 
@@ -63,22 +67,25 @@ function NftMint ({ account }: { account?: string }): React.ReactElement {
   }, [account, imageBase64, imageFileName, imageName, serverIsReady, uploadImage]);
 
   return (
-    <main className='mint-tokens'>
-      <Header as='h1'>Mint Tokens</Header>
+    <>
+      <Header as='h1'>Mint</Header>
+      <Header as='h4'>Создайте свой токен в два клика!</Header>
       <Form className='collection-search'>
         <Grid className='mint-grid'>
           <Grid.Row>
-            <Grid.Column width={16}>
+            <Grid.Column width={8}>
               <Form.Field>
                 <Input
                   className='isSmall'
-                  label={<span>Enter your token name</span>}
                   onChange={onChangeString}
                   // value={searchString}
-                  placeholder='Token Name'
-                  withLabel
+                  placeholder='Enter your token name'
                 />
               </Form.Field>
+            </Grid.Column>
+          </Grid.Row>
+          <Grid.Row>
+            <Grid.Column width={8}>
               <Form.Field>
                 <ImageUploading
                   maxFileSize={maxFileSize}
@@ -94,15 +101,21 @@ function NftMint ({ account }: { account?: string }): React.ReactElement {
                     onImageUpdate,
                     onImageUpload }) => (
                     // write your building UI
-                    <div className='upload__image-wrapper'>
+                    <div
+                      className={`app-upload-image ${(!imageList || !(imageList as ImageType[]).length) ? '' : ' app-upload-image--dragging'}`}
+                    >
                       { (!imageList || !(imageList as ImageType[]).length) && (
                         <div
-                          className='drop-zone'
+                          className='app-upload-image__drop-zone'
                           {...dragProps}
                           onClick={onImageUpload as (e: React.MouseEvent<HTMLDivElement>) => void}
                           style={isDragging ? { background: '#A2DD18' } : undefined}
                         >
-                          Click or Drop here
+                          <Image
+                            className='app-upload-image__img'
+                            src={Picture}
+                          />
+                          Select or drop file
                         </div>
                       )}
                       { (imageList as ImageType[]).map((image: ImageType, index: number) => (
@@ -110,26 +123,26 @@ function NftMint ({ account }: { account?: string }): React.ReactElement {
                           className='image-item'
                           key={index}
                         >
-                          <img alt=''
-                            src={image.dataURL}
-                            width='100' />
+                          <div className='image-item__name'>Тут название картинки</div>
                           <div className='image-item__btn-wrapper'>
-                            <Button
-                              icon='pencil-alt'
-                              label='Update'
+                            <a className='button-link'
                               onClick={(onImageUpdate as (index: number) => void).bind(null, index)}
-                            />
-                            <Button
-                              icon='trash-alt'
-                              label='Remove'
+                            >
+                              <Image src={Replace} />
+                              Replace
+                            </a>
+                            <a className='button-link'
                               onClick={(onImageRemove as (index: number) => void).bind(null, index)}
-                            />
+                            >
+                              <Image src={Delete} />
+                              Delete
+                            </a>
                           </div>
                         </div>
                       ))}
                       {errors && (
-                        <div>
-                          {errors.maxNumber && <span>Number of selected images exceed maxNumber</span>}
+                        <div className='error'>
+                          {<span>Number of selected images exceed maxNumber</span>}
                           {errors.acceptType && <span>Your selected file type is not allow</span>}
                           {errors.maxFileSize && <span>Selected file size exceed maxFileSize</span>}
                           {errors.resolution && <span>Selected file is not match your desired resolution</span>}
@@ -140,28 +153,39 @@ function NftMint ({ account }: { account?: string }): React.ReactElement {
                   )}
                 </ImageUploading>
               </Form.Field>
-              { (imageBase64 && imageName) && (
+            </Grid.Column>
+          </Grid.Row>
+          <Grid.Row>
+            <Grid.Column width={8}>
+              {/* {(imageBase64 && imageName) && (
+                    <Button
+                      content='Create Token'
+                      onClick={onSaveToken}
+                    />
+                  )} */}
+              {(
                 <Button
-                  icon='check'
-                  label='Save'
+                  content='Create Token'
                   onClick={onSaveToken}
                 />
               )}
             </Grid.Column>
           </Grid.Row>
         </Grid>
-        { imgLoading && (
-          <div className='dimmer-loader'>
-            <Loader
-              active
-              inline='centered'
-            >
-              Minting NFT...
-            </Loader>
-          </div>
-        )}
-      </Form>
-    </main>
+        {
+          imgLoading && (
+            <div className='dimmer-loader'>
+              <Loader
+                active
+                inline='centered'
+              >
+                Minting NFT...
+              </Loader>
+            </div>
+          )
+        }
+      </Form >
+    </>
   );
 }
 
