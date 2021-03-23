@@ -12,20 +12,18 @@ import { Route, Switch } from 'react-router-dom';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 
-import { AccountSelector, FormatBalance, Input, NftDetailsModal } from '@polkadot/react-components';
-import { useBalance, useCollections, useRegistry } from '@polkadot/react-hooks';
+import { Input, NftDetailsModal } from '@polkadot/react-components';
+import { useCollections, useRegistry } from '@polkadot/react-hooks';
 
 // local imports and components
 import NftTokenCard from '../../components/NftTokenCard';
 
-const BuyTokens = (): ReactElement => {
+const BuyTokens = ({ account }: { account?: string }): ReactElement => {
   const history = useHistory();
-  const [account, setAccount] = useState<string | null>(null);
   const [shouldUpdateTokens, setShouldUpdateTokens] = useState<string | undefined>('all');
   const { getOffers, offers } = useCollections();
   const [searchString, setSearchString] = useState<string>('');
   const [filteredOffers, setFilteredOffers] = useState<OfferType[]>([]);
-  const { balance } = useBalance(account);
   const localRegistry = useRegistry();
 
   const openDetailedInformationModal = useCallback((collectionId: string, tokenId: string) => {
@@ -47,22 +45,6 @@ const BuyTokens = (): ReactElement => {
     <div className='nft-market'>
       <Header as='h2'>Nft Tokens</Header>
       <Grid className='account-selector'>
-        <Grid.Row>
-          <Grid.Column width={12}>
-            <AccountSelector onChange={setAccount} />
-          </Grid.Column>
-          <Grid.Column width={4}>
-            { balance && (
-              <div className='balance-block'>
-                <label>Your account balance is:</label>
-                <FormatBalance
-                  className='balance'
-                  value={balance.free}
-                />
-              </div>
-            )}
-          </Grid.Column>
-        </Grid.Row>
         <Grid.Row>
           <Grid.Column width={16}>
             <Input

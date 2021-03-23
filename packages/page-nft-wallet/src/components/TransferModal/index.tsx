@@ -14,7 +14,7 @@ import { Button, Input, TxButton } from '@polkadot/react-components';
 import { useApi, useBalance } from '@polkadot/react-hooks';
 
 interface Props {
-  account: string | null;
+  account?: string;
   balance: number;
   canTransferTokens: boolean;
   collection: NftCollectionInterface;

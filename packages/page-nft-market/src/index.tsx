@@ -12,13 +12,13 @@ import { AppProps as Props } from '@polkadot/react-components/types';
 
 import NftMarket from './containers/NftMarket';
 
-function App ({ basePath }: Props): React.ReactElement<Props> {
+function App ({ account, basePath }: Props): React.ReactElement<Props> {
 
   return (
     <main className='nft--App'>
       <Switch>
         <Route path={basePath}>
-          <NftMarket />
+          <NftMarket account={account} />
         </Route>
       </Switch>
     </main>

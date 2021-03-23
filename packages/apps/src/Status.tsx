@@ -12,7 +12,7 @@ import { useAccounts, useApi, useCall } from '@polkadot/react-hooks';
 import { stringToU8a } from '@polkadot/util';
 import { xxhashAsHex } from '@polkadot/util-crypto';
 
-import { useTranslation } from '../translate';
+import { useTranslation } from './translate';
 
 interface Props {
   optionsAll?: KeyringOptions;
