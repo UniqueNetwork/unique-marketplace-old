@@ -15,7 +15,7 @@ import { TypeRegistry } from '@polkadot/types';
 import NftTokenCard from '../NftTokenCard';
 
 interface Props {
-  account: string | null;
+  account?: string;
   canTransferTokens: boolean;
   collection: NftCollectionInterface;
   localRegistry?: TypeRegistry;

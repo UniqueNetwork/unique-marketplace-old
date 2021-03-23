@@ -1,20 +1,17 @@
-// Copyright 2020 UseTech authors & contributors
+// Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
+// SPDX-License-Identifier: Apache-2.0
 
-// global app props and types
-// eslint-disable-next-line header/header
 import './styles.scss';
 
-// external imports
 import React from 'react';
 
 import { AppProps as Props } from '@polkadot/react-components/types';
 
-// local imports and components
 import NftCreator from './containers/NftMint';
 
-function App (): React.ReactElement<Props> {
+function App ({ account }: Props): React.ReactElement<Props> {
   return (
-    <NftCreator />
+    <NftCreator account={account} />
   );
 }
 

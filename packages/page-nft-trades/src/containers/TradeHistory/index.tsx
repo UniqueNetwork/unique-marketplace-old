@@ -35,7 +35,7 @@ function TradeHistory (): React.ReactElement {
         header={headerRef.current}
       >
         { trades && trades.map((trade: TradeType) => (
-          <tr key={`${trade.collectionId}${trade.tokenId}`}>
+          <tr key={`${trade.collectionId}-${trade.tokenId}-${trade.buyer || ''}`}>
             <td
               className='start'
               colSpan={2}

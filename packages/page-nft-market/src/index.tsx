@@ -5,23 +5,16 @@ import './styles.scss';
 
 // external imports
 import React from 'react';
-import { Route, Switch } from 'react-router';
 
 // local imports and components
 import { AppProps as Props } from '@polkadot/react-components/types';
 
 import NftMarket from './containers/NftMarket';
 
-function App ({ basePath }: Props): React.ReactElement<Props> {
+function App ({ account }: Props): React.ReactElement<Props> {
 
   return (
-    <main className='nft--App'>
-      <Switch>
-        <Route path={basePath}>
-          <NftMarket />
-        </Route>
-      </Switch>
-    </main>
+    <NftMarket account={account} />
   );
 }
 
