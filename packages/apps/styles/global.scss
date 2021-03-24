@@ -169,3 +169,28 @@ button.ui.button,
     margin: calc(var(--gap) / 2);
   }
 }
+
+
+.ui.attached {
+  &.tabular {
+    &.menu {
+      margin-bottom: calc(var(--gap) * 2);
+      border-bottom: 1px solid transparent;
+
+      .item {
+        font: 400 18px/27px var(--font-roboto);
+        color: var(--tabs-color);
+        letter-spacing: 0.1em;
+        padding: calc(var(--gap) / 2) var(--gap);
+        border-color: transparent;
+        border-bottom: 1px solid transparent;
+        background-color: transparent;
+
+        &.active {
+          color: var(--link-color);
+          border-bottom:1px solid var(--link-color);
+        }
+      }
+    }
+  }
+}

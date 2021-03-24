@@ -4,6 +4,7 @@
 import './styles.scss';
 
 import React, { ReactText } from 'react';
+import { Tab } from 'semantic-ui-react';
 
 import { Table } from '@polkadot/react-components';
 
@@ -16,8 +17,20 @@ interface Props {
 function ListComponent (props: Props): React.ReactElement<Props> {
   const { children, empty, header } = props;
 
+  const panes = [
+    {
+      menuItem: 'My trades'
+    },
+    {
+      menuItem: 'All trades'
+    }
+  ];
+
   return (
     <div className='list-component'>
+      <Tab
+        panes={panes}
+      />
       <Table
         empty={empty || 'No items'}
         header={header}
