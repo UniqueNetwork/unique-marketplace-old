@@ -28,13 +28,13 @@ export interface NftCollectionInterface {
   TokenPrefix: number[];
   MintMode?: boolean;
   Mode: {
-    isNft: boolean;
-    isFungible: boolean;
-    isReFungible: boolean;
-    isInvalid: boolean;
+    nft: boolean;
+    fungible: boolean;
+    reFungible: boolean;
+    invalid: boolean;
   };
   Name: number[];
-  OffchainSchema: number[];
+  OffchainSchema: string;
   Owner?: string;
   SchemaVersion: {
     isImageUrl: boolean;
@@ -48,14 +48,14 @@ export interface NftCollectionInterface {
     TokenLimit: string;
     SponsorTimeout: string;
   },
-  VariableOnChainSchema: number[];
-  ConstOnChainSchema: number[];
+  VariableOnChainSchema: string;
+  ConstOnChainSchema: string;
 }
 
 export interface TokenDetailsInterface {
   Owner?: any[];
-  ConstData?: number[];
-  VariableData?: number[];
+  ConstData?: string;
+  VariableData?: string;
 }
 
 export type OfferType = {
@@ -103,7 +103,9 @@ export function useCollections () {
     }
 
     try {
-      return (await api.query.nft.collection(collectionId));
+      const collectionInfo = await api.query.nft.collectionById(collectionId);
+
+      return collectionInfo.toJSON() as unknown as NftCollectionInterface;
     } catch (e) {
       console.log('getDetailedCollectionInfo error', e);
     }
@@ -117,7 +119,9 @@ export function useCollections () {
     }
 
     try {
-      return (await api.query.nft.nftItemList(collectionId, tokenId) as unknown as TokenDetailsInterface);
+      const tokenInfo = await api.query.nft.nftItemList(collectionId, tokenId);
+
+      return tokenInfo.toJSON() as unknown as TokenDetailsInterface;
     } catch (e) {
       console.log('getDetailedTokenInfo error', e);
 
@@ -179,8 +183,12 @@ export function useCollections () {
     }
 
     try {
-      const collectionsCount = (await api.query.nft.collectionCount() as unknown as BN).toNumber();
+      const createdCollectionCount = (await api.query.nft.createdCollectionCount() as unknown as BN).toNumber();
+      const destroyedCollectionCount = (await api.query.nft.destroyedCollectionCount() as unknown as BN).toNumber();
+      const collectionsCount = createdCollectionCount - destroyedCollectionCount;
       const collections: Array<NftCollectionInterface> = [];
+
+      console.log('collectionsCount', collectionsCount, 'createdCollectionCount', createdCollectionCount, 'destroyedCollectionCount', destroyedCollectionCount);
 
       for (let i = 1; i <= collectionsCount; i++) {
         const collectionInf = await getDetailedCollectionInfo(i.toString()) as unknown as NftCollectionInterface;

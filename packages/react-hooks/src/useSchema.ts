@@ -36,7 +36,7 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
   const [attributes, setAttributes] = useState<AttributesDecoded>();
   const [tokenDetails, setTokenDetails] = useState<TokenDetailsInterface>();
   const { getDetailedCollectionInfo, getDetailedReFungibleTokenInfo, getDetailedTokenInfo } = useCollections();
-  const { collectionName8Decoder, hex2a } = useDecoder();
+  const { hex2a } = useDecoder();
 
   const tokenImageUrl = useCallback((urlString: string, tokenId: string): string => {
     if (urlString.indexOf('{id}') !== -1) {
@@ -46,7 +46,7 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
     return '';
   }, []);
 
-  const mergeData = useCallback(({ attr, data }: { attr?: any, data?: number[] }): AttributesDecoded => {
+  const mergeData = useCallback(({ attr, data }: { attr?: any, data?: string }): AttributesDecoded => {
     if (attr && data && localRegistry) {
       try {
         const s = new Struct(localRegistry, (JSON.parse(attr) as { root: any }).root, data);
@@ -72,7 +72,7 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
   const getReFungibleDetails = useCallback(() => {
     try {
       if (tokenDetails?.Owner) {
-        if (collectionInfo?.Mode.isReFungible) {
+        if (collectionInfo?.Mode.reFungible) {
           const owner = tokenDetails.Owner.find((item: { fraction: BN, owner: string }) => item.owner.toString() === account) as { fraction: BN, owner: string } | undefined;
 
           if (typeof collectionInfo.DecimalPoints === 'number') {
@@ -89,7 +89,7 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
 
   const setUnique = useCallback(async (collectionInfo: NftCollectionInterface) => {
     try {
-      const collectionMetadata = JSON.parse(collectionName8Decoder(collectionInfo.OffchainSchema)) as MetadataType;
+      const collectionMetadata = JSON.parse(hex2a(collectionInfo.OffchainSchema)) as MetadataType;
 
       if (collectionMetadata.metadata) {
         const dataUrl = tokenImageUrl(collectionMetadata.metadata, tokenId.toString());
@@ -101,25 +101,25 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
     } catch (e) {
       console.log('image metadata parse error', e);
     }
-  }, [collectionName8Decoder, tokenId, tokenImageUrl]);
+  }, [hex2a, tokenId, tokenImageUrl]);
 
   // how to parse Off Chain Schema
   const setOffChainSchema = useCallback(() => {
     if (collectionInfo) {
       if (collectionInfo.SchemaVersion.isImageUrl) {
-        setTokenUrl(tokenImageUrl(collectionName8Decoder(collectionInfo.OffchainSchema), tokenId.toString()));
+        setTokenUrl(tokenImageUrl(hex2a(collectionInfo.OffchainSchema), tokenId.toString()));
       } else {
         void setUnique(collectionInfo);
       }
     }
-  }, [collectionInfo, collectionName8Decoder, setUnique, tokenId, tokenImageUrl]);
+  }, [collectionInfo, hex2a, setUnique, tokenId, tokenImageUrl]);
 
   const setOnChainSchema = useCallback(() => {
     if (collectionInfo) {
-      setAttributesConst(collectionName8Decoder(collectionInfo.ConstOnChainSchema));
-      setAttributesVar(collectionName8Decoder(collectionInfo.VariableOnChainSchema));
+      setAttributesConst(hex2a(collectionInfo.ConstOnChainSchema));
+      setAttributesVar(hex2a(collectionInfo.VariableOnChainSchema));
     }
-  }, [collectionInfo, collectionName8Decoder]);
+  }, [collectionInfo, hex2a]);
 
   const getCollectionInfo = useCallback(async () => {
     if (collectionId) {
@@ -140,11 +140,13 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
     if (collectionId && tokenId && collectionInfo) {
       let tokenDetailsData: TokenDetailsInterface = {};
 
-      if (collectionInfo.Mode.isNft) {
+      if (collectionInfo.Mode.nft) {
         tokenDetailsData = await getDetailedTokenInfo(collectionId.toString(), tokenId.toString());
-      } else if (collectionInfo.Mode.isReFungible) {
+      } else if (collectionInfo.Mode.reFungible) {
         tokenDetailsData = await getDetailedReFungibleTokenInfo(collectionId.toString(), tokenId.toString());
       }
+
+      console.log('tokenDetailsData', tokenDetailsData);
 
       setTokenDetails(tokenDetailsData);
     }
