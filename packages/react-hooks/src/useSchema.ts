@@ -52,8 +52,6 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
         const s = new Struct(localRegistry, (JSON.parse(attr) as { root: any }).root, data);
         const attributesDecoded = JSON.parse(s.toString()) as AttributesDecoded;
 
-        console.log('attributesDecoded', attributesDecoded);
-
         for (const attr in attributesDecoded) {
           if (attr.toLocaleLowerCase().includes('str')) {
             attributesDecoded[attr] = hex2a(attributesDecoded[attr] as string);
@@ -72,10 +70,10 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
   const getReFungibleDetails = useCallback(() => {
     try {
       if (tokenDetails?.Owner) {
-        if (collectionInfo?.Mode.reFungible) {
+        if (Object.prototype.hasOwnProperty.call(collectionInfo?.Mode, 'reFungible')) {
           const owner = tokenDetails.Owner.find((item: { fraction: BN, owner: string }) => item.owner.toString() === account) as { fraction: BN, owner: string } | undefined;
 
-          if (typeof collectionInfo.DecimalPoints === 'number') {
+          if (typeof collectionInfo?.DecimalPoints === 'number') {
             const balance = owner && owner.fraction.toNumber() / Math.pow(10, collectionInfo.DecimalPoints);
 
             setReFungibleBalance(balance || 0);
@@ -125,8 +123,6 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
     if (collectionId) {
       const info: NftCollectionInterface = await getDetailedCollectionInfo(collectionId) as unknown as NftCollectionInterface;
 
-      console.log('collectionInfo', info);
-
       if (info && Object.keys(info).length) {
         setCollectionInfo({
           ...info,
@@ -140,21 +136,17 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
     if (collectionId && tokenId && collectionInfo) {
       let tokenDetailsData: TokenDetailsInterface = {};
 
-      if (collectionInfo.Mode.nft) {
+      if (Object.prototype.hasOwnProperty.call(collectionInfo.Mode, 'nft')) {
         tokenDetailsData = await getDetailedTokenInfo(collectionId.toString(), tokenId.toString());
-      } else if (collectionInfo.Mode.reFungible) {
+      } else if (Object.prototype.hasOwnProperty.call(collectionInfo.Mode, 'reFungible')) {
         tokenDetailsData = await getDetailedReFungibleTokenInfo(collectionId.toString(), tokenId.toString());
       }
-
-      console.log('tokenDetailsData', tokenDetailsData);
 
       setTokenDetails(tokenDetailsData);
     }
   }, [collectionId, collectionInfo, getDetailedTokenInfo, getDetailedReFungibleTokenInfo, tokenId]);
 
   const mergeTokenAttributes = useCallback(() => {
-    console.log('attributesConst', attributesConst, 'tokenDetails', tokenDetails);
-
     const tokenAttributes: any = {
       ...mergeData({ attr: attributesConst, data: tokenDetails?.ConstData }),
       ...mergeData({ attr: attributesVar, data: tokenDetails?.VariableData })

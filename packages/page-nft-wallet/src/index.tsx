@@ -15,9 +15,11 @@ import { useRegistry } from '@polkadot/react-hooks';
 
 import NftWallet from './containers/NftWallet';
 import TokensForSale from './containers/TokensForSale';
+import { useLocation } from 'react-router-dom';
 
 function App ({ account, basePath }: Props): React.ReactElement<Props> {
   const localRegistry = useRegistry();
+  const location = useLocation();
   const [shouldUpdateTokens, setShouldUpdateTokens] = useState<string>();
 
   const items = useMemo(() => [
@@ -34,12 +36,14 @@ function App ({ account, basePath }: Props): React.ReactElement<Props> {
 
   return (
     <>
-      <header>
-        <Tabs
-          basePath={basePath}
-          items={items}
-        />
-      </header>
+      { !location.pathname.includes('token-details') && (
+        <header>
+          <Tabs
+            basePath={basePath}
+            items={items}
+          />
+        </header>
+      )}
       <Switch>
         <Route path={`${basePath}/token-details`}>
           <NftDetails

@@ -66,7 +66,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
       return;
     }
 
-    if (collectionInfo.Mode.reFungible) {
+    if (Object.prototype.hasOwnProperty.call(collectionInfo.Mode, 'reFungible')) {
       info = await getDetailedReFungibleTokenInfo(collectionInfo.id, tokenId);
     } else {
       info = await getDetailedTokenInfo(collectionInfo.id, tokenId);

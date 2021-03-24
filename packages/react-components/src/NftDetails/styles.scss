@@ -85,6 +85,21 @@
     margin: 16px 0;
   }
 
+  .buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-column-gap: 16px;
+    grid-row-gap: 16px;
+  }
+
+  .ui.form {
+    margin: 16px 0;
+
+    .field {
+      margin: 16px 0;
+    }
+  }
+
   .steps {
     .step {
       display: grid;
