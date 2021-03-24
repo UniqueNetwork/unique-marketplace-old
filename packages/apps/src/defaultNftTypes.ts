@@ -3,7 +3,7 @@
 
 // https://github.com/usetech-llc/nft_parachain#ui-custom-types
 const defaultNftTypes = `{
-    "AccessMode": {
+   "AccessMode": {
       "_enum": [
         "Normal",
         "WhiteList"
@@ -35,7 +35,14 @@ const defaultNftTypes = `{
       "ConstData": "Vec<u8>",
       "VariableData": "Vec<u8>"
     },
-    "CollectionType": {
+    "SponsorshipState": {
+      "_enum": {
+        "Disabled": null,
+        "Unconfirmed": "AccountId",
+        "Confirmed": "AccountId"
+      }
+    },
+    "Collection": {
       "Owner": "AccountId",
       "Mode": "CollectionMode",
       "Access": "AccessMode",
@@ -46,8 +53,7 @@ const defaultNftTypes = `{
       "MintMode": "bool",
       "OffchainSchema": "Vec<u8>",
       "SchemaVersion": "SchemaVersion",
-      "Sponsor": "AccountId",
-      "SponsorConfirmed": "bool",
+      "Sponsorship": "SponsorshipState",
       "Limits": "CollectionLimits",
       "VariableOnChainSchema": "Vec<u8>",
       "ConstOnChainSchema": "Vec<u8>"
@@ -97,7 +103,8 @@ const defaultNftTypes = `{
     },
     "CollectionLimits": {
       "AccountTokenOwnershipLimit": "u32",
-      "SponsoredMintSize": "u32",
+      "SponsoredDataSize": "u32",
+      "SponsoredDataRateLimit": "Option<BlockNumber>",
       "TokenLimit": "u32",
       "SponsorTimeout": "u32",
       "OwnerCanTransfer": "bool",

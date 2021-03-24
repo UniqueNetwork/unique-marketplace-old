@@ -22,7 +22,7 @@ export interface UseMintApiInterface {
   uploadingError: string | undefined;
 }
 
-export const collectionIdForMint = '3';
+export const collectionIdForMint = '1';
 
 /**
  * Get validators from server if health "connected":true

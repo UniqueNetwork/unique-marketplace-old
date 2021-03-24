@@ -30,6 +30,22 @@ const definitions: OverrideBundleDefinition = {
           cost: 'Balance',
           income: 'Balance'
         },
+        TokenSymbol: {
+          _enum: [
+            'BNC',
+            'aUSD',
+            'DOT',
+            'vDOT',
+            'KSM',
+            'vKSM',
+            'ETH',
+            'vETH',
+            'EOS',
+            'vEOS',
+            'IOST',
+            'vIOST'
+          ]
+        },
         TokenType: {
           _enum: ['Native', 'Stable', 'Token', 'VToken']
         },
@@ -162,7 +178,14 @@ const definitions: OverrideBundleDefinition = {
           }
         },
         TransactionStatus: {
-          _enum: ['Initialized', 'Created', 'SignComplete', 'Sent', 'Succeeded', 'Failed']
+          _enum: [
+            'Initialized',
+            'Created',
+            'SignComplete',
+            'Sent',
+            'Succeeded',
+            'Failed'
+          ]
         },
         ProducerAuthoritySchedule: {
           version: 'u32',

@@ -53,8 +53,7 @@ export function useNftContract (account: string): useNftContractInterface {
   const [deposited, setDeposited] = useState<BN>();
   const [tokenAsk, setTokenAsk] = useState<{ owner: string, price: BN }>();
   const [isStored, setIsStored] = useState(false);
-  // local 5HpCCd2SufXC1NRANgWBvz6k3GnVCDcTceC24WNwERkBtfSk, remote 5EuBcZYh47ruAjrDweHvH4Fm5BwYkiFHNpTGKWAHkA3WFsEG
-  const [contractAddress] = useState<string>('5EuBcZYh47ruAjrDweHvH4Fm5BwYkiFHNpTGKWAHkA3WFsEG');
+  const [contractAddress] = useState<string>('5FgbNg55FCFT3j1KokxsHaEgp4wfnDMGazCLw3mqC359bY72');
   const settingsUi = settings.get();
 
   const contractInfo = useCall<Option<ContractInfo>>(settingsUi.apiUrl.includes('kusama') ? undefined : api.query.contracts.contractInfoOf, [contractAddress]);
