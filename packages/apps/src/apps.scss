@@ -12,6 +12,27 @@
   background-color: var(--white-color);
   margin-bottom: 0;
   padding: var(--gap) 0;
+
+  .ui.tabular.menu {
+    display: inline-flex;
+    border-bottom: none;
+    margin: 0;
+
+    .item {
+      border: none;
+      padding: calc(var(--gap) / 2) calc(var(--gap) * 1.5);
+      font: 500 16px/24px var(--font-roboto);
+      letter-spacing: 1px;
+      border-radius: var(--bradius) !important;
+
+      &.active {
+        background-color: var(--link-color);
+        color: var(--white-color);
+        margin-top: 0;
+        font-weight: 500;
+      }
+    }
+  }
 }
 
 .app-user {
@@ -33,27 +54,6 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-  }
-
-  .ui.tabular.menu {
-    display: inline-flex;
-    border-bottom: none;
-    margin: 0;
-
-    .item {
-      border: none;
-      padding: calc(var(--gap) / 2) calc(var(--gap) * 1.5);
-      font: 500 16px/24px var(--font-roboto);
-      letter-spacing: 1px;
-
-      &.active {
-        background-color: var(--link-color);
-        border-radius: var(--bradius) !important;
-        color: var(--white-color);
-        margin-top: 0;
-        font-weight: 500;
-      }
-    }
   }
 }
 

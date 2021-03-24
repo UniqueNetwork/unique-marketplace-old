@@ -28,8 +28,9 @@ function TradeHistory (): React.ReactElement {
   }, [fetchTrades]);
 
   return (
-    <div className='appreciation-actions'>
-      <Header as='h1'>Trade History</Header>
+    <div className='trades'>
+      <Header as='h1'>Trades</Header>
+      <Header as='h4'>Description</Header>
       <ListComponent
         empty={'No trades found'}
         header={headerRef.current}

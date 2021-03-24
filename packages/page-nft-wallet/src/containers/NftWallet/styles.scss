@@ -1,72 +1,72 @@
-.nft--App {
-  text-align: left;
-  max-width: 1000px;
+// .nft--App {
+//   text-align: left;
+//   max-width: 1000px;
 
-  .small-help {
-    font-size: 1rem;
-    font-weight: normal;
-    color: rgba(78,78,78,.66);
-  }
+//   .small-help {
+//     font-size: 1rem;
+//     font-weight: normal;
+//     color: rgba(78,78,78,.66);
+//   }
 
-  .collection-actions {
-    width: 200px;
-  }
+//   .collection-actions {
+//     width: 200px;
+//   }
 
-  .card {
-    width: 100%;
-    padding: 15px;
-  }
+//   .card {
+//     width: 100%;
+//     padding: 15px;
+//   }
 
-  .account-balance {
-    .row {
-      padding: 0;
-    }
-  }
+//   .account-balance {
+//     .row {
+//       padding: 0;
+//     }
+//   }
 
-  .balance-block {
-    line-height: 25px;
+//   .balance-block {
+//     line-height: 25px;
 
-    .balance {
-      font-size: 30px;
-    }
-  }
+//     .balance {
+//       font-size: 30px;
+//     }
+//   }
 
-  .current-tokens {
-    .header {
-      background-color: #80808069;
-    }
-  }
+//   .current-tokens {
+//     .header {
+//       background-color: #80808069;
+//     }
+//   }
 
-  .collection-header {
-    line-height: 36px;
-  }
+//   .collection-header {
+//     line-height: 36px;
+//   }
 
-  .account-balance {
-    display: flex;
-    label {
-      margin-right: 5px;
-    }
-    .balance {
-      font-weight: bold;
-    }
-  }
-}
+//   .account-balance {
+//     display: flex;
+//     label {
+//       margin-right: 5px;
+//     }
+//     .balance {
+//       font-weight: bold;
+//     }
+//   }
+// }
 
-.nft-wallets {
-  text-align: left;
-}
+// .nft-wallets {
+//   text-align: left;
+// }
 
-.wallet-list-item-card {
-  width: 100% !important;
-}
+// .wallet-list-item-card {
+//   width: 100% !important;
+// }
 
-.nft-collection-card {
-  width: 100% !important;
-}
+// .nft-collection-card {
+//   width: 100% !important;
+// }
 
-.collection-actions {
-  text-align: right;
-}
+// .collection-actions {
+//   text-align: right;
+// }
 
 /*@media (prefers-reduced-motion: no-preference) {
   .App-logo {
