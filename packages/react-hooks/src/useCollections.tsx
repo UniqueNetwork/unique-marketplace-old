@@ -28,10 +28,10 @@ export interface NftCollectionInterface {
   TokenPrefix: number[];
   MintMode?: boolean;
   Mode: {
-    nft: boolean;
-    fungible: boolean;
-    reFungible: boolean;
-    invalid: boolean;
+    nft: null;
+    fungible: null;
+    reFungible: null;
+    invalid: null;
   };
   Name: number[];
   OffchainSchema: string;
@@ -121,6 +121,8 @@ export function useCollections () {
 
     try {
       const tokenInfo = await api.query.nft.nftItemList(collectionId, tokenId);
+
+      console.log('tokenInfo.toJSON()', tokenInfo.toJSON());
 
       return tokenInfo.toJSON() as unknown as TokenDetailsInterface;
     } catch (e) {

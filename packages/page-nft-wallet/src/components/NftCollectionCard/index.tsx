@@ -67,7 +67,7 @@ function NftCollectionCard ({ account, canTransferTokens, collection, localRegis
           { collection.Description && (
             <span> {collectionName16Decoder(collection.Description)}</span>
           )}
-          { collection.Mode.reFungible &&
+          { Object.prototype.hasOwnProperty.call(collection.Mode, 'reFungible') &&
             <strong>, re-fungible</strong>
           }
         </>

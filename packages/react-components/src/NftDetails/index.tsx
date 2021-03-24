@@ -100,6 +100,8 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
     setReadyToWithdraw(false);
   }, [sendCurrentUserAction]);
 
+  console.log('attributes', attributes, 'attributes name', attributes?.NameStr);
+
   return (
     <div className='toke-details'>
       <Header as='h1'>
@@ -166,38 +168,42 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
               <Header as='h4'>You selling it!</Header>
             )}
             { !!(!uOwnIt && tokenInfo) && (
-              <Header as='h4'>The owner is {tokenInfo?.Owner?.toString()}</Header>
+              <Header as='h5'>The owner is {tokenInfo?.Owner?.toString()}</Header>
             )}
-            { (!uOwnIt && !transferStep && tokenAsk) && (
-              <Button
-                content='Buy it'
-                onClick={sendCurrentUserAction.bind(null, 'BUY')}
-              />
-            )}
-            { (deposited && deposited.gtn(0)) && (
-              <Button
-                content='Withdraw'
-                onClick={setReadyToWithdraw.bind(null, !readyToWithdraw)}
-              />
-            )}
-            { (uOwnIt && !uSellIt) && (
-              <Button
-                content='Sale it'
-                onClick={sendCurrentUserAction.bind(null, 'SELL')}
-              />
-            )}
-            { (uOwnIt && !uSellIt) && (
-              <Button
-                content='Transfer'
-                onClick={setShowTransferForm.bind(null, !showTransferForm)}
-              />
-            )}
-            { (uSellIt && !transferStep) && (
-              <Button
-                content='Cancel sell'
-                onClick={sendCurrentUserAction.bind(null, 'CANCEL')}
-              />
-            )}
+
+            <div className='buttons'>
+              { (!uOwnIt && !transferStep && tokenAsk) && (
+                <Button
+                  content='Buy it'
+                  onClick={sendCurrentUserAction.bind(null, 'BUY')}
+                />
+              )}
+              { (deposited && deposited.gtn(0)) && (
+                <Button
+                  content='Withdraw'
+                  onClick={setReadyToWithdraw.bind(null, !readyToWithdraw)}
+                />
+              )}
+              { (uOwnIt && !uSellIt) && (
+                <Button
+                  content='Sale it'
+                  onClick={sendCurrentUserAction.bind(null, 'SELL')}
+                />
+              )}
+              { (uOwnIt && !uSellIt) && (
+                <Button
+                  content='Transfer'
+                  onClick={setShowTransferForm.bind(null, !showTransferForm)}
+                />
+              )}
+              { (uSellIt && !transferStep) && (
+                <Button
+                  content='Cancel sell'
+                  onClick={sendCurrentUserAction.bind(null, 'CANCEL')}
+                />
+              )}
+            </div>
+
             { showTransferForm && (
               <Form className='transfer-form'>
                 <Form.Field>
@@ -209,7 +215,7 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
                     placeholder='Recipient address'
                   />
                 </Form.Field>
-                { collectionInfo?.Mode.reFungible && (
+                { Object.prototype.hasOwnProperty.call(collectionInfo?.Mode, 'reFungible') && (
                   <Form.Field>
                     <Input
                       className='isSmall'

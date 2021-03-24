@@ -25,7 +25,7 @@ interface Props {
 
 function TransferModal ({ account, balance, canTransferTokens, closeModal, collection, tokenId, updateTokens }: Props): React.ReactElement<Props> {
   const { api } = useApi();
-  const [recipient, setRecipient] = useState<string | null>(null);
+  const [recipient, setRecipient] = useState<string>();
   const [tokenPart, setTokenPart] = useState<number>(0);
   const [isAddressError, setIsAddressError] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
@@ -89,7 +89,7 @@ function TransferModal ({ account, balance, canTransferTokens, closeModal, colle
               placeholder='Recipient address'
             />
           </Form.Field>
-          { collection.Mode.reFungible && (
+          { Object.prototype.hasOwnProperty.call(collection.Mode, 'reFungible') && (
             <Form.Field>
               <Input
                 className='isSmall'

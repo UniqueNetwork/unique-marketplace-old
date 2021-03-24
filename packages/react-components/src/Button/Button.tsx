@@ -121,6 +121,10 @@ export default React.memo(styled(Button)`
     margin: -${ICON_PADDING}rem 0;
     padding: ${ICON_PADDING}rem;
     width: 1rem;
+
+    path {
+      fill: white !important;
+    }
   }
 
   &.isBusy {

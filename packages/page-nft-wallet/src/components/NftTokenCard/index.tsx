@@ -52,7 +52,7 @@ function NftTokenCard ({ account, canTransferTokens, collection, localRegistry, 
         #{token.toString()}
       </td>
       <td className='token-balance'>
-        { collection && collection.Mode.reFungible && <span>Balance: {reFungibleBalance}</span> }
+        { collection && Object.prototype.hasOwnProperty.call(collection.Mode, 'reFungible') && <span>Balance: {reFungibleBalance}</span> }
       </td>
       <td className='token-balance'>
         { attributes && Object.values(attributes).length > 0 && <span>Attributes: {Object.keys(attributes).map((attrKey) => (<span key={attrKey}>{attrKey}: {attributes[attrKey]}</span>))}</span> }

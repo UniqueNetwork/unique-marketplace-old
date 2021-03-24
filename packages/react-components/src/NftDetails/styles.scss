@@ -34,13 +34,18 @@
       line-height: 42px;
     }
 
-    h4 {
+    h4, h5 {
       font-family: var(--font-roboto) var(--font-mono);
       font-style: normal;
       font-weight: bold;
       font-size: 16px;
       line-height: 24px;
       min-height: 0 !important;
+    }
+
+    .h5 {
+      font-size: 14px;
+      line-height: 20px;
     }
 
     .accessories {
@@ -85,6 +90,25 @@
     margin: 16px 0;
   }
 
+  .buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-column-gap: 16px;
+    grid-row-gap: 16px;
+  }
+
+  .ui.form {
+    margin: 16px 0;
+
+    .field {
+      margin: 16px 0;
+    }
+  }
+
+  .sale-steps, .buy-steps {
+    margin-top: 16px;
+  }
+
   .steps {
     .step {
       display: grid;
@@ -108,28 +132,6 @@
         font-style: normal;
         font-weight: 500;
         font-size: 14px;
-      }
-
-      .ui.loader {
-        position: relative;
-        height: 25px;
-        width: 25px;
-
-        &:after, &:before {
-          height: 25px;
-          width: 25px;
-          margin: 0;
-        }
-
-        &:after {
-          left: 0;
-          border-width: 0.1em;
-          border-color: var(--link-color) transparent transparent;
-        }
-
-        &:before {
-          border: none;
-        }
       }
     }
   }

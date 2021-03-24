@@ -47,11 +47,11 @@ export default createGlobalStyle<Props & ThemeProps>(({ theme, uiHighlight }: Pr
   }
 
   .highlight--before-border:before {
-    border-color: ${getHighlight(uiHighlight)} !important;
+    border-color: transparent !important;
   }
 
   .highlight--bg {
-    background: ${getHighlight(uiHighlight)} !important;
+    background: transparent !important;
   }
 
   .highlight--bg-contrast {
@@ -84,7 +84,7 @@ export default createGlobalStyle<Props & ThemeProps>(({ theme, uiHighlight }: Pr
   }
 
   .highlight--border {
-    border-color: ${getHighlight(uiHighlight)} !important;
+    border-color: transparent !important;
   }
 
   .highlight--color {

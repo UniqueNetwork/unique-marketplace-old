@@ -6,6 +6,7 @@ import './styles.scss';
 // external imports
 import React, { useMemo, useState } from 'react';
 import { Route, Switch } from 'react-router';
+import { useLocation } from 'react-router-dom';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header/Header';
 
 import { NftDetails } from '@polkadot/react-components';
@@ -19,6 +20,7 @@ import TokensForSale from './containers/TokensForSale';
 
 function App ({ account, basePath }: Props): React.ReactElement<Props> {
   const localRegistry = useRegistry();
+  const location = useLocation();
   const [shouldUpdateTokens, setShouldUpdateTokens] = useState<string>();
 
   const items = useMemo(() => [
@@ -37,12 +39,14 @@ function App ({ account, basePath }: Props): React.ReactElement<Props> {
     <>
       <Header as='h1'>My Tokens</Header>
       <Header as='h4'>Your tokens</Header>
-      <header>
-        <Tabs
-          basePath={basePath}
-          items={items}
-        />
-      </header>
+      { !location.pathname.includes('token-details') && (
+        <header>
+          <Tabs
+            basePath={basePath}
+            items={items}
+          />
+        </header>
+      )}
       <Switch>
         <Route path={`${basePath}/token-details`}>
           <NftDetails
