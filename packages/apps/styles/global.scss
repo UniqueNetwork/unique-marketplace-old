@@ -1,3 +1,9 @@
+hr {
+  height: 0;
+  border: 0;
+  border-top: 1px solid var(--border-color);
+}
+
 h1.ui.header {
   font: 700 36px/48px var(--font-inter);
   color: var(--title-color);
@@ -14,6 +20,16 @@ h4.ui.header {
 }
 
 .ui--Labelled {
+
+  &.search {
+    input {
+      padding-left: calc(var(--gap) * 2.5);
+      background-image: url('../public/icons/magnifying.svg') !important;
+      background-size: 24px 24px !important;
+      background-repeat: no-repeat !important;
+      background-position: 8px !important;
+    }
+  }
 
   label {
     display: none;
@@ -136,5 +152,20 @@ button.ui.button,
     height: 16px;
     flex: 0 0 auto;
     margin-right: calc(var(--gap) / 2);
+  }
+}
+
+.link {
+  display: flex;
+  align-items: center;
+  letter-spacing: 0.11em;
+  color: var(--link-color) !important;
+  font: 500 16px/24px var(--font-roboto) !important;
+
+  img {
+    width: 16px;
+    height: 16px;
+    flex: 0 0 auto;
+    margin: calc(var(--gap) / 2);
   }
 }

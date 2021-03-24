@@ -10,6 +10,7 @@ import React, { memo, ReactElement, useCallback, useEffect, useState } from 'rea
 import { useHistory } from 'react-router';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
+import Image from 'semantic-ui-react/dist/commonjs/elements/Image';
 
 import { Input } from '@polkadot/react-components';
 import { useCollections } from '@polkadot/react-hooks';
@@ -48,42 +49,71 @@ const BuyTokens = ({ account, localRegistry, setShouldUpdateTokens, shouldUpdate
 
   return (
     <div className='nft-market'>
-      <Header as='h2'>Nft Tokens</Header>
-      <Grid className='account-selector'>
+      <Header as='h1'>Market</Header>
+      <Header as='h4'>Art gallery collections</Header>
+      <Grid>
         <Grid.Row>
-          <Grid.Column width={16}>
+          <Grid.Column width={4}>
+            <Header as='h5'>Collections</Header>
             <Input
-              className='isSmall'
-              help={<span>Find and select your token collection.</span>}
-              isDisabled={!offers || !offers.length}
-              label={'Find token by name or collection'}
-              onChange={setSearchString}
+              className='isSmall search'
               placeholder='Search...'
-              value={searchString}
-              withLabel
             />
+            <ul className='collections-list'>
+              <li className='collections-list__item'>
+                <div className='collections-list__img'>
+                  {/* <Image src={} /> */}
+                </div>
+                <div className='collections-list__name'>SubstraPunks</div>
+              </li>
+              <li className='collections-list__item'>
+                <div className='collections-list__img'>
+                  {/* <Image src={} /> */}
+                </div>
+                <div className='collections-list__name'>SubstraPunks</div>
+              </li>
+            </ul>
+            <hr/>
+          </Grid.Column>
+          <Grid.Column width={12}>
+            <Grid>
+              <Grid.Row>
+                <Grid.Column width={16}>
+                  <Input
+                    className='isSmall search'
+                    help={<span>Find and select your token collection.</span>}
+                    isDisabled={!offers || !offers.length}
+                    label={'Find token by name or collection'}
+                    onChange={setSearchString}
+                    placeholder='Search...'
+                    value={searchString}
+                    withLabel
+                  />
+                </Grid.Column>
+              </Grid.Row>
+              {(account && filteredOffers.length > 0) && (
+                <Grid.Row>
+                  <Grid.Column width={16}>
+                    <div className='market-pallet'>
+                      <div className='market-pallet__item'>
+                        {filteredOffers.map((token) => (
+                          <NftTokenCard
+                            account={account}
+                            collectionId={token.collectionId.toString()}
+                            key={token.tokenId}
+                            localRegistry={localRegistry}
+                            openDetailedInformationModal={openDetailedInformationModal}
+                            token={token}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  </Grid.Column>
+                </Grid.Row>
+              )}
+            </Grid>
           </Grid.Column>
         </Grid.Row>
-        { (account && filteredOffers.length > 0) && (
-          <Grid.Row>
-            <Grid.Column width={16}>
-              <div className='market-pallet'>
-                <div className='nft-tokens'>
-                  { filteredOffers.map((token) => (
-                    <NftTokenCard
-                      account={account}
-                      collectionId={token.collectionId.toString()}
-                      key={token.tokenId}
-                      localRegistry={localRegistry}
-                      openDetailedInformationModal={openDetailedInformationModal}
-                      token={token}
-                    />
-                  )) }
-                </div>
-              </div>
-            </Grid.Column>
-          </Grid.Row>
-        )}
       </Grid>
     </div>
   );
