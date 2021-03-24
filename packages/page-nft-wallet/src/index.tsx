@@ -6,6 +6,7 @@ import './styles.scss';
 // external imports
 import React, { useMemo, useState } from 'react';
 import { Route, Switch } from 'react-router';
+import Header from 'semantic-ui-react/dist/commonjs/elements/Header/Header';
 
 import { NftDetails } from '@polkadot/react-components';
 import Tabs from '@polkadot/react-components/Tabs';
@@ -34,6 +35,8 @@ function App ({ account, basePath }: Props): React.ReactElement<Props> {
 
   return (
     <>
+      <Header as='h1'>My Tokens</Header>
+      <Header as='h4'>Your tokens</Header>
       <header>
         <Tabs
           basePath={basePath}

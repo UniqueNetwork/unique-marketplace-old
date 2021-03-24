@@ -10,6 +10,12 @@ h1.ui.header {
   margin-bottom: calc(var(--gap) / 2);
 }
 
+h2.ui.header {
+  font: 700 28px/38px var(--font-inter);
+  color: var(--title-color);
+  margin-bottom: calc(var(--gap) / 2);
+}
+
 h4.ui.header {
   font: 400 18px/27px var(--font-roboto);
   margin: 0;
@@ -17,6 +23,11 @@ h4.ui.header {
   letter-spacing: 0.1em;
   margin-bottom: var(--gap);
   min-height: 60px;
+}
+
+.ui--LabelHelp  {
+  font-size: 0.5em;
+  vertical-align: middle;
 }
 
 .ui--Labelled {
@@ -167,30 +178,5 @@ button.ui.button,
     height: 16px;
     flex: 0 0 auto;
     margin: calc(var(--gap) / 2);
-  }
-}
-
-
-.ui.attached {
-  &.tabular {
-    &.menu {
-      margin-bottom: calc(var(--gap) * 2);
-      border-bottom: 1px solid transparent;
-
-      .item {
-        font: 400 18px/27px var(--font-roboto);
-        color: var(--tabs-color);
-        letter-spacing: 0.1em;
-        padding: calc(var(--gap) / 2) var(--gap);
-        border-color: transparent;
-        border-bottom: 1px solid transparent;
-        background-color: transparent;
-
-        &.active {
-          color: var(--link-color);
-          border-bottom:1px solid var(--link-color);
-        }
-      }
-    }
   }
 }
