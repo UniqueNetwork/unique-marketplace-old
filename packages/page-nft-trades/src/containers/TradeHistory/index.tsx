@@ -4,7 +4,6 @@
 import type { TradeType } from '@polkadot/react-hooks/useCollections';
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import Header from 'semantic-ui-react/dist/commonjs/elements/Header/Header';
 
 import { ListComponent } from '@polkadot/react-components';
 import { useCollections } from '@polkadot/react-hooks';

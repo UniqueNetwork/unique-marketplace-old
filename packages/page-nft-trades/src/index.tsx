@@ -7,11 +7,11 @@ import './styles.scss';
 import React, { useMemo } from 'react';
 import { Route, Switch } from 'react-router';
 
+import Tabs from '@polkadot/react-components/Tabs';
 // local imports and components
 import { AppProps as Props } from '@polkadot/react-components/types';
 
 import TradeHistory from './containers/TradeHistory';
-import Tabs from '@polkadot/react-components/Tabs';
 
 function App ({ account, basePath }: Props): React.ReactElement<Props> {
 
