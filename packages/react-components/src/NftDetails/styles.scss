@@ -34,13 +34,18 @@
       line-height: 42px;
     }
 
-    h4 {
+    h4, h5 {
       font-family: var(--font-roboto) var(--font-mono);
       font-style: normal;
       font-weight: bold;
       font-size: 16px;
       line-height: 24px;
       min-height: 0 !important;
+    }
+
+    .h5 {
+      font-size: 14px;
+      line-height: 20px;
     }
 
     .accessories {

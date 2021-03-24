@@ -168,7 +168,7 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
               <Header as='h4'>You selling it!</Header>
             )}
             { !!(!uOwnIt && tokenInfo) && (
-              <Header as='h4'>The owner is {tokenInfo?.Owner?.toString()}</Header>
+              <Header as='h5'>The owner is {tokenInfo?.Owner?.toString()}</Header>
             )}
 
             <div className='buttons'>
