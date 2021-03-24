@@ -4,7 +4,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import spinnerSrc from './Spinner.png';
+import spinnerSrc from './Spinner.svg';
 import { useTranslation } from './translate';
 
 interface Props {
@@ -54,6 +54,7 @@ export default React.memo(styled(Spinner)`
   img {
     border: 1px solid transparent;
     border-radius: 10rem;
+    animation: 1s linear 0s normal none infinite running rot;
   }
 
   .text {
@@ -63,6 +64,15 @@ export default React.memo(styled(Spinner)`
 
     div+div {
       margin-top: 0.25rem;
+    }
+  }
+
+  @keyframes rot {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
     }
   }
 `);
