@@ -10,7 +10,6 @@ import React, { memo, ReactElement, useCallback, useEffect, useState } from 'rea
 import { useHistory } from 'react-router';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
-import Image from 'semantic-ui-react/dist/commonjs/elements/Image';
 
 import { Input } from '@polkadot/react-components';
 import { useCollections } from '@polkadot/react-hooks';
@@ -28,7 +27,7 @@ interface BuyTokensProps {
 
 const BuyTokens = ({ account, localRegistry, setShouldUpdateTokens, shouldUpdateTokens }: BuyTokensProps): ReactElement => {
   const history = useHistory();
-  const { getOffers, offers } = useCollections();
+  const { getOffers, offers, presetMintTokenCollection } = useCollections();
   const [searchString, setSearchString] = useState<string>('');
   const [filteredOffers, setFilteredOffers] = useState<OfferType[]>([]);
 
@@ -46,6 +45,10 @@ const BuyTokens = ({ account, localRegistry, setShouldUpdateTokens, shouldUpdate
       setShouldUpdateTokens(undefined);
     }
   }, [getOffers, shouldUpdateTokens, setShouldUpdateTokens]);
+
+  useEffect(() => {
+    void presetMintTokenCollection();
+  }, [presetMintTokenCollection]);
 
   return (
     <div className='nft-market'>

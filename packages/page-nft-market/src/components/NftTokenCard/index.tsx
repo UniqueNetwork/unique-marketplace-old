@@ -12,7 +12,7 @@ import Card from 'semantic-ui-react/dist/commonjs/views/Card';
 import { useSchema } from '@polkadot/react-hooks';
 import { TypeRegistry } from '@polkadot/types';
 
-import Arrow from '../../../../apps/public/icons/arrowRight.svg'
+import Arrow from '../../../../apps/public/icons/arrowRight.svg';
 
 interface Props {
   account: string;

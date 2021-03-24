@@ -4,38 +4,68 @@
 import './styles.scss';
 
 // external imports
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Route, Switch } from 'react-router';
 
 import { NftDetails } from '@polkadot/react-components';
+import Tabs from '@polkadot/react-components/Tabs';
 // local imports and components
 import { AppProps as Props } from '@polkadot/react-components/types';
 import { useRegistry } from '@polkadot/react-hooks';
 
 import NftWallet from './containers/NftWallet';
+import TokensForSale from './containers/TokensForSale';
 
 function App ({ account, basePath }: Props): React.ReactElement<Props> {
   const localRegistry = useRegistry();
   const [shouldUpdateTokens, setShouldUpdateTokens] = useState<string>();
 
+  const items = useMemo(() => [
+    {
+      isRoot: true,
+      name: 'tokens',
+      text: 'Tokens'
+    },
+    {
+      name: 'tokens-for-sale',
+      text: 'Tokens for sell'
+    }
+  ], []);
+
   return (
-    <Switch>
-      <Route path={`${basePath}/token-details`}>
-        <NftDetails
-          account={account || ''}
-          localRegistry={localRegistry}
-          setShouldUpdateTokens={setShouldUpdateTokens}
+    <>
+      <header>
+        <Tabs
+          basePath={basePath}
+          items={items}
         />
-      </Route>
-      <Route path={basePath}>
-        <NftWallet
-          account={account}
-          localRegistry={localRegistry}
-          setShouldUpdateTokens={setShouldUpdateTokens}
-          shouldUpdateTokens={shouldUpdateTokens}
-        />
-      </Route>
-    </Switch>
+      </header>
+      <Switch>
+        <Route path={`${basePath}/token-details`}>
+          <NftDetails
+            account={account || ''}
+            localRegistry={localRegistry}
+            setShouldUpdateTokens={setShouldUpdateTokens}
+          />
+        </Route>
+        <Route path={`${basePath}/tokens-for-sale`}>
+          <TokensForSale
+            account={account}
+            localRegistry={localRegistry}
+            setShouldUpdateTokens={setShouldUpdateTokens}
+            shouldUpdateTokens={shouldUpdateTokens}
+          />
+        </Route>
+        <Route path={basePath}>
+          <NftWallet
+            account={account}
+            localRegistry={localRegistry}
+            setShouldUpdateTokens={setShouldUpdateTokens}
+            shouldUpdateTokens={shouldUpdateTokens}
+          />
+        </Route>
+      </Switch>
+    </>
   );
 }
 

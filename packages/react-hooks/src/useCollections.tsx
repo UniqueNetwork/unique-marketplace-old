@@ -208,6 +208,25 @@ export function useCollections () {
     }
   }, [api, getDetailedCollectionInfo]);
 
+  const presetMintTokenCollection = useCallback(async (): Promise<NftCollectionInterface[]> => {
+    try {
+      const collections: Array<NftCollectionInterface> = [];
+      const mintCollectionInfo = await getDetailedCollectionInfo('1') as unknown as NftCollectionInterface;
+
+      if (mintCollectionInfo && mintCollectionInfo.Owner && mintCollectionInfo.Owner.toString() !== '5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM') {
+        collections.push({ ...mintCollectionInfo, id: '1' });
+      }
+
+      localStorage.setItem('tokenCollections', JSON.stringify(collections));
+
+      return collections;
+    } catch (e) {
+      console.log('presetTokensCollections error', e);
+
+      return [];
+    }
+  }, [getDetailedCollectionInfo]);
+
   return {
     error,
     getDetailedCollectionInfo,
@@ -217,6 +236,7 @@ export function useCollections () {
     getTokensOfCollection,
     getTrades,
     offers,
+    presetMintTokenCollection,
     presetTokensCollections,
     trades
   };
