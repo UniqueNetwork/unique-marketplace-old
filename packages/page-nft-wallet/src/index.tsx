@@ -6,6 +6,7 @@ import './styles.scss';
 // external imports
 import React, { useMemo, useState } from 'react';
 import { Route, Switch } from 'react-router';
+import { useLocation } from 'react-router-dom';
 
 import { NftDetails } from '@polkadot/react-components';
 import Tabs from '@polkadot/react-components/Tabs';
@@ -15,7 +16,6 @@ import { useRegistry } from '@polkadot/react-hooks';
 
 import NftWallet from './containers/NftWallet';
 import TokensForSale from './containers/TokensForSale';
-import { useLocation } from 'react-router-dom';
 
 function App ({ account, basePath }: Props): React.ReactElement<Props> {
   const localRegistry = useRegistry();
