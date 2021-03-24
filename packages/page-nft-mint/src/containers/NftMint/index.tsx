@@ -16,10 +16,10 @@ import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
 import { Input } from '@polkadot/react-components';
 
-import Replace from '../../../../apps/public/icons/ArrowCounterClockwise.svg';
-import Delete from '../../../../apps/public/icons/TrashSimple.svg';
 import useMintApi, { ImageInterface } from '../../hooks/useMintApi';
+import Replace from '../../images/ArrowCounterClockwise.svg';
 import Picture from '../../images/picture.svg';
+import Delete from '../../images/TrashSimple.svg';
 
 const maxFileSize = 5000000;
 
