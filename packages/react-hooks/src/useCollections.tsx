@@ -99,7 +99,7 @@ export function useCollections () {
 
   const getDetailedCollectionInfo = useCallback(async (collectionId: string) => {
     if (!api) {
-      return {};
+      return null;
     }
 
     try {

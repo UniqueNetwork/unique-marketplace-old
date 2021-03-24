@@ -7,14 +7,18 @@ import BN from 'bn.js';
 import React, { useCallback, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
+import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
+import Button from 'semantic-ui-react/dist/commonjs/elements/Button';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
+import Image from 'semantic-ui-react/dist/commonjs/elements/Image';
 import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
-import { Button, Input, InputBalance, TxButton } from '@polkadot/react-components';
-import { useApi, useBalance, useMarketplaceStages, useSchema } from '@polkadot/react-hooks';
+import { Input, InputBalance, TxButton } from '@polkadot/react-components';
+import { useApi, useBalance, useDecoder, useMarketplaceStages, useSchema } from '@polkadot/react-hooks';
 import { TypeRegistry } from '@polkadot/types';
 import { formatBalance } from '@polkadot/util';
 
+import arrowLeft from './arrowLeft.svg';
 import BuySteps from './BuySteps';
 import SaleSteps from './SaleSteps';
 
@@ -36,9 +40,10 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
   const [isAddressError, setIsAddressError] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
   const { balance } = useBalance(account);
+  const { collectionName16Decoder } = useDecoder();
   const { attributes, collectionInfo, reFungibleBalance, tokenUrl } = useSchema(account, collectionId, tokenId, localRegistry);
   const [tokenPriceForSale, setTokenPriceForSale] = useState<string>('');
-  const { cancelStep, deposited, readyToAskPrice, saleFee, sendCurrentUserAction, setPrice, setWithdrawAmount, tokenAsk, tokenInfo, transferStep, withdrawAmount } = useMarketplaceStages(account, collectionInfo, tokenId);
+  const { cancelStep, deposited, formatKsmBalance, kusamaBalance, readyToAskPrice, saleFee, sendCurrentUserAction, setPrice, setWithdrawAmount, tokenAsk, tokenInfo, transferStep, withdrawAmount } = useMarketplaceStages(account, collectionInfo, tokenId);
 
   const uOwnIt = tokenInfo?.Owner?.toString() === account || (tokenAsk && tokenAsk.owner === account);
   const uSellIt = tokenAsk && tokenAsk.owner === account;
@@ -60,7 +65,8 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
     setTokenPart(parseFloat(value));
   }, [decimalPoints, reFungibleBalance]);
 
-  const goBack = useCallback(() => {
+  const goBack = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
     history.back();
   }, []);
 
@@ -96,119 +102,146 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
 
   return (
     <div className='toke-details'>
-      { collectionInfo && (
-        <div className='token-image'>
-          <img
-            alt='token-image'
-            src={tokenUrl}
-          />
-        </div>
-      )}
-      <a onClick={goBack} />
-      <div className='token-info'>
-        <Header as='h3'>{collectionId} #{tokenId}</Header>
-        { attributes && Object.values(attributes).length > 0 && (
-          <>
-            <strong>Attributes:</strong>
-            {Object.keys(attributes).map((attrKey) => (<p key={attrKey}>{attrKey}: {attributes[attrKey]}</p>))}
-          </>
+      <Header as='h1'>
+        { attributes && attributes.NameStr && (
+          <span>
+            {attributes.NameStr} - {tokenId}
+          </span>
         )}
-        { (uOwnIt && !uSellIt) && (
-          <Header as='h4'>You own it! (address: {account})</Header>
+        { (!attributes || !attributes.NameStr) && (
+          <span>
+            {tokenId}
+          </span>
         )}
-        { uSellIt && (
-          <Header as='h4'>You selling it! (price: {formatBalance(tokenAsk?.price)})</Header>
-        )}
-        { !!(!uOwnIt && tokenInfo) && (
-          <Header as='h4'>The owner is {tokenInfo?.Owner?.toString()}</Header>
-        )}
-        { deposited && (
-          <p>Your deposit is: <strong>{formatBalance(deposited)}</strong></p>
-        )}
-        { (!uOwnIt && !transferStep && tokenAsk) && (
-          <>
-            <p>Price <strong>{formatBalance(tokenAsk.price)}</strong> with commission (2%) <strong>{formatBalance(tokenAsk.price.muln(0.02))}</strong></p>
-            <p>Total: <strong>{formatBalance(tokenAsk.price.add(tokenAsk.price.muln(0.02)))}</strong></p>
-            <Button
-              icon='shopping-cart'
-              label='Buy it'
-              onClick={sendCurrentUserAction.bind(null, 'BUY')}
-            />
-          </>
-        )}
-        { (deposited && deposited.gtn(0)) && (
-          <Button
-            icon='history'
-            label='Withdraw'
-            onClick={setReadyToWithdraw.bind(null, !readyToWithdraw)}
-          />
-        )}
-        { (uOwnIt && !uSellIt) && (
-          <Button
-            icon='dollar-sign'
-            label='Sale it'
-            onClick={sendCurrentUserAction.bind(null, 'SELL')}
-          />
-        )}
-        { (uOwnIt && !uSellIt) && (
-          <Button
-            icon='paper-plane'
-            label='Transfer'
-            onClick={setShowTransferForm.bind(null, !showTransferForm)}
-          />
-        )}
-        { (uSellIt && !transferStep) && (
-          <Button
-            icon='window-close'
-            label='Cancel sell'
-            onClick={sendCurrentUserAction.bind(null, 'CANCEL')}
-          />
-        )}
-      </div>
-      { (saleFee && !balance?.free.gte(saleFee)) && (
-        <span className='text-warning'>Your balance is too low to pay fees</span>
-      )}
-      { showTransferForm && (
-        <Form className='transfer-form'>
-          <Form.Field>
-            <Input
-              className='isSmall'
-              isError={isAddressError}
-              label='Please enter an address you want to transfer'
-              onChange={setRecipientAddress}
-              placeholder='Recipient address'
-            />
-          </Form.Field>
-          { collectionInfo?.Mode.isReFungible && (
-            <Form.Field>
-              <Input
-                className='isSmall'
-                isError={isError}
-                label={`Please enter part of token you want to transfer, your token balance is: ${reFungibleBalance}`}
-                min={1 / (decimalPoints * 10)}
-                onChange={setTokenPartToTransfer}
-                placeholder='Part of re-fungible address'
-                type='number'
+      </Header>
+      <a
+        className='go-back'
+        href='/'
+        onClick={goBack}
+      >
+        <Image
+          className='go-back'
+          src={arrowLeft}
+        />
+        back
+      </a>
+      <Grid className='token-info'>
+        <Grid.Row>
+          <Grid.Column width={8}>
+            { collectionInfo && (
+              <Image
+                className='token-image'
+                src={tokenUrl}
               />
-            </Form.Field>
-          )}
-          <Form.Field>
-            <TxButton
-              accountId={account}
-              isDisabled={!recipient || isError}
-              label='Submit'
-              onStart={setShowTransferForm.bind(null, false)}
-              onSuccess={onTransferSuccess}
-              params={[recipient, collectionId, tokenId, (tokenPart * Math.pow(10, decimalPoints))]}
-              tx={api.tx.nft.transfer}
-            />
-          </Form.Field>
-        </Form>
-      )}
+            )}
+          </Grid.Column>
+          <Grid.Column width={8}>
+            <Header as='h3'>{collectionInfo && <span>{collectionName16Decoder(collectionInfo.Name)}</span>} #{tokenId}</Header>
+            { attributes && Object.values(attributes).length > 0 && (
+              <div className='accessories'>
+                <p>Accessories:</p>
+                {Object.keys(attributes).map((attrKey) => (<span key={attrKey}>{attrKey}: {attributes[attrKey]}</span>))}
+              </div>
+            )}
+            { (tokenAsk && tokenAsk.price) && (
+              <>
+                <Header as={'h2'}>
+                  {formatBalance(tokenAsk.price.add(tokenAsk.price.muln(0.02)), { decimals: 12, withSi: false })} KSM
+                </Header>
+                <p>Fee: {formatKsmBalance(tokenAsk.price.muln(0.02))} KSM, Price: {formatBalance(tokenAsk.price, { decimals: 12, withSi: false })} KSM</p>
+                <p>Your KSM Balance: {formatBalance(kusamaBalance?.free || new BN(0), { decimals: 12, withSi: false })} KSM</p>
+                { deposited && (
+                  <p>Your KSM Deposit: {formatBalance(deposited, { decimals: 12, withSi: false })} KSM</p>
+                )}
+                { (saleFee && !balance?.free.add(deposited || new BN(0)).gte(saleFee)) && (
+                  <p className='text-warning'>Your balance is too low to pay fees</p>
+                )}
+              </>
+            )}
+            <div className='divider' />
+            { (uOwnIt && !uSellIt) && (
+              <Header as='h4'>You own it!</Header>
+            )}
+            { uSellIt && (
+              <Header as='h4'>You selling it!</Header>
+            )}
+            { !!(!uOwnIt && tokenInfo) && (
+              <Header as='h4'>The owner is {tokenInfo?.Owner?.toString()}</Header>
+            )}
+            { (!uOwnIt && !transferStep && tokenAsk) && (
+              <Button
+                content='Buy it'
+                onClick={sendCurrentUserAction.bind(null, 'BUY')}
+              />
+            )}
+            { (deposited && deposited.gtn(0)) && (
+              <Button
+                content='Withdraw'
+                onClick={setReadyToWithdraw.bind(null, !readyToWithdraw)}
+              />
+            )}
+            { (uOwnIt && !uSellIt) && (
+              <Button
+                content='Sale it'
+                onClick={sendCurrentUserAction.bind(null, 'SELL')}
+              />
+            )}
+            { (uOwnIt && !uSellIt) && (
+              <Button
+                content='Transfer'
+                onClick={setShowTransferForm.bind(null, !showTransferForm)}
+              />
+            )}
+            { (uSellIt && !transferStep) && (
+              <Button
+                content='Cancel sell'
+                onClick={sendCurrentUserAction.bind(null, 'CANCEL')}
+              />
+            )}
+            { showTransferForm && (
+              <Form className='transfer-form'>
+                <Form.Field>
+                  <Input
+                    className='isSmall'
+                    isError={isAddressError}
+                    label='Please enter an address you want to transfer'
+                    onChange={setRecipientAddress}
+                    placeholder='Recipient address'
+                  />
+                </Form.Field>
+                { collectionInfo?.Mode.isReFungible && (
+                  <Form.Field>
+                    <Input
+                      className='isSmall'
+                      isError={isError}
+                      label={`Please enter part of token you want to transfer, your token balance is: ${reFungibleBalance}`}
+                      min={1 / (decimalPoints * 10)}
+                      onChange={setTokenPartToTransfer}
+                      placeholder='Part of re-fungible address'
+                      type='number'
+                    />
+                  </Form.Field>
+                )}
+                <Form.Field>
+                  <TxButton
+                    accountId={account}
+                    isDisabled={!recipient || isError}
+                    label='Submit'
+                    onStart={setShowTransferForm.bind(null, false)}
+                    onSuccess={onTransferSuccess}
+                    params={[recipient, collectionId, tokenId, (tokenPart * Math.pow(10, decimalPoints))]}
+                    tx={api.tx.nft.transfer}
+                  />
+                </Form.Field>
+              </Form>
+            )}
+          </Grid.Column>
+        </Grid.Row>
+      </Grid>
       { cancelStep && (
         <Loader
           active
-          className='modal-loader'
+          className='token-loader'
           inline='centered'
         >
           Cancel sale...
@@ -217,6 +250,7 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
       { !!(transferStep && transferStep <= 3) && (
         <SaleSteps step={transferStep} />
       )}
+      <SaleSteps step={2} />
       { !!(transferStep && transferStep >= 4) && (
         <BuySteps step={transferStep} />
       )}
@@ -238,14 +272,12 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
           </Form.Field>
           <Form.Field>
             <Button
-              icon='history'
-              label={`Withdraw max ${formatBalance(deposited)}`}
+              content={`Withdraw max ${formatBalance(deposited)}`}
               onClick={deposited ? setWithdrawAmount.bind(null, deposited) : () => null}
             />
             <Button
-              icon='save'
-              isDisabled={!deposited || (withdrawAmount && withdrawAmount.gt(deposited))}
-              label='confirm withdraw'
+              content='confirm withdraw'
+              disabled={!deposited || (withdrawAmount && withdrawAmount.gt(deposited))}
               onClick={onConfirmWithdraw}
             />
           </Form.Field>
@@ -265,8 +297,7 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
           </Form.Field>
           <Form.Field>
             <Button
-              icon='save'
-              label='Set price'
+              content='Set price'
               onClick={onSavePrice}
             />
           </Form.Field>

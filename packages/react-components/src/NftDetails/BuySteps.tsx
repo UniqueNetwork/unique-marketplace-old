@@ -5,7 +5,8 @@ import './styles.scss';
 
 import React, { memo } from 'react';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
-import Step from 'semantic-ui-react/dist/commonjs/elements/Step';
+
+import Step from './Step';
 
 interface StepProps {
   step: number;
@@ -17,34 +18,29 @@ const BuySteps: React.FC<StepProps> = ({ step }) => {
       className='buy-steps'
       id='buy-steps'>
       <Header as='h3'>Buying this NFT</Header>
-      <Step.Group ordered>
+      <div className='steps'>
         <Step
-          active={step === 4}
-          completed={step > 4}
-        >
-          <Step.Content>
-            <Step.Title>Send Funds to Escrow</Step.Title>
-          </Step.Content>
-        </Step>
-
+          active={step === 1}
+          completed={step > 1}
+          inactive={step < 1}
+          numb={1}
+          text={'Send NFT to Escrow'}
+        />
         <Step
-          active={step === 5}
-          completed={step > 5}
-        >
-          <Step.Content>
-            <Step.Title>Wait for Deposit Registry</Step.Title>
-          </Step.Content>
-        </Step>
-
+          active={step === 2}
+          completed={step > 2}
+          inactive={step < 2}
+          numb={2}
+          text={'Wait for Deposit Registry'}
+        />
         <Step
-          active={step === 6}
-          completed={step > 6}
-        >
-          <Step.Content>
-            <Step.Title>Exchange Funds for NFT</Step.Title>
-          </Step.Content>
-        </Step>
-      </Step.Group>
+          active={step === 3}
+          completed={step > 3}
+          inactive={step < 3}
+          numb={3}
+          text={'Set Price'}
+        />
+      </div>
     </div>
   );
 };

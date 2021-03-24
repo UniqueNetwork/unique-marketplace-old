@@ -15,7 +15,19 @@ type AttributesDecoded = {
   [key: string]: string | string[],
 }
 
-export function useSchema (account: string, collectionId: string, tokenId: string | number, localRegistry?: TypeRegistry) {
+interface UseSchemaInterface {
+  attributes?: AttributesDecoded;
+  attributesConst?: string;
+  attributesVar?: string;
+  collectionInfo?: NftCollectionInterface;
+  getCollectionInfo: () => void;
+  getTokenDetails: () => void;
+  reFungibleBalance: number;
+  tokenDetails?: TokenDetailsInterface;
+  tokenUrl: string;
+}
+
+export function useSchema (account: string, collectionId: string, tokenId: string | number, localRegistry?: TypeRegistry): UseSchemaInterface {
   const [collectionInfo, setCollectionInfo] = useState<NftCollectionInterface>();
   const [reFungibleBalance, setReFungibleBalance] = useState<number>(0);
   const [tokenUrl, setTokenUrl] = useState<string>('');
@@ -73,7 +85,7 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
     } catch (e) {
       console.error('token balance calculation error', e);
     }
-  }, [account, collectionInfo?.DecimalPoints, collectionInfo?.Mode.isReFungible, tokenDetails?.Owner]);
+  }, [account, collectionInfo, tokenDetails?.Owner]);
 
   const setUnique = useCallback(async (collectionInfo: NftCollectionInterface) => {
     try {
@@ -113,12 +125,14 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
     if (collectionId) {
       const info: NftCollectionInterface = await getDetailedCollectionInfo(collectionId) as unknown as NftCollectionInterface;
 
-      setCollectionInfo({
-        ...info,
-        ConstOnChainSchema: info.ConstOnChainSchema,
-        VariableOnChainSchema: info.VariableOnChainSchema,
-        id: collectionId
-      });
+      console.log('collectionInfo', info);
+
+      if (info && Object.keys(info).length) {
+        setCollectionInfo({
+          ...info,
+          id: collectionId
+        });
+      }
     }
   }, [collectionId, getDetailedCollectionInfo]);
 

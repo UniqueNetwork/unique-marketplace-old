@@ -14,9 +14,10 @@ import { TypeRegistry } from '@polkadot/types/create';
 import { encodeAddress } from '@polkadot/util-crypto';
 
 interface UseKusamaApiInterface {
+  formatKsmBalance: (balance: BN) => string;
   kusamaBalance: BalanceInterface | undefined;
   kusamaDecimals: number;
-  kusamaTransfer: (recipient: string, value: BN, onSuccess: () => void, onFail: () => void) => void;
+  kusamaTransfer: (recipient: string, value: BN, onSuccess: (status: string) => void, onFail: (status: string) => void) => void;
 }
 
 export const useKusamaApi = (account?: string): UseKusamaApiInterface => {
@@ -26,6 +27,21 @@ export const useKusamaApi = (account?: string): UseKusamaApiInterface => {
   const [kusamaBalance, setKusamaBalance] = useState<BalanceInterface>();
   const [encodedKusamaAccount, setEncodedKusamaAccount] = useState<string>();
   const { queueExtrinsic } = useContext(StatusContext);
+
+  const formatKsmBalance = useCallback((value: BN): string => {
+    console.log('value str', parseFloat(value.toString()));
+
+    let roundedNum = (Math.round(parseFloat(value.toString()) / Math.pow(10, kusamaDecimals))).toString();
+    const dec = roundedNum.indexOf('.');
+
+    if ((dec >= 0) && (roundedNum.length >= dec + 4)) {
+      roundedNum = roundedNum.substr(0, dec + 4);
+    }
+
+    console.log('roundedNum', roundedNum);
+
+    return roundedNum; // `${(value.toNumber() / Math.pow(10, kusamaDecimals)).toFixed(5)} ksm`;
+  }, [kusamaDecimals]);
 
   const getKusamaBalance = useCallback(async () => {
     try {
@@ -58,16 +74,16 @@ export const useKusamaApi = (account?: string): UseKusamaApiInterface => {
     });
   }, [queuePayload, queueSetTxStatus]);
 
-  const kusamaTransfer = useCallback((recipient, value) => {
+  const kusamaTransfer = useCallback((recipient: string, value: BN, onSuccess: (status: string) => void, onFail: (status: string) => void) => {
     if (encodedKusamaAccount && kusamaApi) {
       queueExtrinsic({
         accountId: encodedKusamaAccount,
         extrinsic: kusamaApi.tx.balances
           .transfer(recipient, value),
         isUnsigned: false,
-        txFailedCb: () => { console.log('send'); /* send(fail); */ },
+        txFailedCb: () => { onFail('SEND_MONEY_FAIL'); },
         txStartCb: () => { console.log('start'); },
-        txSuccessCb: () => { console.log('send'); /* send(success); */ },
+        txSuccessCb: () => { onSuccess('SEND_MONEY_SUCCESS'); },
         txUpdateCb: () => { console.log('update'); }
       });
     }
@@ -92,6 +108,7 @@ export const useKusamaApi = (account?: string): UseKusamaApiInterface => {
   }, [initKusamaApi]);
 
   return {
+    formatKsmBalance,
     kusamaBalance,
     kusamaDecimals,
     kusamaTransfer

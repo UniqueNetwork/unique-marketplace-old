@@ -10,7 +10,7 @@ import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 import { StatusContext } from '@polkadot/react-components/Status';
 import { useApi, useBalance, useCollections, useKusamaApi, useNftContract } from '@polkadot/react-hooks';
-import { settings } from '@polkadot/ui-settings';
+import { BalanceInterface } from '@polkadot/react-hooks/useBalance';
 import { formatBalance } from '@polkadot/util';
 
 import marketplaceStateMachine from './stateMachine';
@@ -22,6 +22,9 @@ export interface MarketplaceStagesInterface {
   deposited: BN | undefined;
   depositor: string | undefined;
   error: string | null;
+  formatKsmBalance: (value: BN) => string;
+  kusamaBalance: BalanceInterface | undefined;
+  kusamaDecimals: number;
   saleFee: BN | undefined;
   sendCurrentUserAction: (action: UserActionType) => void;
   setPrice: (price: string) => void;
@@ -48,11 +51,9 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
   const { queueExtrinsic } = useContext(StatusContext);
   const [readyToAskPrice, setReadyToAskPrice] = useState<boolean>(false);
   const [tokenPriceForSale, setTokenPriceForSale] = useState<number>();
-  const { kusamaDecimals, kusamaTransfer } = useKusamaApi(account);
+  const { formatKsmBalance, kusamaBalance, kusamaDecimals, kusamaTransfer } = useKusamaApi(account);
   // currency code
   const quoteId = 2;
-
-  console.log('settings.get', settings.get());
 
   const sendCurrentUserAction = useCallback((userAction: UserActionType) => {
     send(userAction);
@@ -206,8 +207,8 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
     if (!isDepositEnough(userDeposit, tokenAsk.price)) {
       const needed = depositNeeded(userDeposit, tokenAsk.price);
 
-      if (balance?.free.lt(needed)) {
-        const err = `Your KSM balance is too low: ${formatBalance(balance?.free)}. You need at least: ${formatBalance(needed)}`;
+      if (kusamaBalance?.free.lt(needed)) {
+        const err = `Your KSM balance is too low: ${formatBalance(kusamaBalance?.free)}. You need at least: ${formatBalance(needed)}`;
 
         setError(err);
 
@@ -215,20 +216,12 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
       }
 
       send('SIGN_SUCCESS');
-
-      queueTransaction(
-        api.tx.balances
-          .transfer(escrowAddress, needed),
-        'SEND_MONEY_FAIL',
-        'SIGN_SUCCESS',
-        'SEND_MONEY_SUCCESS',
-        'transfer update'
-      );
+      kusamaTransfer(escrowAddress, needed, send, send);
     } else {
       send('WAIT_FOR_DEPOSIT');
     }
     // buyStep3
-  }, [api.tx.balances, balance?.free, depositNeeded, escrowAddress, getUserDeposit, isDepositEnough, queueTransaction, send, tokenAsk]);
+  }, [depositNeeded, escrowAddress, getUserDeposit, isDepositEnough, kusamaBalance, kusamaTransfer, send, tokenAsk]);
 
   const checkDepositReady = useCallback(async () => {
     const userDeposit = await getUserDeposit();
@@ -409,6 +402,9 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
     deposited,
     depositor,
     error,
+    formatKsmBalance,
+    kusamaBalance,
+    kusamaDecimals,
     readyToAskPrice,
     saleFee,
     sendCurrentUserAction,
