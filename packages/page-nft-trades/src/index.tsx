@@ -4,21 +4,43 @@
 import './styles.scss';
 
 // external imports
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Route, Switch } from 'react-router';
 
 // local imports and components
 import { AppProps as Props } from '@polkadot/react-components/types';
 
 import TradeHistory from './containers/TradeHistory';
+import Tabs from '@polkadot/react-components/Tabs';
 
-function App ({ basePath }: Props): React.ReactElement<Props> {
+function App ({ account, basePath }: Props): React.ReactElement<Props> {
+
+  const items = useMemo(() => [
+    {
+      isRoot: true,
+      name: 'my-trades',
+      text: 'My trades'
+    },
+    {
+      name: 'all-trades',
+      text: 'All trades'
+    }
+  ], []);
 
   return (
     <main className='nft--App'>
+      <header>
+        <Tabs
+          basePath={basePath}
+          items={items}
+        />
+      </header>
       <Switch>
-        <Route path={`${basePath}`}>
+        <Route path={`${basePath}/all-trades`}>
           <TradeHistory />
+        </Route>
+        <Route path={`${basePath}`}>
+          <TradeHistory account={account} />
         </Route>
       </Switch>
     </main>
