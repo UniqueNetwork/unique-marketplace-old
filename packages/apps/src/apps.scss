@@ -23,10 +23,10 @@
       padding: calc(var(--gap) / 2) calc(var(--gap) * 1.5);
       font: 500 16px/24px var(--font-roboto);
       letter-spacing: 1px;
+      border-radius: var(--bradius) !important;
 
       &.active {
         background-color: var(--link-color);
-        border-radius: var(--bradius) !important;
         color: var(--white-color);
         margin-top: 0;
         font-weight: 500;
