@@ -209,7 +209,7 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
                     placeholder='Recipient address'
                   />
                 </Form.Field>
-                { collectionInfo?.Mode.isReFungible && (
+                { collectionInfo?.Mode.reFungible && (
                   <Form.Field>
                     <Input
                       className='isSmall'
@@ -235,74 +235,73 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
                 </Form.Field>
               </Form>
             )}
+            { cancelStep && (
+              <Loader
+                active
+                className='token-loader'
+                inline='centered'
+              >
+                Cancel sale...
+              </Loader>
+            )}
+            { !!(transferStep && transferStep <= 3) && (
+              <SaleSteps step={transferStep} />
+            )}
+            { !!(transferStep && transferStep >= 4) && (
+              <BuySteps step={transferStep} />
+            )}
+            { readyToWithdraw && (
+              <Form className='transfer-form'>
+                <Form.Field>
+                  <InputBalance
+                    autoFocus
+                    className='isSmall'
+                    defaultValue={withdrawAmount}
+                    help={'Type the amount you want to withdraw.'}
+                    isError={!deposited || (withdrawAmount && withdrawAmount.gt(deposited))}
+                    isZeroable
+                    label={'amount'}
+                    maxValue={deposited}
+                    onChange={setWithdrawAmount}
+                    value={withdrawAmount}
+                  />
+                </Form.Field>
+                <Form.Field>
+                  <Button
+                    content={`Withdraw max ${formatBalance(deposited)}`}
+                    onClick={deposited ? setWithdrawAmount.bind(null, deposited) : () => null}
+                  />
+                  <Button
+                    content='confirm withdraw'
+                    disabled={!deposited || (withdrawAmount && withdrawAmount.gt(deposited))}
+                    onClick={onConfirmWithdraw}
+                  />
+                </Form.Field>
+              </Form>
+            )}
+            { readyToAskPrice && (
+              <Form className='transfer-form'>
+                <Form.Field>
+                  <InputBalance
+                    autoFocus
+                    className='isSmall'
+                    help={<span>Set nft token price</span>}
+                    label={'amount'}
+                    onChange={setTokenPriceForSale}
+                    value={tokenPriceForSale}
+                  />
+                </Form.Field>
+                <Form.Field>
+                  <Button
+                    content='Set price'
+                    onClick={onSavePrice}
+                  />
+                </Form.Field>
+              </Form>
+            )}
           </Grid.Column>
         </Grid.Row>
       </Grid>
-      { cancelStep && (
-        <Loader
-          active
-          className='token-loader'
-          inline='centered'
-        >
-          Cancel sale...
-        </Loader>
-      )}
-      { !!(transferStep && transferStep <= 3) && (
-        <SaleSteps step={transferStep} />
-      )}
-      <SaleSteps step={2} />
-      { !!(transferStep && transferStep >= 4) && (
-        <BuySteps step={transferStep} />
-      )}
-      { readyToWithdraw && (
-        <Form className='transfer-form'>
-          <Form.Field>
-            <InputBalance
-              autoFocus
-              className='isSmall'
-              defaultValue={withdrawAmount}
-              help={'Type the amount you want to withdraw.'}
-              isError={!deposited || (withdrawAmount && withdrawAmount.gt(deposited))}
-              isZeroable
-              label={'amount'}
-              maxValue={deposited}
-              onChange={setWithdrawAmount}
-              value={withdrawAmount}
-            />
-          </Form.Field>
-          <Form.Field>
-            <Button
-              content={`Withdraw max ${formatBalance(deposited)}`}
-              onClick={deposited ? setWithdrawAmount.bind(null, deposited) : () => null}
-            />
-            <Button
-              content='confirm withdraw'
-              disabled={!deposited || (withdrawAmount && withdrawAmount.gt(deposited))}
-              onClick={onConfirmWithdraw}
-            />
-          </Form.Field>
-        </Form>
-      )}
-      { readyToAskPrice && (
-        <Form className='transfer-form'>
-          <Form.Field>
-            <InputBalance
-              autoFocus
-              className='isSmall'
-              help={<span>Set nft token price</span>}
-              label={'amount'}
-              onChange={setTokenPriceForSale}
-              value={tokenPriceForSale}
-            />
-          </Form.Field>
-          <Form.Field>
-            <Button
-              content='Set price'
-              onClick={onSavePrice}
-            />
-          </Form.Field>
-        </Form>
-      )}
     </div>
   );
 }

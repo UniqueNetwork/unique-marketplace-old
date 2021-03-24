@@ -89,7 +89,7 @@ function TransferModal ({ account, balance, canTransferTokens, closeModal, colle
               placeholder='Recipient address'
             />
           </Form.Field>
-          { collection.Mode.isReFungible && (
+          { collection.Mode.reFungible && (
             <Form.Field>
               <Input
                 className='isSmall'
