@@ -3,18 +3,18 @@
 
 import type { TradeType } from '@polkadot/react-hooks/useCollections';
 
-import React, { useCallback, useEffect, useRef } from 'react';
-import Header from 'semantic-ui-react/dist/commonjs/elements/Header/Header';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { ListComponent } from '@polkadot/react-components';
 import { useCollections } from '@polkadot/react-hooks';
 
-function TradeHistory (): React.ReactElement {
-  const { getTrades, trades } = useCollections();
+function TradeHistory ({ account }: { account?: string }): React.ReactElement {
+  const { getTrades, myTrades, trades } = useCollections();
+  const [tradesList, setTradesList] = useState<TradeType[]>();
 
   const fetchTrades = useCallback(() => {
-    getTrades();
-  }, [getTrades]);
+    getTrades(account);
+  }, [account, getTrades]);
 
   const headerRef = useRef([
     ['Price', 'start', 2],
@@ -27,15 +27,22 @@ function TradeHistory (): React.ReactElement {
     fetchTrades();
   }, [fetchTrades]);
 
+  useEffect(() => {
+    if (account) {
+      setTradesList(myTrades);
+    } else {
+      setTradesList(trades);
+    }
+  }, [account, myTrades, trades]);
+
   return (
     <div className='trades'>
-      <Header as='h1'>Trades</Header>
-      <Header as='h4'>Description</Header>
+      { account && 'MY TRADES!!!' }
       <ListComponent
         empty={'No trades found'}
         header={headerRef.current}
       >
-        { trades && trades.map((trade: TradeType) => (
+        { tradesList && tradesList.map((trade: TradeType) => (
           <tr key={`${trade.collectionId}-${trade.tokenId}-${trade.buyer || ''}`}>
             <td
               className='start'

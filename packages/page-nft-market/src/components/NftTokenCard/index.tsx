@@ -11,8 +11,9 @@ import Card from 'semantic-ui-react/dist/commonjs/views/Card';
 
 import { useSchema } from '@polkadot/react-hooks';
 import { TypeRegistry } from '@polkadot/types';
+import { formatBalance } from '@polkadot/util';
 
-import Arrow from '../../../../apps/public/icons/arrowRight.svg'
+import Arrow from '../../../../apps/public/icons/arrowRight.svg';
 
 interface Props {
   account: string;
@@ -41,13 +42,15 @@ const NftTokenCard = ({ account, collectionId, localRegistry, openDetailedInform
       { token && (
         <Card.Content>
           <Card.Description>
-            <div className='card-name'>
-              <div className='card-name__title'>Name</div>
-              <div className='card-name__field'>PNK-5498</div>
-            </div>
+            { attributes && attributes.NameStr && (
+              <div className='card-name'>
+                <div className='card-name__title'>Name</div>
+                <div className='card-name__field'>{attributes.NameStr}</div>
+              </div>
+            )}
             <div className='card-price'>
               <div className='card-price__title'>Price</div>
-              <div className='card-price__field'>1,2 KSM</div>
+              <div className='card-price__field'>{formatBalance(token.price)}</div>
             </div>
           </Card.Description>
           <Card.Meta>
@@ -57,17 +60,6 @@ const NftTokenCard = ({ account, collectionId, localRegistry, openDetailedInform
               />
             </a>
           </Card.Meta>
-          {/* <Card.Header>{collectionId} #{token.tokenId}</Card.Header> */}
-          {/* <Card.Meta>
-            { attributes && Object.values(attributes).length > 0 && (
-              <p className='token-balance'>
-                Attributes: {Object.keys(attributes).map((attrKey) => (<span key={attrKey}>{attrKey}: {attributes[attrKey]}</span>))}
-              </p>
-            )}
-          </Card.Meta>
-          <Card.Description>
-            Seller: {token.seller}
-            </Card.Description> */}
         </Card.Content>
       )}
     </Card>

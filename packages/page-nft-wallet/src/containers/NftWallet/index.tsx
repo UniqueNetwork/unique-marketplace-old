@@ -9,9 +9,10 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header/Header';
 
 import { LabelHelp, Table } from '@polkadot/react-components';
+import { useCollections } from '@polkadot/react-hooks';
 import { TypeRegistry } from '@polkadot/types';
 
-import CollectionSearch from '../../components/CollectionSearch';
+// import CollectionSearch from '../../components/CollectionSearch';
 import NftCollectionCard from '../../components/NftCollectionCard';
 import TransferModal from '../../components/TransferModal/';
 
@@ -29,10 +30,17 @@ function NftWallet ({ account, localRegistry, setShouldUpdateTokens, shouldUpdat
   const [selectedCollection, setSelectedCollection] = useState<NftCollectionInterface>();
   const [canTransferTokens] = useState<boolean>(true);
   const currentAccount = useRef<string | null | undefined>();
+  const { presetMintTokenCollection } = useCollections();
 
-  const addCollection = useCallback((collection: NftCollectionInterface) => {
+  /* const addCollection = useCallback((collection: NftCollectionInterface) => {
     setCollections((prevCollections: NftCollectionInterface[]) => [...prevCollections, collection]);
-  }, []);
+  }, []); */
+
+  const addMintCollectionToList = useCallback(async () => {
+    const firstCollections: NftCollectionInterface[] = await presetMintTokenCollection();
+
+    setCollections(() => [...firstCollections]);
+  }, [presetMintTokenCollection]);
 
   const removeCollection = useCallback((collectionToRemove) => {
     if (selectedCollection && selectedCollection.id === collectionToRemove) {
@@ -55,19 +63,23 @@ function NftWallet ({ account, localRegistry, setShouldUpdateTokens, shouldUpdat
     setShouldUpdateTokens('all');
   }, [account, setShouldUpdateTokens]);
 
-  useEffect(() => {
+  /* useEffect(() => {
     localStorage.setItem('tokenCollections', JSON.stringify(collections));
-  }, [collections]);
+  }, [collections]); */
+
+  useEffect(() => {
+    void addMintCollectionToList();
+  }, [addMintCollectionToList]);
 
   return (
     <div className='nft-wallet'>
-      <Header as='h1'>Usetech NFT wallet</Header>
+      {/* <Header as='h1'>Usetech NFT wallet</Header>
       <CollectionSearch
         account={account}
         addCollection={addCollection}
         collections={collections}
       />
-      <br />
+      <br /> */}
       <Header as='h2'>
         My collections
         <LabelHelp

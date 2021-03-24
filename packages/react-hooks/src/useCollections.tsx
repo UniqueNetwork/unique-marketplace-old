@@ -82,6 +82,7 @@ export function useCollections () {
   const [error, setError] = useState<ErrorType>();
   const [offers, setOffers] = useState<OfferType[]>();
   const [trades, setTrades] = useState<TradeType[]>();
+  const [myTrades, setMyTrades] = useState<TradeType[]>();
 
   const getTokensOfCollection = useCallback(async (collectionId: string, ownerId: string) => {
     if (!api || !collectionId || !ownerId) {
@@ -167,14 +168,24 @@ export function useCollections () {
   /**
    * Return the list of token trades
    */
-  const getTrades = useCallback(() => {
-    fetchData<TradeType[]>('/trades/').subscribe((result: TradeType[] | ErrorType) => {
-      if ('error' in result) {
-        setError(result);
-      } else {
-        setTrades(result);
-      }
-    });
+  const getTrades = useCallback((account?: string) => {
+    if (!account) {
+      fetchData<TradeType[]>('/trades/').subscribe((result: TradeType[] | ErrorType) => {
+        if ('error' in result) {
+          setError(result);
+        } else {
+          setTrades(result);
+        }
+      });
+    } else {
+      fetchData<TradeType[]>(`/trades/${account}`).subscribe((result: TradeType[] | ErrorType) => {
+        if ('error' in result) {
+          setError(result);
+        } else {
+          setMyTrades(result);
+        }
+      });
+    }
   }, [fetchData]);
 
   const presetTokensCollections = useCallback(async () => {
@@ -208,6 +219,25 @@ export function useCollections () {
     }
   }, [api, getDetailedCollectionInfo]);
 
+  const presetMintTokenCollection = useCallback(async (): Promise<NftCollectionInterface[]> => {
+    try {
+      const collections: Array<NftCollectionInterface> = [];
+      const mintCollectionInfo = await getDetailedCollectionInfo('1') as unknown as NftCollectionInterface;
+
+      if (mintCollectionInfo && mintCollectionInfo.Owner && mintCollectionInfo.Owner.toString() !== '5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM') {
+        collections.push({ ...mintCollectionInfo, id: '1' });
+      }
+
+      localStorage.setItem('tokenCollections', JSON.stringify(collections));
+
+      return collections;
+    } catch (e) {
+      console.log('presetTokensCollections error', e);
+
+      return [];
+    }
+  }, [getDetailedCollectionInfo]);
+
   return {
     error,
     getDetailedCollectionInfo,
@@ -216,7 +246,9 @@ export function useCollections () {
     getOffers,
     getTokensOfCollection,
     getTrades,
+    myTrades,
     offers,
+    presetMintTokenCollection,
     presetTokensCollections,
     trades
   };
