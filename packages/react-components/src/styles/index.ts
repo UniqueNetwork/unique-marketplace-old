@@ -58,31 +58,6 @@ export default createGlobalStyle<Props & ThemeProps>(({ theme, uiHighlight }: Pr
     background: ${getContrast(uiHighlight)};
   }
 
-  .highlight--bg-faint,
-  .highlight--bg-light {
-    background: var(--bg-table);
-    position: relative;
-
-    &:before {
-      background: ${getHighlight(uiHighlight)};
-      bottom: 0;
-      content: ' ';
-      left: 0;
-      position: absolute;
-      right: 0;
-      top: 0;
-      z-index: -1;
-    }
-  }
-
-  .highlight--bg-faint:before {
-    opacity: 0.025;
-  }
-
-  .highlight--bg-light:before {
-    opacity: 0.2;
-  }
-
   .highlight--border {
     border-color: transparent !important;
   }

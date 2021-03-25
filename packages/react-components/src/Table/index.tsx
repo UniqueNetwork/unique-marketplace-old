@@ -59,9 +59,10 @@ function Table ({ children, className = '', empty, emptySpinner, filter, footer,
 }
 
 export default React.memo(styled(Table)`
-  margin-bottom: 1.5rem;
   max-width: 100%;
   width: 100%;
+  padding: var(--gap);
+  background-color: var(--white-color);
 
   table {
     border-spacing: 0;
@@ -69,7 +70,12 @@ export default React.memo(styled(Table)`
     overflow: hidden;
     position: relative;
     width: 100%;
+    font: 400 16px/24px var(--font-roboto);
     z-index: 1;
+
+    th {
+      font: 500 16px/24px var(--font-roboto);
+    }
 
     &.isFixed {
       table-layout: fixed;
@@ -81,13 +87,6 @@ export default React.memo(styled(Table)`
 
       td,
       &:not(.filter) th {
-        &:first-child {
-          padding-left: 1.5rem;
-        }
-
-        &:last-child {
-          padding-right: 0.75rem;
-        }
 
         &.all {
           width: 100%;

@@ -31,20 +31,13 @@ function Body ({ children, className = '', empty, emptySpinner }: Props): React.
 
 export default React.memo(styled(Body)`
   position: relative;
+  background: var(--bg-table);
 
   td {
-    border-bottom: 1px solid var(--border-table);
-    padding: 0.75rem 1rem;
+    padding: calc(var(--gap) / 2) var(--gap);
     text-align: left;
     vertical-align: middle;
-
-    &:first-child {
-      border-left: 1px solid var(--border-table);
-    }
-
-    &:last-child {
-      border-right: 1px solid var(--border-table);
-    }
+    border-bottom: 1px solid var(--bg-page);
 
     label {
       display: block !important;
@@ -176,34 +169,6 @@ export default React.memo(styled(Body)`
   }
 
   tr {
-    &:nth-child(odd):not(.isEven),
-    &:nth-child(even).isOdd {
-      background: var(--bg-table);
-    }
-
-    &:first-child {
-      td:first-child {
-        border-top-left-radius: 0.25rem;
-      }
-
-      td:last-child {
-        border-top-right-radius: 0.25rem;
-      }
-    }
-
-    &:last-child {
-      td {
-        border-bottom: 1px solid var(--border-table);
-
-        &:first-child {
-          border-bottom-left-radius: 0.25rem;
-        }
-
-        :last-child {
-          border-bottom-right-radius: 0.25rem;
-        }
-      }
-    }
 
     &.transparent {
       background: transparent;

@@ -27,23 +27,23 @@ function ListComponent (props: Props): React.ReactElement<Props> {
       >
         {children}
       </Table>
-      <div className='pagination-trades'>
+      {/* <div className='pagination-trades'>
         <div className='pagination-trades__page'>
           On page: 4
-          <Image src={Arrow} />
+          <a><Image src={Arrow} /></a>
         </div>
         <div className='pagination-trades__pagination'>
           1 of 4 page
           <div className='pagination-trades__arrows'>
-            <a>
+            <a className='pagination-trades__back'>
               <Image src={Arrow} />
             </a>
-            <a>
+            <a className='pagination-trades__forvard'>
               <Image src={Arrow} />
             </a>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }
