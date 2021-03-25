@@ -77,9 +77,10 @@ export type TradeType = {
   buyer?: string;
   collectionId: number;
   metadata: string
-  price: string
+  price: string;
   quoteId: number;
   seller: string;
+  tradeDate: string; // 2021-03-25T08:50:49.622992
   tokenId: number;
 }
 

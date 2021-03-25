@@ -3,10 +3,12 @@
 
 import type { TradeType } from '@polkadot/react-hooks/useCollections';
 
+import moment from 'moment';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { ListComponent } from '@polkadot/react-components';
 import { useCollections } from '@polkadot/react-hooks';
+import { KUSAMA_DECIMALS } from '@polkadot/react-hooks/useKusamaApi';
 
 function TradeHistory ({ account }: { account?: string }): React.ReactElement {
   const { getTrades, myTrades, trades } = useCollections();
@@ -17,10 +19,11 @@ function TradeHistory ({ account }: { account?: string }): React.ReactElement {
   }, [account, getTrades]);
 
   const headerRef = useRef([
-    ['Price', 'start', 2],
-    ['Collection', 'start'],
     ['Token', 'start'],
-    ['Buyer', 'start']
+    ['Price', 'start'],
+    ['Date', 'start'],
+    ['Buyer', 'start'],
+    ['Seller', 'start']
   ]);
 
   useEffect(() => {
@@ -43,20 +46,20 @@ function TradeHistory ({ account }: { account?: string }): React.ReactElement {
       >
         { tradesList && tradesList.map((trade: TradeType) => (
           <tr key={`${trade.collectionId}-${trade.tokenId}-${trade.buyer || ''}`}>
-            <td
-              className='start'
-              colSpan={2}
-            >
-              {trade.price}
-            </td>
-            <td className='overflow'>
-              {trade.collectionId}
-            </td>
             <td className='overflow'>
               {trade.tokenId}
             </td>
             <td className='overflow'>
+              {parseFloat(trade.price) / Math.pow(10, KUSAMA_DECIMALS)} KSM
+            </td>
+            <td className='overflow'>
+              {moment(trade.tradeDate).format('YYYY-MM-DD')}
+            </td>
+            <td className='overflow'>
               {trade.buyer}
+            </td>
+            <td className='overflow'>
+              {trade.seller}
             </td>
           </tr>
         ))}

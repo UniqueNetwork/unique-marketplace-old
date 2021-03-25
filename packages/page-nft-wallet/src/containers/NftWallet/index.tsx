@@ -84,7 +84,7 @@ function NftWallet ({ account, localRegistry, setShouldUpdateTokens, shouldUpdat
         My collections
         <LabelHelp
           className='small-help'
-          help={'Your tokens are here'}
+          help={'NFTs owned by me'}
         />
       </Header>
       <Table

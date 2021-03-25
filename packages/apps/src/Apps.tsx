@@ -5,7 +5,7 @@ import './apps.scss';
 
 import type { BareProps as Props, ThemeDef } from '@polkadot/react-components/types';
 
-import React, { Suspense, useContext, useEffect, useMemo, useState } from 'react';
+import React, { Suspense, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import Menu from 'semantic-ui-react/dist/commonjs/collections/Menu';
 import store from 'store';
@@ -19,6 +19,7 @@ import { useTranslation } from '@polkadot/apps/translate';
 import { getSystemChainColor } from '@polkadot/apps-config';
 import createRoutes from '@polkadot/apps-routing';
 import { Route } from '@polkadot/apps-routing/types';
+import { web3Enable } from '@polkadot/extension-dapp';
 import { AccountSelector, ErrorBoundary, Spinner, StatusContext } from '@polkadot/react-components';
 import GlobalStyle from '@polkadot/react-components/styles';
 import { useApi } from '@polkadot/react-hooks';
@@ -50,6 +51,7 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
   const { api, isApiConnected, isApiReady, systemChain, systemName } = useApi();
   const { queueAction } = useContext(StatusContext);
   const [account, setAccount] = useState<string>();
+  const [web3Enabled, setWeb3Enabled] = useState<boolean>(false);
 
   const uiHighlight = useMemo(
     () => getSystemChainColor(systemChain, systemName),
@@ -66,6 +68,12 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
   );
 
   const missingApis = findMissingApis(api, needsApi);
+
+  const detectWeb3 = useCallback(async () => {
+    const web3EnableLis = await web3Enable('unique-app');
+
+    setWeb3Enabled(!!web3EnableLis.length);
+  }, []);
 
   // set default nft types and substrate prefix
   useEffect(() => {
@@ -84,7 +92,9 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
 
   useEffect(() => {
     console.log('process.env', process.env);
-  }, []);
+
+    void detectWeb3();
+  }, [detectWeb3]);
 
   return (
     <>
@@ -148,12 +158,23 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                             </header>
                             <main className='app-main'>
                               <div className='app-container'>
-                                <Component
-                                  account={account}
-                                  basePath={`/${name}`}
-                                  location={location}
-                                  onStatusChange={queueAction}
-                                />
+                                {!web3Enabled &&
+                                <div className='error-block'>
+                                  Please enable the <a
+                                    href='https://polkadot.js.org/extension/'
+                                    rel='noopener noreferrer'
+                                    target='_blank'
+                                  >polkadot.js extension</a>!
+                                </div>
+                                }
+                                { web3Enabled && (
+                                  <Component
+                                    account={account}
+                                    basePath={`/${name}`}
+                                    location={location}
+                                    onStatusChange={queueAction}
+                                  />
+                                )}
                                 <ConnectingOverlay />
                                 <div id={PORTAL_ID} />
                               </div>

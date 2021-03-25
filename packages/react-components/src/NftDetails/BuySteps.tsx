@@ -24,21 +24,21 @@ const BuySteps: React.FC<StepProps> = ({ step }) => {
           completed={step > 1}
           inactive={step < 1}
           numb={1}
-          text={'Send NFT to Escrow'}
+          text='Send KSM to Escrow'
         />
         <Step
           active={step === 2}
           completed={step > 2}
           inactive={step < 2}
           numb={2}
-          text={'Wait for Deposit Registry'}
+          text='Wait for Deposit Registry'
         />
         <Step
           active={step === 3}
           completed={step > 3}
           inactive={step < 3}
           numb={3}
-          text={'Set Price'}
+          text='Exchange KSM for NFT'
         />
       </div>
     </div>

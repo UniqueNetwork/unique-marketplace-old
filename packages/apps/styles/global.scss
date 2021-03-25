@@ -140,6 +140,17 @@ h4.ui.header {
   margin: 0;
 }
 
+.error-block {
+  width: 100%;
+  font-size: 20px;
+  color: var(--error-color);
+  text-align: center;
+  padding: 2rem;
+  margin: 2rem;
+  background-color: white;
+  border-radius: 6px;
+}
+
 button.ui.button,
 .button-link {
   display: flex;

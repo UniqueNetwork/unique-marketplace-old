@@ -25,7 +25,7 @@ interface Props {
 }
 
 function NftCollectionCard ({ account, canTransferTokens, collection, localRegistry, openTransferModal, removeCollection, shouldUpdateTokens }: Props): React.ReactElement<Props> {
-  const [opened, setOpened] = useState(false);
+  const [opened, setOpened] = useState(true);
   const [tokensOfCollection, setTokensOfCollection] = useState<Array<string>>([]);
   const { getTokensOfCollection } = useCollections();
   const { collectionName16Decoder } = useDecoder();
@@ -65,7 +65,7 @@ function NftCollectionCard ({ account, canTransferTokens, collection, localRegis
         <>
           <strong>{collectionName16Decoder(collection.Name)}</strong>
           { collection.Description && (
-            <span> {collectionName16Decoder(collection.Description)}</span>
+            <span> - {collectionName16Decoder(collection.Description)}</span>
           )}
           { Object.prototype.hasOwnProperty.call(collection.Mode, 'reFungible') &&
             <strong>, re-fungible</strong>
@@ -89,12 +89,14 @@ function NftCollectionCard ({ account, canTransferTokens, collection, localRegis
           ))}
         </tbody>
       </table>
-      <Button
-        basic
-        color='red'
-        onClick={removeCollection.bind(null, collection.id)}>
-        Remove collection
-      </Button>
+      { collection.id !== '1' && (
+        <Button
+          basic
+          color='red'
+          onClick={removeCollection.bind(null, collection.id)}>
+          Remove collection
+        </Button>
+      )}
     </Expander>
   );
 }

@@ -18,7 +18,7 @@ const SaleSteps: React.FC<StepsProps> = ({ step }) => {
       className='sale-steps'
       id='sale-steps'
     >
-      <Header as='h3'>Selling this NFT</Header>
+      <Header as='h3'>Listing this NFT</Header>
       <div className='steps'>
         <Step
           active={step === 1}

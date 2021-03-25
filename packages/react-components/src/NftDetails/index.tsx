@@ -170,30 +170,34 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
             { uSellIt && (
               <Header as='h4'>You selling it!</Header>
             )}
-            { !!(!uOwnIt && tokenInfo && tokenInfo && tokenInfo.Owner && tokenInfo.Owner.toString() === escrowAddress) && (
-              <Header as='h5'>The owner is Escrow.</Header>
+            { (!uOwnIt && tokenInfo && tokenInfo && tokenInfo.Owner && tokenInfo.Owner.toString() === escrowAddress && !tokenAsk?.owner) && (
+              <Header as='h5'>The owner is Escrow</Header>
             )}
 
-            { !!(!uOwnIt && tokenInfo && tokenInfo && tokenInfo.Owner && tokenInfo.Owner.toString() !== escrowAddress) && (
+            { (!uOwnIt && tokenInfo && tokenInfo && tokenInfo.Owner && tokenInfo.Owner.toString() !== escrowAddress && !tokenAsk?.owner) && (
               <Header as='h5'>The owner is {tokenInfo?.Owner?.toString()}</Header>
+            )}
+
+            { (!uOwnIt && tokenInfo && tokenInfo && tokenInfo.Owner && tokenInfo.Owner.toString() === escrowAddress && tokenAsk?.owner) && (
+              <Header as='h5'>The owner is {tokenAsk?.owner.toString()}</Header>
             )}
 
             <div className='buttons'>
               { (!uOwnIt && !transferStep && tokenAsk) && (
                 <Button
-                  content='Buy it'
+                  content={`Buy it - ${formatKsmBalance(tokenAsk.price.add(tokenAsk.price.muln(2).divRound(new BN(100))))} KSM`}
                   onClick={sendCurrentUserAction.bind(null, 'BUY')}
                 />
               )}
               { (deposited && deposited.gtn(0)) && (
                 <Button
-                  content='Withdraw'
+                  content='Withdraw ksm deposit'
                   onClick={setReadyToWithdraw.bind(null, !readyToWithdraw)}
                 />
               )}
               { (uOwnIt && !uSellIt) && (
                 <Button
-                  content='Sale it'
+                  content='Sell'
                   onClick={sendCurrentUserAction.bind(null, 'SELL')}
                 />
               )}
@@ -207,7 +211,7 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
                 <Button
                   content={
                     <>
-                    Cancel sell
+                      Delist
                       { cancelStep && (
                         <Loader
                           active
@@ -310,7 +314,7 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
                 </Form.Field>
                 <Form.Field>
                   <Button
-                    content='Set price'
+                    content='Set KSM price'
                     onClick={onSavePrice}
                   />
                 </Form.Field>

@@ -27,18 +27,18 @@ function App ({ account, basePath }: Props): React.ReactElement<Props> {
     {
       isRoot: true,
       name: 'tokens',
-      text: 'Tokens'
+      text: 'Idle'
     },
     {
       name: 'tokens-for-sale',
-      text: 'Tokens for sell'
+      text: 'Listed for sale'
     }
   ], []);
 
   return (
     <>
       <Header as='h1'>My Tokens</Header>
-      <Header as='h4'>Your tokens</Header>
+      <Header as='h4'>NFTs owned by me</Header>
       { !location.pathname.includes('token-details') && (
         <header>
           <Tabs

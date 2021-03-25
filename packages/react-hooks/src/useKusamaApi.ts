@@ -20,17 +20,10 @@ interface UseKusamaApiInterface {
   kusamaTransfer: (recipient: string, value: BN, onSuccess: (status: string) => void, onFail: (status: string) => void) => void;
 }
 
-const KUSAMA_DECIMALS = 12;
+export const KUSAMA_DECIMALS = 12;
 
 export function formatKsmBalance (value: BN | undefined = new BN(0)): string {
-  let roundedNum = (parseFloat(value.toString()) / Math.pow(10, KUSAMA_DECIMALS)).toString();
-  const dec = roundedNum.indexOf('.');
-
-  if ((dec >= 0) && (roundedNum.length >= dec + 4)) {
-    roundedNum = roundedNum.substr(0, dec + 4);
-  }
-
-  return roundedNum;
+  return (parseFloat(value.toString()) / Math.pow(10, KUSAMA_DECIMALS)).toString();
 }
 
 export const useKusamaApi = (account?: string): UseKusamaApiInterface => {
