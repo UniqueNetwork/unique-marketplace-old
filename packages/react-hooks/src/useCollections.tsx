@@ -83,6 +83,13 @@ export type TradeType = {
   tokenId: number;
 }
 
+export type TradesResponseType = {
+  items: TradeType[];
+  itemsCount: number;
+  page: number;
+  pageSize: number;
+}
+
 export function useCollections () {
   const { api } = useApi();
   const { fetchData } = useFetch();
@@ -177,19 +184,19 @@ export function useCollections () {
    */
   const getTrades = useCallback((account?: string) => {
     if (!account) {
-      fetchData<TradeType[]>('/trades/').subscribe((result: TradeType[] | ErrorType) => {
+      fetchData<TradesResponseType>('/trades/').subscribe((result: TradesResponseType | ErrorType) => {
         if ('error' in result) {
           setError(result);
         } else {
-          setTrades(result);
+          setTrades(result.items);
         }
       });
     } else {
-      fetchData<TradeType[]>(`/trades/${account}`).subscribe((result: TradeType[] | ErrorType) => {
+      fetchData<TradesResponseType>(`/trades/${account}`).subscribe((result: TradesResponseType | ErrorType) => {
         if ('error' in result) {
           setError(result);
         } else {
-          setMyTrades(result);
+          setMyTrades(result.items);
         }
       });
     }
