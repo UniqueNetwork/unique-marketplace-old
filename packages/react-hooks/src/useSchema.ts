@@ -4,7 +4,7 @@
 import type { MetadataType, NftCollectionInterface, TokenDetailsInterface } from '@polkadot/react-hooks/useCollections';
 
 import BN from 'bn.js';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useCollections, useDecoder } from '@polkadot/react-hooks';
 import { Struct, TypeRegistry } from '@polkadot/types';
@@ -37,6 +37,7 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
   const [tokenDetails, setTokenDetails] = useState<TokenDetailsInterface>();
   const { getDetailedCollectionInfo, getDetailedReFungibleTokenInfo, getDetailedTokenInfo } = useCollections();
   const { hex2a } = useDecoder();
+  const cleanup = useRef<boolean>(false);
 
   const tokenImageUrl = useCallback((urlString: string, tokenId: string): string => {
     if (urlString.indexOf('{id}') !== -1) {
@@ -94,6 +95,10 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
         const urlResponse = await fetch(dataUrl);
         const jsonData = await urlResponse.json() as { image: string };
 
+        if (cleanup.current) {
+          return;
+        }
+
         setTokenUrl(jsonData.image);
       }
     } catch (e) {
@@ -123,6 +128,10 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
     if (collectionId) {
       const info: NftCollectionInterface = await getDetailedCollectionInfo(collectionId) as unknown as NftCollectionInterface;
 
+      if (cleanup.current) {
+        return;
+      }
+
       if (info && Object.keys(info).length) {
         setCollectionInfo({
           ...info,
@@ -140,6 +149,10 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
         tokenDetailsData = await getDetailedTokenInfo(collectionId.toString(), tokenId.toString());
       } else if (Object.prototype.hasOwnProperty.call(collectionInfo.Mode, 'reFungible')) {
         tokenDetailsData = await getDetailedReFungibleTokenInfo(collectionId.toString(), tokenId.toString());
+      }
+
+      if (cleanup.current) {
+        return;
       }
 
       setTokenDetails(tokenDetailsData);
@@ -176,6 +189,12 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
   useEffect(() => {
     void getReFungibleDetails();
   }, [getReFungibleDetails]);
+
+  useEffect(() => {
+    return () => {
+      cleanup.current = true;
+    };
+  }, []);
 
   return {
     attributes,

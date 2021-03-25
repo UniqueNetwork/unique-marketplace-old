@@ -5,7 +5,7 @@ import './NftCollectionCard.scss';
 
 import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollections';
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 
 import { Expander } from '@polkadot/react-components';
@@ -29,6 +29,7 @@ function NftCollectionCard ({ account, canTransferTokens, collection, localRegis
   const [tokensOfCollection, setTokensOfCollection] = useState<Array<string>>([]);
   const { getTokensOfCollection } = useCollections();
   const { collectionName16Decoder } = useDecoder();
+  const cleanup = useRef<boolean>(false);
 
   const openCollection = useCallback((isOpen) => {
     setOpened(isOpen);
@@ -40,6 +41,10 @@ function NftCollectionCard ({ account, canTransferTokens, collection, localRegis
     }
 
     const tokensOfCollection = (await getTokensOfCollection(collection.id, account)) as string[];
+
+    if (cleanup.current) {
+      return;
+    }
 
     setTokensOfCollection(tokensOfCollection);
   }, [account, collection, getTokensOfCollection]);
@@ -55,6 +60,12 @@ function NftCollectionCard ({ account, canTransferTokens, collection, localRegis
       void updateTokens();
     }
   }, [account, opened, updateTokens]);
+
+  useEffect(() => {
+    return () => {
+      cleanup.current = true;
+    };
+  }, []);
 
   return (
     <Expander

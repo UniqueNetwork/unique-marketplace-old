@@ -31,6 +31,7 @@ function NftWallet ({ account, localRegistry, setShouldUpdateTokens, shouldUpdat
   const [canTransferTokens] = useState<boolean>(true);
   const currentAccount = useRef<string | null | undefined>();
   const { presetMintTokenCollection } = useCollections();
+  const cleanup = useRef<boolean>(false);
 
   /* const addCollection = useCallback((collection: NftCollectionInterface) => {
     setCollections((prevCollections: NftCollectionInterface[]) => [...prevCollections, collection]);
@@ -38,6 +39,10 @@ function NftWallet ({ account, localRegistry, setShouldUpdateTokens, shouldUpdat
 
   const addMintCollectionToList = useCallback(async () => {
     const firstCollections: NftCollectionInterface[] = await presetMintTokenCollection();
+
+    if (cleanup.current) {
+      return;
+    }
 
     setCollections(() => [...firstCollections]);
   }, [presetMintTokenCollection]);
@@ -69,6 +74,10 @@ function NftWallet ({ account, localRegistry, setShouldUpdateTokens, shouldUpdat
 
   useEffect(() => {
     void addMintCollectionToList();
+
+    return () => {
+      cleanup.current = true;
+    };
   }, [addMintCollectionToList]);
 
   return (
