@@ -50,6 +50,8 @@
 
     .accessories {
 
+      word-break: break-all;
+
       p {
         font-family: var(--font-inter);
         color: var(--title-color);
@@ -91,8 +93,8 @@
   }
 
   .buttons {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
+    display: flex;
+    flex-wrap: wrap;
     grid-column-gap: 16px;
     grid-row-gap: 16px;
   }

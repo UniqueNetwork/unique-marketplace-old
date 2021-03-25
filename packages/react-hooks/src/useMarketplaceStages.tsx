@@ -21,8 +21,9 @@ export interface MarketplaceStagesInterface {
   cancelStep: boolean;
   deposited: BN | undefined;
   depositor: string | undefined;
+  escrowAddress: string;
   error: string | null;
-  formatKsmBalance: (value: BN) => string;
+  formatKsmBalance: (value: BN | undefined) => string;
   kusamaBalance: BalanceInterface | undefined;
   kusamaDecimals: number;
   saleFee: BN | undefined;
@@ -402,6 +403,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
     deposited,
     depositor,
     error,
+    escrowAddress,
     formatKsmBalance,
     kusamaBalance,
     kusamaDecimals,

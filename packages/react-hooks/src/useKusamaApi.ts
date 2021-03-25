@@ -14,7 +14,7 @@ import { TypeRegistry } from '@polkadot/types/create';
 import { encodeAddress } from '@polkadot/util-crypto';
 
 interface UseKusamaApiInterface {
-  formatKsmBalance: (balance: BN) => string;
+  formatKsmBalance: (balance: BN | undefined) => string;
   kusamaBalance: BalanceInterface | undefined;
   kusamaDecimals: number;
   kusamaTransfer: (recipient: string, value: BN, onSuccess: (status: string) => void, onFail: (status: string) => void) => void;
@@ -28,7 +28,7 @@ export const useKusamaApi = (account?: string): UseKusamaApiInterface => {
   const [encodedKusamaAccount, setEncodedKusamaAccount] = useState<string>();
   const { queueExtrinsic } = useContext(StatusContext);
 
-  const formatKsmBalance = useCallback((value: BN): string => {
+  const formatKsmBalance = useCallback((value: BN | undefined = new BN(0)): string => {
     console.log('value str', parseFloat(value.toString()));
 
     let roundedNum = (Math.round(parseFloat(value.toString()) / Math.pow(10, kusamaDecimals))).toString();

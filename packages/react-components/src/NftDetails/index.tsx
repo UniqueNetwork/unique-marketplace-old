@@ -43,7 +43,7 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
   const { collectionName16Decoder } = useDecoder();
   const { attributes, collectionInfo, reFungibleBalance, tokenUrl } = useSchema(account, collectionId, tokenId, localRegistry);
   const [tokenPriceForSale, setTokenPriceForSale] = useState<string>('');
-  const { cancelStep, deposited, formatKsmBalance, kusamaBalance, readyToAskPrice, saleFee, sendCurrentUserAction, setPrice, setWithdrawAmount, tokenAsk, tokenInfo, transferStep, withdrawAmount } = useMarketplaceStages(account, collectionInfo, tokenId);
+  const { cancelStep, deposited, escrowAddress, formatKsmBalance, kusamaBalance, readyToAskPrice, saleFee, sendCurrentUserAction, setPrice, setWithdrawAmount, tokenAsk, tokenInfo, transferStep, withdrawAmount } = useMarketplaceStages(account, collectionInfo, tokenId);
 
   const uOwnIt = tokenInfo?.Owner?.toString() === account || (tokenAsk && tokenAsk.owner === account);
   const uSellIt = tokenAsk && tokenAsk.owner === account;
@@ -100,7 +100,7 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
     setReadyToWithdraw(false);
   }, [sendCurrentUserAction]);
 
-  console.log('attributes', attributes, 'attributes name', attributes?.NameStr);
+  console.log('kusamaBalance', kusamaBalance?.free.toString());
 
   return (
     <div className='toke-details'>
@@ -148,12 +148,12 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
             { (tokenAsk && tokenAsk.price) && (
               <>
                 <Header as={'h2'}>
-                  {formatBalance(tokenAsk.price.add(tokenAsk.price.muln(0.02)), { decimals: 12, withSi: false })} KSM
+                  {formatKsmBalance(tokenAsk.price.add(tokenAsk.price.muln(0.02)))} KSM
                 </Header>
-                <p>Fee: {formatKsmBalance(tokenAsk.price.muln(0.02))} KSM, Price: {formatBalance(tokenAsk.price, { decimals: 12, withSi: false })} KSM</p>
-                <p>Your KSM Balance: {formatBalance(kusamaBalance?.free || new BN(0), { decimals: 12, withSi: false })} KSM</p>
+                <p>Fee: {formatKsmBalance(tokenAsk.price.muln(0.02))} KSM, Price: {formatKsmBalance(tokenAsk.price)} KSM</p>
+                <p>Your KSM Balance: {formatKsmBalance(kusamaBalance?.free)} KSM</p>
                 { deposited && (
-                  <p>Your KSM Deposit: {formatBalance(deposited, { decimals: 12, withSi: false })} KSM</p>
+                  <p>Your KSM Deposit: {formatKsmBalance(deposited)} KSM</p>
                 )}
                 { (saleFee && !balance?.free.add(deposited || new BN(0)).gte(saleFee)) && (
                   <p className='text-warning'>Your balance is too low to pay fees</p>
@@ -167,7 +167,11 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
             { uSellIt && (
               <Header as='h4'>You selling it!</Header>
             )}
-            { !!(!uOwnIt && tokenInfo) && (
+            { !!(!uOwnIt && tokenInfo && tokenInfo && tokenInfo.Owner && tokenInfo.Owner.toString() === escrowAddress) && (
+              <Header as='h5'>The owner is Escrow.</Header>
+            )}
+
+            { !!(!uOwnIt && tokenInfo && tokenInfo && tokenInfo.Owner && tokenInfo.Owner.toString() !== escrowAddress) && (
               <Header as='h5'>The owner is {tokenInfo?.Owner?.toString()}</Header>
             )}
 
