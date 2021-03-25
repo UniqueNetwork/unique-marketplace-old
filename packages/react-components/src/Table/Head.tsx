@@ -4,8 +4,6 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import Icon from '../Icon';
-
 type HeaderDef = [React.ReactNode?, string?, number?, (() => void)?];
 
 interface Props {
@@ -37,13 +35,7 @@ function Head ({ className = '', filter, header, isEmpty }: Props): React.ReactE
           >
             {index === 0
               ? (
-                <h1>
-                  <Icon
-                    className='highlight--color'
-                    icon='dot-circle'
-                  />
-                  {label}
-                </h1>
+                <span>{ label }</span>
               )
               : isEmpty
                 ? ''
@@ -61,32 +53,8 @@ export default React.memo(styled(Head)`
   z-index: 1;
 
   th {
-    font: var(--font-sans);
-    font-weight: var(--font-weight-normal);
-    padding: 0.75rem 1rem 0.25rem;
-    text-align: right;
+    padding: calc(var(--gap) / 2) var(--gap);
     vertical-align: baseline;
-    white-space: nowrap;
-
-    h1, h2 {
-      font-size: 1.75rem;
-    }
-
-    h1 {
-      .ui--Icon {
-        font-size: 1rem;
-        margin-right: 0.5rem;
-        vertical-align: middle;
-      }
-    }
-
-    &:first-child {
-      border-left: 1px solid var(--border-table);
-    }
-
-    &:last-child {
-      border-right: 1px solid var(--border-table);
-    }
 
     &.address {
       padding-left: 3rem;
@@ -119,12 +87,6 @@ export default React.memo(styled(Head)`
     background: var(--bg-table);
     text-transform: lowercase;
 
-    &:first-child {
-      th {
-        border-top: 1px solid var(--border-table);
-      }
-    }
-
     &.filter {
       .ui.input {
         background: transparent;
@@ -136,12 +98,6 @@ export default React.memo(styled(Head)`
 
       th {
         padding: 0;
-      }
-    }
-
-    &:not(.filter) {
-      th {
-        color: var(--color-table-head);
       }
     }
   }

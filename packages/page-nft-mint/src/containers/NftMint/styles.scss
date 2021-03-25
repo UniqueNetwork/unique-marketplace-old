@@ -59,6 +59,12 @@
   bottom: 0;
   background-color: rgba(#000, 0.1);
   text-align: center;
+
+  .ui.loader {
+    &:after, &:before {
+      left: 40% !important;
+    }
+  }
 }
 
 
