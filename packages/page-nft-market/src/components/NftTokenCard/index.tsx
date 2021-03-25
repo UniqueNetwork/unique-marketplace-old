@@ -54,11 +54,11 @@ const NftTokenCard = ({ account, collectionId, localRegistry, openDetailedInform
             </div>
           </Card.Description>
           <Card.Meta>
-            <a className='link'>View
+            <span className='link'>View
               <Image
                 src={Arrow}
               />
-            </a>
+            </span>
           </Card.Meta>
         </Card.Content>
       )}

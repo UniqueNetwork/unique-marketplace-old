@@ -8,6 +8,8 @@
     margin: 0;
 
     .content {
+      display: flex;
+      flex-direction: column;
       border-top: 0;
     }
 
@@ -30,27 +32,23 @@
   }
 
   .description {
-    display: flex;
-    justify-content: space-between;
     margin-bottom: var(--gap);
   }
 
   .card-name,
   .card-price {
+    margin-bottom: calc(var(--gap) / 2);
     &__title {
       font: 400 14px/21px var(--font-roboto);
     }
 
     &__field {
-      font: 400 14px/21px var(--font-inter);
+      font: 400 12px/21px var(--font-inter);
     }
-  }
-
-  .card-price {
-    text-align: right;
   }
 
   .meta {
     justify-content: flex-start;
+    margin-top: auto;
   }
 }
