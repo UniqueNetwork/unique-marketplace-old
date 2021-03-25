@@ -12,7 +12,8 @@ import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 
 import { Input } from '@polkadot/react-components';
-import { useCollections } from '@polkadot/react-hooks';
+import { useCollections, useDecoder } from '@polkadot/react-hooks';
+import { NftCollectionInterface } from '@polkadot/react-hooks/useCollections';
 import { TypeRegistry } from '@polkadot/types';
 
 // local imports and components
@@ -29,11 +30,20 @@ const BuyTokens = ({ account, localRegistry, setShouldUpdateTokens, shouldUpdate
   const history = useHistory();
   const { getOffers, offers, presetMintTokenCollection } = useCollections();
   const [searchString, setSearchString] = useState<string>('');
+  // const [collectionSearchString, setCollectionSearchString] = useState<string>('');
+  const [collections, setCollections] = useState<NftCollectionInterface[]>([]);
   const [filteredOffers, setFilteredOffers] = useState<OfferType[]>([]);
+  const { collectionName16Decoder } = useDecoder();
 
   const openDetailedInformationModal = useCallback((collectionId: string, tokenId: string) => {
     history.push(`/market/token-details?collectionId=${collectionId}&tokenId=${tokenId}`);
   }, [history]);
+
+  const addMintCollectionToList = useCallback(async () => {
+    const firstCollections: NftCollectionInterface[] = await presetMintTokenCollection();
+
+    setCollections(() => [...firstCollections]);
+  }, [presetMintTokenCollection]);
 
   useEffect(() => {
     setFilteredOffers(offers && offers.length ? offers.filter((item: OfferType) => item.collectionId.toString().includes(searchString.toLowerCase()) || item.tokenId.toString().includes(searchString.toLowerCase())) : []);
@@ -47,8 +57,8 @@ const BuyTokens = ({ account, localRegistry, setShouldUpdateTokens, shouldUpdate
   }, [getOffers, shouldUpdateTokens, setShouldUpdateTokens]);
 
   useEffect(() => {
-    void presetMintTokenCollection();
-  }, [presetMintTokenCollection]);
+    void addMintCollectionToList();
+  }, [addMintCollectionToList]);
 
   return (
     <div className='nft-market'>
@@ -58,23 +68,28 @@ const BuyTokens = ({ account, localRegistry, setShouldUpdateTokens, shouldUpdate
         <Grid.Row>
           <Grid.Column width={4}>
             <Header as='h5'>Collections</Header>
-            <Input
+            {/* <Input
               className='isSmall search'
-              placeholder='Search...'
-            />
+              help={<span>Find and select tokens collection.</span>}
+              isDisabled={!offers || !offers.length}
+              label={'Find collection by name'}
+              onChange={setSearchString}
+              placeholder='Find collection by name or id'
+              value={searchString}
+              withLabel
+            /> */}
             <ul className='collections-list'>
-              <li className='collections-list__item'>
-                <div className='collections-list__img'>
-                  {/* <Image src={} /> */}
-                </div>
-                <div className='collections-list__name'>SubstraPunks</div>
-              </li>
-              <li className='collections-list__item'>
-                <div className='collections-list__img'>
-                  {/* <Image src={} /> */}
-                </div>
-                <div className='collections-list__name'>SubstraPunks</div>
-              </li>
+              { collections.map((collection) => (
+                <li
+                  className='collections-list__item'
+                  key={collection.id}
+                >
+                  <div className='collections-list__img'>
+                    {/* <Image src={} /> */}
+                  </div>
+                  <div className='collections-list__name'>{collectionName16Decoder(collection.Name)}</div>
+                </li>
+              ))}
             </ul>
             <hr/>
           </Grid.Column>
@@ -84,7 +99,7 @@ const BuyTokens = ({ account, localRegistry, setShouldUpdateTokens, shouldUpdate
                 <Grid.Column width={16}>
                   <Input
                     className='isSmall search'
-                    help={<span>Find and select your token collection.</span>}
+                    help={<span>Find and select token.</span>}
                     isDisabled={!offers || !offers.length}
                     label={'Find token by name or collection'}
                     onChange={setSearchString}

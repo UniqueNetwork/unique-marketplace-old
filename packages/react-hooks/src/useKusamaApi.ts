@@ -20,28 +20,26 @@ interface UseKusamaApiInterface {
   kusamaTransfer: (recipient: string, value: BN, onSuccess: (status: string) => void, onFail: (status: string) => void) => void;
 }
 
+const KUSAMA_DECIMALS = 12;
+
+export function formatKsmBalance (value: BN | undefined = new BN(0)): string {
+  let roundedNum = (parseFloat(value.toString()) / Math.pow(10, KUSAMA_DECIMALS)).toString();
+  const dec = roundedNum.indexOf('.');
+
+  if ((dec >= 0) && (roundedNum.length >= dec + 4)) {
+    roundedNum = roundedNum.substr(0, dec + 4);
+  }
+
+  return roundedNum;
+}
+
 export const useKusamaApi = (account?: string): UseKusamaApiInterface => {
   const { queuePayload, queueSetTxStatus } = useContext(StatusContext);
   const [kusamaApi, setKusamaApi] = useState<ApiPromise>();
-  const [kusamaDecimals] = useState<number>(12);
+  const [kusamaDecimals] = useState<number>(KUSAMA_DECIMALS);
   const [kusamaBalance, setKusamaBalance] = useState<BalanceInterface>();
   const [encodedKusamaAccount, setEncodedKusamaAccount] = useState<string>();
   const { queueExtrinsic } = useContext(StatusContext);
-
-  const formatKsmBalance = useCallback((value: BN | undefined = new BN(0)): string => {
-    console.log('value str', parseFloat(value.toString()));
-
-    let roundedNum = (Math.round(parseFloat(value.toString()) / Math.pow(10, kusamaDecimals))).toString();
-    const dec = roundedNum.indexOf('.');
-
-    if ((dec >= 0) && (roundedNum.length >= dec + 4)) {
-      roundedNum = roundedNum.substr(0, dec + 4);
-    }
-
-    console.log('roundedNum', roundedNum);
-
-    return roundedNum; // `${(value.toNumber() / Math.pow(10, kusamaDecimals)).toFixed(5)} ksm`;
-  }, [kusamaDecimals]);
 
   const getKusamaBalance = useCallback(async () => {
     try {

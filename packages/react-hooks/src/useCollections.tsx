@@ -66,6 +66,13 @@ export type OfferType = {
   metadata: any;
 }
 
+export type OffersResponseType = {
+  items: OfferType[];
+  itemsCount: number;
+  page: number;
+  pageSize: number;
+}
+
 export type TradeType = {
   buyer?: string;
   collectionId: number;
@@ -122,8 +129,6 @@ export function useCollections () {
     try {
       const tokenInfo = await api.query.nft.nftItemList(collectionId, tokenId);
 
-      console.log('tokenInfo.toJSON()', tokenInfo.toJSON());
-
       return tokenInfo.toJSON() as unknown as TokenDetailsInterface;
     } catch (e) {
       console.log('getDetailedTokenInfo error', e);
@@ -151,14 +156,14 @@ export function useCollections () {
    */
   const getOffers = useCallback(() => {
     try {
-      fetchData<OfferType[]>('/offers/').subscribe((result: OfferType[] | ErrorType) => {
+      fetchData<OffersResponseType>('/offers/').subscribe((result: OffersResponseType | ErrorType) => {
         console.log('result', result);
 
         if ('error' in result) {
           setError(result);
         } else {
-          if (result && result.length) {
-            setOffers(result.map((offer: OfferType) => ({ ...offer, seller: encodeAddress(base64Decode(offer.seller)) })));
+          if (result && result.items.length) {
+            setOffers(result.items.map((offer: OfferType) => ({ ...offer, seller: encodeAddress(base64Decode(offer.seller)) })));
           }
         }
       });

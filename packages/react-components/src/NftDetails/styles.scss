@@ -97,6 +97,18 @@
     flex-wrap: wrap;
     grid-column-gap: 16px;
     grid-row-gap: 16px;
+
+    .ui.button {
+
+      .ui.loader {
+
+        &:after {
+          position: absolute;
+          left: 50%;
+          border-color: white transparent transparent;
+        }
+      }
+    }
   }
 
   .ui.form {
