@@ -123,7 +123,14 @@ function NftMint ({ account }: { account?: string }): React.ReactElement {
                           className='image-item'
                           key={index}
                         >
-                          <div className='image-item__name'>Тут название картинки</div>
+                          <div className='image-item__img-wrapper'>
+                            <div className='image-item__preview'>
+                              <Image
+                                src={image.dataURL}
+                              />
+                            </div>
+                            <div className='image-item__name'>Тут название картинки</div>
+                          </div>
                           <div className='image-item__btn-wrapper'>
                             <a className='button-link'
                               onClick={(onImageUpdate as (index: number) => void).bind(null, index)}
