@@ -6,6 +6,7 @@ import './styles.scss';
 // external imports
 import React, { useMemo } from 'react';
 import { Route, Switch } from 'react-router';
+import Header from 'semantic-ui-react/dist/commonjs/elements/Header/Header';
 
 import Tabs from '@polkadot/react-components/Tabs';
 // local imports and components
@@ -29,6 +30,8 @@ function App ({ account, basePath }: Props): React.ReactElement<Props> {
 
   return (
     <main className='nft--App'>
+      <Header as='h1'>Trades</Header>
+      <Header as='h4'>Description</Header>
       <header>
         <Tabs
           basePath={basePath}
