@@ -15,7 +15,6 @@ import { AppProps as Props } from '@polkadot/react-components/types';
 import TradeHistory from './containers/TradeHistory';
 
 function App ({ account, basePath }: Props): React.ReactElement<Props> {
-
   const items = useMemo(() => [
     {
       isRoot: true,

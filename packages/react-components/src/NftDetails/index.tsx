@@ -13,7 +13,7 @@ import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import Image from 'semantic-ui-react/dist/commonjs/elements/Image';
 import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
-import { Input, InputBalance, TxButton } from '@polkadot/react-components';
+import { Input, TxButton } from '@polkadot/react-components';
 import { useApi, useBalance, useDecoder, useMarketplaceStages, useSchema } from '@polkadot/react-hooks';
 import { TypeRegistry } from '@polkadot/types';
 import { formatBalance } from '@polkadot/util';
@@ -43,7 +43,7 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
   const { collectionName16Decoder } = useDecoder();
   const { attributes, collectionInfo, reFungibleBalance, tokenUrl } = useSchema(account, collectionId, tokenId, localRegistry);
   const [tokenPriceForSale, setTokenPriceForSale] = useState<string>('');
-  const { cancelStep, deposited, escrowAddress, formatKsmBalance, kusamaBalance, readyToAskPrice, saleFee, sendCurrentUserAction, setPrice, setWithdrawAmount, tokenAsk, tokenInfo, transferStep, withdrawAmount } = useMarketplaceStages(account, collectionInfo, tokenId);
+  const { cancelStep, deposited, escrowAddress, formatKsmBalance, kusamaBalance, kusamaDecimals, readyToAskPrice, saleFee, sendCurrentUserAction, setPrice, setWithdrawAmount, tokenAsk, tokenInfo, transferStep, withdrawAmount } = useMarketplaceStages(account, collectionInfo, tokenId);
 
   const uOwnIt = tokenInfo?.Owner?.toString() === account || (tokenAsk && tokenAsk.owner === account);
   const uSellIt = tokenAsk && tokenAsk.owner === account;
@@ -84,11 +84,14 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
   }, [setIsAddressError, setRecipient]);
 
   const onSavePrice = useCallback(() => {
-    /* if (tokenPriceForSale && ((tokenPriceForSale < 0.01) || (tokenPriceForSale > 10000)))`
-      Sorry, price should be in the range between 0.01 and 10000 KSM. You have input: ${price}
-    `; */
-    setPrice(tokenPriceForSale);
-  }, [setPrice, tokenPriceForSale]);
+    if (tokenPriceForSale && ((parseFloat(tokenPriceForSale) < 0.01) || (parseFloat(tokenPriceForSale) > 100000))) {
+      alert(`Sorry, price should be in the range between 0.01 and 100000 KSM. You have input: ${tokenPriceForSale}`);
+    }
+
+    console.log('tokenPriceForSale', tokenPriceForSale, parseFloat(tokenPriceForSale) * Math.pow(10, kusamaDecimals));
+
+    setPrice((parseFloat(tokenPriceForSale) * Math.pow(10, kusamaDecimals)).toString());
+  }, [kusamaDecimals, setPrice, tokenPriceForSale]);
 
   const onTransferSuccess = useCallback(() => {
     sendCurrentUserAction('UPDATE_TOKEN_STATE');
@@ -148,9 +151,9 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
             { (tokenAsk && tokenAsk.price) && (
               <>
                 <Header as={'h2'}>
-                  {formatKsmBalance(tokenAsk.price.add(tokenAsk.price.muln(0.02)))} KSM
+                  {formatKsmBalance(tokenAsk.price.add(tokenAsk.price.muln(2).divRound(new BN(100))))} KSM
                 </Header>
-                <p>Fee: {formatKsmBalance(tokenAsk.price.muln(0.02))} KSM, Price: {formatKsmBalance(tokenAsk.price)} KSM</p>
+                <p>Fee: {formatKsmBalance(tokenAsk.price.muln(2).divRound(new BN(100)))} KSM, Price: {formatKsmBalance(tokenAsk.price)} KSM</p>
                 <p>Your KSM Balance: {formatKsmBalance(kusamaBalance?.free)} KSM</p>
                 { deposited && (
                   <p>Your KSM Deposit: {formatKsmBalance(deposited)} KSM</p>
@@ -202,7 +205,17 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
               )}
               { (uSellIt && !transferStep) && (
                 <Button
-                  content='Cancel sell'
+                  content={
+                    <>
+                    Cancel sell
+                      { cancelStep && (
+                        <Loader
+                          active
+                          inline='centered'
+                        />
+                      )}
+                    </>
+                  }
                   onClick={sendCurrentUserAction.bind(null, 'CANCEL')}
                 />
               )}
@@ -245,59 +258,53 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
                 </Form.Field>
               </Form>
             )}
-            { cancelStep && (
-              <Loader
-                active
-                className='token-loader'
-                inline='centered'
-              >
-                Cancel sale...
-              </Loader>
-            )}
             { !!(transferStep && transferStep <= 3) && (
               <SaleSteps step={transferStep} />
             )}
             { !!(transferStep && transferStep >= 4) && (
-              <BuySteps step={transferStep} />
+              <BuySteps step={transferStep - 3} />
             )}
             { readyToWithdraw && (
               <Form className='transfer-form'>
                 <Form.Field>
-                  <InputBalance
+                  <Input
                     autoFocus
                     className='isSmall'
-                    defaultValue={withdrawAmount}
-                    help={'Type the amount you want to withdraw.'}
-                    isError={!deposited || (withdrawAmount && withdrawAmount.gt(deposited))}
-                    isZeroable
+                    defaultValue={(withdrawAmount || 0).toString()}
+                    isError={!!(!deposited || (withdrawAmount && new BN(withdrawAmount).gt(deposited)))}
                     label={'amount'}
-                    maxValue={deposited}
+                    max={parseFloat((deposited || 0).toString())}
                     onChange={setWithdrawAmount}
+                    type='number'
                     value={withdrawAmount}
                   />
                 </Form.Field>
                 <Form.Field>
-                  <Button
-                    content={`Withdraw max ${formatBalance(deposited)}`}
-                    onClick={deposited ? setWithdrawAmount.bind(null, deposited) : () => null}
-                  />
-                  <Button
-                    content='confirm withdraw'
-                    disabled={!deposited || (withdrawAmount && withdrawAmount.gt(deposited))}
-                    onClick={onConfirmWithdraw}
-                  />
+                  <div className='buttons'>
+                    <Button
+                      content={`Withdraw max ${formatBalance(deposited)}`}
+                      onClick={deposited ? setWithdrawAmount.bind(null, deposited.toString()) : () => null}
+                    />
+                    <Button
+                      content='confirm withdraw'
+                      disabled={!!(!deposited || (withdrawAmount && new BN(withdrawAmount).gt(deposited)))}
+                      onClick={onConfirmWithdraw}
+                    />
+                  </div>
                 </Form.Field>
               </Form>
             )}
             { readyToAskPrice && (
               <Form className='transfer-form'>
                 <Form.Field>
-                  <InputBalance
+                  <Input
                     autoFocus
                     className='isSmall'
                     help={<span>Set nft token price</span>}
                     label={'amount'}
+                    min={0.01}
                     onChange={setTokenPriceForSale}
+                    type='number'
                     value={tokenPriceForSale}
                   />
                 </Form.Field>

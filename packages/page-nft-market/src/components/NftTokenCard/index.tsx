@@ -11,7 +11,7 @@ import Card from 'semantic-ui-react/dist/commonjs/views/Card';
 
 import { useSchema } from '@polkadot/react-hooks';
 import { TypeRegistry } from '@polkadot/types';
-import { formatBalance } from '@polkadot/util';
+import { formatKsmBalance } from '@polkadot/react-hooks/useKusamaApi';
 
 import Arrow from '../../../../apps/public/icons/arrowRight.svg';
 
@@ -50,7 +50,7 @@ const NftTokenCard = ({ account, collectionId, localRegistry, openDetailedInform
             )}
             <div className='card-price'>
               <div className='card-price__title'>Price</div>
-              <div className='card-price__field'>{formatBalance(token.price)}</div>
+              <div className='card-price__field'>{formatKsmBalance(token.price)} KSM</div>
             </div>
           </Card.Description>
           <Card.Meta>
