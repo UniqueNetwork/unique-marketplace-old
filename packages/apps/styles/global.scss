@@ -151,6 +151,14 @@ h4.ui.header {
   border-radius: 6px;
 }
 
+.warning-block {
+  width: 100%;
+  font-size: 20px;
+  color: var(--error-color);
+  padding: 1rem 0;
+  margin: 1rem 0;
+}
+
 button.ui.button,
 .button-link {
   display: flex;

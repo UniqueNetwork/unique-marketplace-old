@@ -43,11 +43,13 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
   const { collectionName16Decoder } = useDecoder();
   const { attributes, collectionInfo, reFungibleBalance, tokenUrl } = useSchema(account, collectionId, tokenId, localRegistry);
   const [tokenPriceForSale, setTokenPriceForSale] = useState<string>('');
-  const { cancelStep, deposited, escrowAddress, formatKsmBalance, kusamaBalance, kusamaDecimals, readyToAskPrice, saleFee, sendCurrentUserAction, setPrice, setWithdrawAmount, tokenAsk, tokenInfo, transferStep, withdrawAmount } = useMarketplaceStages(account, collectionInfo, tokenId);
+  const { buyFee, cancelStep, deposited, escrowAddress, formatKsmBalance, kusamaBalance, kusamaDecimals, readyToAskPrice, saleFee, sendCurrentUserAction, setPrice, setWithdrawAmount, tokenAsk, tokenInfo, transferStep, withdrawAmount } = useMarketplaceStages(account, collectionInfo, tokenId);
 
   const uOwnIt = tokenInfo?.Owner?.toString() === account || (tokenAsk && tokenAsk.owner === account);
   const uSellIt = tokenAsk && tokenAsk.owner === account;
   const decimalPoints = collectionInfo?.DecimalPoints instanceof BN ? collectionInfo?.DecimalPoints.toNumber() : 1;
+  const lowBalanceToBuy = !!(buyFee && !balance?.free.gte(buyFee));
+  const lowBalanceToSell = !!(saleFee && !balance?.free.gte(saleFee));
 
   const setTokenPartToTransfer = useCallback((value) => {
     const numberValue = parseFloat(value);
@@ -67,8 +69,9 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
 
   const goBack = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
+    setShouldUpdateTokens && setShouldUpdateTokens('all');
     history.back();
-  }, []);
+  }, [setShouldUpdateTokens]);
 
   const setRecipientAddress = useCallback((value: string) => {
     // setRecipient
@@ -86,9 +89,9 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
   const onSavePrice = useCallback(() => {
     if (tokenPriceForSale && ((parseFloat(tokenPriceForSale) < 0.01) || (parseFloat(tokenPriceForSale) > 100000))) {
       alert(`Sorry, price should be in the range between 0.01 and 100000 KSM. You have input: ${tokenPriceForSale}`);
-    }
 
-    console.log('tokenPriceForSale', tokenPriceForSale, parseFloat(tokenPriceForSale) * Math.pow(10, kusamaDecimals));
+      return;
+    }
 
     setPrice((parseFloat(tokenPriceForSale) * Math.pow(10, kusamaDecimals)).toString());
   }, [kusamaDecimals, setPrice, tokenPriceForSale]);
@@ -102,8 +105,6 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
     sendCurrentUserAction('REVERT_UNUSED_MONEY');
     setReadyToWithdraw(false);
   }, [sendCurrentUserAction]);
-
-  console.log('kusamaBalance', kusamaBalance?.free.toString());
 
   return (
     <div className='toke-details'>
@@ -158,8 +159,15 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
                 { deposited && (
                   <p>Your KSM Deposit: {formatKsmBalance(deposited)} KSM</p>
                 )}
-                { (saleFee && !balance?.free.add(deposited || new BN(0)).gte(saleFee)) && (
-                  <p className='text-warning'>Your balance is too low to pay fees</p>
+                { uOwnIt && !uSellIt && lowBalanceToSell && (
+                  <div className='warning-block'>Your balance is too low to pay fees. <a href='https://t.me/unique2faucetbot'
+                    rel='noreferrer nooperer'
+                    target='_blank'>Get testUnq here</a></div>
+                )}
+                { (!uOwnIt && !transferStep && tokenAsk) && lowBalanceToBuy && (
+                  <div className='warning-block'>Your balance is too low to pay fees. <a href='https://t.me/unique2faucetbot'
+                    rel='noreferrer nooperer'
+                    target='_blank'>Get testUnq here</a></div>
                 )}
               </>
             )}
@@ -186,6 +194,7 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
               { (!uOwnIt && !transferStep && tokenAsk) && (
                 <Button
                   content={`Buy it - ${formatKsmBalance(tokenAsk.price.add(tokenAsk.price.muln(2).divRound(new BN(100))))} KSM`}
+                  disabled={lowBalanceToBuy}
                   onClick={sendCurrentUserAction.bind(null, 'BUY')}
                 />
               )}
@@ -198,6 +207,7 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
               { (uOwnIt && !uSellIt) && (
                 <Button
                   content='Sell'
+                  disabled={lowBalanceToSell}
                   onClick={sendCurrentUserAction.bind(null, 'SELL')}
                 />
               )}

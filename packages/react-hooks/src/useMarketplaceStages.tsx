@@ -17,6 +17,7 @@ import marketplaceStateMachine from './stateMachine';
 type UserActionType = 'BUY' | 'CANCEL' | 'SELL' | 'REVERT_UNUSED_MONEY' | 'UPDATE_TOKEN_STATE' | 'OFFER_TRANSACTION_FAIL' | 'SUBMIT_OFFER' | 'OFFER_TRANSACTION_SUCCESS';
 
 export interface MarketplaceStagesInterface {
+  buyFee: BN | undefined;
   cancelStep: boolean;
   deposited: BN | undefined;
   depositor: string | undefined;
@@ -44,6 +45,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
   const [withdrawAmount, setWithdrawAmount] = useState<string>('0');
   const [tokenInfo, setTokenInfo] = useState<TokenDetailsInterface>();
   const [saleFee, setSaleFee] = useState<BN>();
+  const [buyFee, setBuyFee] = useState<BN>();
   const { getDetailedReFungibleTokenInfo, getDetailedTokenInfo } = useCollections();
   const { contractInstance, deposited, depositor, escrowAddress, findCallMethodByName, getDepositor, getTokenAsk, getUserDeposit, isContractReady, maxGas, tokenAsk } = useNftContract(account);
   const { balance } = useBalance(account);
@@ -126,18 +128,39 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
     if (fee) {
       setSaleFee(fee.partialFee);
 
-      return fee.partialFee;
+      return fee.partialFee.muln(2);
     }
 
     return null;
   }, [account, api.tx.nft, collectionInfo, escrowAddress, tokenId]);
 
-  /** user actions **/
-  const sell = useCallback(async () => {
-    // check balance to have enough fee
-    const fee = await getSaleFee();
+  const getBuyFee = useCallback(async () => {
+    if (contractInstance && collectionInfo) {
+      const message = findCallMethodByName('buy');
 
-    if (fee && balance?.free.gte(fee) && collectionInfo) {
+      if (message) {
+        const extrinsic = contractInstance.exec(message, {
+          gasLimit: maxGas,
+          value: 0
+        }, collectionInfo.id, tokenId);
+
+        const fee = await extrinsic.paymentInfo(account) as { partialFee: BN };
+
+        if (fee) {
+          setBuyFee(fee.partialFee);
+
+          return fee.partialFee;
+        }
+      }
+    }
+
+    return null;
+  }, [account, contractInstance, collectionInfo, findCallMethodByName, maxGas, tokenId]);
+
+  /** user actions **/
+  const sell = useCallback(() => {
+    // check balance to have enough fee
+    if (saleFee && balance?.free.gte(saleFee) && collectionInfo) {
       queueTransaction(
         api.tx.nft
           .transfer(escrowAddress, collectionInfo.id, tokenId, 0),
@@ -147,8 +170,10 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
         'deposit nft to contract update'
       );
       send('TRANSACTION_READY');
+    } else {
+      alert('Your unique balance is not enough to sell');
     }
-  }, [api.tx.nft, balance?.free, collectionInfo, escrowAddress, getSaleFee, queueTransaction, send, tokenId]);
+  }, [api.tx.nft, balance?.free, collectionInfo, escrowAddress, saleFee, queueTransaction, send, tokenId]);
 
   const waitForNftDeposit = useCallback(async () => {
     if (collectionInfo) {
@@ -178,7 +203,6 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
     }
   }, [account, getTokenInfo, send]);
 
-  // @todo add transfer fees
   const depositNeeded = useCallback((userDeposit: BN, tokenPrice: BN): BN => {
     const feeFull = getFee(tokenPrice);
     const feePaid = getFee(userDeposit);
@@ -395,9 +419,15 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
     }
   }, [send, isContractReady]);
 
+  useEffect(() => {
+    void getSaleFee();
+    void getBuyFee();
+  }, [getBuyFee, getSaleFee]);
+
   console.log('buy / sale stage', state.value);
 
   return {
+    buyFee,
     cancelStep,
     deposited,
     depositor,
