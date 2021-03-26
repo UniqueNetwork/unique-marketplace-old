@@ -165,10 +165,11 @@ h4.ui.header {
 
 .attention-block {
   width: 100%;
+  max-width: var(--max-width);
+  margin: 0 auto;
   font-size: 16px;
   color: var(--error-color);
   padding: 1rem 0;
-  margin: 1rem 0;
 }
 
 button.ui.button,
