@@ -158,6 +158,9 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                             </header>
                             <main className='app-main'>
                               <div className='app-container'>
+                                <div className='attention-block'>
+                                  FOR TESTING AND DEMONSTRATION ONLY. DO NOT RISK LARGE AMOUNTS OF KSM OR TRADE AT YOUR OWN RISK
+                                </div>
                                 {!web3Enabled &&
                                 <div className='error-block'>
                                   Please install and/or enable <a
