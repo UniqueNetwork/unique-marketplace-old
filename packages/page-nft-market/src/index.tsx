@@ -16,7 +16,7 @@ import NftMarket from './containers/NftMarket';
 
 function App ({ account, basePath }: Props): React.ReactElement<Props> {
   const localRegistry = useRegistry();
-  const [shouldUpdateTokens, setShouldUpdateTokens] = useState<string | undefined>('all');
+  const [shouldUpdateTokens, setShouldUpdateTokens] = useState<string | undefined>();
 
   return (
     <Switch>

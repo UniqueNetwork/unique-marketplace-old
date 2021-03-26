@@ -25,7 +25,7 @@ export interface NftCollectionInterface {
   id: string;
   DecimalPoints: BN | number;
   Description: number[];
-  TokenPrefix: number[];
+  TokenPrefix: string;
   MintMode?: boolean;
   Mode: {
     nft: null;

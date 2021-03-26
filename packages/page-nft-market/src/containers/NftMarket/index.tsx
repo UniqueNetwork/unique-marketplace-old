@@ -60,6 +60,10 @@ const BuyTokens = ({ account, localRegistry, setShouldUpdateTokens, shouldUpdate
     void addMintCollectionToList();
   }, [addMintCollectionToList]);
 
+  useEffect(() => {
+    setShouldUpdateTokens('all');
+  }, [setShouldUpdateTokens]);
+
   return (
     <div className='nft-market'>
       <Header as='h1'>Market</Header>

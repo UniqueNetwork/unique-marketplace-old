@@ -360,6 +360,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
         return 5;
       case 'sentTokenToNewOwner':
       case 'waitForSignTokenBuy':
+      case 'waitForTokenOwn':
         return 6;
       default:
         return 0;
@@ -406,6 +407,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
         void cancelSell();
         break;
       case state.matches('waitForTokenRevert'):
+      case state.matches('waitForTokenOwn'):
         void waitForTokenRevert();
         break;
       default:

@@ -9,6 +9,8 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ListComponent } from '@polkadot/react-components';
 import { useCollections } from '@polkadot/react-hooks';
 import { KUSAMA_DECIMALS } from '@polkadot/react-hooks/useKusamaApi';
+import { keyring } from '@polkadot/ui-keyring';
+import { base64Decode } from '@polkadot/util-crypto';
 
 function TradeHistory ({ account }: { account?: string }): React.ReactElement {
   const { getTrades, myTrades, trades } = useCollections();
@@ -56,10 +58,10 @@ function TradeHistory ({ account }: { account?: string }): React.ReactElement {
               {moment(trade.tradeDate).format('YYYY-MM-DD')}
             </td>
             <td className='overflow'>
-              {trade.buyer}
+              {trade.buyer ? keyring.encodeAddress(base64Decode(trade.buyer)) : ''}
             </td>
             <td className='overflow'>
-              {trade.seller}
+              {keyring.encodeAddress(base64Decode(trade.seller))}
             </td>
           </tr>
         ))}

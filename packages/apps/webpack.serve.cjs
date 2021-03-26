@@ -17,19 +17,19 @@ module.exports = merge(
       proxy: {
         '/health': {
           changeOrigin: true,
-          target: 'http://whitelabel.market/'
+          target: 'https://whitelabel.market/'
         },
         '/mint': {
           changeOrigin: true,
-          target: 'http://whitelabel.market/'
+          target: 'https://whitelabel.market/'
         },
         '/offers': {
           changeOrigin: true,
-          target: 'http://whitelabel.market/'
+          target: 'https://whitelabel.market/'
         },
         '/trades': {
           changeOrigin: true,
-          target: 'http://whitelabel.market/'
+          target: 'https://whitelabel.market/'
         }
       },
       static: path.resolve(__dirname, 'build')

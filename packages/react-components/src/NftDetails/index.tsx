@@ -16,7 +16,6 @@ import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 import { Input, TxButton } from '@polkadot/react-components';
 import { useApi, useBalance, useDecoder, useMarketplaceStages, useSchema } from '@polkadot/react-hooks';
 import { TypeRegistry } from '@polkadot/types';
-import { formatBalance } from '@polkadot/util';
 
 import arrowLeft from './arrowLeft.svg';
 import BuySteps from './BuySteps';
@@ -40,7 +39,7 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
   const [isAddressError, setIsAddressError] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
   const { balance } = useBalance(account);
-  const { collectionName16Decoder } = useDecoder();
+  const { hex2a } = useDecoder();
   const { attributes, collectionInfo, reFungibleBalance, tokenUrl } = useSchema(account, collectionId, tokenId, localRegistry);
   const [tokenPriceForSale, setTokenPriceForSale] = useState<string>('');
   const { buyFee, cancelStep, deposited, escrowAddress, formatKsmBalance, kusamaBalance, kusamaDecimals, readyToAskPrice, saleFee, sendCurrentUserAction, setPrice, setWithdrawAmount, tokenAsk, tokenInfo, transferStep, withdrawAmount } = useMarketplaceStages(account, collectionInfo, tokenId);
@@ -142,7 +141,7 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
             )}
           </Grid.Column>
           <Grid.Column width={8}>
-            <Header as='h3'>{collectionInfo && <span>{collectionName16Decoder(collectionInfo.Name)}</span>} #{tokenId}</Header>
+            <Header as='h3'>{collectionInfo && <span>{hex2a(collectionInfo.TokenPrefix)}</span>} #{tokenId}</Header>
             { attributes && Object.values(attributes).length > 0 && (
               <div className='accessories'>
                 <p>Accessories:</p>
@@ -155,10 +154,6 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
                   {formatKsmBalance(tokenAsk.price.add(tokenAsk.price.muln(2).divRound(new BN(100))))} KSM
                 </Header>
                 <p>Fee: {formatKsmBalance(tokenAsk.price.muln(2).divRound(new BN(100)))} KSM, Price: {formatKsmBalance(tokenAsk.price)} KSM</p>
-                <p>Your KSM Balance: {formatKsmBalance(kusamaBalance?.free)} KSM</p>
-                { deposited && (
-                  <p>Your KSM Deposit: {formatKsmBalance(deposited)} KSM</p>
-                )}
                 { uOwnIt && !uSellIt && lowBalanceToSell && (
                   <div className='warning-block'>Your balance is too low to pay fees. <a href='https://t.me/unique2faucetbot'
                     rel='noreferrer nooperer'
@@ -170,6 +165,10 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
                     target='_blank'>Get testUnq here</a></div>
                 )}
               </>
+            )}
+            <p>Your KSM Balance: {formatKsmBalance(kusamaBalance?.free)} KSM</p>
+            { deposited && (
+              <p>Your KSM Deposit: {formatKsmBalance(deposited)} KSM</p>
             )}
             <div className='divider' />
             { (uOwnIt && !uSellIt) && (
@@ -285,9 +284,9 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
                     autoFocus
                     className='isSmall'
                     defaultValue={(withdrawAmount || 0).toString()}
-                    isError={!!(!deposited || (withdrawAmount && new BN(withdrawAmount).gt(deposited)))}
+                    isError={!!(!deposited || (withdrawAmount && parseFloat(withdrawAmount) > parseFloat(formatKsmBalance(deposited))))}
                     label={'amount'}
-                    max={parseFloat((deposited || 0).toString())}
+                    max={parseFloat(formatKsmBalance(deposited))}
                     onChange={setWithdrawAmount}
                     type='number'
                     value={withdrawAmount}
@@ -296,12 +295,12 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
                 <Form.Field>
                   <div className='buttons'>
                     <Button
-                      content={`Withdraw max ${formatBalance(deposited)}`}
-                      onClick={deposited ? setWithdrawAmount.bind(null, deposited.toString()) : () => null}
+                      content={`Withdraw max ${formatKsmBalance(deposited)}`}
+                      onClick={deposited ? setWithdrawAmount.bind(null, formatKsmBalance(deposited)) : () => null}
                     />
                     <Button
                       content='confirm withdraw'
-                      disabled={!!(!deposited || (withdrawAmount && new BN(withdrawAmount).gt(deposited)))}
+                      disabled={!deposited || (parseFloat(withdrawAmount) > parseFloat(formatKsmBalance(deposited)))}
                       onClick={onConfirmWithdraw}
                     />
                   </div>

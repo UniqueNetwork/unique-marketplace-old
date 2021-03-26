@@ -86,10 +86,6 @@ export const useKusamaApi = (account?: string): UseKusamaApiInterface => {
     }
   }, [account]);
 
-  /* useEffect(() => {
-    kusamaTransfer('5FZeTmbZQZsJcyEevjGVK1HHkcKfWBYxWpbgEffQ2M1SqAnP', 41916676505);
-  }, [kusamaTransfer]); */
-
   useEffect(() => {
     void getKusamaBalance();
   }, [getKusamaBalance]);
