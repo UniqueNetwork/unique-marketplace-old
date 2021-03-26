@@ -23,7 +23,9 @@ interface UseKusamaApiInterface {
 export const KUSAMA_DECIMALS = 12;
 
 export function formatKsmBalance (value: BN | undefined = new BN(0)): string {
-  return (parseFloat(value.toString()) / Math.pow(10, KUSAMA_DECIMALS)).toString();
+  const floatValue = parseFloat(value.toString()) / Math.pow(10, KUSAMA_DECIMALS);
+
+  return (Math.trunc(floatValue * 10000) / 10000).toFixed(4);
 }
 
 export const useKusamaApi = (account?: string): UseKusamaApiInterface => {

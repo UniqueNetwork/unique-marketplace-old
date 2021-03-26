@@ -6,6 +6,16 @@
     line-height: 48px;
   }
 
+  p {
+    font-family: var(--font-roboto);
+    font-style: normal;
+    font-weight: normal;
+    font-size: 16px;
+    line-height: 24px;
+    margin-right: 24px;
+    margin-bottom: 0;
+  }
+
   .go-back {
     display: flex;
     flex-direction: row;
@@ -51,25 +61,21 @@
     .accessories {
 
       word-break: break-all;
+      color: var(--title-color);
+      font-family: var(--font-inter);
+      opacity: 0.5;
+      font-weight: bold;
+      font-size: 18px;
+      line-height: 27px;
 
       p {
-        font-family: var(--font-inter);
-        color: var(--title-color);
-        font-size: 18px;
-        line-height: 27px;
-        opacity: 0.5;
-        margin-bottom: 8px;
-        font-style: normal;
-        font-weight: bold;
-      }
-
-      span {
         font-family: var(--font-roboto);
         font-style: normal;
         font-weight: normal;
         font-size: 16px;
         line-height: 24px;
         margin-right: 24px;
+        margin-bottom: 0;
       }
     }
 

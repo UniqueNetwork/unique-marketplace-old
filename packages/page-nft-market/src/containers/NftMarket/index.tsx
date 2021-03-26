@@ -10,6 +10,7 @@ import React, { memo, ReactElement, useCallback, useEffect, useState } from 'rea
 import { useHistory } from 'react-router';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
+import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
 import { Input } from '@polkadot/react-components';
 import { useCollections, useDecoder } from '@polkadot/react-hooks';
@@ -113,6 +114,14 @@ const BuyTokens = ({ account, localRegistry, setShouldUpdateTokens, shouldUpdate
                   />
                 </Grid.Column>
               </Grid.Row>
+              { (!account || !offers) && (
+                <Loader
+                  active
+                  inline='centered'
+                >
+                  Loading...
+                </Loader>
+              )}
               {(account && filteredOffers.length > 0) && (
                 <Grid.Row>
                   <Grid.Column width={16}>

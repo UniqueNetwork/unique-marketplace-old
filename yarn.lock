@@ -5581,6 +5581,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"bignumber@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "bignumber@npm:1.1.0"
+  checksum: ba00a3ef2f126e085c5ec4b059e77767941afe02e70c3081d52b831195a9d4959e28de4b6861b4c7e5cae8cfffc430205c9e4b763373b3da3e87bdac438dc4eb
+  languageName: node
+  linkType: hard
+
 "binary-extensions@npm:^1.0.0":
   version: 1.13.1
   resolution: "binary-extensions@npm:1.13.1"
@@ -19101,6 +19108,7 @@ __metadata:
     "@types/styled-components": ^5.1.9
     "@types/styled-theming": ^2.2.5
     "@xstate/react": ^1.1.0
+    bignumber: ^1.1.0
     concurrently: ^5.3.0
     cypress: ^6.8.0
     devtron: ^1.4.0

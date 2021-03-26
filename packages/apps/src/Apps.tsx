@@ -160,11 +160,11 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                               <div className='app-container'>
                                 {!web3Enabled &&
                                 <div className='error-block'>
-                                  Please enable the <a
+                                  Please install and/or enable <a
                                     href='https://polkadot.js.org/extension/'
                                     rel='noopener noreferrer'
                                     target='_blank'
-                                  >polkadot.js extension</a>!
+                                  >polkadot.js extension</a> and create or import at an address in it.
                                 </div>
                                 }
                                 { web3Enabled && (

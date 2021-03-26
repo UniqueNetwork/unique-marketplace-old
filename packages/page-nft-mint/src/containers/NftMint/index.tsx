@@ -69,7 +69,6 @@ function NftMint ({ account }: { account?: string }): React.ReactElement {
   return (
     <>
       <Header as='h1'>Mint</Header>
-      <Header as='h4'>Создайте свой токен в два клика!</Header>
       <Form className='collection-search'>
         <Grid className='mint-grid'>
           <Grid.Row>

@@ -283,11 +283,13 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
   const revertMoney = useCallback(() => {
     const message = findCallMethodByName('withdraw');
 
+    console.log('amountToWithdraw', (parseFloat(withdrawAmount) * Math.pow(10, kusamaDecimals)));
+
     if (message && contractInstance) {
       const extrinsic = contractInstance.exec(message, {
         gasLimit: maxGas,
         value: 0
-      }, quoteId, withdrawAmount);
+      }, quoteId, (parseFloat(withdrawAmount) * Math.pow(10, kusamaDecimals)));
 
       queueTransaction(
         extrinsic,
@@ -422,9 +424,11 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
   }, [send, isContractReady]);
 
   useEffect(() => {
-    void getSaleFee();
-    void getBuyFee();
-  }, [getBuyFee, getSaleFee]);
+    if (account) {
+      void getSaleFee();
+      void getBuyFee();
+    }
+  }, [account, getBuyFee, getSaleFee]);
 
   console.log('buy / sale stage', state.value);
 

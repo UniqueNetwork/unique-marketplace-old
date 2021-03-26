@@ -11,7 +11,7 @@ import { Struct, TypeRegistry } from '@polkadot/types';
 
 // export type Attributes = TokenAttribute[];
 
-type AttributesDecoded = {
+export type AttributesDecoded = {
   [key: string]: string | string[],
 }
 

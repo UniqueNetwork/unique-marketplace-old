@@ -35,9 +35,6 @@ function isCodec (value?: AccountId | AccountIndex | Address | string | Uint8Arr
 
 function IdentityIcon ({ className = '', prefix, size = 24, theme, value }: Props): React.ReactElement<Props> {
   const { isEthereum, systemName } = useApi();
-
-  console.log('systemName', systemName);
-
   const { t } = useTranslation();
   const { queueAction } = useContext(StatusContext);
   const thisTheme = theme || getIdentityTheme(systemName);

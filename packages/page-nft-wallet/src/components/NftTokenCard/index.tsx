@@ -1,11 +1,11 @@
 // Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import './NftTokenCard.scss';
+import './styles.scss';
 
 import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollections';
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useHistory } from 'react-router';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 import Item from 'semantic-ui-react/dist/commonjs/views/Item';
@@ -31,6 +31,20 @@ function NftTokenCard ({ account, canTransferTokens, collection, localRegistry, 
     history.push(`/wallet/token-details?collectionId=${collectionId}&tokenId=${tokenId}`);
   }, [history]);
 
+  const attrebutesToShow = useMemo(() => {
+    if (attributes) {
+      return [...Object.keys(attributes).map((attr: string) => {
+        if (attr.toLowerCase().includes('hash')) {
+          return `${attr}: ${(attributes[attr] as string).substring(0, 8)}...`;
+        }
+
+        return `${attr}: ${(attributes[attr] as string)}`;
+      })].join(', ');
+    }
+
+    return '';
+  }, [attributes]);
+
   if (!reFungibleBalance && collection?.Mode?.reFungible) {
     return <></>;
   }
@@ -54,8 +68,8 @@ function NftTokenCard ({ account, canTransferTokens, collection, localRegistry, 
       <td className='token-balance'>
         { collection && Object.prototype.hasOwnProperty.call(collection.Mode, 'reFungible') && <span>Balance: {reFungibleBalance}</span> }
       </td>
-      <td className='token-balance'>
-        { attributes && Object.values(attributes).length > 0 && <span>Attributes: {Object.keys(attributes).map((attrKey) => (<span key={attrKey}>{attrKey}: {attributes[attrKey]} </span>))}</span> }
+      <td className='token-attributes'>
+        { attributes && Object.values(attributes).length > 0 && attrebutesToShow}
       </td>
       <td className='token-actions'>
         <Button

@@ -30,6 +30,10 @@ module.exports = merge(
         '/trades': {
           changeOrigin: true,
           target: 'https://whitelabel.market/'
+        },
+        'https://whitelabel.market': {
+          changeOrigin: true,
+          target: 'https://whitelabel.market/'
         }
       },
       static: path.resolve(__dirname, 'build')
