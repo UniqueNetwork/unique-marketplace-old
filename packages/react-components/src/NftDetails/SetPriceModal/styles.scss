@@ -1,0 +1,14 @@
+.ui.modal.unique-modal {
+
+  &.set-price {
+    .actions {
+      padding: 1rem !important;
+      display: flex;
+      float: right;
+    }
+  }
+}
+
+.transfer-form {
+  width: 100%;
+}

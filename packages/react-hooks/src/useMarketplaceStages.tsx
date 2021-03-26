@@ -29,6 +29,7 @@ export interface MarketplaceStagesInterface {
   saleFee: BN | undefined;
   sendCurrentUserAction: (action: UserActionType) => void;
   setPrice: (price: string) => void;
+  setReadyToAskPrice: (ready: boolean) => void;
   setTokenPriceForSale: (price: number) => void;
   setWithdrawAmount: (withdrawAmount: string) => void;
   tokenAsk: { owner: string, price: BN } | undefined;
@@ -299,7 +300,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
         'withdraw update'
       );
     }
-  }, [findCallMethodByName, contractInstance, maxGas, withdrawAmount, queueTransaction]);
+  }, [findCallMethodByName, contractInstance, kusamaDecimals, maxGas, withdrawAmount, queueTransaction]);
 
   const askPrice = useCallback(() => {
     setReadyToAskPrice(true);
@@ -446,6 +447,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
     saleFee,
     sendCurrentUserAction,
     setPrice,
+    setReadyToAskPrice,
     setTokenPriceForSale,
     setWithdrawAmount,
     tokenAsk,
