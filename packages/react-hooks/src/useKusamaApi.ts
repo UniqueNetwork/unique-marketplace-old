@@ -41,12 +41,7 @@ export const useKusamaApi = (account?: string): UseKusamaApiInterface => {
       if (kusamaApi && encodedKusamaAccount) {
         const kusamaAccountBalance: { data: BalanceInterface } = await kusamaApi.query.system.account(encodedKusamaAccount);
 
-        console.log('encodedKusamaAccount', encodedKusamaAccount);
-
         setKusamaBalance(kusamaAccountBalance.data);
-        const ksmBalance = kusamaAccountBalance.data.free.toNumber() / 1000000000000;
-
-        console.log('kusamaAccountBalance', ksmBalance, 'kusamaAccountBalance.data', kusamaAccountBalance.data.free.toNumber());
       }
     } catch (e) {
       console.log('kusama balance error', e);

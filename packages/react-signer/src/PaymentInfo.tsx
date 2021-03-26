@@ -11,21 +11,17 @@ import { Trans } from 'react-i18next';
 
 import { Expander, MarkWarning } from '@polkadot/react-components';
 import { useApi, useCall, useIsMountedRef } from '@polkadot/react-hooks';
-import { formatBalance, isFunction } from '@polkadot/util';
-
-import { useTranslation } from './translate';
+import { isFunction } from '@polkadot/util';
 
 interface Props {
   accountId?: string | null;
   className?: string;
   extrinsic?: SubmittableExtrinsic | null;
-  isSendable: boolean;
   onChange?: (hasAvailable: boolean) => void;
   tip?: BN;
 }
 
 function PaymentInfo ({ accountId, className = '', extrinsic }: Props): React.ReactElement<Props> | null {
-  const { t } = useTranslation();
   const { api } = useApi();
   const [dispatchInfo, setDispatchInfo] = useState<RuntimeDispatchInfo | null>(null);
   const balances = useCall<DeriveBalancesAll>(api.derive.balances.all, [accountId]);
@@ -55,12 +51,13 @@ function PaymentInfo ({ accountId, className = '', extrinsic }: Props): React.Re
         className={className}
         summary={
           <Trans i18nKey='feesForSubmission'>
-            Fees of <span className='highlight'>{formatBalance(dispatchInfo.partialFee, { withSiFull: true })}</span> will be applied to the submission
+            Fees of <span className='highlight'>{(parseFloat(dispatchInfo.partialFee.toString()) / Math.pow(10, 15)).toString()} testUNQ</span> will be applied to the submission
+            {/* Fees of <span className='highlight'>{formatBalance(dispatchInfo.partialFee, { decimals: 15 })}</span> will be applied to the submission */}
           </Trans>
         }
       />
       {api.consts.balances && !api.tx.balances?.transfer.is(extrinsic) && balances?.accountId.eq(accountId) && balances.availableBalance.sub(dispatchInfo.partialFee).lte(api.consts.balances.existentialDeposit) && (
-        <MarkWarning content={t<string>('The account does not have enough free funds (excluding locked/bonded/reserved) available to cover the transaction fees without dropping the balance below the account existential amount.')} />
+        <MarkWarning content={'The account does not have enough free funds (excluding locked/bonded/reserved) available to cover the transaction fees without dropping the balance below the account existential amount.'} />
       )}
     </>
   );

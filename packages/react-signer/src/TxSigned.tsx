@@ -15,7 +15,7 @@ import styled from 'styled-components';
 
 import { ApiPromise } from '@polkadot/api';
 import { web3FromSource } from '@polkadot/extension-dapp';
-import { Button, ErrorBoundary, Modal, Output, StatusContext, Toggle } from '@polkadot/react-components';
+import { Button, ErrorBoundary, Modal, StatusContext } from '@polkadot/react-components';
 import { useApi, useLedger, useToggle } from '@polkadot/react-hooks';
 import { keyring } from '@polkadot/ui-keyring';
 import { assert, BN_ZERO } from '@polkadot/util';
@@ -23,8 +23,6 @@ import { assert, BN_ZERO } from '@polkadot/util';
 import Address from './Address';
 import Qr from './Qr';
 import { AccountSigner, LedgerSigner, QrSigner } from './signers';
-import SignFields from './SignFields';
-import Tip from './Tip';
 import Transaction from './Transaction';
 import { useTranslation } from './translate';
 import { cacheUnlock, extractExternal, handleTxResults } from './util';
@@ -167,13 +165,14 @@ function TxSigned ({ className, currentItem, requestAddress }: Props): React.Rea
   const [{ isQrHashed, qrAddress, qrPayload, qrResolve }, setQrState] = useState<QrState>({ isQrHashed: false, qrAddress: '', qrPayload: new Uint8Array() });
   const [isBusy, setBusy] = useState(false);
   const [isRenderError, toggleRenderError] = useToggle();
-  const [isSubmit, setIsSubmit] = useState(true);
+  const [isSubmit] = useState(true);
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [senderInfo, setSenderInfo] = useState<AddressProxy>({ isMultiCall: false, isUnlockCached: false, multiRoot: null, proxyRoot: null, signAddress: requestAddress, signPassword: '' });
-  const [signedOptions, setSignedOptions] = useState<Partial<SignerOptions>>({});
-  const [signedTx, setSignedTx] = useState<string | null>(null);
-  const [multiCall, setMultiCall] = useState<string | null>(null);
-  const [tip, setTip] = useState(BN_ZERO);
+  const [signedOptions] = useState<Partial<SignerOptions>>({});
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [, setSignedTx] = useState<string | null>(null);
+  const [, setMultiCall] = useState<string | null>(null);
+  const [tip] = useState(BN_ZERO);
 
   useEffect((): void => {
     setFlags(extractExternal(senderInfo.signAddress));
@@ -344,32 +343,6 @@ function TxSigned ({ className, currentItem, requestAddress }: Props): React.Rea
                   passwordError={passwordError}
                   requestAddress={requestAddress}
                 />
-                {!currentItem.payload && (
-                  <Tip onChange={setTip} />
-                )}
-                {!isSubmit && (
-                  <SignFields
-                    address={senderInfo.signAddress}
-                    onChange={setSignedOptions}
-                    signedTx={signedTx}
-                  />
-                )}
-                {isSubmit && !senderInfo.isMultiCall && multiCall && (
-                  <Modal.Columns>
-                    <Modal.Column>
-                      <Output
-                        isFull
-                        isTrimmed
-                        label={t<string>('multisig call data')}
-                        value={multiCall}
-                        withCopy
-                      />
-                    </Modal.Column>
-                    <Modal.Column>
-                      {t('The call data that can be supplied to a final call to multi approvals')}
-                    </Modal.Column>
-                  </Modal.Columns>
-                )}
               </>
             )
           }
@@ -394,19 +367,6 @@ function TxSigned ({ className, currentItem, requestAddress }: Props): React.Rea
           onClick={_doStart}
           tabIndex={2}
         />
-        {!isBusy && (
-          <Toggle
-            className='signToggle'
-            isDisabled={!!currentItem.payload}
-            label={
-              isSubmit
-                ? t<string>('Sign and Submit')
-                : t<string>('Sign (no submission)')
-            }
-            onChange={setIsSubmit}
-            value={isSubmit}
-          />
-        )}
       </Modal.Actions>
     </>
   );

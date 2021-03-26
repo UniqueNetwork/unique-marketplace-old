@@ -1,6 +1,8 @@
 // Copyright 2017-2021 @polkadot/react-signer authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import './styles.scss';
+
 import type { SubmittableExtrinsic } from '@polkadot/api/types';
 import type { QueueTx, QueueTxMessageSetStatus } from '@polkadot/react-components/Status/types';
 

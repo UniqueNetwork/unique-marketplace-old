@@ -48,7 +48,7 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
   const uSellIt = tokenAsk && tokenAsk.owner === account;
   const decimalPoints = collectionInfo?.DecimalPoints instanceof BN ? collectionInfo?.DecimalPoints.toNumber() : 1;
   const lowBalanceToBuy = !!(buyFee && !balance?.free.gte(buyFee));
-  const lowKsmBalanceToBuy = tokenAsk?.price && kusamaBalance?.free.lte(tokenAsk.price);
+  const lowKsmBalanceToBuy = tokenAsk?.price && kusamaBalance?.free.add(deposited || new BN(0)).lte(tokenAsk.price);
   const lowBalanceToSell = !!(saleFee && !balance?.free.gte(saleFee));
 
   console.log('kusamaBalance?.free', kusamaBalance?.free.toString(), 'tokenAsk.price', tokenAsk?.price.toString());

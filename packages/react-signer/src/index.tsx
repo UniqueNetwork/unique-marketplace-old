@@ -13,7 +13,6 @@ import { Modal, StatusContext } from '@polkadot/react-components';
 import { useApi } from '@polkadot/react-hooks';
 import { assert, isFunction, loggerFormat } from '@polkadot/util';
 
-import { useTranslation } from './translate';
 import TxSigned from './TxSigned';
 import TxUnsigned from './TxUnsigned';
 
@@ -87,7 +86,6 @@ function extractCurrent (txqueue: QueueTx[]): ItemState {
 
 function Signer ({ children, className = '' }: Props): React.ReactElement<Props> {
   const { api } = useApi();
-  const { t } = useTranslation();
   const { queueSetTxStatus, txqueue } = useContext(StatusContext);
 
   const { count, currentItem, isRpc, isVisible, requestAddress } = useMemo(
@@ -106,9 +104,9 @@ function Signer ({ children, className = '' }: Props): React.ReactElement<Props>
       {currentItem && isVisible && (
         <Modal
           className={className}
-          header={<>{t('Authorize transaction')}{(count === 1) ? undefined : <>&nbsp;1/{count}</>}</>}
+          header={<>Authorize transaction{(count === 1) ? undefined : <>&nbsp;1/{count}</>}</>}
           key={currentItem.id}
-          size='large'
+          size='small'
         >
           {currentItem.isUnsigned
             ? <TxUnsigned currentItem={currentItem} />
