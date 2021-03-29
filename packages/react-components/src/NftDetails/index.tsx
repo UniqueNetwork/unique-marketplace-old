@@ -321,28 +321,6 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
                 </Form.Field>
               </Form>
             )}
-            {/* { readyToAskPrice && (
-              <Form className='transfer-form'>
-                <Form.Field>
-                  <Input
-                    autoFocus
-                    className='isSmall'
-                    help={<span>Set nft token price</span>}
-                    label={'amount'}
-                    min={0.01}
-                    onChange={setTokenPriceForSale}
-                    type='number'
-                    value={tokenPriceForSale}
-                  />
-                </Form.Field>
-                <Form.Field>
-                  <Button
-                    content='Set KSM price'
-                    onClick={onSavePrice}
-                  />
-                </Form.Field>
-              </Form>
-            )} */}
           </Grid.Column>
         </Grid.Row>
       </Grid>

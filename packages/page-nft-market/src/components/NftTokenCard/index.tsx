@@ -5,13 +5,14 @@ import './styles.scss';
 
 import type { OfferType } from '@polkadot/react-hooks/useCollections';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Image from 'semantic-ui-react/dist/commonjs/elements/Image';
 import Card from 'semantic-ui-react/dist/commonjs/views/Card';
 
 import { useSchema } from '@polkadot/react-hooks';
-import { TypeRegistry } from '@polkadot/types';
 import { formatKsmBalance } from '@polkadot/react-hooks/useKusamaApi';
+import { AttributesDecoded } from '@polkadot/react-hooks/useSchema';
+import { TypeRegistry } from '@polkadot/types';
 
 import Arrow from '../../../../apps/public/icons/arrowRight.svg';
 
@@ -19,12 +20,19 @@ interface Props {
   account: string;
   collectionId: string;
   localRegistry?: TypeRegistry;
+  onSetTokenAttributes: (collectionId: string, tokenId: string, attributes: AttributesDecoded) => void;
   openDetailedInformationModal: (collectionId: string, tokenId: string) => void;
   token: OfferType;
 }
 
-const NftTokenCard = ({ account, collectionId, localRegistry, openDetailedInformationModal, token }: Props): React.ReactElement<Props> => {
+const NftTokenCard = ({ account, collectionId, localRegistry, onSetTokenAttributes, openDetailedInformationModal, token }: Props): React.ReactElement<Props> => {
   const { attributes, tokenUrl } = useSchema(account, collectionId, token.tokenId, localRegistry);
+
+  useEffect(() => {
+    if (attributes) {
+      onSetTokenAttributes(collectionId, token.tokenId, attributes);
+    }
+  }, [attributes, collectionId, onSetTokenAttributes, token]);
 
   return (
     <Card

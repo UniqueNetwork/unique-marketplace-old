@@ -15,6 +15,7 @@ import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 import { Input } from '@polkadot/react-components';
 import { useCollections, useDecoder } from '@polkadot/react-hooks';
 import { NftCollectionInterface } from '@polkadot/react-hooks/useCollections';
+import { AttributesDecoded } from '@polkadot/react-hooks/useSchema';
 import { TypeRegistry } from '@polkadot/types';
 
 // local imports and components
@@ -27,10 +28,15 @@ interface BuyTokensProps {
   shouldUpdateTokens?: string;
 }
 
+interface OfferWithAttributes {
+  [collectionId: string]: {[tokenId: string]: AttributesDecoded}
+}
+
 const BuyTokens = ({ account, localRegistry, setShouldUpdateTokens, shouldUpdateTokens }: BuyTokensProps): ReactElement => {
   const history = useHistory();
   const { getOffers, offers, presetMintTokenCollection } = useCollections();
   const [searchString, setSearchString] = useState<string>('');
+  const [offersWithAttributes, setOffersWithAttributes] = useState<OfferWithAttributes>({});
   // const [collectionSearchString, setCollectionSearchString] = useState<string>('');
   const [collections, setCollections] = useState<NftCollectionInterface[]>([]);
   const [filteredOffers, setFilteredOffers] = useState<OfferType[]>([]);
@@ -46,9 +52,39 @@ const BuyTokens = ({ account, localRegistry, setShouldUpdateTokens, shouldUpdate
     setCollections(() => [...firstCollections]);
   }, [presetMintTokenCollection]);
 
+  const onSetTokenAttributes = useCallback((collectionId: string, tokenId: string, attributes: AttributesDecoded) => {
+    setOffersWithAttributes((prevOffers: OfferWithAttributes) => {
+      const newOffers = { ...prevOffers };
+
+      if (newOffers[collectionId]) {
+        prevOffers[collectionId][tokenId] = attributes;
+      } else {
+        newOffers[collectionId] = { [tokenId]: attributes };
+      }
+
+      return newOffers;
+    });
+  }, []);
+
   useEffect(() => {
-    setFilteredOffers(offers && offers.length ? offers.filter((item: OfferType) => item.collectionId.toString().includes(searchString.toLowerCase()) || item.tokenId.toString().includes(searchString.toLowerCase())) : []);
-  }, [offers, searchString]);
+    if (offers) {
+      if (searchString && searchString.length) {
+        const filtered = offers.filter((item: OfferType) => {
+          if (offersWithAttributes[item.collectionId] && offersWithAttributes[item.collectionId][item.tokenId]) {
+            const offerItemAttrs = offersWithAttributes[item.collectionId][item.tokenId];
+
+            return (offerItemAttrs.NameStr && (offerItemAttrs.NameStr as string).toLowerCase().includes(searchString.toLowerCase())) || item.price.toString().includes(searchString.toLowerCase());
+          }
+
+          return false;
+        });
+
+        setFilteredOffers(filtered);
+      } else {
+        setFilteredOffers(offers);
+      }
+    }
+  }, [offers, offersWithAttributes, searchString]);
 
   useEffect(() => {
     if (shouldUpdateTokens) {
@@ -133,6 +169,7 @@ const BuyTokens = ({ account, localRegistry, setShouldUpdateTokens, shouldUpdate
                             collectionId={token.collectionId.toString()}
                             key={token.tokenId}
                             localRegistry={localRegistry}
+                            onSetTokenAttributes={onSetTokenAttributes}
                             openDetailedInformationModal={openDetailedInformationModal}
                             token={token}
                           />
