@@ -58,6 +58,11 @@ export interface TokenDetailsInterface {
   VariableData?: string;
 }
 
+export interface TokenInterface extends TokenDetailsInterface {
+  collectionId: string;
+  id: string;
+}
+
 export type OfferType = {
   collectionId: number;
   price: BN;
@@ -228,23 +233,25 @@ export function useCollections () {
     }
   }, [api, getDetailedCollectionInfo]);
 
-  const collectAllTokensFromChain = useCallback(async () => {
+  const getCollectionWithTokenCount = useCallback(async (collectionId: string): Promise<{ info: NftCollectionInterface, tokenCount: number }> => {
+    return {
+      info: (await getDetailedCollectionInfo(collectionId)) as unknown as NftCollectionInterface,
+      tokenCount: (await api.query.nft.itemListIndex(collectionId)) as unknown as number
+    };
+  }, [api.query.nft, getDetailedCollectionInfo]);
+
+  const getAllCollectionsWithTokenCount = useCallback(async () => {
     const createdCollectionCount = (await api.query.nft.createdCollectionCount() as unknown as BN).toNumber();
     const destroyedCollectionCount = (await api.query.nft.destroyedCollectionCount() as unknown as BN).toNumber();
     const collectionsCount = createdCollectionCount - destroyedCollectionCount;
     const collectionWithTokensCount: { [key: string]: { info: NftCollectionInterface, tokenCount: number } } = {};
 
     for (let i = 1; i <= collectionsCount; i++) {
-      collectionWithTokensCount[i] = {
-        info: (await getDetailedCollectionInfo(i.toString())) as unknown as NftCollectionInterface,
-        tokenCount: (await api.query.nft.itemListIndex(i)) as unknown as number
-      };
+      collectionWithTokensCount[i] = await getCollectionWithTokenCount(i.toString());
     }
 
-    console.log('collectionWithTokensCount', collectionWithTokensCount);
-
     return collectionWithTokensCount;
-  }, [api.query.nft, getDetailedCollectionInfo]);
+  }, [api.query.nft, getCollectionWithTokenCount]);
 
   const presetMintTokenCollection = useCallback(async (): Promise<NftCollectionInterface[]> => {
     try {
@@ -266,8 +273,8 @@ export function useCollections () {
   }, [getDetailedCollectionInfo]);
 
   return {
-    collectAllTokensFromChain,
     error,
+    getCollectionWithTokenCount,
     getDetailedCollectionInfo,
     getDetailedReFungibleTokenInfo,
     getDetailedTokenInfo,

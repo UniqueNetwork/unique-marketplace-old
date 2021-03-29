@@ -57,7 +57,7 @@ const BuyTokens = ({ account, localRegistry, setShouldUpdateTokens, shouldUpdate
       const newOffers = { ...prevOffers };
 
       if (newOffers[collectionId]) {
-        prevOffers[collectionId][tokenId] = attributes;
+        newOffers[collectionId][tokenId] = attributes;
       } else {
         newOffers[collectionId] = { [tokenId]: attributes };
       }

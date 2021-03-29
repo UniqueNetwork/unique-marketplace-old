@@ -23,7 +23,7 @@ interface BuyTokensProps {
 
 const TokensForSale = ({ account, localRegistry, setShouldUpdateTokens, shouldUpdateTokens }: BuyTokensProps): ReactElement => {
   const history = useHistory();
-  const { getOffers, offers, presetMintTokenCollection } = useCollections();
+  const { getOffers, offers } = useCollections();
   const [filteredOffers, setFilteredOffers] = useState<OfferType[]>([]);
 
   const openDetailedInformationModal = useCallback((collectionId: string, tokenId: string) => {
@@ -48,8 +48,8 @@ const TokensForSale = ({ account, localRegistry, setShouldUpdateTokens, shouldUp
   }, [filterOffers]);
 
   useEffect(() => {
-    void presetMintTokenCollection();
-  }, [presetMintTokenCollection]);
+    setShouldUpdateTokens('all');
+  }, [setShouldUpdateTokens]);
 
   return (
     <div className='nft-market'>

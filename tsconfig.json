@@ -22,6 +22,8 @@
       "@polkadot/app-contracts/*": [ "packages/page-contracts/src/*" ],
       "@polkadot/app-settings": [ "packages/page-settings/src" ],
       "@polkadot/app-settings/*": [ "packages/page-settings/src/*" ],
+      "@polkadot/app-nft-all": [ "packages/page-nft-all/src" ],
+      "@polkadot/app-nft-all/*": [ "packages/app-nft-all/src/*" ],
       "@polkadot/app-nft-wallet": [ "packages/page-nft-wallet/src" ],
       "@polkadot/app-nft-wallet/*": [ "packages/page-nft-wallet/src/*" ],
       "@polkadot/app-nft-mint": [ "packages/page-nft-mint/src" ],
