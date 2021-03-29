@@ -20,7 +20,7 @@ interface Props {
   account: string;
   collectionId: string;
   localRegistry?: TypeRegistry;
-  onSetTokenAttributes: (collectionId: string, tokenId: string, attributes: AttributesDecoded) => void;
+  onSetTokenAttributes?: (collectionId: string, tokenId: string, attributes: AttributesDecoded) => void;
   openDetailedInformationModal: (collectionId: string, tokenId: string) => void;
   token: OfferType;
 }
@@ -29,7 +29,7 @@ const NftTokenCard = ({ account, collectionId, localRegistry, onSetTokenAttribut
   const { attributes, tokenUrl } = useSchema(account, collectionId, token.tokenId, localRegistry);
 
   useEffect(() => {
-    if (attributes) {
+    if (attributes && onSetTokenAttributes) {
       onSetTokenAttributes(collectionId, token.tokenId, attributes);
     }
   }, [attributes, collectionId, onSetTokenAttributes, token]);

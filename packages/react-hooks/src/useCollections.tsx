@@ -165,8 +165,6 @@ export function useCollections () {
   const getOffers = useCallback(() => {
     try {
       fetchData<OffersResponseType>('/offers/').subscribe((result: OffersResponseType | ErrorType) => {
-        console.log('result', result);
-
         if ('error' in result) {
           setError(result);
         } else {
@@ -214,12 +212,8 @@ export function useCollections () {
       const collectionsCount = createdCollectionCount - destroyedCollectionCount;
       const collections: Array<NftCollectionInterface> = [];
 
-      console.log('collectionsCount', collectionsCount, 'createdCollectionCount', createdCollectionCount, 'destroyedCollectionCount', destroyedCollectionCount);
-
       for (let i = 1; i <= collectionsCount; i++) {
         const collectionInf = await getDetailedCollectionInfo(i.toString()) as unknown as NftCollectionInterface;
-
-        console.log('collectionInf', collectionInf);
 
         if (collectionInf && collectionInf.Owner && collectionInf.Owner.toString() !== '5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM') {
           collections.push({ ...collectionInf, id: i.toString() });
@@ -233,6 +227,24 @@ export function useCollections () {
       return [];
     }
   }, [api, getDetailedCollectionInfo]);
+
+  const collectAllTokensFromChain = useCallback(async () => {
+    const createdCollectionCount = (await api.query.nft.createdCollectionCount() as unknown as BN).toNumber();
+    const destroyedCollectionCount = (await api.query.nft.destroyedCollectionCount() as unknown as BN).toNumber();
+    const collectionsCount = createdCollectionCount - destroyedCollectionCount;
+    const collectionWithTokensCount: { [key: string]: { info: NftCollectionInterface, tokenCount: number } } = {};
+
+    for (let i = 1; i <= collectionsCount; i++) {
+      collectionWithTokensCount[i] = {
+        info: (await getDetailedCollectionInfo(i.toString())) as unknown as NftCollectionInterface,
+        tokenCount: (await api.query.nft.itemListIndex(i)) as unknown as number
+      };
+    }
+
+    console.log('collectionWithTokensCount', collectionWithTokensCount);
+
+    return collectionWithTokensCount;
+  }, [api.query.nft, getDetailedCollectionInfo]);
 
   const presetMintTokenCollection = useCallback(async (): Promise<NftCollectionInterface[]> => {
     try {
@@ -254,6 +266,7 @@ export function useCollections () {
   }, [getDetailedCollectionInfo]);
 
   return {
+    collectAllTokensFromChain,
     error,
     getDetailedCollectionInfo,
     getDetailedReFungibleTokenInfo,

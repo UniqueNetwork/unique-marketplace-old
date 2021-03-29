@@ -151,7 +151,9 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
             )}
           </Grid.Column>
           <Grid.Column width={8}>
-            <Header as='h3'>{collectionInfo && <span>{hex2a(collectionInfo.TokenPrefix)}</span>} #{tokenId}</Header>
+            <Header as='h3'>
+              {collectionInfo && <span>{hex2a(collectionInfo.TokenPrefix)}</span>} #{tokenId}
+            </Header>
             { attributes && Object.values(attributes).length > 0 && (
               <div className='accessories'>
                 Attributes:
