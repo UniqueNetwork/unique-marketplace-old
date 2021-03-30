@@ -12,7 +12,7 @@ import { useHistory } from 'react-router';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
-import { Input } from '@polkadot/react-components';
+// import { Input } from '@polkadot/react-components';
 import { useCollections } from '@polkadot/react-hooks';
 import { AttributesDecoded } from '@polkadot/react-hooks/useSchema';
 import { TypeRegistry } from '@polkadot/types';
@@ -36,7 +36,7 @@ const perPage = 20;
 const AllNfts = ({ account, localRegistry, setShouldUpdateTokens }: BuyTokensProps): ReactElement => {
   const history = useHistory();
   const { getCollectionWithTokenCount, getTokenInfo } = useCollections();
-  const [searchString, setSearchString] = useState<string>('');
+  const [searchString] = useState<string>('');
   const [collectionWithTokensCount, setCollectionWithTokensCount] = useState<CollectionWithTokensCount>();
   const [allTokens, setAllTokens] = useState<{ [key: string]: TokenInterface}>({});
   const [tokensWithAttributes, setTokensWithAttributes] = useState<TokensWithAttributesInterface>({});
@@ -126,6 +126,10 @@ const AllNfts = ({ account, localRegistry, setShouldUpdateTokens }: BuyTokensPro
       <Grid>
         <Grid.Row>
           <Grid.Column width={16}>
+          </Grid.Column>
+        </Grid.Row>
+        {/* <Grid.Row>
+          <Grid.Column width={16}>
             <Input
               className='isSmall search'
               help={<span>Find and select token.</span>}
@@ -137,7 +141,7 @@ const AllNfts = ({ account, localRegistry, setShouldUpdateTokens }: BuyTokensPro
               withLabel
             />
           </Grid.Column>
-        </Grid.Row>
+        </Grid.Row> */}
         { (!account || !Object.values(allTokens).length) && (
           <Loader
             active
@@ -160,7 +164,7 @@ const AllNfts = ({ account, localRegistry, setShouldUpdateTokens }: BuyTokensPro
                     />}
                   pageStart={1}
                   threshold={200}
-                  useWindow={false}
+                  useWindow={true}
                 >
                   <div className='market-pallet__item'>
                     {filteredTokens.map((token) => (
