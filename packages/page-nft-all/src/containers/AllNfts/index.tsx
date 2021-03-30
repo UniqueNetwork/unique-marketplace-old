@@ -39,11 +39,10 @@ const AllNfts = ({ account, localRegistry, setShouldUpdateTokens }: BuyTokensPro
   const [searchString, setSearchString] = useState<string>('');
   const [collectionWithTokensCount, setCollectionWithTokensCount] = useState<CollectionWithTokensCount>();
   const [allTokens, setAllTokens] = useState<{ [key: string]: TokenInterface}>({});
-  const [page, setPage] = useState<number>(1);
   const [tokensWithAttributes, setTokensWithAttributes] = useState<TokensWithAttributesInterface>({});
   // const [collectionSearchString, setCollectionSearchString] = useState<string>('');
   const [filteredTokens, setFilteredTokens] = useState<TokenInterface[]>([]);
-  const hasMore = collectionWithTokensCount && page * perPage < collectionWithTokensCount?.tokenCount;
+  const hasMore = collectionWithTokensCount && Object.values(allTokens).length < collectionWithTokensCount?.tokenCount;
 
   const openDetailedInformationModal = useCallback((collectionId: string, tokenId: string) => {
     history.push(`/market/token-details?collectionId=${collectionId}&tokenId=${tokenId}`);
@@ -81,16 +80,11 @@ const AllNfts = ({ account, localRegistry, setShouldUpdateTokens }: BuyTokensPro
     const collectionInfoWithTokensCount: CollectionWithTokensCount = await getCollectionWithTokenCount('1');
 
     setCollectionWithTokensCount(collectionInfoWithTokensCount);
-
-    console.log('collectionInfoWithTokensCount', collectionInfoWithTokensCount);
   }, [getCollectionWithTokenCount]);
 
   const fetchData = useCallback((newPage: number) => {
-    console.log('fetchData', 'page', page, 'newPage', newPage);
-    setPage(page);
-
     void fillTokensTable((newPage - 1) * perPage, newPage * perPage);
-  }, [fillTokensTable, page]);
+  }, [fillTokensTable]);
 
   useEffect(() => {
     if (allTokens) {
@@ -127,8 +121,6 @@ const AllNfts = ({ account, localRegistry, setShouldUpdateTokens }: BuyTokensPro
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [collectionWithTokensCount]);
 
-  console.log('allTokens', allTokens, 'hasMore', hasMore);
-
   return (
     <div className='all-tokens'>
       <Grid>
@@ -150,9 +142,7 @@ const AllNfts = ({ account, localRegistry, setShouldUpdateTokens }: BuyTokensPro
           <Loader
             active
             inline='centered'
-          >
-            Loading...
-          </Loader>
+          />
         )}
         {(account && filteredTokens.length > 0) && (
           <Grid.Row>
@@ -169,7 +159,7 @@ const AllNfts = ({ account, localRegistry, setShouldUpdateTokens }: BuyTokensPro
                     />
                   }
                   pageStart={1}
-                  threshold={100}
+                  threshold={200}
                   useWindow={false}
                 >
                   <div className='market-pallet__item'>
