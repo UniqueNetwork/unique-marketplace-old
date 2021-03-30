@@ -96,6 +96,8 @@ export type TradesResponseType = {
   pageSize: number;
 }
 
+export type CollectionWithTokensCount = { info: NftCollectionInterface, tokenCount: number };
+
 export function useCollections () {
   const { api } = useApi();
   const { fetchData } = useFetch();
@@ -124,9 +126,12 @@ export function useCollections () {
     }
 
     try {
-      const collectionInfo = await api.query.nft.collectionById(collectionId);
+      const collectionInfo = (await api.query.nft.collectionById(collectionId)).toJSON() as unknown as NftCollectionInterface;
 
-      return collectionInfo.toJSON() as unknown as NftCollectionInterface;
+      return {
+        ...collectionInfo,
+        id: collectionId
+      };
     } catch (e) {
       console.log('getDetailedCollectionInfo error', e);
     }
@@ -233,25 +238,39 @@ export function useCollections () {
     }
   }, [api, getDetailedCollectionInfo]);
 
-  const getCollectionWithTokenCount = useCallback(async (collectionId: string): Promise<{ info: NftCollectionInterface, tokenCount: number }> => {
+  const getCollectionWithTokenCount = useCallback(async (collectionId: string): Promise<CollectionWithTokensCount> => {
     return {
       info: (await getDetailedCollectionInfo(collectionId)) as unknown as NftCollectionInterface,
-      tokenCount: (await api.query.nft.itemListIndex(collectionId)) as unknown as number
+      tokenCount: ((await api.query.nft.itemListIndex(collectionId)) as unknown as BN).toNumber()
     };
   }, [api.query.nft, getDetailedCollectionInfo]);
 
-  const getAllCollectionsWithTokenCount = useCallback(async () => {
+  const getTokenInfo = useCallback(async (collectionInfo: NftCollectionInterface, tokenId: string): Promise<TokenDetailsInterface> => {
+    let tokenDetailsData: TokenDetailsInterface = {};
+
+    if (tokenId && collectionInfo) {
+      if (Object.prototype.hasOwnProperty.call(collectionInfo.Mode, 'nft')) {
+        tokenDetailsData = await getDetailedTokenInfo(collectionInfo.id, tokenId);
+      } else if (Object.prototype.hasOwnProperty.call(collectionInfo.Mode, 'reFungible')) {
+        tokenDetailsData = await getDetailedReFungibleTokenInfo(collectionInfo.id, tokenId);
+      }
+    }
+
+    return tokenDetailsData;
+  }, [getDetailedTokenInfo, getDetailedReFungibleTokenInfo]);
+
+  /* const getAllCollectionsWithTokenCount = useCallback(async () => {
     const createdCollectionCount = (await api.query.nft.createdCollectionCount() as unknown as BN).toNumber();
     const destroyedCollectionCount = (await api.query.nft.destroyedCollectionCount() as unknown as BN).toNumber();
     const collectionsCount = createdCollectionCount - destroyedCollectionCount;
-    const collectionWithTokensCount: { [key: string]: { info: NftCollectionInterface, tokenCount: number } } = {};
+    const collectionWithTokensCount: { [key: string]: CollectionWithTokensCount } = {};
 
     for (let i = 1; i <= collectionsCount; i++) {
       collectionWithTokensCount[i] = await getCollectionWithTokenCount(i.toString());
     }
 
     return collectionWithTokensCount;
-  }, [api.query.nft, getCollectionWithTokenCount]);
+  }, [api.query.nft, getCollectionWithTokenCount]); */
 
   const presetMintTokenCollection = useCallback(async (): Promise<NftCollectionInterface[]> => {
     try {
@@ -279,6 +298,7 @@ export function useCollections () {
     getDetailedReFungibleTokenInfo,
     getDetailedTokenInfo,
     getOffers,
+    getTokenInfo,
     getTokensOfCollection,
     getTrades,
     myTrades,

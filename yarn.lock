@@ -3890,6 +3890,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/react-infinite-scroller@npm:^1.2.1":
+  version: 1.2.1
+  resolution: "@types/react-infinite-scroller@npm:1.2.1"
+  dependencies:
+    "@types/react": "*"
+  checksum: 2f8d9060eb3336be68608de6a4fe970d1e07790c92180309ff0298a27cc87463d6cc24ad1ea62d5253c7ceb677e33cdfe7b0cfa5dc500642cfcd1064bdbbf858
+  languageName: node
+  linkType: hard
+
 "@types/react-router-dom@npm:^5.1.7":
   version: 5.1.7
   resolution: "@types/react-router-dom@npm:5.1.7"
@@ -15940,6 +15949,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-infinite-scroller@npm:^1.2.4":
+  version: 1.2.4
+  resolution: "react-infinite-scroller@npm:1.2.4"
+  dependencies:
+    prop-types: ^15.5.8
+  peerDependencies:
+    react: ^0.14.9 || ^15.3.0 || ^16.0.0
+  checksum: 1bbf35611fd93ae69bbe432279bd3b4c2fbdc69416c0629266a4eb2c817897f11443ac3baaa8d5dc5ac0513fc4d253b7822bcc74b3034a14c2ffb48e5bc853b5
+  languageName: node
+  linkType: hard
+
 "react-is@npm:^16.13.1, react-is@npm:^16.6.0, react-is@npm:^16.6.3, react-is@npm:^16.7.0, react-is@npm:^16.8.1, react-is@npm:^16.8.6":
   version: 16.13.1
   resolution: "react-is@npm:16.13.1"
@@ -19112,6 +19132,7 @@ __metadata:
     "@types/react-beautiful-dnd": ^13.0.0
     "@types/react-copy-to-clipboard": ^5.0.0
     "@types/react-dom": ^17.0.2
+    "@types/react-infinite-scroller": ^1.2.1
     "@types/react-router-dom": ^5.1.7
     "@types/store": ^2.0.2
     "@types/styled-components": ^5.1.9
@@ -19130,6 +19151,7 @@ __metadata:
     react: ^17.0.1
     react-dom: ^17.0.1
     react-images-uploading: ^3.1.2
+    react-infinite-scroller: ^1.2.4
     react-is: ^17.0.1
     sass: ^1.26.8
     sass-loader: ^8.0.2

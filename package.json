@@ -105,11 +105,13 @@
   "dependencies": {
     "@types/lodash": "^4.14.168",
     "@types/lodash.memoize": "^4.1.6",
+    "@types/react-infinite-scroller": "^1.2.1",
     "@xstate/react": "^1.1.0",
     "bignumber": "^1.1.0",
     "cypress": "^6.8.0",
     "lodash": "^4.17.21",
     "react-images-uploading": "^3.1.2",
+    "react-infinite-scroller": "^1.2.4",
     "style-loader": "^2.0.0",
     "thread-loader": "^3.0.1",
     "xstate": "^4.15.0"

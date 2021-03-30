@@ -33,7 +33,7 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
   const [attributesVar, setAttributesVar] = useState<string>();
   const [attributes, setAttributes] = useState<AttributesDecoded>();
   const [tokenDetails, setTokenDetails] = useState<TokenDetailsInterface>();
-  const { getDetailedCollectionInfo, getDetailedReFungibleTokenInfo, getDetailedTokenInfo } = useCollections();
+  const { getDetailedCollectionInfo, getTokenInfo } = useCollections();
   const cleanup = useRef<boolean>(false);
   const { getOnChainSchema, getTokenImageUrl, mergeData } = useMetadata(localRegistry);
 
@@ -82,22 +82,12 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
   }, [collectionId, getDetailedCollectionInfo]);
 
   const getTokenDetails = useCallback(async () => {
-    if (collectionId && tokenId && collectionInfo) {
-      let tokenDetailsData: TokenDetailsInterface = {};
-
-      if (Object.prototype.hasOwnProperty.call(collectionInfo.Mode, 'nft')) {
-        tokenDetailsData = await getDetailedTokenInfo(collectionId.toString(), tokenId.toString());
-      } else if (Object.prototype.hasOwnProperty.call(collectionInfo.Mode, 'reFungible')) {
-        tokenDetailsData = await getDetailedReFungibleTokenInfo(collectionId.toString(), tokenId.toString());
-      }
-
-      if (cleanup.current) {
-        return;
-      }
+    if (tokenId && collectionInfo) {
+      const tokenDetailsData = await getTokenInfo(collectionInfo, tokenId.toString());
 
       setTokenDetails(tokenDetailsData);
     }
-  }, [collectionId, collectionInfo, getDetailedTokenInfo, getDetailedReFungibleTokenInfo, tokenId]);
+  }, [collectionInfo, getTokenInfo, tokenId]);
 
   const mergeTokenAttributes = useCallback(() => {
     const tokenAttributes: any = {

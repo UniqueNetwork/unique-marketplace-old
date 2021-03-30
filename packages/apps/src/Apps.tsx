@@ -150,6 +150,12 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                                     name='trades'
                                     to='/trades'
                                   />
+                                  <Menu.Item
+                                    active={location.pathname === '/all-tokens'}
+                                    as={NavLink}
+                                    name='allTokens'
+                                    to='/all-tokens'
+                                  />
                                 </Menu>
                                 <div className='app-user'>
                                   <AccountSelector onChange={setAccount} />
