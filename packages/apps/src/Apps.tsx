@@ -27,6 +27,7 @@ import Signer from '@polkadot/react-signer';
 import uiSettings from '@polkadot/ui-settings';
 
 import ConnectingOverlay from './overlays/Connecting';
+import BalancesHeader from './BalancesHeader';
 import defaultNftTypes from './defaultNftTypes';
 import WarmUp from './WarmUp';
 
@@ -157,6 +158,7 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                                     to='/trades'
                                   />
                                 </Menu>
+                                <BalancesHeader account={account} />
                                 <div className='app-user'>
                                   <AccountSelector onChange={setAccount} />
                                 </div>

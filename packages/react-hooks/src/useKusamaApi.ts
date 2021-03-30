@@ -15,6 +15,7 @@ import { encodeAddress } from '@polkadot/util-crypto';
 
 interface UseKusamaApiInterface {
   formatKsmBalance: (balance: BN | undefined) => string;
+  getKusamaBalance: () => void;
   kusamaBalance: BalanceInterface | undefined;
   kusamaDecimals: number;
   kusamaTransfer: (recipient: string, value: BN, onSuccess: (status: string) => void, onFail: (status: string) => void) => void;
@@ -97,6 +98,7 @@ export const useKusamaApi = (account?: string): UseKusamaApiInterface => {
 
   return {
     formatKsmBalance,
+    getKusamaBalance,
     kusamaBalance,
     kusamaDecimals,
     kusamaTransfer

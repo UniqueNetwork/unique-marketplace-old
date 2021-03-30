@@ -8,6 +8,7 @@ export { useAddresses } from './useAddresses';
 export { useApi } from './useApi';
 export { useAvailableSlashes } from './useAvailableSlashes';
 export { useBalance } from './useBalance';
+export { useBalances } from './useBalances';
 export { useBlockTime } from './useBlockTime';
 export { useBlocksPerDays } from './useBlocksPerDays';
 export { useCacheKey } from './useCacheKey';
