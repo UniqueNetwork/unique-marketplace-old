@@ -45,7 +45,7 @@ const AllNfts = ({ account, localRegistry, setShouldUpdateTokens }: BuyTokensPro
   const hasMore = collectionWithTokensCount && Object.values(allTokens).length < collectionWithTokensCount?.tokenCount;
 
   const openDetailedInformationModal = useCallback((collectionId: string, tokenId: string) => {
-    history.push(`/market/token-details?collectionId=${collectionId}&tokenId=${tokenId}`);
+    history.push(`/all-tokens/token-details?collectionId=${collectionId}&tokenId=${tokenId}`);
   }, [history]);
 
   const onSetTokenAttributes = useCallback((collectionId: string, tokenId: string, attributes: AttributesDecoded) => {
@@ -138,7 +138,7 @@ const AllNfts = ({ account, localRegistry, setShouldUpdateTokens }: BuyTokensPro
             />
           </Grid.Column>
         </Grid.Row>
-        { (!account || !Object.values(filteredTokens).length) && (
+        { (!account || !Object.values(allTokens).length) && (
           <Loader
             active
             inline='centered'
@@ -152,12 +152,12 @@ const AllNfts = ({ account, localRegistry, setShouldUpdateTokens }: BuyTokensPro
                   hasMore={hasMore}
                   initialLoad={false}
                   loadMore={fetchData}
-                  loader={
-                    <Loader
+                  loader={searchString && searchString.length
+                    ? <></>
+                    : <Loader
                       active
                       inline='centered'
-                    />
-                  }
+                    />}
                   pageStart={1}
                   threshold={200}
                   useWindow={false}

@@ -22,7 +22,6 @@ function App ({ account, basePath }: Props): React.ReactElement<Props> {
   return (
     <>
       <Header as='h1'>All Tokens</Header>
-      <Header as='h4'>NFTs owned by me</Header>
       <Switch>
         <Route path={`${basePath}/token-details`}>
           <NftDetails
