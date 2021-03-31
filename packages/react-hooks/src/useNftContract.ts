@@ -12,11 +12,11 @@ import { Abi, ContractPromise } from '@polkadot/api-contract';
 import { DEFAULT_DECIMALS } from '@polkadot/react-api';
 import { useApi, useCall } from '@polkadot/react-hooks';
 import keyring from '@polkadot/ui-keyring';
+import { settings } from '@polkadot/ui-settings';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import metadata from './metadata19.03.json';
-import { settings } from '@polkadot/ui-settings';
 
 export interface AskOutputInterface {
   output: [string, string, string, BN, string]

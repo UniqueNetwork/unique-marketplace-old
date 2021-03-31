@@ -1,7 +1,8 @@
 // Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import React, { memo } from 'react';
+import React, { memo, useCallback } from 'react';
+import Popup from 'semantic-ui-react/dist/commonjs/modules/Popup';
 
 import { useBalances } from '@polkadot/react-hooks';
 import { formatKsmBalance, formatStrBalance } from '@polkadot/react-hooks/useKusamaApi';
@@ -9,7 +10,11 @@ import { formatKsmBalance, formatStrBalance } from '@polkadot/react-hooks/useKus
 import balanceUpdate from '../public/icons/balanceUpdate.svg';
 
 function BalancesHeader ({ account }: { account?: string }): React.ReactElement<{ account?: string }> {
-  const { balancesAll, deposited, kusamaBalancesAll, updateBalances } = useBalances(account);
+  const { balancesAll, deposited, kusamaBalancesAll } = useBalances(account);
+
+  const withdrawDeposit = useCallback(() => {
+    console.log('withdrawDeposit');
+  }, []);
 
   return (
     <div className='app-balances'>
@@ -18,18 +23,21 @@ function BalancesHeader ({ account }: { account?: string }): React.ReactElement<
         {formatStrBalance(15, balancesAll?.freeBalance)} UNQ
       </div>
       <div className='app-balance--item'>
-        <small>deposit</small>
-        {formatKsmBalance(deposited)} KSM
-      </div>
-      <div className='app-balance--item'>
         <small>balance</small>
         {formatKsmBalance(kusamaBalancesAll?.freeBalance)} KSM
       </div>
-      <img
-        alt='balance-update'
-        onClick={updateBalances}
-        src={balanceUpdate as string}
-      />
+      <div className='app-balance--item'>
+        <small>deposit</small>
+        {formatKsmBalance(deposited)} KSM
+        <Popup
+          content='Withdraw your ksm deposit'
+          trigger={<img
+            alt='balance-update'
+            onClick={withdrawDeposit}
+            src={balanceUpdate as string}
+          />}
+        />
+      </div>
     </div>
   );
 }

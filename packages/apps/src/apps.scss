@@ -78,6 +78,10 @@
     display: flex;
     align-items: flex-end;
 
+    &:last-child {
+      border-right: none;
+    }
+
     small {
       position: absolute;
       top: -4px;
