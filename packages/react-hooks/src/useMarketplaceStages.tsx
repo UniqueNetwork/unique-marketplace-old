@@ -284,8 +284,6 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
   const revertMoney = useCallback(() => {
     const message = findCallMethodByName('withdraw');
 
-    console.log('amountToWithdraw', (parseFloat(withdrawAmount) * Math.pow(10, kusamaDecimals)));
-
     if (message && contractInstance) {
       const extrinsic = contractInstance.exec(message, {
         gasLimit: maxGas,

@@ -106,7 +106,7 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
             {needsApi && (!isApiReady || !isApiConnected)
               ? (
                 <div className='connecting'>
-                  <Spinner label={t<string>('Initializing connection')} />
+                  <Spinner label='Initializing connection' />
                 </div>
               )
               : (

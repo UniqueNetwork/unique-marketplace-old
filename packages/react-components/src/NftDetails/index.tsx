@@ -15,7 +15,6 @@ import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
 import { Input, TxButton } from '@polkadot/react-components';
 import { useApi, useBalance, useDecoder, useMarketplaceStages, useSchema } from '@polkadot/react-hooks';
-import { formatStrBalance } from '@polkadot/react-hooks/useKusamaApi';
 import { TypeRegistry } from '@polkadot/types';
 
 import arrowLeft from './arrowLeft.svg';
@@ -180,11 +179,6 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
                   <div className='warning-block'>Your balance is too low to buy</div>
                 )}
               </>
-            )}
-            <p>Your testUNQ Balance: {formatStrBalance(15, balance?.free)} testUNQ</p>
-            <p>Your KSM Balance: {formatKsmBalance(kusamaBalance?.free)} KSM</p>
-            { deposited && (
-              <p>Your KSM Deposit: {formatKsmBalance(deposited)} KSM</p>
             )}
             <div className='divider' />
             { (uOwnIt && !uSellIt) && (
