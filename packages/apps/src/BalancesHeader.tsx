@@ -9,13 +9,13 @@ import { formatKsmBalance, formatStrBalance } from '@polkadot/react-hooks/useKus
 import balanceUpdate from '../public/icons/balanceUpdate.svg';
 
 function BalancesHeader ({ account }: { account?: string }): React.ReactElement<{ account?: string }> {
-  const { balance, deposited, kusamaBalance, updateBalances } = useBalances(account);
+  const { balancesAll, deposited, kusamaBalancesAll, updateBalances } = useBalances(account);
 
   return (
     <div className='app-balances'>
       <div className='app-balance--item'>
         <small>balance</small>
-        {formatStrBalance(15, balance?.free)} UNQ
+        {formatStrBalance(15, balancesAll?.freeBalance)} UNQ
       </div>
       <div className='app-balance--item'>
         <small>deposit</small>
@@ -23,7 +23,7 @@ function BalancesHeader ({ account }: { account?: string }): React.ReactElement<
       </div>
       <div className='app-balance--item'>
         <small>balance</small>
-        {formatKsmBalance(kusamaBalance?.free)} KSM
+        {formatKsmBalance(kusamaBalancesAll?.freeBalance)} KSM
       </div>
       <img
         alt='balance-update'
