@@ -6,7 +6,7 @@ import type { DeriveBalancesAll } from '@polkadot/api-derive/types';
 import BN from 'bn.js';
 import { useEffect } from 'react';
 
-import { useApi, useCall, useKusamaApi, useNftContract } from '@polkadot/react-hooks';
+import { useApi, useCall, useKusamaApi } from '@polkadot/react-hooks';
 
 interface UseBalancesInterface {
   balancesAll: DeriveBalancesAll | undefined;
@@ -14,10 +14,9 @@ interface UseBalancesInterface {
   kusamaBalancesAll: DeriveBalancesAll | undefined;
 }
 
-export const useBalances = (account?: string): UseBalancesInterface => {
+export const useBalances = (account: string | undefined, deposited: BN | undefined, getUserDeposit: () => Promise<BN | null>): UseBalancesInterface => {
   const api = useApi();
   const { kusamaApi } = useKusamaApi(account || '');
-  const { deposited, getUserDeposit } = useNftContract(account || '');
   const balancesAll = useCall<DeriveBalancesAll>(api?.api?.derive.balances.all, [account]);
   const kusamaBalancesAll = useCall<DeriveBalancesAll>(kusamaApi?.derive?.balances.all, [account]);
 

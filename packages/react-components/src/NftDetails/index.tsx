@@ -15,12 +15,14 @@ import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
 import { Input, TxButton } from '@polkadot/react-components';
 import { useApi, useBalance, useDecoder, useMarketplaceStages, useSchema } from '@polkadot/react-hooks';
+import { KUSAMA_DECIMALS } from '@polkadot/react-hooks/utils';
 import { TypeRegistry } from '@polkadot/types';
 
 import arrowLeft from './arrowLeft.svg';
 import BuySteps from './BuySteps';
 import SaleSteps from './SaleSteps';
 import SetPriceModal from './SetPriceModal';
+import {formatKsmBalance} from "@polkadot/react-hooks/useKusamaApi";
 
 interface NftDetailsProps {
   account: string;
@@ -43,7 +45,7 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
   const { hex2a } = useDecoder();
   const { attributes, collectionInfo, reFungibleBalance, tokenUrl } = useSchema(account, collectionId, tokenId, localRegistry);
   const [tokenPriceForSale, setTokenPriceForSale] = useState<string>('');
-  const { buyFee, cancelStep, deposited, escrowAddress, formatKsmBalance, kusamaBalance, kusamaDecimals, readyToAskPrice, saleFee, sendCurrentUserAction, setPrice, setReadyToAskPrice, setWithdrawAmount, tokenAsk, tokenInfo, transferStep, withdrawAmount } = useMarketplaceStages(account, collectionInfo, tokenId);
+  const { buyFee, cancelStep, deposited, escrowAddress, formatKsmBalance, kusamaBalance, readyToAskPrice, saleFee, sendCurrentUserAction, setPrice, setReadyToAskPrice, setWithdrawAmount, tokenAsk, tokenInfo, transferStep, withdrawAmount } = useMarketplaceStages(account, collectionInfo, tokenId);
 
   const uOwnIt = tokenInfo?.Owner?.toString() === account || (tokenAsk && tokenAsk.owner === account);
   const uSellIt = tokenAsk && tokenAsk.owner === account;
@@ -94,8 +96,8 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
       return;
     }
 
-    setPrice((parseFloat(tokenPriceForSale) * Math.pow(10, kusamaDecimals)).toString());
-  }, [kusamaDecimals, setPrice, tokenPriceForSale]);
+    setPrice((parseFloat(tokenPriceForSale) * Math.pow(10, KUSAMA_DECIMALS)).toString());
+  }, [setPrice, tokenPriceForSale]);
 
   const onTransferSuccess = useCallback(() => {
     sendCurrentUserAction('UPDATE_TOKEN_STATE');
@@ -105,8 +107,9 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
   const onConfirmWithdraw = useCallback(() => {
     sendCurrentUserAction('REVERT_UNUSED_MONEY');
     setReadyToWithdraw(false);
-    console.log('withdrawAmount', withdrawAmount);
-  }, [sendCurrentUserAction, withdrawAmount]);
+  }, [sendCurrentUserAction]);
+
+  console.log('deposited', parseFloat(formatKsmBalance(deposited)));
 
   return (
     <div className='toke-details'>
@@ -310,7 +313,7 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
                     />
                     <Button
                       content='confirm withdraw'
-                      disabled={!deposited || (parseFloat(withdrawAmount) > parseFloat(formatKsmBalance(deposited)))}
+                      disabled={!deposited || !parseFloat(withdrawAmount) || (parseFloat(withdrawAmount) > parseFloat(formatKsmBalance(deposited)))}
                       onClick={onConfirmWithdraw}
                     />
                   </div>

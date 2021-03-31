@@ -8,6 +8,7 @@ import { ApiPromise } from '@polkadot/api/promise';
 import { typesBundle, typesChain } from '@polkadot/apps-config';
 import { StatusContext } from '@polkadot/react-components';
 import { BalanceInterface } from '@polkadot/react-hooks/useBalance';
+import { KUSAMA_DECIMALS } from '@polkadot/react-hooks/utils';
 import ApiSigner from '@polkadot/react-signer/signers/ApiSigner';
 import { WsProvider } from '@polkadot/rpc-provider';
 import { TypeRegistry } from '@polkadot/types/create';
@@ -18,11 +19,8 @@ interface UseKusamaApiInterface {
   getKusamaBalance: () => void;
   kusamaApi: ApiPromise | undefined;
   kusamaBalance: BalanceInterface | undefined;
-  kusamaDecimals: number;
   kusamaTransfer: (recipient: string, value: BN, onSuccess: (status: string) => void, onFail: (status: string) => void) => void;
 }
-
-export const KUSAMA_DECIMALS = 12;
 
 export function formatKsmBalance (value: BN | undefined = new BN(0)): string {
   return formatStrBalance(KUSAMA_DECIMALS, value);
@@ -37,7 +35,6 @@ export function formatStrBalance (decimals: number, value: BN | undefined = new 
 export const useKusamaApi = (account?: string): UseKusamaApiInterface => {
   const { queuePayload, queueSetTxStatus } = useContext(StatusContext);
   const [kusamaApi, setKusamaApi] = useState<ApiPromise>();
-  const [kusamaDecimals] = useState<number>(KUSAMA_DECIMALS);
   const [kusamaBalance, setKusamaBalance] = useState<BalanceInterface>();
   const [encodedKusamaAccount, setEncodedKusamaAccount] = useState<string>();
   const { queueExtrinsic } = useContext(StatusContext);
@@ -102,7 +99,6 @@ export const useKusamaApi = (account?: string): UseKusamaApiInterface => {
     getKusamaBalance,
     kusamaApi,
     kusamaBalance,
-    kusamaDecimals,
     kusamaTransfer
   };
 };

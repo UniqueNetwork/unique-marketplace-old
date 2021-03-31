@@ -7,6 +7,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import { useCollections } from '@polkadot/react-hooks/useCollections';
+import { UNIQUE_COLLECTION_ID } from '@polkadot/react-hooks/utils';
 
 export interface ImageInterface {
   address: string;
@@ -22,8 +23,6 @@ export interface UseMintApiInterface {
   uploadingError: string | undefined;
 }
 
-export const collectionIdForMint = '1';
-
 /**
  * Get validators from server if health "connected":true
  * @return {Array<ValidatorInfo>} filtered validators from server
@@ -35,15 +34,15 @@ function useMintApi (): UseMintApiInterface {
   const { getDetailedCollectionInfo } = useCollections();
   const history = useHistory();
 
-  console.log('collectionIdForMint', collectionIdForMint);
+  console.log('collectionIdForMint', UNIQUE_COLLECTION_ID);
 
   const addMintedTokenToWallet = useCallback(async () => {
     const collections: NftCollectionInterface[] = JSON.parse(localStorage.getItem('tokenCollections') || '[]') as NftCollectionInterface[];
 
-    if (!collections.length || !collections.find((collection: NftCollectionInterface) => collection.id === collectionIdForMint)) {
-      const collectionInf = await getDetailedCollectionInfo(collectionIdForMint) as unknown as NftCollectionInterface;
+    if (!collections.length || !collections.find((collection: NftCollectionInterface) => collection.id === UNIQUE_COLLECTION_ID)) {
+      const collectionInf = await getDetailedCollectionInfo(UNIQUE_COLLECTION_ID) as unknown as NftCollectionInterface;
 
-      collections.push({ ...collectionInf, id: collectionIdForMint });
+      collections.push({ ...collectionInf, id: UNIQUE_COLLECTION_ID });
 
       localStorage.setItem('tokenCollections', JSON.stringify(collections));
     }

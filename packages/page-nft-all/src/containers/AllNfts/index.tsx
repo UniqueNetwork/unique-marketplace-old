@@ -15,6 +15,7 @@ import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 // import { Input } from '@polkadot/react-components';
 import { useCollections } from '@polkadot/react-hooks';
 import { AttributesDecoded } from '@polkadot/react-hooks/useSchema';
+import { UNIQUE_COLLECTION_ID } from '@polkadot/react-hooks/utils';
 import { TypeRegistry } from '@polkadot/types';
 
 // local imports and components
@@ -77,7 +78,7 @@ const AllNfts = ({ account, localRegistry, setShouldUpdateTokens }: BuyTokensPro
   }, [allTokens, collectionWithTokensCount, getTokenInfo]);
 
   const presetTokensTable = useCallback(async () => {
-    const collectionInfoWithTokensCount: CollectionWithTokensCount = await getCollectionWithTokenCount('1');
+    const collectionInfoWithTokensCount: CollectionWithTokensCount = await getCollectionWithTokenCount(UNIQUE_COLLECTION_ID);
 
     setCollectionWithTokensCount(collectionInfoWithTokensCount);
   }, [getCollectionWithTokenCount]);

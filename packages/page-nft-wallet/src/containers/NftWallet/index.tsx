@@ -8,13 +8,12 @@ import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header/Header';
 
-import { LabelHelp, Table } from '@polkadot/react-components';
+import { LabelHelp, Table, TransferModal } from '@polkadot/react-components';
 import { useCollections } from '@polkadot/react-hooks';
 import { TypeRegistry } from '@polkadot/types';
 
 // import CollectionSearch from '../../components/CollectionSearch';
 import NftCollectionCard from '../../components/NftCollectionCard';
-import TransferModal from '../../components/TransferModal/';
 
 interface NftWalletProps {
   account?: string;

@@ -1,20 +1,29 @@
 // Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import React, { memo, useCallback } from 'react';
+import React, { memo, useCallback, useState } from 'react';
 import Popup from 'semantic-ui-react/dist/commonjs/modules/Popup';
 
-import { useBalances } from '@polkadot/react-hooks';
+import { WithdrawModal } from '@polkadot/react-components';
+import { useBalances, useNftContract } from '@polkadot/react-hooks';
 import { formatKsmBalance, formatStrBalance } from '@polkadot/react-hooks/useKusamaApi';
 
 import balanceUpdate from '../public/icons/balanceUpdate.svg';
 
 function BalancesHeader ({ account }: { account?: string }): React.ReactElement<{ account?: string }> {
-  const { balancesAll, deposited, kusamaBalancesAll } = useBalances(account);
+  const { contractInstance, deposited, getUserDeposit } = useNftContract(account || '');
+  const { balancesAll, kusamaBalancesAll } = useBalances(account, deposited, getUserDeposit);
+  const [showWithdrawModal, toggleWithdrawModal] = useState<boolean>(false);
 
-  const withdrawDeposit = useCallback(() => {
-    console.log('withdrawDeposit');
+  const closeModal = useCallback(() => {
+    toggleWithdrawModal(false);
   }, []);
+
+  const openModal = useCallback(() => {
+    if (deposited && parseFloat(formatKsmBalance(deposited)) > 0) {
+      toggleWithdrawModal(true);
+    }
+  }, [deposited]);
 
   return (
     <div className='app-balances'>
@@ -33,11 +42,20 @@ function BalancesHeader ({ account }: { account?: string }): React.ReactElement<
           content='Withdraw your ksm deposit'
           trigger={<img
             alt='balance-update'
-            onClick={withdrawDeposit}
+            onClick={openModal}
             src={balanceUpdate as string}
           />}
         />
       </div>
+      { showWithdrawModal && (
+        <WithdrawModal
+          account={account}
+          closeModal={closeModal}
+          contractInstance={contractInstance}
+          deposited={deposited}
+          updateDeposit={getUserDeposit}
+        />
+      )}
     </div>
   );
 }
