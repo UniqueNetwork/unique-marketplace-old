@@ -56,7 +56,7 @@ export function useNftContract (account: string): useNftContractInterface {
   const [contractAddress] = useState<string>('5FgbNg55FCFT3j1KokxsHaEgp4wfnDMGazCLw3mqC359bY72');
   const settingsUi = settings.get();
 
-  const contractInfo = useCall<Option<ContractInfo>>(settingsUi.apiUrl.includes('kusama') ? undefined : api.query.contracts.contractInfoOf, [contractAddress]);
+  const contractInfo = useCall<Option<ContractInfo>>(settingsUi.apiUrl.includes('kusama') ? undefined : api.query?.contracts?.contractInfoOf, [contractAddress]);
   // currency code
   const quoteId = 2;
 

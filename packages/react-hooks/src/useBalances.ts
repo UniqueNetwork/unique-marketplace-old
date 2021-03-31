@@ -15,11 +15,11 @@ interface UseBalancesInterface {
 }
 
 export const useBalances = (account?: string): UseBalancesInterface => {
+  const api = useApi();
   const { kusamaApi } = useKusamaApi(account || '');
   const { deposited, getUserDeposit } = useNftContract(account || '');
-  const api = useApi();
-  const balancesAll = useCall<DeriveBalancesAll>(api.api.derive.balances.all, [account]);
-  const kusamaBalancesAll = useCall<DeriveBalancesAll>(kusamaApi?.derive.balances.all, [account]);
+  const balancesAll = useCall<DeriveBalancesAll>(api?.api?.derive.balances.all, [account]);
+  const kusamaBalancesAll = useCall<DeriveBalancesAll>(kusamaApi?.derive?.balances.all, [account]);
 
   useEffect(() => {
     void getUserDeposit();

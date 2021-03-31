@@ -158,7 +158,9 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                                     to='/trades'
                                   />
                                 </Menu>
-                                <BalancesHeader account={account} />
+                                { isApiReady && (
+                                  <BalancesHeader account={account} />
+                                )}
                                 <div className='app-user'>
                                   <AccountSelector onChange={setAccount} />
                                 </div>
