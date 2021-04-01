@@ -12,6 +12,7 @@ import Modal from 'semantic-ui-react/dist/commonjs/modules/Modal/Modal';
 
 import { Button, Input, TxButton } from '@polkadot/react-components';
 import { useApi, useBalance } from '@polkadot/react-hooks';
+import { keyring } from '@polkadot/ui-keyring';
 
 interface Props {
   account?: string;
@@ -27,22 +28,19 @@ function TransferModal ({ account, balance, canTransferTokens, closeModal, colle
   const { api } = useApi();
   const [recipient, setRecipient] = useState<string>();
   const [tokenPart, setTokenPart] = useState<number>(0);
-  const [isAddressError, setIsAddressError] = useState<boolean>(false);
+  const [isAddressError, setIsAddressError] = useState<boolean>(true);
   const [isError, setIsError] = useState<boolean>(false);
   const balanceInfo = useBalance(recipient);
   const decimalPoints = collection?.DecimalPoints instanceof BN ? collection?.DecimalPoints.toNumber() : 1;
 
   const setRecipientAddress = useCallback((value: string) => {
-    // setRecipient
-    if (!value) {
+    try {
+      keyring.decodeAddress(value);
+      setIsAddressError(false);
+      setRecipient(value);
+    } catch (e) {
       setIsAddressError(true);
     }
-
-    if (value.length !== '5D73wtH5pqN99auP4b6KQRQAbketaSj4StkBJxACPBUAUdiq'.length) {
-      setIsAddressError(true);
-    }
-
-    setRecipient(value);
   }, [setIsAddressError, setRecipient]);
 
   const setTokenPartToTransfer = useCallback((value) => {
@@ -111,15 +109,17 @@ function TransferModal ({ account, balance, canTransferTokens, closeModal, colle
           onClick={closeModal}
         />
         {/* if tokenPart === 0 - it will transfer all parts of token */}
-        <TxButton
-          accountId={account}
-          isDisabled={!canTransferTokens || !recipient || isError}
-          label='Submit'
-          onStart={closeModal}
-          onSuccess={updateTokens.bind(null, collection.id)}
-          params={[recipient, collection.id, tokenId, (tokenPart * Math.pow(10, decimalPoints))]}
-          tx={api.tx.nft.transfer}
-        />
+        {!isAddressError && (
+          <TxButton
+            accountId={account}
+            isDisabled={!canTransferTokens || !recipient || isError}
+            label='Submit'
+            onStart={closeModal}
+            onSuccess={updateTokens.bind(null, collection.id)}
+            params={[recipient, collection.id, tokenId, (tokenPart * Math.pow(10, decimalPoints))]}
+            tx={api.tx.nft.transfer}
+          />
+        )}
       </Modal.Actions>
     </Modal>
   );
