@@ -7,6 +7,7 @@ import BN from 'bn.js';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useApi, useFetch } from '@polkadot/react-hooks';
+import { UNIQUE_COLLECTION_ID } from '@polkadot/react-hooks/utils';
 import { Constructor } from '@polkadot/types/types/codec';
 import { base64Decode, encodeAddress } from '@polkadot/util-crypto';
 
@@ -320,14 +321,14 @@ export function useCollections () {
   const presetMintTokenCollection = useCallback(async (): Promise<NftCollectionInterface[]> => {
     try {
       const collections: Array<NftCollectionInterface> = [];
-      const mintCollectionInfo = await getDetailedCollectionInfo('1') as unknown as NftCollectionInterface;
+      const mintCollectionInfo = await getDetailedCollectionInfo(UNIQUE_COLLECTION_ID) as unknown as NftCollectionInterface;
 
       if (cleanup.current) {
         return [];
       }
 
       if (mintCollectionInfo && mintCollectionInfo.Owner && mintCollectionInfo.Owner.toString() !== '5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM') {
-        collections.push({ ...mintCollectionInfo, id: '1' });
+        collections.push({ ...mintCollectionInfo, id: UNIQUE_COLLECTION_ID });
       }
 
       localStorage.setItem('tokenCollections', JSON.stringify(collections));
