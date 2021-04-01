@@ -10,6 +10,7 @@ import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 
 import { Expander } from '@polkadot/react-components';
 import { useCollections, useDecoder } from '@polkadot/react-hooks';
+import { UNIQUE_COLLECTION_ID } from '@polkadot/react-hooks/utils';
 import { TypeRegistry } from '@polkadot/types';
 
 import NftTokenCard from '../NftTokenCard';
@@ -100,7 +101,7 @@ function NftCollectionCard ({ account, canTransferTokens, collection, localRegis
           ))}
         </tbody>
       </table>
-      { collection.id !== '1' && (
+      { collection.id !== UNIQUE_COLLECTION_ID && (
         <Button
           basic
           color='red'
