@@ -4,7 +4,7 @@
 import type { ErrorType } from '@polkadot/react-hooks/useFetch';
 
 import BN from 'bn.js';
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
 import { useApi, useFetch } from '@polkadot/react-hooks';
 import { Constructor } from '@polkadot/types/types/codec';
@@ -105,6 +105,7 @@ export function useCollections () {
   const [offers, setOffers] = useState<OfferType[]>();
   const [trades, setTrades] = useState<TradeType[]>();
   const [myTrades, setMyTrades] = useState<TradeType[]>();
+  const cleanup = useRef<boolean>(false);
 
   const getTokensOfCollection = useCallback(async (collectionId: string, ownerId: string) => {
     if (!api || !collectionId || !ownerId) {
@@ -112,7 +113,13 @@ export function useCollections () {
     }
 
     try {
-      return (await api.query.nft.addressTokens(collectionId, ownerId));
+      const tokensOfCollection = await api.query.nft.addressTokens(collectionId, ownerId);
+
+      if (cleanup.current) {
+        return '';
+      }
+
+      return tokensOfCollection;
     } catch (e) {
       console.log('getTokensOfCollection error', e);
     }
@@ -127,6 +134,10 @@ export function useCollections () {
 
     try {
       const collectionInfo = (await api.query.nft.collectionById(collectionId)).toJSON() as unknown as NftCollectionInterface;
+
+      if (cleanup.current) {
+        return '';
+      }
 
       return {
         ...collectionInfo,
@@ -147,6 +158,10 @@ export function useCollections () {
     try {
       const tokenInfo = await api.query.nft.nftItemList(collectionId, tokenId);
 
+      if (cleanup.current) {
+        return {};
+      }
+
       return tokenInfo.toJSON() as unknown as TokenDetailsInterface;
     } catch (e) {
       console.log('getDetailedTokenInfo error', e);
@@ -161,7 +176,13 @@ export function useCollections () {
     }
 
     try {
-      return (await api.query.nft.reFungibleItemList(collectionId, tokenId) as unknown as TokenDetailsInterface);
+      const detailedReFungibleTokenInfo = (await api.query.nft.reFungibleItemList(collectionId, tokenId) as unknown as TokenDetailsInterface);
+
+      if (cleanup.current) {
+        return {};
+      }
+
+      return detailedReFungibleTokenInfo;
     } catch (e) {
       console.log('getDetailedReFungibleTokenInfo error', e);
 
@@ -175,6 +196,10 @@ export function useCollections () {
   const getOffers = useCallback(() => {
     try {
       fetchData<OffersResponseType>('/offers/').subscribe((result: OffersResponseType | ErrorType) => {
+        if (cleanup.current) {
+          return;
+        }
+
         if ('error' in result) {
           setError(result);
         } else {
@@ -194,6 +219,10 @@ export function useCollections () {
   const getTrades = useCallback((account?: string) => {
     if (!account) {
       fetchData<TradesResponseType>('/trades/').subscribe((result: TradesResponseType | ErrorType) => {
+        if (cleanup.current) {
+          return;
+        }
+
         if ('error' in result) {
           setError(result);
         } else {
@@ -202,6 +231,10 @@ export function useCollections () {
       });
     } else {
       fetchData<TradesResponseType>(`/trades/${account}`).subscribe((result: TradesResponseType | ErrorType) => {
+        if (cleanup.current) {
+          return;
+        }
+
         if ('error' in result) {
           setError(result);
         } else {
@@ -225,6 +258,10 @@ export function useCollections () {
       for (let i = 1; i <= collectionsCount; i++) {
         const collectionInf = await getDetailedCollectionInfo(i.toString()) as unknown as NftCollectionInterface;
 
+        if (cleanup.current) {
+          return;
+        }
+
         if (collectionInf && collectionInf.Owner && collectionInf.Owner.toString() !== '5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM') {
           collections.push({ ...collectionInf, id: i.toString() });
         }
@@ -239,9 +276,12 @@ export function useCollections () {
   }, [api, getDetailedCollectionInfo]);
 
   const getCollectionWithTokenCount = useCallback(async (collectionId: string): Promise<CollectionWithTokensCount> => {
+    const info = (await getDetailedCollectionInfo(collectionId)) as unknown as NftCollectionInterface;
+    const tokenCount = ((await api.query.nft.itemListIndex(collectionId)) as unknown as BN).toNumber();
+
     return {
-      info: (await getDetailedCollectionInfo(collectionId)) as unknown as NftCollectionInterface,
-      tokenCount: ((await api.query.nft.itemListIndex(collectionId)) as unknown as BN).toNumber()
+      info,
+      tokenCount
     };
   }, [api.query.nft, getDetailedCollectionInfo]);
 
@@ -276,6 +316,10 @@ export function useCollections () {
     try {
       const collections: Array<NftCollectionInterface> = [];
       const mintCollectionInfo = await getDetailedCollectionInfo('1') as unknown as NftCollectionInterface;
+
+      if (cleanup.current) {
+        return [];
+      }
 
       if (mintCollectionInfo && mintCollectionInfo.Owner && mintCollectionInfo.Owner.toString() !== '5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM') {
         collections.push({ ...mintCollectionInfo, id: '1' });
