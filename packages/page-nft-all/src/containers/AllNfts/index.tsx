@@ -10,6 +10,7 @@ import React, { memo, ReactElement, useCallback, useEffect, useState } from 'rea
 import InfiniteScroll from 'react-infinite-scroller';
 import { useHistory } from 'react-router';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
+import Header from 'semantic-ui-react/dist/commonjs/elements/Header/Header';
 import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
 // import { Input } from '@polkadot/react-components';
@@ -39,6 +40,7 @@ const AllNfts = ({ account, localRegistry, setShouldUpdateTokens }: BuyTokensPro
   const { getCollectionWithTokenCount, getTokenInfo } = useCollections();
   const [searchString] = useState<string>('');
   const [collectionWithTokensCount, setCollectionWithTokensCount] = useState<CollectionWithTokensCount>();
+  const [tokensLoading, setTokensLoading] = useState<boolean>(false);
   const [allTokens, setAllTokens] = useState<{ [key: string]: TokenInterface}>({});
   const [tokensWithAttributes, setTokensWithAttributes] = useState<TokensWithAttributesInterface>({});
   // const [collectionSearchString, setCollectionSearchString] = useState<string>('');
@@ -64,21 +66,28 @@ const AllNfts = ({ account, localRegistry, setShouldUpdateTokens }: BuyTokensPro
   }, []);
 
   const fillTokensTable = useCallback(async (indexFrom: number, indexTo: number) => {
-    if (collectionWithTokensCount) {
+    if (collectionWithTokensCount && collectionWithTokensCount.tokenCount > 0) {
+      setTokensLoading(true);
+
       const allTokensTable = { ...allTokens };
 
       for (let i = indexFrom; i <= indexTo; i++) {
         const tokenInfo: TokenDetailsInterface = await getTokenInfo(collectionWithTokensCount.info, i.toString());
 
-        allTokensTable[`${collectionWithTokensCount.info.id}-${i}`] = { ...tokenInfo, collectionId: collectionWithTokensCount.info.id, id: i.toString() };
+        if (tokenInfo && Object.values(tokenInfo).length) {
+          allTokensTable[`${collectionWithTokensCount.info.id}-${i}`] = { ...tokenInfo, collectionId: collectionWithTokensCount.info.id, id: i.toString() };
+        }
       }
 
+      setTokensLoading(false);
       setAllTokens(allTokensTable);
     }
   }, [allTokens, collectionWithTokensCount, getTokenInfo]);
 
   const presetTokensTable = useCallback(async () => {
     const collectionInfoWithTokensCount: CollectionWithTokensCount = await getCollectionWithTokenCount(UNIQUE_COLLECTION_ID);
+
+    console.log('collectionInfoWithTokensCount', collectionInfoWithTokensCount);
 
     setCollectionWithTokensCount(collectionInfoWithTokensCount);
   }, [getCollectionWithTokenCount]);
@@ -143,11 +152,14 @@ const AllNfts = ({ account, localRegistry, setShouldUpdateTokens }: BuyTokensPro
             />
           </Grid.Column>
         </Grid.Row> */}
-        { (!account || !Object.values(allTokens).length) && (
+        { (!account || tokensLoading) && (
           <Loader
             active
             inline='centered'
           />
+        )}
+        { collectionWithTokensCount && collectionWithTokensCount.tokenCount === 0 && (
+          <Header as='h4'>No tokens found</Header>
         )}
         {(account && filteredTokens.length > 0) && (
           <Grid.Row>
