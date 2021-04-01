@@ -4,7 +4,7 @@
 import type { ErrorType } from '@polkadot/react-hooks/useFetch';
 
 import BN from 'bn.js';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useApi, useFetch } from '@polkadot/react-hooks';
 import { Constructor } from '@polkadot/types/types/codec';
@@ -334,6 +334,12 @@ export function useCollections () {
       return [];
     }
   }, [getDetailedCollectionInfo]);
+
+  useEffect(() => {
+    return () => {
+      cleanup.current = true;
+    };
+  }, []);
 
   return {
     error,
