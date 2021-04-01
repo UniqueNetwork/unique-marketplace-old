@@ -13,8 +13,8 @@ import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import Image from 'semantic-ui-react/dist/commonjs/elements/Image';
 import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
-import { Input, TxButton } from '@polkadot/react-components';
-import { useApi, useBalance, useDecoder, useMarketplaceStages, useSchema } from '@polkadot/react-hooks';
+import { Input, TransferModal } from '@polkadot/react-components';
+import { useBalance, useDecoder, useMarketplaceStages, useSchema } from '@polkadot/react-hooks';
 import { KUSAMA_DECIMALS } from '@polkadot/react-hooks/utils';
 import { TypeRegistry } from '@polkadot/types';
 
@@ -30,16 +30,11 @@ interface NftDetailsProps {
 }
 
 function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetailsProps): React.ReactElement<NftDetailsProps> {
-  const { api } = useApi();
   const query = new URLSearchParams(useLocation().search);
   const tokenId = query.get('tokenId') || '';
   const collectionId = query.get('collectionId') || '';
-  const [recipient, setRecipient] = useState<string | null>(null);
-  const [tokenPart, setTokenPart] = useState<number>(0);
   const [readyToWithdraw, setReadyToWithdraw] = useState<boolean>(false);
   const [showTransferForm, setShowTransferForm] = useState<boolean>(false);
-  const [isAddressError, setIsAddressError] = useState<boolean>(false);
-  const [isError, setIsError] = useState<boolean>(false);
   const { balance } = useBalance(account);
   const { hex2a } = useDecoder();
   const { attributes, collectionInfo, reFungibleBalance, tokenUrl } = useSchema(account, collectionId, tokenId, localRegistry);
@@ -48,45 +43,15 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
 
   const uOwnIt = tokenInfo?.Owner?.toString() === account || (tokenAsk && tokenAsk.owner === account);
   const uSellIt = tokenAsk && tokenAsk.owner === account;
-  const decimalPoints = collectionInfo?.DecimalPoints instanceof BN ? collectionInfo?.DecimalPoints.toNumber() : 1;
   const lowBalanceToBuy = !!(buyFee && !balance?.free.gte(buyFee));
   const lowKsmBalanceToBuy = tokenAsk?.price && kusamaBalance?.free.add(deposited || new BN(0)).lte(tokenAsk.price);
   const lowBalanceToSell = !!(saleFee && !balance?.free.gte(saleFee));
-
-  const setTokenPartToTransfer = useCallback((value) => {
-    const numberValue = parseFloat(value);
-
-    if (!numberValue) {
-      console.log('token part error');
-    }
-
-    if (numberValue > reFungibleBalance || numberValue > 1 || numberValue < (1 / Math.pow(10, decimalPoints))) {
-      setIsError(true);
-    } else {
-      setIsError(false);
-    }
-
-    setTokenPart(parseFloat(value));
-  }, [decimalPoints, reFungibleBalance]);
 
   const goBack = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     setShouldUpdateTokens && setShouldUpdateTokens('all');
     history.back();
   }, [setShouldUpdateTokens]);
-
-  const setRecipientAddress = useCallback((value: string) => {
-    // setRecipient
-    if (!value) {
-      setIsAddressError(true);
-    }
-
-    if (value.length !== '5D73wtH5pqN99auP4b6KQRQAbketaSj4StkBJxACPBUAUdiq'.length) {
-      setIsAddressError(true);
-    }
-
-    setRecipient(value);
-  }, [setIsAddressError, setRecipient]);
 
   const onSavePrice = useCallback(() => {
     if (tokenPriceForSale && ((parseFloat(tokenPriceForSale) < 0.01) || (parseFloat(tokenPriceForSale) > 100000))) {
@@ -99,6 +64,7 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
   }, [setPrice, tokenPriceForSale]);
 
   const onTransferSuccess = useCallback(() => {
+    setShowTransferForm(false);
     sendCurrentUserAction('UPDATE_TOKEN_STATE');
     setShouldUpdateTokens && setShouldUpdateTokens(collectionId);
   }, [collectionId, sendCurrentUserAction, setShouldUpdateTokens]);
@@ -246,42 +212,15 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
               )}
             </div>
 
-            { showTransferForm && (
-              <Form className='transfer-form'>
-                <Form.Field>
-                  <Input
-                    className='isSmall'
-                    isError={isAddressError}
-                    label='Please enter an address you want to transfer'
-                    onChange={setRecipientAddress}
-                    placeholder='Recipient address'
-                  />
-                </Form.Field>
-                { Object.prototype.hasOwnProperty.call(collectionInfo?.Mode, 'reFungible') && (
-                  <Form.Field>
-                    <Input
-                      className='isSmall'
-                      isError={isError}
-                      label={`Please enter part of token you want to transfer, your token balance is: ${reFungibleBalance}`}
-                      min={1 / (decimalPoints * 10)}
-                      onChange={setTokenPartToTransfer}
-                      placeholder='Part of re-fungible address'
-                      type='number'
-                    />
-                  </Form.Field>
-                )}
-                <Form.Field>
-                  <TxButton
-                    accountId={account}
-                    isDisabled={!recipient || isError}
-                    label='Submit'
-                    onStart={setShowTransferForm.bind(null, false)}
-                    onSuccess={onTransferSuccess}
-                    params={[recipient, collectionId, tokenId, (tokenPart * Math.pow(10, decimalPoints))]}
-                    tx={api.tx.nft.transfer}
-                  />
-                </Form.Field>
-              </Form>
+            { (showTransferForm && collectionInfo) && (
+              <TransferModal
+                account={account}
+                balance={reFungibleBalance}
+                closeModal={setShowTransferForm.bind(null, false)}
+                collection={collectionInfo}
+                tokenId={tokenId}
+                updateTokens={onTransferSuccess}
+              />
             )}
             { !!(transferStep && transferStep <= 3) && (
               <SaleSteps step={transferStep} />

@@ -103,6 +103,7 @@ export function useCollections () {
   const { fetchData } = useFetch();
   const [error, setError] = useState<ErrorType>();
   const [offers, setOffers] = useState<OfferType[]>();
+  const [loadingOffers, setLoadingOffers] = useState<boolean>();
   const [trades, setTrades] = useState<TradeType[]>();
   const [myTrades, setMyTrades] = useState<TradeType[]>();
   const cleanup = useRef<boolean>(false);
@@ -195,6 +196,7 @@ export function useCollections () {
    */
   const getOffers = useCallback(() => {
     try {
+      setLoadingOffers(true);
       fetchData<OffersResponseType>('/offers/').subscribe((result: OffersResponseType | ErrorType) => {
         if (cleanup.current) {
           return;
@@ -207,9 +209,12 @@ export function useCollections () {
             setOffers(result.items.map((offer: OfferType) => ({ ...offer, seller: encodeAddress(base64Decode(offer.seller)) })));
           }
         }
+
+        setLoadingOffers(false);
       });
     } catch (e) {
       console.log('getOffers error', e);
+      setLoadingOffers(false);
     }
   }, [fetchData]);
 
@@ -351,6 +356,7 @@ export function useCollections () {
     getTokenInfo,
     getTokensOfCollection,
     getTrades,
+    loadingOffers,
     myTrades,
     offers,
     presetMintTokenCollection,

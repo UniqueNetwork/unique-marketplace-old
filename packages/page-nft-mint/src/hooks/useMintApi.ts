@@ -34,8 +34,6 @@ function useMintApi (): UseMintApiInterface {
   const { getDetailedCollectionInfo } = useCollections();
   const history = useHistory();
 
-  console.log('collectionIdForMint', UNIQUE_COLLECTION_ID);
-
   const addMintedTokenToWallet = useCallback(async () => {
     const collections: NftCollectionInterface[] = JSON.parse(localStorage.getItem('tokenCollections') || '[]') as NftCollectionInterface[];
 

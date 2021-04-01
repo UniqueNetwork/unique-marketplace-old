@@ -34,7 +34,7 @@ interface OfferWithAttributes {
 
 const BuyTokens = ({ account, localRegistry, setShouldUpdateTokens, shouldUpdateTokens }: BuyTokensProps): ReactElement => {
   const history = useHistory();
-  const { getOffers, offers, presetMintTokenCollection } = useCollections();
+  const { getOffers, loadingOffers, offers, presetMintTokenCollection } = useCollections();
   const [searchString, setSearchString] = useState<string>('');
   const [offersWithAttributes, setOffersWithAttributes] = useState<OfferWithAttributes>({});
   // const [collectionSearchString, setCollectionSearchString] = useState<string>('');
@@ -150,7 +150,7 @@ const BuyTokens = ({ account, localRegistry, setShouldUpdateTokens, shouldUpdate
                   />
                 </Grid.Column>
               </Grid.Row>
-              { (!account || !offers) && (
+              { (!account || loadingOffers) && (
                 <Loader
                   active
                   inline='centered'

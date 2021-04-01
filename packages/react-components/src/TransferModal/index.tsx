@@ -6,31 +6,29 @@ import './styles.scss';
 import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollections';
 
 import BN from 'bn.js';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form/Form';
 import Modal from 'semantic-ui-react/dist/commonjs/modules/Modal/Modal';
 
 import { Button, Input, TxButton } from '@polkadot/react-components';
-import { useApi, useBalance } from '@polkadot/react-hooks';
+import { useApi } from '@polkadot/react-hooks';
 import { keyring } from '@polkadot/ui-keyring';
 
 interface Props {
   account?: string;
   balance: number;
-  canTransferTokens: boolean;
   collection: NftCollectionInterface;
   closeModal: () => void;
   tokenId: string;
   updateTokens: (collectionId: string) => void;
 }
 
-function TransferModal ({ account, balance, canTransferTokens, closeModal, collection, tokenId, updateTokens }: Props): React.ReactElement<Props> {
+function TransferModal ({ account, balance, closeModal, collection, tokenId, updateTokens }: Props): React.ReactElement<Props> {
   const { api } = useApi();
   const [recipient, setRecipient] = useState<string>();
   const [tokenPart, setTokenPart] = useState<number>(0);
   const [isAddressError, setIsAddressError] = useState<boolean>(true);
   const [isError, setIsError] = useState<boolean>(false);
-  const balanceInfo = useBalance(recipient);
   const decimalPoints = collection?.DecimalPoints instanceof BN ? collection?.DecimalPoints.toNumber() : 1;
 
   const setRecipientAddress = useCallback((value: string) => {
@@ -58,12 +56,6 @@ function TransferModal ({ account, balance, canTransferTokens, closeModal, colle
 
     setTokenPart(parseFloat(value));
   }, [balance, decimalPoints]);
-
-  useEffect(() => {
-    const { balanceError } = balanceInfo;
-
-    setIsAddressError(balanceError);
-  }, [balanceInfo]);
 
   // @todo address validation
   return (
@@ -112,7 +104,7 @@ function TransferModal ({ account, balance, canTransferTokens, closeModal, colle
         {!isAddressError && (
           <TxButton
             accountId={account}
-            isDisabled={!canTransferTokens || !recipient || isError}
+            isDisabled={!recipient || isError}
             label='Submit'
             onStart={closeModal}
             onSuccess={updateTokens.bind(null, collection.id)}

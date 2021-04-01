@@ -10,7 +10,7 @@ export const escrowAddress = '5FdzbgdBGRM5FDALrnSPRybWhqKv4eiy6QUpWUdBt3v3omAU';
 export const contractAddress = '5FgbNg55FCFT3j1KokxsHaEgp4wfnDMGazCLw3mqC359bY72';
 export const quoteId = 2;
 export const KUSAMA_DECIMALS = 12;
-export const UNIQUE_COLLECTION_ID = '1';
+export const UNIQUE_COLLECTION_ID = '2';
 
 export const findCallMethodByName = (contractInstance: ContractPromise | null, methodName: string): AbiMessage | null => {
   const message = contractInstance && Object.values(contractInstance.abi.messages).find((message) => message.identifier === methodName);

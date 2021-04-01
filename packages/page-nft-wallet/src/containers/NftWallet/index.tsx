@@ -119,7 +119,6 @@ function NftWallet ({ account, localRegistry, setShouldUpdateTokens, shouldUpdat
         <TransferModal
           account={account}
           balance={openTransfer.balance}
-          canTransferTokens={canTransferTokens}
           closeModal={setOpenTransfer.bind(null, null)}
           collection={openTransfer.collection}
           tokenId={openTransfer.tokenId}
