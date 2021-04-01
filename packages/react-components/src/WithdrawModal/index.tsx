@@ -45,7 +45,7 @@ function WithdrawModal ({ account, closeModal, contractInstance, deposited, upda
         txUpdateCb: () => { console.log('update withdraw'); }
       });
     }
-  }, [account, contractInstance, queueExtrinsic, withdrawAmount]);
+  }, [account, closeModal, contractInstance, queueExtrinsic, updateDeposit, withdrawAmount]);
 
   return (
     <Modal

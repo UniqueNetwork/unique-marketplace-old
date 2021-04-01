@@ -22,7 +22,6 @@ import arrowLeft from './arrowLeft.svg';
 import BuySteps from './BuySteps';
 import SaleSteps from './SaleSteps';
 import SetPriceModal from './SetPriceModal';
-import {formatKsmBalance} from "@polkadot/react-hooks/useKusamaApi";
 
 interface NftDetailsProps {
   account: string;
