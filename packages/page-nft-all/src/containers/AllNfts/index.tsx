@@ -6,7 +6,7 @@ import './styles.scss';
 import type { CollectionWithTokensCount, TokenDetailsInterface, TokenInterface } from '@polkadot/react-hooks/useCollections';
 
 // external imports
-import React, { memo, ReactElement, useCallback, useEffect, useState } from 'react';
+import React, { memo, ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
 import { useHistory } from 'react-router';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
@@ -46,6 +46,7 @@ const AllNfts = ({ account, localRegistry, setShouldUpdateTokens }: BuyTokensPro
   // const [collectionSearchString, setCollectionSearchString] = useState<string>('');
   const [filteredTokens, setFilteredTokens] = useState<TokenInterface[]>([]);
   const hasMore = collectionWithTokensCount && Object.values(allTokens).length < collectionWithTokensCount?.tokenCount;
+  const cleanup = useRef<boolean>(false);
 
   const openDetailedInformationModal = useCallback((collectionId: string, tokenId: string) => {
     history.push(`/all-tokens/token-details?collectionId=${collectionId}&tokenId=${tokenId}`);
@@ -74,6 +75,10 @@ const AllNfts = ({ account, localRegistry, setShouldUpdateTokens }: BuyTokensPro
       for (let i = indexFrom; i <= indexTo; i++) {
         const tokenInfo: TokenDetailsInterface = await getTokenInfo(collectionWithTokensCount.info, i.toString());
 
+        if (cleanup.current) {
+          return;
+        }
+
         if (tokenInfo && Object.values(tokenInfo).length) {
           allTokensTable[`${collectionWithTokensCount.info.id}-${i}`] = { ...tokenInfo, collectionId: collectionWithTokensCount.info.id, id: i.toString() };
         }
@@ -87,7 +92,9 @@ const AllNfts = ({ account, localRegistry, setShouldUpdateTokens }: BuyTokensPro
   const presetTokensTable = useCallback(async () => {
     const collectionInfoWithTokensCount: CollectionWithTokensCount = await getCollectionWithTokenCount(UNIQUE_COLLECTION_ID);
 
-    console.log('collectionInfoWithTokensCount', collectionInfoWithTokensCount);
+    if (cleanup.current) {
+      return;
+    }
 
     setCollectionWithTokensCount(collectionInfoWithTokensCount);
   }, [getCollectionWithTokenCount]);
@@ -130,6 +137,12 @@ const AllNfts = ({ account, localRegistry, setShouldUpdateTokens }: BuyTokensPro
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [collectionWithTokensCount]);
+
+  useEffect(() => {
+    return () => {
+      cleanup.current = true;
+    };
+  }, []);
 
   return (
     <div className='all-tokens'>

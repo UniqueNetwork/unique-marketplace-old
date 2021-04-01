@@ -73,11 +73,13 @@ function NftWallet ({ account, localRegistry, setShouldUpdateTokens, shouldUpdat
 
   useEffect(() => {
     void addMintCollectionToList();
+  }, [addMintCollectionToList]);
 
+  useEffect(() => {
     return () => {
       cleanup.current = true;
     };
-  }, [addMintCollectionToList]);
+  }, []);
 
   return (
     <div className='nft-wallet'>
