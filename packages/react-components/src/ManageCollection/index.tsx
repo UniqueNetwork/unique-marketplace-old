@@ -7,7 +7,9 @@ import React, { useCallback, useState } from 'react';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button';
+import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
+import Dropdown from 'semantic-ui-react/dist/commonjs/modules/Dropdown';
 
 import { Input } from '@polkadot/react-components';
 import { keyring } from '@polkadot/ui-keyring';
@@ -15,6 +17,19 @@ import { keyring } from '@polkadot/ui-keyring';
 interface Props {
   account: string;
 }
+
+const TypeOptions = [
+  {
+    key: 'string',
+    text: 'string/number',
+    value: 'Bytes'
+  },
+  {
+    key: 'enum',
+    text: 'enumerable',
+    value: '_enum'
+  }
+];
 
 function ManageCollection (props: Props): React.ReactElement<Props> {
   const { account } = props;
@@ -195,6 +210,31 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
                   </Form.Field>
                 </>
               )}
+            </Grid.Column>
+          </Grid.Row>
+          <Header as='h3'>Manage collection ConstOnChainSchema</Header>
+          <Grid.Row>
+            <Grid.Column width={4}>
+              <Form.Field>
+                <Dropdown
+                  fluid
+                  options={TypeOptions}
+                  placeholder='Select Attribute Type'
+                  selection
+                />
+              </Form.Field>
+            </Grid.Column>
+            <Grid.Column width={5}>
+              <Form.Field>
+                <Input
+                  className='isSmall'
+                  isError={false}
+                  label='Please enter the Attribute name'
+                  onChange={onSetAttributeName}
+                  placeholder='Attribute name'
+                  value={attributeName}
+                />
+              </Form.Field>
             </Grid.Column>
           </Grid.Row>
         </Grid>
