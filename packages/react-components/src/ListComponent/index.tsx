@@ -4,11 +4,11 @@
 import './styles.scss';
 
 import React, { ReactText } from 'react';
-import Image from 'semantic-ui-react/dist/commonjs/elements/Image';
 
+// import Image from 'semantic-ui-react/dist/commonjs/elements/Image';
 import { Table } from '@polkadot/react-components';
 
-import Arrow from './image/arrow.svg';
+// import Arrow from './image/arrow.svg';
 
 interface Props {
   children: React.ReactNode | React.ReactNode[];

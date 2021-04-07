@@ -16,7 +16,6 @@ import { AppProps as Props } from '@polkadot/react-components/types';
 import { useRegistry } from '@polkadot/react-hooks';
 
 import NftWallet from './containers/NftWallet';
-import TokensForSale from './containers/TokensForSale';
 
 function App ({ account, basePath }: Props): React.ReactElement<Props> {
   const localRegistry = useRegistry();
@@ -28,10 +27,6 @@ function App ({ account, basePath }: Props): React.ReactElement<Props> {
       isRoot: true,
       name: 'tokens',
       text: 'Idle'
-    },
-    {
-      name: 'tokens-for-sale',
-      text: 'Listed for sale'
     }
   ], []);
 
@@ -53,14 +48,6 @@ function App ({ account, basePath }: Props): React.ReactElement<Props> {
             account={account || ''}
             localRegistry={localRegistry}
             setShouldUpdateTokens={setShouldUpdateTokens}
-          />
-        </Route>
-        <Route path={`${basePath}/tokens-for-sale`}>
-          <TokensForSale
-            account={account}
-            localRegistry={localRegistry}
-            setShouldUpdateTokens={setShouldUpdateTokens}
-            shouldUpdateTokens={shouldUpdateTokens}
           />
         </Route>
         <Route path={basePath}>

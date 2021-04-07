@@ -17,3 +17,13 @@ export const findCallMethodByName = (contractInstance: ContractPromise | null, m
 
   return message || null;
 };
+
+export function strToUTF16 (str: string): any {
+  const buf: number[] = [];
+
+  for (let i = 0, strLen = str.length; i < strLen; i++) {
+    buf.push(str.charCodeAt(i));
+  }
+
+  return buf;
+}

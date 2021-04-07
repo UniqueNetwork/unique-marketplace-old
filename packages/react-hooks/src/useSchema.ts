@@ -35,7 +35,7 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
   const [tokenDetails, setTokenDetails] = useState<TokenDetailsInterface>();
   const { getDetailedCollectionInfo, getTokenInfo } = useCollections();
   const cleanup = useRef<boolean>(false);
-  const { getOnChainSchema, getTokenImageUrl, mergeData } = useMetadata(localRegistry);
+  const { decodeStruct, getOnChainSchema, getTokenImageUrl } = useMetadata(localRegistry);
 
   const getReFungibleDetails = useCallback(() => {
     try {
@@ -91,12 +91,12 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
 
   const mergeTokenAttributes = useCallback(() => {
     const tokenAttributes: any = {
-      ...mergeData({ attr: attributesConst, data: tokenDetails?.ConstData }),
-      ...mergeData({ attr: attributesVar, data: tokenDetails?.VariableData })
+      ...decodeStruct({ attr: attributesConst, data: tokenDetails?.ConstData }),
+      ...decodeStruct({ attr: attributesVar, data: tokenDetails?.VariableData })
     };
 
     setAttributes(tokenAttributes);
-  }, [attributesConst, attributesVar, mergeData, tokenDetails]);
+  }, [attributesConst, attributesVar, decodeStruct, tokenDetails]);
 
   const saveTokenImageUrl = useCallback(async (collectionInf: NftCollectionInterface, tokenId: string) => {
     const tokenImageUrl = await getTokenImageUrl(collectionInf, tokenId);
