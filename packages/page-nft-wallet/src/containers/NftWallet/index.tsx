@@ -12,7 +12,7 @@ import { LabelHelp, Table, TransferModal } from '@polkadot/react-components';
 import { useCollections } from '@polkadot/react-hooks';
 import { TypeRegistry } from '@polkadot/types';
 
-// import CollectionSearch from '../../components/CollectionSearch';
+import CollectionSearch from '../../components/CollectionSearch';
 import NftCollectionCard from '../../components/NftCollectionCard';
 
 interface NftWalletProps {
@@ -32,9 +32,9 @@ function NftWallet ({ account, localRegistry, setShouldUpdateTokens, shouldUpdat
   const { presetMintTokenCollection } = useCollections();
   const cleanup = useRef<boolean>(false);
 
-  /* const addCollection = useCallback((collection: NftCollectionInterface) => {
+  const addCollection = useCallback((collection: NftCollectionInterface) => {
     setCollections((prevCollections: NftCollectionInterface[]) => [...prevCollections, collection]);
-  }, []); */
+  }, []);
 
   const addMintCollectionToList = useCallback(async () => {
     const firstCollections: NftCollectionInterface[] = await presetMintTokenCollection();
@@ -67,9 +67,9 @@ function NftWallet ({ account, localRegistry, setShouldUpdateTokens, shouldUpdat
     setShouldUpdateTokens('all');
   }, [account, setShouldUpdateTokens]);
 
-  /* useEffect(() => {
+  useEffect(() => {
     localStorage.setItem('tokenCollections', JSON.stringify(collections));
-  }, [collections]); */
+  }, [collections]);
 
   useEffect(() => {
     void addMintCollectionToList();
@@ -83,13 +83,13 @@ function NftWallet ({ account, localRegistry, setShouldUpdateTokens, shouldUpdat
 
   return (
     <div className='nft-wallet'>
-      {/* <Header as='h1'>Usetech NFT wallet</Header>
+      <Header as='h1'>Usetech NFT wallet</Header>
       <CollectionSearch
         account={account}
         addCollection={addCollection}
         collections={collections}
       />
-      <br /> */}
+      <br />
       <Header as='h2'>
         My collections
         <LabelHelp

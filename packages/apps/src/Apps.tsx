@@ -128,34 +128,10 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                               <div className='app-container app-container--header'>
                                 <Menu tabular>
                                   <Menu.Item
-                                    active={location.pathname === '/market'}
-                                    as={NavLink}
-                                    name='market'
-                                    to='/market'
-                                  />
-                                  <Menu.Item
-                                    active={location.pathname === '/all-tokens'}
-                                    as={NavLink}
-                                    name='gallery'
-                                    to='/all-tokens'
-                                  />
-                                  <Menu.Item
-                                    active={location.pathname === '/mint'}
-                                    as={NavLink}
-                                    name='mint'
-                                    to='/mint'
-                                  />
-                                  <Menu.Item
                                     active={location.pathname === '/my-tokens'}
                                     as={NavLink}
                                     name='myTokens'
                                     to='/wallet'
-                                  />
-                                  <Menu.Item
-                                    active={location.pathname === '/trades'}
-                                    as={NavLink}
-                                    name='trades'
-                                    to='/trades'
                                   />
                                 </Menu>
                                 { isApiReady && (
