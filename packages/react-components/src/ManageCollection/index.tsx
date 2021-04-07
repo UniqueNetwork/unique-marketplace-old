@@ -9,27 +9,17 @@ import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
-import Dropdown from 'semantic-ui-react/dist/commonjs/modules/Dropdown';
 
 import { Input } from '@polkadot/react-components';
+import { TypeRegistry } from '@polkadot/types';
 import { keyring } from '@polkadot/ui-keyring';
 
-interface Props {
-  account: string;
-}
+import ManageCollectionAttributes from './ManageCollectionAttributes';
 
-const TypeOptions = [
-  {
-    key: 'string',
-    text: 'string/number',
-    value: 'Bytes'
-  },
-  {
-    key: 'enum',
-    text: 'enumerable',
-    value: '_enum'
-  }
-];
+interface Props {
+  account?: string;
+  localRegistry?: TypeRegistry;
+}
 
 function ManageCollection (props: Props): React.ReactElement<Props> {
   const { account } = props;
@@ -40,8 +30,8 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
   const [sponsorAddress, setSponsorAddress] = useState<string>();
   const [showAdminForm, toggleAdminForm] = useState<boolean>(true);
   const [showSponsorForm, toggleSponsorForm] = useState<boolean>(true);
-  const [isAdminAddressError, setIsAdminAddressError] = useState<boolean>(true);
-  const [isSponsorAddressError, setIsSponsorAddressError] = useState<boolean>(true);
+  const [isAdminAddressError, setIsAdminAddressError] = useState<boolean>(false);
+  const [isSponsorAddressError, setIsSponsorAddressError] = useState<boolean>(false);
   const [deletingCurrentAdmin, toggleDeletingCurrentAdmin] = useState<boolean>(false);
   const [settingCurrentAdmin, toggleSettingCurrentAdmin] = useState<boolean>(false);
   const [settingSponsor, toggleSettingSponsor] = useState<boolean>(false);
@@ -85,9 +75,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
 
   return (
     <div className='manage-collection'>
-      {account}
-      Задать/подтвердить режим спонсора
-      Создать метаданные и задать схему
+      <Header as='h3'>Collection advanced settings</Header>
       <Form className='manage-collection--form'>
         <Grid className='manage-collection--form--grid'>
           <Grid.Row>
@@ -212,33 +200,15 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
               )}
             </Grid.Column>
           </Grid.Row>
-          <Header as='h3'>Manage collection ConstOnChainSchema</Header>
-          <Grid.Row>
-            <Grid.Column width={4}>
-              <Form.Field>
-                <Dropdown
-                  fluid
-                  options={TypeOptions}
-                  placeholder='Select Attribute Type'
-                  selection
-                />
-              </Form.Field>
-            </Grid.Column>
-            <Grid.Column width={5}>
-              <Form.Field>
-                <Input
-                  className='isSmall'
-                  isError={false}
-                  label='Please enter the Attribute name'
-                  onChange={onSetAttributeName}
-                  placeholder='Attribute name'
-                  value={attributeName}
-                />
-              </Form.Field>
-            </Grid.Column>
-          </Grid.Row>
         </Grid>
       </Form>
+      <Grid className='manage-collection--form--grid'>
+        <Grid.Row>
+          <Grid.Column width={8}>
+            <ManageCollectionAttributes account={account} />
+          </Grid.Column>
+        </Grid.Row>
+      </Grid>
     </div>
   );
 }

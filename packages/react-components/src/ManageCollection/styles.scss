@@ -1,0 +1,21 @@
+.manage-collection {
+
+  .button-group {
+    display: flex;
+  }
+
+  .attributes {
+
+    .attribute {
+       display: grid;
+       grid-template-columns: 1fr 1fr 1fr;
+       grid-column-gap: 1rem;
+    }
+  }
+
+  .attribute-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr 30px;
+    grid-column-gap: 1rem;
+  }
+}

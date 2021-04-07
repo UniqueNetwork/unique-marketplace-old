@@ -3,15 +3,56 @@
 
 import './styles.scss';
 
-import React from 'react';
+import React, { useMemo } from 'react';
+import { Route, Switch } from 'react-router';
+import Header from 'semantic-ui-react/dist/commonjs/elements/Header/Header';
 
+import { ManageCollection, Tabs } from '@polkadot/react-components';
 import { AppProps as Props } from '@polkadot/react-components/types';
+import { useRegistry } from '@polkadot/react-hooks';
 
 import NftCreator from './containers/NftMint';
 
-function App ({ account }: Props): React.ReactElement<Props> {
+function App ({ account, basePath }: Props): React.ReactElement<Props> {
+  const localRegistry = useRegistry();
+
+  const items = useMemo(() => [
+    {
+      isRoot: true,
+      name: 'manage-collections',
+      text: 'Manage collections'
+    },
+    {
+      name: 'mint-token',
+      text: 'Mint token'
+    }
+  ], []);
+
   return (
-    <NftCreator account={account} />
+    <main className='nft--App'>
+      <Header as='h1'>Trades</Header>
+      <Header as='h4'>See the most recent successful trades</Header>
+      <header>
+        <Tabs
+          basePath={basePath}
+          items={items}
+        />
+      </header>
+      <Switch>
+        <Route path={`${basePath}/mint-token`}>
+          <NftCreator
+            account={account}
+            localRegistry={localRegistry}
+          />
+        </Route>
+        <Route path={`${basePath}`}>
+          <ManageCollection
+            account={account}
+            localRegistry={localRegistry}
+          />
+        </Route>
+      </Switch>
+    </main>
   );
 }
 

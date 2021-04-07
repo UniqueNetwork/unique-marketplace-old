@@ -15,6 +15,7 @@ import Image from 'semantic-ui-react/dist/commonjs/elements/Image';
 import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
 import { Input } from '@polkadot/react-components';
+import { TypeRegistry } from '@polkadot/types';
 
 import useMintApi, { ImageInterface } from '../../hooks/useMintApi';
 import Replace from '../../images/ArrowCounterClockwise.svg';
@@ -23,7 +24,12 @@ import Delete from '../../images/TrashSimple.svg';
 
 const maxFileSize = 5000000;
 
-function NftMint ({ account }: { account?: string }): React.ReactElement {
+interface Props {
+  account?: string;
+  localRegistry?: TypeRegistry;
+}
+
+function NftMint ({ account }: Props): React.ReactElement {
   const [images, setImages] = useState<ImageType[]>([]);
   const [imageBase64, setImageBase64] = useState<string>();
   const [imageFileName, setImageFileName] = useState<string>();
