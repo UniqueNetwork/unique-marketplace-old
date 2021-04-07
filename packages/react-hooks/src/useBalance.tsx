@@ -17,9 +17,10 @@ export interface UseBalanceInterface {
   balance: BalanceInterface | null;
   balanceError: boolean;
   existentialDeposit: BN | null;
+  getAccountBalance: () => void;
 }
 
-export function useBalance (accountId: string | null): UseBalanceInterface {
+export function useBalance (accountId?: string): UseBalanceInterface {
   const { api } = useApi();
   const [balance, setBalance] = useState<BalanceInterface | null>(null);
   const [balanceError, setBalanceError] = useState<boolean>(false);
@@ -49,5 +50,5 @@ export function useBalance (accountId: string | null): UseBalanceInterface {
     void getAccountBalance();
   }, [getAccountBalance]);
 
-  return { balance, balanceError, existentialDeposit };
+  return { balance, balanceError, existentialDeposit, getAccountBalance };
 }

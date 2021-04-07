@@ -1,5 +1,54 @@
-.ui.card.token-card {
-  width: 100%;
-  border: 1px solid;
-  margin: 0;
+.ui.card {
+  box-shadow: none;
+  border-radius: 0;
+  border: 1px solid var(--border-color) !important;
+
+  &.token-card {
+    width: auto;
+    margin: 0;
+
+    .content {
+      display: flex;
+      flex-direction: column;
+      border-top: 0;
+    }
+
+    & > .image {
+      background-color: transparent;
+      border-radius: 0;
+      padding: var(--gap);
+      height: 232px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      img {
+        max-width: 100%;
+        max-height: 100%;
+        width: auto;
+      }
+    }
+  }
+
+  .description {
+    margin-bottom: var(--gap);
+  }
+
+  .card-name,
+  .card-price {
+    margin-bottom: calc(var(--gap) / 2);
+    &__title {
+      font: 400 14px/21px var(--font-roboto);
+    }
+
+    &__field {
+      font: 400 12px/21px var(--font-inter);
+    }
+  }
+
+  .meta {
+    justify-content: flex-start;
+    margin-top: auto;
+  }
 }

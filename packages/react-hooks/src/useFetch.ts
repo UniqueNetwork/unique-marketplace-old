@@ -4,8 +4,8 @@
 import type { Observable } from '@polkadot/x-rxjs';
 
 import { useCallback } from 'react';
-import { fromFetch } from 'rxjs/fetch';
 import { of } from 'rxjs';
+import { fromFetch } from 'rxjs/fetch';
 import { catchError, switchMap } from 'rxjs/operators';
 
 export type ErrorType = {

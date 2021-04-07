@@ -168,13 +168,9 @@ function createWebpack (context, mode = 'production') {
       new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
       new webpack.DefinePlugin({
         'process.env': {
-          MatcherContractAddress: JSON.stringify(process.env.MatcherContractAddress),
           NODE_ENV: JSON.stringify(process.env.NODE_ENV),
           VERSION: JSON.stringify(pkgJson.version),
-          WS_URL: JSON.stringify(process.env.WS_URL),
-          escrowAddress: JSON.stringify(process.env.escrowAddress),
-          mintedCollection: JSON.stringify(process.env.mintedCollection),
-          vaultAddress: JSON.stringify(process.env.vaultAddress)
+          WS_URL: JSON.stringify(process.env.WS_URL)
         }
       }),
       new webpack.optimize.SplitChunksPlugin(),

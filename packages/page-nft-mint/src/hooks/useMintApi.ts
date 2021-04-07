@@ -7,6 +7,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import { useCollections } from '@polkadot/react-hooks/useCollections';
+import { UNIQUE_COLLECTION_ID } from '@polkadot/react-hooks/utils';
 
 export interface ImageInterface {
   address: string;
@@ -19,17 +20,8 @@ export interface UseMintApiInterface {
   imgLoading: boolean;
   serverIsReady: boolean;
   uploadImage: (image: ImageInterface) => void;
-  uploadedSuccessfully: boolean;
+  uploadingError: string | undefined;
 }
-
-interface EnvWindow {
-  // eslint-disable-next-line camelcase
-  process_env?: {
-    mintedCollection: string;
-  }
-}
-
-export const collectionIdForMint = (window as EnvWindow)?.process_env?.mintedCollection || '3';
 
 /**
  * Get validators from server if health "connected":true
@@ -38,17 +30,17 @@ export const collectionIdForMint = (window as EnvWindow)?.process_env?.mintedCol
 function useMintApi (): UseMintApiInterface {
   const [imgLoading, setImgLoading] = useState<boolean>(false);
   const [serverIsReady, setServerIsReady] = useState<boolean>(false);
-  const [uploadedSuccessfully, setUploadedSuccessfully] = useState<boolean>(false);
+  const [uploadingError, setUploadingError] = useState<string>();
   const { getDetailedCollectionInfo } = useCollections();
   const history = useHistory();
 
   const addMintedTokenToWallet = useCallback(async () => {
     const collections: NftCollectionInterface[] = JSON.parse(localStorage.getItem('tokenCollections') || '[]') as NftCollectionInterface[];
 
-    if (!collections.length || !collections.find((collection: NftCollectionInterface) => collection.id === collectionIdForMint)) {
-      const collectionInf = await getDetailedCollectionInfo(collectionIdForMint) as unknown as NftCollectionInterface;
+    if (!collections.length || !collections.find((collection: NftCollectionInterface) => collection.id === UNIQUE_COLLECTION_ID)) {
+      const collectionInf = await getDetailedCollectionInfo(UNIQUE_COLLECTION_ID) as unknown as NftCollectionInterface;
 
-      collections.push({ ...collectionInf, id: collectionIdForMint });
+      collections.push({ ...collectionInf, id: UNIQUE_COLLECTION_ID });
 
       localStorage.setItem('tokenCollections', JSON.stringify(collections));
     }
@@ -56,8 +48,6 @@ function useMintApi (): UseMintApiInterface {
 
   const uploadImage = useCallback(async (file: ImageInterface) => {
     setImgLoading(true);
-
-    console.log('upload', JSON.stringify(file));
 
     try {
       const response = await fetch('/mint', { // Your POST endpoint
@@ -68,15 +58,19 @@ function useMintApi (): UseMintApiInterface {
         method: 'POST'
       });
 
-      console.log('token minted successfully', response);
-
-      setUploadedSuccessfully(true);
-      setImgLoading(false);
-      await addMintedTokenToWallet();
-      history.push('/wallet');
+      if (response.ok) {
+        console.log('token minted successfully', response);
+        setImgLoading(false);
+        await addMintedTokenToWallet();
+        history.push('/wallet');
+      } else {
+        setUploadingError(response.statusText);
+        setImgLoading(false);
+      }
     } catch (e) {
       console.log('error uploading image', e);
       setImgLoading(false);
+      setUploadingError('error while uploading image');
     }
   }, [addMintedTokenToWallet, history]);
 
@@ -98,7 +92,7 @@ function useMintApi (): UseMintApiInterface {
     healthCheck();
   }, [healthCheck]);
 
-  return { imgLoading, serverIsReady, uploadImage, uploadedSuccessfully };
+  return { imgLoading, serverIsReady, uploadImage, uploadingError };
 }
 
 export default useMintApi;

@@ -5,20 +5,34 @@ import './styles.scss';
 
 import type { OfferType } from '@polkadot/react-hooks/useCollections';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Image from 'semantic-ui-react/dist/commonjs/elements/Image';
 import Card from 'semantic-ui-react/dist/commonjs/views/Card';
+
 import { useSchema } from '@polkadot/react-hooks';
+import { formatKsmBalance } from '@polkadot/react-hooks/useKusamaApi';
+import { AttributesDecoded } from '@polkadot/react-hooks/useSchema';
+import { TypeRegistry } from '@polkadot/types';
+
+import Arrow from '../../../../apps/public/icons/arrowRight.svg';
 
 interface Props {
   account: string;
   collectionId: string;
+  localRegistry?: TypeRegistry;
+  onSetTokenAttributes?: (collectionId: string, tokenId: string, attributes: AttributesDecoded) => void;
   openDetailedInformationModal: (collectionId: string, tokenId: string) => void;
   token: OfferType;
 }
 
-const NftTokenCard = ({ account, collectionId, openDetailedInformationModal, token }: Props): React.ReactElement<Props> => {
-  const { attributes, tokenUrl } = useSchema(account, collectionId, token.tokenId);
+const NftTokenCard = ({ account, collectionId, localRegistry, onSetTokenAttributes, openDetailedInformationModal, token }: Props): React.ReactElement<Props> => {
+  const { attributes, tokenUrl } = useSchema(account, collectionId, token.tokenId, localRegistry);
+
+  useEffect(() => {
+    if (attributes && onSetTokenAttributes) {
+      onSetTokenAttributes(collectionId, token.tokenId, attributes);
+    }
+  }, [attributes, collectionId, onSetTokenAttributes, token]);
 
   return (
     <Card
@@ -35,18 +49,25 @@ const NftTokenCard = ({ account, collectionId, openDetailedInformationModal, tok
       )}
       { token && (
         <Card.Content>
-          <Card.Header>{collectionId} #{token.tokenId}</Card.Header>
-          <Card.Meta>
-            { attributes && Object.values(attributes).length > 0 && (
-              <p className='token-balance'>
-                {/* eslint-disable-next-line @typescript-eslint/no-unsafe-member-access */}
-                Attributes: {Object.keys(attributes).map((attrKey) => (<span key={attrKey}>{attrKey}: {attributes[attrKey]}</span>))}
-              </p>
-            )}
-          </Card.Meta>
           <Card.Description>
-            Seller: {token.seller}
+            { attributes && attributes.NameStr && (
+              <div className='card-name'>
+                <div className='card-name__title'>Name</div>
+                <div className='card-name__field'>{attributes.NameStr}</div>
+              </div>
+            )}
+            <div className='card-price'>
+              <div className='card-price__title'>Price</div>
+              <div className='card-price__field'>{formatKsmBalance(token.price)} KSM</div>
+            </div>
           </Card.Description>
+          <Card.Meta>
+            <span className='link'>View
+              <Image
+                src={Arrow}
+              />
+            </span>
+          </Card.Meta>
         </Card.Content>
       )}
     </Card>

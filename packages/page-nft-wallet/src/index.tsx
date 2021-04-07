@@ -4,38 +4,75 @@
 import './styles.scss';
 
 // external imports
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Route, Switch } from 'react-router';
+import { useLocation } from 'react-router-dom';
+import Header from 'semantic-ui-react/dist/commonjs/elements/Header/Header';
 
-// local imports and components
+import { NftDetails } from '@polkadot/react-components';
 import Tabs from '@polkadot/react-components/Tabs';
+// local imports and components
 import { AppProps as Props } from '@polkadot/react-components/types';
+import { useRegistry } from '@polkadot/react-hooks';
 
 import NftWallet from './containers/NftWallet';
+import TokensForSale from './containers/TokensForSale';
 
-function App ({ basePath }: Props): React.ReactElement<Props> {
+function App ({ account, basePath }: Props): React.ReactElement<Props> {
+  const localRegistry = useRegistry();
+  const location = useLocation();
+  const [shouldUpdateTokens, setShouldUpdateTokens] = useState<string>();
+
   const items = useMemo(() => [
     {
       isRoot: true,
-      name: 'wallet',
-      text: 'NFT Wallet'
+      name: 'tokens',
+      text: 'Idle'
+    },
+    {
+      name: 'tokens-for-sale',
+      text: 'Listed for sale'
     }
   ], []);
 
   return (
-    <main className='nft--App'>
-      <header>
-        <Tabs
-          basePath={basePath}
-          items={items}
-        />
-      </header>
+    <>
+      <Header as='h1'>My Tokens</Header>
+      <Header as='h4'>NFTs owned by me</Header>
+      { !location.pathname.includes('token-details') && (
+        <header>
+          <Tabs
+            basePath={basePath}
+            items={items}
+          />
+        </header>
+      )}
       <Switch>
+        <Route path={`${basePath}/token-details`}>
+          <NftDetails
+            account={account || ''}
+            localRegistry={localRegistry}
+            setShouldUpdateTokens={setShouldUpdateTokens}
+          />
+        </Route>
+        <Route path={`${basePath}/tokens-for-sale`}>
+          <TokensForSale
+            account={account}
+            localRegistry={localRegistry}
+            setShouldUpdateTokens={setShouldUpdateTokens}
+            shouldUpdateTokens={shouldUpdateTokens}
+          />
+        </Route>
         <Route path={basePath}>
-          <NftWallet />
+          <NftWallet
+            account={account}
+            localRegistry={localRegistry}
+            setShouldUpdateTokens={setShouldUpdateTokens}
+            shouldUpdateTokens={shouldUpdateTokens}
+          />
         </Route>
       </Switch>
-    </main>
+    </>
   );
 }
 

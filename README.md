@@ -16,6 +16,6 @@ For production build
 
 Docker build
 
-`docker build -t wallet-app:prod .`
+`docker build -t unique-marketplace:prod .`
 
-`docker run -p 7000:80 -t wallet-app:prod`
+`docker run -p 8080:80 -t unique-marketplace:prod`

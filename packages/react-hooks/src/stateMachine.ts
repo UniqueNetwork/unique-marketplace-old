@@ -87,13 +87,19 @@ const marketplaceStateMachine = Machine({
     waitForSignTokenBuy: {
       on: {
         SEND_TOKEN_FAIL: 'loadingTokenInfo',
-        SEND_TOKEN_SUCCESS: 'loadingTokenInfo'
+        SEND_TOKEN_SUCCESS: 'waitForTokenOwn'
       }
     },
     waitForSignTransfer: {
       on: {
         TRANSFER_FAIL: 'loadingTokenInfo',
         TRANSFER_SUCCESS: 'waitForNftDeposit'
+      }
+    },
+    waitForTokenOwn: {
+      on: {
+        TOKEN_REVERT_FAIL: 'waitForTokenOwn',
+        TOKEN_REVERT_SUCCESS: 'loadingTokenInfo'
       }
     },
     waitForTokenRevert: {

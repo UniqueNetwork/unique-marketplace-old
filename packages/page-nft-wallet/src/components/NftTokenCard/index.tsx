@@ -1,35 +1,51 @@
 // Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import './NftTokenCard.scss';
+import './styles.scss';
 
 import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollections';
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useHistory } from 'react-router';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 import Item from 'semantic-ui-react/dist/commonjs/views/Item';
 
 import { useSchema } from '@polkadot/react-hooks';
+import { TypeRegistry } from '@polkadot/types';
 
 interface Props {
   account: string;
   canTransferTokens: boolean;
   collection: NftCollectionInterface;
+  localRegistry?: TypeRegistry;
   openTransferModal: (collection: NftCollectionInterface, tokenId: string, balance: number) => void;
   shouldUpdateTokens: string | undefined;
   token: string;
 }
 
-function NftTokenCard ({ account, canTransferTokens, collection, openTransferModal, token }: Props): React.ReactElement<Props> {
-  const { attributes, reFungibleBalance, tokenUrl } = useSchema(account, collection.id, token);
+function NftTokenCard ({ account, canTransferTokens, collection, localRegistry, openTransferModal, token }: Props): React.ReactElement<Props> {
+  const { attributes, reFungibleBalance, tokenUrl } = useSchema(account, collection.id, token, localRegistry);
   const history = useHistory();
 
   const openDetailedInformationModal = useCallback((collectionId: string | number, tokenId: string) => {
     history.push(`/wallet/token-details?collectionId=${collectionId}&tokenId=${tokenId}`);
   }, [history]);
 
-  if (!reFungibleBalance && collection?.Mode?.isReFungible) {
+  const attrebutesToShow = useMemo(() => {
+    if (attributes) {
+      return [...Object.keys(attributes).map((attr: string) => {
+        if (attr.toLowerCase().includes('hash')) {
+          return `${attr}: ${(attributes[attr] as string).substring(0, 8)}...`;
+        }
+
+        return `${attr}: ${(attributes[attr] as string)}`;
+      })].join(', ');
+    }
+
+    return '';
+  }, [attributes]);
+
+  if (!reFungibleBalance && collection?.Mode?.reFungible) {
     return <></>;
   }
 
@@ -49,17 +65,12 @@ function NftTokenCard ({ account, canTransferTokens, collection, openTransferMod
       <td className='token-name'>
         #{token.toString()}
       </td>
-      { collection && collection.Mode.isReFungible && (
-        <td className='token-balance'>
-          Balance: {reFungibleBalance}
-        </td>
-      )}
-      { attributes && Object.values(attributes).length > 0 && (
-        <td className='token-balance'>
-          {/* eslint-disable-next-line @typescript-eslint/no-unsafe-member-access */}
-          Attributes: {Object.keys(attributes).map((attrKey) => (<span key={attrKey}>{attrKey}: {attributes[attrKey]}</span>))}
-        </td>
-      )}
+      <td className='token-balance'>
+        { collection && Object.prototype.hasOwnProperty.call(collection.Mode, 'reFungible') && <span>Balance: {reFungibleBalance}</span> }
+      </td>
+      <td className='token-attributes'>
+        { attributes && Object.values(attributes).length > 0 && attrebutesToShow}
+      </td>
       <td className='token-actions'>
         <Button
           disabled={!canTransferTokens}

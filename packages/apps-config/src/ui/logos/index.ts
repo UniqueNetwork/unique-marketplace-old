@@ -15,7 +15,7 @@ import chainRococoTick from './chains/rococo-tick.svg';
 import chainRococoTrack from './chains/rococo-track.svg';
 import chainRococoTrick from './chains/rococo-trick.svg';
 import chainSnakenet from './chains/snakenet.svg';
-import chainUnique from './chains/unique.png';
+import chainUnique from './chains/unique.svg';
 import extensionPolkadotJs from './extensions/polkadot-js.svg';
 import externalCommonwealth from './external/commonwealth.png';
 import externalPolkascan from './external/polkascan.png';
@@ -69,7 +69,7 @@ import nodeSubstrate from './nodes/substrate-hexagon.svg';
 import nodeTernoa from './nodes/ternoa.svg';
 import nodeTrustBase from './nodes/trustbase.png';
 import nodeUniarts from './nodes/uniarts.png';
-import nodeUnique from './nodes/unique.png';
+import nodeUnique from './nodes/unique.svg';
 import nodeZenlink from './nodes/zenlink.svg';
 import nodeZero from './nodes/zero.svg';
 // last-resort fallback, just something empty
@@ -114,7 +114,7 @@ export const chainLogos: Record<string, unknown> = [
   ['Trick', chainRococoTrick],
   ['TrustBase PC1', nodeTrustBase],
   ['Uniarts', nodeUniarts],
-  ['Unique', chainUnique]
+  ['Unique', chainUnique],
 ].reduce((logos, [chain, logo]): Record<string, unknown> => ({
   ...logos,
   [(chain as string).toLowerCase()]: logo
@@ -189,7 +189,7 @@ export const nodeLogos: Record<string, unknown> = [
   ['Zenlink Collator', nodeZenlink],
   ['SubDAO Collator', nodeSubDAO],
   ['Uniarts', nodeUniarts],
-  ['Unique Node', nodeUnique]
+  ['Unique Node', nodeUnique],
 ].reduce((logos, [node, logo]): Record<string, unknown> => ({
   ...logos,
   [(node as string).toLowerCase().replace(/-/g, ' ')]: logo

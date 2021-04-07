@@ -57,10 +57,6 @@ function Tabs ({ basePath, className = '', hidden, items }: Props): React.ReactE
 }
 
 export default React.memo(styled(Tabs)`
-  align-items: flex-end;
-  background: var(--bg-tabs);
-  border-bottom: 1px solid var(--border-tabs);
-
   text-align: left;
   z-index: 1;
 
@@ -69,11 +65,26 @@ export default React.memo(styled(Tabs)`
     margin: 0 auto;
     width: 100%;
     display: flex;
-    padding: 1.25rem 1.5rem 0;
+    margin-bottom: 28px;
   }
 
   &::-webkit-scrollbar {
     display: none;
     width: 0px;
   }
+
+  .ui--Tab {
+    font: 400 18px/27px var(--font-roboto);
+    color: var(--tabs-color);
+    letter-spacing: 0.1em;
+    padding: calc(var(--gap) / 2) var(--gap);
+    border-color: transparent;
+    border-bottom: 1px solid transparent;
+    background-color: transparent;
+
+    &.active {
+      color: var(--link-color);
+      border-bottom:1px solid var(--link-color);
+    }
+}
 `);

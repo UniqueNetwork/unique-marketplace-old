@@ -4,13 +4,14 @@
 import type { TFunction } from 'i18next';
 import type { LinkOption } from '../settings/types';
 
+import { ROCOCO_GENESIS } from '../api/constants';
 import { expandEndpoints } from './util';
 
 /* eslint-disable sort-keys */
 
 // The available endpoints that will show in the dropdown. For the most part (with the exception of
 // Polkadot) we try to keep this to live chains only, with RPCs hosted by the community/chain vendor
-//   info: The chain logo name as defined in ../ui/logos/index.ts in namedLogos (this also needs to align with @polkadot/networks)
+//   info: The chain logo name as defined in ../ui/logos/index.tsx in namedLogos (this also needs to align with @polkadot/networks)
 //   text: The text to display on the dropdown
 //   value: The actual hosted secure websocket endpoint
 
@@ -18,7 +19,7 @@ import { expandEndpoints } from './util';
 export function createRococo (t: TFunction): LinkOption[] {
   return expandEndpoints(t, [{
     dnslink: 'rococo',
-    genesisHash: '0x19c0e4fa8ab75f5ac7865e0b8f74ff91eb9a100d336f423cd013a8befba40299',
+    genesisHash: ROCOCO_GENESIS,
     info: 'rococo',
     text: t('rpc.rococo', 'Rococo', { ns: 'apps-config' }),
     providers: {
@@ -72,7 +73,7 @@ export function createRococo (t: TFunction): LinkOption[] {
       },
       {
         info: 'rococoBitCountry',
-        paraId: 8888,
+        paraId: 8,
         text: t('rpc.rococo.bitcountry', 'Bit.Country PC1', { ns: 'apps-config' }),
         providers: {
           BitCountry: 'wss://tewai-parachain.bit.country:9955'

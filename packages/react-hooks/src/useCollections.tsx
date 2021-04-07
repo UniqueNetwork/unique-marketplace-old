@@ -1,14 +1,18 @@
 // Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import BN from 'bn.js';
-import { useCallback, useState } from 'react';
+import type { ErrorType } from '@polkadot/react-hooks/useFetch';
 
-import { ErrorType, useApi, useFetch } from '@polkadot/react-hooks';
+import BN from 'bn.js';
+import { useCallback, useEffect, useRef, useState } from 'react';
+
+import { useApi, useFetch } from '@polkadot/react-hooks';
+import { UNIQUE_COLLECTION_ID } from '@polkadot/react-hooks/utils';
 import { Constructor } from '@polkadot/types/types/codec';
+import { base64Decode, encodeAddress } from '@polkadot/util-crypto';
 
 export type MetadataType = {
-  metadata: string;
+  metadata?: string;
 }
 
 export type TokenAttribute = Record<string, Constructor | string | Record<string, string> | {
@@ -22,16 +26,16 @@ export interface NftCollectionInterface {
   id: string;
   DecimalPoints: BN | number;
   Description: number[];
-  TokenPrefix: number[];
+  TokenPrefix: string;
   MintMode?: boolean;
   Mode: {
-    isNft: boolean;
-    isFungible: boolean;
-    isReFungible: boolean;
-    isInvalid: boolean;
+    nft: null;
+    fungible: null;
+    reFungible: null;
+    invalid: null;
   };
   Name: number[];
-  OffchainSchema: number[];
+  OffchainSchema: string;
   Owner?: string;
   SchemaVersion: {
     isImageUrl: boolean;
@@ -45,74 +49,65 @@ export interface NftCollectionInterface {
     TokenLimit: string;
     SponsorTimeout: string;
   },
-  VariableOnChainSchema: number[];
-  ConstOnChainSchema: number[];
+  VariableOnChainSchema: string;
+  ConstOnChainSchema: string;
 }
 
 export interface TokenDetailsInterface {
   Owner?: any[];
-  ConstData?: number[];
-  VariableData?: number[];
+  ConstData?: string;
+  VariableData?: string;
+}
+
+export interface TokenInterface extends TokenDetailsInterface {
+  collectionId: string;
+  id: string;
 }
 
 export type OfferType = {
-  collectionId: string;
+  collectionId: number;
   price: BN;
   seller: string;
   tokenId: string;
   metadata: any;
 }
 
-export type TradeType = {
-  buyer: string;
-  offer: OfferType;
-  tradeDate: string;
+export type OffersResponseType = {
+  items: OfferType[];
+  itemsCount: number;
+  page: number;
+  pageSize: number;
 }
 
-/* const mockedOffers: OfferType[] = [
-  {
-    collectionId: '1',
-    metadata: 'any',
-    price: new BN(10),
-    seller: '5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty',
-    tokenId: '1'
-  },
-  {
-    collectionId: '2',
-    metadata: 'any',
-    price: new BN(10),
-    seller: '5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty',
-    tokenId: '2'
-  },
-  {
-    collectionId: '3',
-    metadata: 'any',
-    price: new BN(10),
-    seller: '5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty',
-    tokenId: '3'
-  },
-  {
-    collectionId: '4',
-    metadata: 'any',
-    price: new BN(10),
-    seller: '5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty',
-    tokenId: '4'
-  },
-  {
-    collectionId: '5',
-    metadata: 'any',
-    price: new BN(10),
-    seller: '5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty',
-    tokenId: '5'
-  }
-]; */
+export type TradeType = {
+  buyer?: string;
+  collectionId: number;
+  metadata: string
+  price: string;
+  quoteId: number;
+  seller: string;
+  tradeDate: string; // 2021-03-25T08:50:49.622992
+  tokenId: number;
+}
+
+export type TradesResponseType = {
+  items: TradeType[];
+  itemsCount: number;
+  page: number;
+  pageSize: number;
+}
+
+export type CollectionWithTokensCount = { info: NftCollectionInterface, tokenCount: number };
 
 export function useCollections () {
   const { api } = useApi();
   const { fetchData } = useFetch();
   const [error, setError] = useState<ErrorType>();
   const [offers, setOffers] = useState<OfferType[]>();
+  const [loadingOffers, setLoadingOffers] = useState<boolean>();
   const [trades, setTrades] = useState<TradeType[]>();
+  const [myTrades, setMyTrades] = useState<TradeType[]>();
+  const cleanup = useRef<boolean>(false);
 
   const getTokensOfCollection = useCallback(async (collectionId: string, ownerId: string) => {
     if (!api || !collectionId || !ownerId) {
@@ -120,7 +115,13 @@ export function useCollections () {
     }
 
     try {
-      return (await api.query.nft.addressTokens(collectionId, ownerId));
+      const tokensOfCollection = await api.query.nft.addressTokens(collectionId, ownerId);
+
+      if (cleanup.current) {
+        return '';
+      }
+
+      return tokensOfCollection;
     } catch (e) {
       console.log('getTokensOfCollection error', e);
     }
@@ -130,11 +131,20 @@ export function useCollections () {
 
   const getDetailedCollectionInfo = useCallback(async (collectionId: string) => {
     if (!api) {
-      return {};
+      return null;
     }
 
     try {
-      return (await api.query.nft.collection(collectionId));
+      const collectionInfo = (await api.query.nft.collectionById(collectionId)).toJSON() as unknown as NftCollectionInterface;
+
+      if (cleanup.current) {
+        return '';
+      }
+
+      return {
+        ...collectionInfo,
+        id: collectionId
+      };
     } catch (e) {
       console.log('getDetailedCollectionInfo error', e);
     }
@@ -148,7 +158,13 @@ export function useCollections () {
     }
 
     try {
-      return (await api.query.nft.nftItemList(collectionId, tokenId) as unknown as TokenDetailsInterface);
+      const tokenInfo = await api.query.nft.nftItemList(collectionId, tokenId);
+
+      if (cleanup.current) {
+        return {};
+      }
+
+      return tokenInfo.toJSON() as unknown as TokenDetailsInterface;
     } catch (e) {
       console.log('getDetailedTokenInfo error', e);
 
@@ -162,7 +178,13 @@ export function useCollections () {
     }
 
     try {
-      return (await api.query.nft.reFungibleItemList(collectionId, tokenId) as unknown as TokenDetailsInterface);
+      const detailedReFungibleTokenInfo = (await api.query.nft.reFungibleItemList(collectionId, tokenId) as unknown as TokenDetailsInterface);
+
+      if (cleanup.current) {
+        return {};
+      }
+
+      return detailedReFungibleTokenInfo;
     } catch (e) {
       console.log('getDetailedReFungibleTokenInfo error', e);
 
@@ -174,26 +196,58 @@ export function useCollections () {
    * Return the list of token sale offers
    */
   const getOffers = useCallback(() => {
-    fetchData<OfferType[]>('/offers/').subscribe((result: OfferType[] | ErrorType) => {
-      if ('error' in result) {
-        setError(result);
-      } else {
-        setOffers(result);
-      }
-    });
+    try {
+      setLoadingOffers(true);
+      fetchData<OffersResponseType>('/offers/').subscribe((result: OffersResponseType | ErrorType) => {
+        if (cleanup.current) {
+          return;
+        }
+
+        if ('error' in result) {
+          setError(result);
+        } else {
+          if (result && result.items.length) {
+            setOffers(result.items.map((offer: OfferType) => ({ ...offer, seller: encodeAddress(base64Decode(offer.seller)) })));
+          }
+        }
+
+        setLoadingOffers(false);
+      });
+    } catch (e) {
+      console.log('getOffers error', e);
+      setLoadingOffers(false);
+    }
   }, [fetchData]);
 
   /**
    * Return the list of token trades
    */
-  const getTrades = useCallback(() => {
-    fetchData<TradeType[]>('/trades/').subscribe((result: TradeType[] | ErrorType) => {
-      if ('error' in result) {
-        setError(result);
-      } else {
-        setTrades(result);
-      }
-    });
+  const getTrades = useCallback((account?: string) => {
+    if (!account) {
+      fetchData<TradesResponseType>('/trades/').subscribe((result: TradesResponseType | ErrorType) => {
+        if (cleanup.current) {
+          return;
+        }
+
+        if ('error' in result) {
+          setError(result);
+        } else {
+          setTrades(result.items);
+        }
+      });
+    } else {
+      fetchData<TradesResponseType>(`/trades/${account}`).subscribe((result: TradesResponseType | ErrorType) => {
+        if (cleanup.current) {
+          return;
+        }
+
+        if ('error' in result) {
+          setError(result);
+        } else {
+          setMyTrades(result.items);
+        }
+      });
+    }
   }, [fetchData]);
 
   const presetTokensCollections = useCallback(async () => {
@@ -202,13 +256,17 @@ export function useCollections () {
     }
 
     try {
-      const collectionsCount = (await api.query.nft.collectionCount() as unknown as BN).toNumber();
+      const createdCollectionCount = (await api.query.nft.createdCollectionCount() as unknown as BN).toNumber();
+      const destroyedCollectionCount = (await api.query.nft.destroyedCollectionCount() as unknown as BN).toNumber();
+      const collectionsCount = createdCollectionCount - destroyedCollectionCount;
       const collections: Array<NftCollectionInterface> = [];
 
       for (let i = 1; i <= collectionsCount; i++) {
         const collectionInf = await getDetailedCollectionInfo(i.toString()) as unknown as NftCollectionInterface;
 
-        console.log('collectionInf', collectionInf);
+        if (cleanup.current) {
+          return;
+        }
 
         if (collectionInf && collectionInf.Owner && collectionInf.Owner.toString() !== '5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM') {
           collections.push({ ...collectionInf, id: i.toString() });
@@ -223,15 +281,86 @@ export function useCollections () {
     }
   }, [api, getDetailedCollectionInfo]);
 
+  const getCollectionWithTokenCount = useCallback(async (collectionId: string): Promise<CollectionWithTokensCount> => {
+    const info = (await getDetailedCollectionInfo(collectionId)) as unknown as NftCollectionInterface;
+    const tokenCount = ((await api.query.nft.itemListIndex(collectionId)) as unknown as BN).toNumber();
+
+    return {
+      info,
+      tokenCount
+    };
+  }, [api.query.nft, getDetailedCollectionInfo]);
+
+  const getTokenInfo = useCallback(async (collectionInfo: NftCollectionInterface, tokenId: string): Promise<TokenDetailsInterface> => {
+    let tokenDetailsData: TokenDetailsInterface = {};
+
+    if (tokenId && collectionInfo) {
+      if (Object.prototype.hasOwnProperty.call(collectionInfo.Mode, 'nft')) {
+        tokenDetailsData = await getDetailedTokenInfo(collectionInfo.id, tokenId);
+      } else if (Object.prototype.hasOwnProperty.call(collectionInfo.Mode, 'reFungible')) {
+        tokenDetailsData = await getDetailedReFungibleTokenInfo(collectionInfo.id, tokenId);
+      }
+    }
+
+    return tokenDetailsData;
+  }, [getDetailedTokenInfo, getDetailedReFungibleTokenInfo]);
+
+  /* const getAllCollectionsWithTokenCount = useCallback(async () => {
+    const createdCollectionCount = (await api.query.nft.createdCollectionCount() as unknown as BN).toNumber();
+    const destroyedCollectionCount = (await api.query.nft.destroyedCollectionCount() as unknown as BN).toNumber();
+    const collectionsCount = createdCollectionCount - destroyedCollectionCount;
+    const collectionWithTokensCount: { [key: string]: CollectionWithTokensCount } = {};
+
+    for (let i = 1; i <= collectionsCount; i++) {
+      collectionWithTokensCount[i] = await getCollectionWithTokenCount(i.toString());
+    }
+
+    return collectionWithTokensCount;
+  }, [api.query.nft, getCollectionWithTokenCount]); */
+
+  const presetMintTokenCollection = useCallback(async (): Promise<NftCollectionInterface[]> => {
+    try {
+      const collections: Array<NftCollectionInterface> = [];
+      const mintCollectionInfo = await getDetailedCollectionInfo(UNIQUE_COLLECTION_ID) as unknown as NftCollectionInterface;
+
+      if (cleanup.current) {
+        return [];
+      }
+
+      if (mintCollectionInfo && mintCollectionInfo.Owner && mintCollectionInfo.Owner.toString() !== '5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM') {
+        collections.push({ ...mintCollectionInfo, id: UNIQUE_COLLECTION_ID });
+      }
+
+      localStorage.setItem('tokenCollections', JSON.stringify(collections));
+
+      return collections;
+    } catch (e) {
+      console.log('presetTokensCollections error', e);
+
+      return [];
+    }
+  }, [getDetailedCollectionInfo]);
+
+  useEffect(() => {
+    return () => {
+      cleanup.current = true;
+    };
+  }, []);
+
   return {
     error,
+    getCollectionWithTokenCount,
     getDetailedCollectionInfo,
     getDetailedReFungibleTokenInfo,
     getDetailedTokenInfo,
     getOffers,
+    getTokenInfo,
     getTokensOfCollection,
     getTrades,
+    loadingOffers,
+    myTrades,
     offers,
+    presetMintTokenCollection,
     presetTokensCollections,
     trades
   };

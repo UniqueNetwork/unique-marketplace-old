@@ -4,47 +4,38 @@
 import './styles.scss';
 
 // external imports
-import React, { useMemo } from 'react';
+import React, { useState } from 'react';
 import { Route, Switch } from 'react-router';
 
+import { NftDetails } from '@polkadot/react-components';
 // local imports and components
-import Tabs from '@polkadot/react-components/Tabs';
 import { AppProps as Props } from '@polkadot/react-components/types';
+import { useRegistry } from '@polkadot/react-hooks';
 
 import NftMarket from './containers/NftMarket';
-import TradeHistory from './containers/TradeHistory';
 
-function App ({ basePath }: Props): React.ReactElement<Props> {
-
-  const items = useMemo(() => [
-    {
-      isRoot: true,
-      name: 'nftMarket',
-      text: 'NFT Market'
-    },
-    {
-      name: 'trade-history',
-      text: 'Trade History'
-    }
-  ], []);
+function App ({ account, basePath }: Props): React.ReactElement<Props> {
+  const localRegistry = useRegistry();
+  const [shouldUpdateTokens, setShouldUpdateTokens] = useState<string>();
 
   return (
-    <main className='nft--App'>
-      <header>
-        <Tabs
-          basePath={basePath}
-          items={items}
+    <Switch>
+      <Route path={`${basePath}/token-details`}>
+        <NftDetails
+          account={account || ''}
+          localRegistry={localRegistry}
+          setShouldUpdateTokens={setShouldUpdateTokens}
         />
-      </header>
-      <Switch>
-        <Route path={`${basePath}/trade-history`}>
-          <TradeHistory />
-        </Route>
-        <Route path={basePath}>
-          <NftMarket />
-        </Route>
-      </Switch>
-    </main>
+      </Route>
+      <Route path={basePath}>
+        <NftMarket
+          account={account}
+          localRegistry={localRegistry}
+          setShouldUpdateTokens={setShouldUpdateTokens}
+          shouldUpdateTokens={shouldUpdateTokens}
+        />
+      </Route>
+    </Switch>
   );
 }
 

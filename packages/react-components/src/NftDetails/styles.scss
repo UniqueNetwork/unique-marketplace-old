@@ -1,0 +1,158 @@
+.toke-details {
+  font-family: var(--font-roboto) var(--font-mono);
+
+  h1 {
+    font-size: 36px;
+    line-height: 48px;
+  }
+
+  p {
+    font-family: var(--font-roboto);
+    font-style: normal;
+    font-weight: normal;
+    font-size: 16px;
+    line-height: 24px;
+    margin-right: 24px;
+    margin-bottom: 0;
+  }
+
+  .go-back {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    color: var(--link-color) !important;;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 24px;
+
+    img {
+      margin-right: 8px;
+    }
+  }
+
+  .token-info {
+    margin-top: 40px;
+    padding: 24px;
+    background-color: white;
+
+    h3 {
+      font-family: var(--font-inter);
+      font-style: normal;
+      font-weight: bold;
+      font-size: 28px;
+      line-height: 42px;
+    }
+
+    h4, h5 {
+      font-family: var(--font-roboto) var(--font-mono);
+      font-style: normal;
+      font-weight: bold;
+      font-size: 16px;
+      line-height: 24px;
+      min-height: 0 !important;
+    }
+
+    .h5 {
+      font-size: 14px;
+      line-height: 20px;
+    }
+
+    .accessories {
+
+      word-break: break-all;
+      color: var(--title-color);
+      font-family: var(--font-inter);
+      opacity: 0.5;
+      font-weight: bold;
+      font-size: 18px;
+      line-height: 27px;
+
+      p {
+        font-family: var(--font-roboto);
+        font-style: normal;
+        font-weight: normal;
+        font-size: 16px;
+        line-height: 24px;
+        margin-right: 24px;
+        margin-bottom: 0;
+      }
+    }
+
+    .prices {
+      h2 {
+        font-family: var(--font-inter);
+        font-style: normal;
+        font-weight: bold;
+        font-size: 28px;
+        line-height: 42px;
+        margin: 48px 0 16px 0;
+      }
+    }
+  }
+
+  .divider {
+    border: 1px solid var(--divider-color);
+    height: 1px;
+    width: 100%;
+    margin: 16px 0;
+  }
+
+  .buttons {
+    display: flex;
+    flex-wrap: wrap;
+    grid-column-gap: 16px;
+    grid-row-gap: 16px;
+
+    .ui.button {
+
+      .ui.loader {
+
+        &:after {
+          position: absolute;
+          left: 50%;
+          border-color: white transparent transparent;
+        }
+      }
+    }
+  }
+
+  .ui.form {
+    margin: 16px 0;
+
+    .field {
+      margin: 16px 0;
+    }
+  }
+
+  .sale-steps, .buy-steps {
+    margin-top: 16px;
+  }
+
+  .steps {
+    .step {
+      display: grid;
+      grid-template-columns: 25px 1fr;
+      grid-column-gap: 8px;
+      align-items: center;
+      margin-bottom: 16px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      .inactive {
+        width: 25px;
+        height: 25px;
+        border: 1px solid var(--border-color);
+        border-radius: 25px;
+        text-align: center;
+        line-height: 22px;
+        font-family: var(--font-roboto) var(--font-mono);
+        font-style: normal;
+        font-weight: 500;
+        font-size: 14px;
+      }
+    }
+  }
+}

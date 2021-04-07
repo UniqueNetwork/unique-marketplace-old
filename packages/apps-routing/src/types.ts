@@ -7,6 +7,7 @@ import type { AppProps, BareProps } from '@polkadot/react-components/types';
 export type RouteGroup = 'accounts' | 'developer' | 'governance' | 'network' | 'nft' | 'settings';
 
 export interface RouteProps extends AppProps, BareProps {
+  account?: string;
   location: any;
 }
 

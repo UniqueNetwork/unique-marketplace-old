@@ -31,8 +31,6 @@ COPY --from=builder /apps/packages/apps/build /usr/share/nginx/html
 
 EXPOSE 80
 
-# CMD ["/bin/bash", "-c", "/usr/share/nginx/html/env.sh && nginx -g \"daemon off;\""]
-
 CMD ["/bin/bash", "-c", "/usr/share/nginx/html/env.sh"]
 
 CMD ["nginx", "-g", "daemon off;"]

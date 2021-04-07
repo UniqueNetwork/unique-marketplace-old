@@ -1,0 +1,95 @@
+@import '../styles/global.scss';
+
+.app-wrapper {
+  background: var(--bg-page);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.app-header {
+  background-color: var(--white-color);
+  margin-bottom: 0;
+  padding: var(--gap) 0;
+
+  .ui.tabular.menu {
+    display: inline-flex;
+    border-bottom: none;
+    margin: 0;
+
+    .item {
+      border: none;
+      padding: calc(var(--gap) / 2) calc(var(--gap) * 1.5);
+      font: 500 16px/24px var(--font-roboto);
+      letter-spacing: 1px;
+      border-radius: var(--bradius) !important;
+
+      &.active {
+        background-color: var(--link-color);
+        color: var(--white-color);
+        margin-top: 0;
+        font-weight: 500;
+      }
+    }
+  }
+}
+
+.app-user {
+  width: 230px;
+}
+
+.app-main {
+  padding: 44px 0;
+  flex: 1 1 auto;
+}
+
+.app-container {
+  width: 100%;
+  max-width: var(--max-width);
+  padding: 0 var(--gap);
+  margin: 0 auto;
+
+  &--header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+.app-user-icon {
+  display: block;
+  width: 32px;
+  height: 32px;
+}
+
+.app-balances {
+  display: flex;
+
+  .app-balance--item {
+    border-right: 1px solid var(--border-color);
+    font-family: var(--font-roboto) var(--font-mono);
+    font-size: 14px;
+    line-height: 14px;
+    font-weight: 400;
+    padding: 0 8px;
+    position: relative;
+    height: 24px;
+    display: flex;
+    align-items: flex-end;
+
+    &:last-child {
+      border-right: none;
+    }
+
+    small {
+      position: absolute;
+      top: -4px;
+    }
+  }
+
+  img {
+    margin-left: 8px;
+    cursor: pointer;
+  }
+}

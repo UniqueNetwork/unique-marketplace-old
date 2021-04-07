@@ -10,7 +10,7 @@ import { expandEndpoints } from './util';
 
 // The available endpoints that will show in the dropdown. For the most part (with the exception of
 // Polkadot) we try to keep this to live chains only, with RPCs hosted by the community/chain vendor
-//   info: The chain logo name as defined in ../ui/logos/index.ts in namedLogos (this also needs to align with @polkadot/networks)
+//   info: The chain logo name as defined in ../ui/logos/index.tsx in namedLogos (this also needs to align with @polkadot/networks)
 //   text: The text to display on the dropdown
 //   value: The actual hosted secure websocket endpoint
 
@@ -70,7 +70,8 @@ export function createTesting (t: TFunction): LinkOption[] {
       info: 'crust',
       text: t('rpc.crust.network', 'Crust Maxwell', { ns: 'apps-config' }),
       providers: {
-        'Crust Network': 'wss://api.crust.network/'
+        'Crust Network': 'wss://api.crust.network/',
+        'DCloud Foundation': 'wss://api.decloudf.com/'
       }
     },
     {
@@ -134,7 +135,8 @@ export function createTesting (t: TFunction): LinkOption[] {
       info: 'galois',
       text: t('rpc.galois', 'Galois', { ns: 'apps-config' }),
       providers: {
-        MathWallet: 'wss://galois.maiziqianbao.net/ws'
+        MathWallet: 'wss://galois-hk.maiziqianbao.net/ws',
+        'MathWallet Backup': 'wss://galois.maiziqianbao.net/ws'
       }
     },
     {
@@ -236,6 +238,13 @@ export function createTesting (t: TFunction): LinkOption[] {
       text: t('rpc.unique', 'Unique', { ns: 'apps-config' }),
       providers: {
         Unique: 'wss://testnet2.uniquenetwork.io'
+      }
+    },
+    {
+      info: 'vln',
+      text: t('rpc.vln', 'Valiu Liquidity Network', { ns: 'apps-config' }),
+      providers: {
+        Valiu: 'wss://vln.valiu.dev'
       }
     },
     {

@@ -5,28 +5,32 @@ import './NftCollectionCard.scss';
 
 import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollections';
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 
 import { Expander } from '@polkadot/react-components';
 import { useCollections, useDecoder } from '@polkadot/react-hooks';
+import { UNIQUE_COLLECTION_ID } from '@polkadot/react-hooks/utils';
+import { TypeRegistry } from '@polkadot/types';
 
 import NftTokenCard from '../NftTokenCard';
 
 interface Props {
-  account: string | null;
+  account?: string;
   canTransferTokens: boolean;
   collection: NftCollectionInterface;
+  localRegistry?: TypeRegistry;
   removeCollection: (collection: string) => void;
   openTransferModal: (collection: NftCollectionInterface, tokenId: string, balance: number) => void;
   shouldUpdateTokens: string | undefined;
 }
 
-function NftCollectionCard ({ account, canTransferTokens, collection, openTransferModal, removeCollection, shouldUpdateTokens }: Props): React.ReactElement<Props> {
-  const [opened, setOpened] = useState(false);
+function NftCollectionCard ({ account, canTransferTokens, collection, localRegistry, openTransferModal, removeCollection, shouldUpdateTokens }: Props): React.ReactElement<Props> {
+  const [opened, setOpened] = useState(true);
   const [tokensOfCollection, setTokensOfCollection] = useState<Array<string>>([]);
   const { getTokensOfCollection } = useCollections();
   const { collectionName16Decoder } = useDecoder();
+  const cleanup = useRef<boolean>(false);
 
   const openCollection = useCallback((isOpen) => {
     setOpened(isOpen);
@@ -38,6 +42,10 @@ function NftCollectionCard ({ account, canTransferTokens, collection, openTransf
     }
 
     const tokensOfCollection = (await getTokensOfCollection(collection.id, account)) as string[];
+
+    if (cleanup.current) {
+      return;
+    }
 
     setTokensOfCollection(tokensOfCollection);
   }, [account, collection, getTokensOfCollection]);
@@ -54,6 +62,12 @@ function NftCollectionCard ({ account, canTransferTokens, collection, openTransf
     }
   }, [account, opened, updateTokens]);
 
+  useEffect(() => {
+    return () => {
+      cleanup.current = true;
+    };
+  }, []);
+
   return (
     <Expander
       className='nft-collection-item'
@@ -63,9 +77,9 @@ function NftCollectionCard ({ account, canTransferTokens, collection, openTransf
         <>
           <strong>{collectionName16Decoder(collection.Name)}</strong>
           { collection.Description && (
-            <span> {collectionName16Decoder(collection.Description)}</span>
+            <span> - {collectionName16Decoder(collection.Description)}</span>
           )}
-          { collection.Mode.isReFungible &&
+          { Object.prototype.hasOwnProperty.call(collection.Mode, 'reFungible') &&
             <strong>, re-fungible</strong>
           }
         </>
@@ -79,6 +93,7 @@ function NftCollectionCard ({ account, canTransferTokens, collection, openTransf
               canTransferTokens={canTransferTokens}
               collection={collection}
               key={token}
+              localRegistry={localRegistry}
               openTransferModal={openTransferModal}
               shouldUpdateTokens={shouldUpdateTokens}
               token={token}
@@ -86,12 +101,14 @@ function NftCollectionCard ({ account, canTransferTokens, collection, openTransf
           ))}
         </tbody>
       </table>
-      <Button
-        basic
-        color='red'
-        onClick={removeCollection.bind(null, collection.id)}>
-        Remove collection
-      </Button>
+      { collection.id !== UNIQUE_COLLECTION_ID && (
+        <Button
+          basic
+          color='red'
+          onClick={removeCollection.bind(null, collection.id)}>
+          Remove collection
+        </Button>
+      )}
     </Expander>
   );
 }

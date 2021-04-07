@@ -6,6 +6,7 @@ import { useCallback } from 'react';
 interface UseDecoderInterface {
   collectionName16Decoder: (name: number[]) => string;
   collectionName8Decoder: (name: number[]) => string;
+  hex2a: (hex: string) => string;
 }
 
 export function useDecoder (): UseDecoderInterface {
@@ -21,8 +22,20 @@ export function useDecoder (): UseDecoderInterface {
     return String.fromCharCode(...collectionNameArr);
   }, []);
 
+  const hex2a = useCallback((hexx: string) => {
+    const hex: string = hexx.substring(2);
+    let str = '';
+
+    for (let i = 0; (i < hex.length && hex.substr(i, 2) !== '00'); i += 2) {
+      str += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
+    }
+
+    return str;
+  }, []);
+
   return {
     collectionName16Decoder,
-    collectionName8Decoder
+    collectionName8Decoder,
+    hex2a
   };
 }
