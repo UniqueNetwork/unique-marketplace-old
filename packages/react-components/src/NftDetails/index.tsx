@@ -76,7 +76,7 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
 
   console.log('deposited', parseFloat(formatKsmBalance(deposited)));
 
-  const showMarketActions = false;
+  const showMarketActions = true;
 
   return (
     <div className='toke-details'>

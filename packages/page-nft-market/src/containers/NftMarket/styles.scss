@@ -1,0 +1,49 @@
+.market-pallet {
+  width: 100%;
+
+  &__item {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+
+    .token-card {
+      word-break: break-all;
+    }
+  }
+}
+
+.collections-list {
+  list-style: none;
+  margin: 0;
+  padding: var(--gap) 0;
+
+  &__item {
+    display: flex;
+    margin-bottom: var(--gap);
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  &__img {
+    width: 24px;
+    height: 24px;
+    margin-right: calc(var(--gap) / 2);
+    border-radius: 50%;
+    flex: 0 0 auto;
+    overflow: hidden;
+
+    img {
+      max-width: 100%;
+      max-height: 100%;
+    }
+  }
+
+  &__name {
+    font: 400 14px/24px var(--font-roboto);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+}
