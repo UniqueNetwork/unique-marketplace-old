@@ -48,6 +48,7 @@ export { useSavedFlags } from './useSavedFlags';
 export { useSchema } from './useSchema';
 export { useStepper } from './useStepper';
 export { useSudo } from './useSudo';
+export { useToken } from './useToken';
 export { useToggle } from './useToggle';
 export { useTreasury } from './useTreasury';
 export { useVotingStatus } from './useVotingStatus';

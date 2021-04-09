@@ -152,46 +152,6 @@ export function useCollections () {
     return {};
   }, [api]);
 
-  const getDetailedTokenInfo = useCallback(async (collectionId: string, tokenId: string): Promise<TokenDetailsInterface> => {
-    if (!api) {
-      return {};
-    }
-
-    try {
-      const tokenInfo = await api.query.nft.nftItemList(collectionId, tokenId);
-
-      if (cleanup.current) {
-        return {};
-      }
-
-      return tokenInfo.toJSON() as unknown as TokenDetailsInterface;
-    } catch (e) {
-      console.log('getDetailedTokenInfo error', e);
-
-      return {};
-    }
-  }, [api]);
-
-  const getDetailedReFungibleTokenInfo = useCallback(async (collectionId: string, tokenId: string): Promise<TokenDetailsInterface> => {
-    if (!api) {
-      return {};
-    }
-
-    try {
-      const detailedReFungibleTokenInfo = (await api.query.nft.reFungibleItemList(collectionId, tokenId) as unknown as TokenDetailsInterface);
-
-      if (cleanup.current) {
-        return {};
-      }
-
-      return detailedReFungibleTokenInfo;
-    } catch (e) {
-      console.log('getDetailedReFungibleTokenInfo error', e);
-
-      return {};
-    }
-  }, [api]);
-
   /**
    * Return the list of token sale offers
    */
@@ -291,20 +251,6 @@ export function useCollections () {
     };
   }, [api.query.nft, getDetailedCollectionInfo]);
 
-  const getTokenInfo = useCallback(async (collectionInfo: NftCollectionInterface, tokenId: string): Promise<TokenDetailsInterface> => {
-    let tokenDetailsData: TokenDetailsInterface = {};
-
-    if (tokenId && collectionInfo) {
-      if (Object.prototype.hasOwnProperty.call(collectionInfo.Mode, 'nft')) {
-        tokenDetailsData = await getDetailedTokenInfo(collectionInfo.id, tokenId);
-      } else if (Object.prototype.hasOwnProperty.call(collectionInfo.Mode, 'reFungible')) {
-        tokenDetailsData = await getDetailedReFungibleTokenInfo(collectionInfo.id, tokenId);
-      }
-    }
-
-    return tokenDetailsData;
-  }, [getDetailedTokenInfo, getDetailedReFungibleTokenInfo]);
-
   /* const getAllCollectionsWithTokenCount = useCallback(async () => {
     const createdCollectionCount = (await api.query.nft.createdCollectionCount() as unknown as BN).toNumber();
     const destroyedCollectionCount = (await api.query.nft.destroyedCollectionCount() as unknown as BN).toNumber();
@@ -351,10 +297,7 @@ export function useCollections () {
     error,
     getCollectionWithTokenCount,
     getDetailedCollectionInfo,
-    getDetailedReFungibleTokenInfo,
-    getDetailedTokenInfo,
     getOffers,
-    getTokenInfo,
     getTokensOfCollection,
     getTrades,
     loadingOffers,

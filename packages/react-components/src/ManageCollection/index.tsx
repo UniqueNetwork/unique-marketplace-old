@@ -22,7 +22,7 @@ interface Props {
 }
 
 function ManageCollection (props: Props): React.ReactElement<Props> {
-  const { account } = props;
+  const { account, localRegistry } = props;
   const [name, setName] = useState<string>();
   const [description, setDescription] = useState<string>();
   const [tokenPrefix, setTokenPrefix] = useState<string>();
@@ -202,13 +202,10 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
           </Grid.Row>
         </Grid>
       </Form>
-      <Grid className='manage-collection--form--grid'>
-        <Grid.Row>
-          <Grid.Column width={8}>
-            <ManageCollectionAttributes account={account} />
-          </Grid.Column>
-        </Grid.Row>
-      </Grid>
+      <ManageCollectionAttributes
+        account={account}
+        localRegistry={localRegistry}
+      />
     </div>
   );
 }

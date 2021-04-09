@@ -78,16 +78,21 @@ export const useMetadata = (localRegistry?: TypeRegistry): UseMetadataInterface 
   // TypeRegistry from ConstOnChainData, createType - from TypeRegistry
 
   const encodeStruct = useCallback(({ attr, data }: { attr?: any, data?: string }): string => {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    localRegistry.register(JSON.parse(attr));
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore {"Gender":"Female","Traits":["Smile"], "ImageHash": "123123"}
-    const encoded = localRegistry.createType('root', JSON.parse(data)).toHex();
+    if (attr && data && localRegistry) {
+      try {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        localRegistry.register(JSON.parse(attr));
 
-    console.log('encoded', encoded);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore {"Gender":"Female","Traits":["Smile"], "ImageHash": "123123"}
+        return localRegistry.createType('root', JSON.parse(data)).toHex();;
+      } catch (e) {
+        console.log('encodeStruct error', e);
+      }
+    }
 
-    return encoded;
+    return '';
   }, [localRegistry]);
 
   const decodeStruct = useCallback(({ attr, data }: { attr?: any, data?: string }): AttributesDecoded => {
