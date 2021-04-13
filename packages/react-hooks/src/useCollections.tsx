@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import type { ErrorType } from '@polkadot/react-hooks/useFetch';
+import type { TokenDetailsInterface } from '@polkadot/react-hooks/useToken';
 
 import BN from 'bn.js';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -51,12 +52,6 @@ export interface NftCollectionInterface {
   },
   VariableOnChainSchema: string;
   ConstOnChainSchema: string;
-}
-
-export interface TokenDetailsInterface {
-  Owner?: any[];
-  ConstData?: string;
-  VariableData?: string;
 }
 
 export interface TokenInterface extends TokenDetailsInterface {

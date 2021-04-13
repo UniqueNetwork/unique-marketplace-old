@@ -44,6 +44,21 @@ export function useCollection () {
   const { api } = useApi();
   const { queueExtrinsic } = useContext(StatusContext);
 
+  // collectionName16Decoder(collection.Name);
+  // collectionName16Decoder(collection.Description)
+  // hex2a(collectionInfo.TokenPrefix)
+  // collectionInfo.Sponsor
+  // confirmSponsorship(collection_id)
+  // api.query.nft.contractSelfSponsoring(accountId)
+  // api.query.nft.contractSponsorBasket(accountId, accountId)
+  // api.query.nft.contractOwner(AccountId)
+  // const changeAdminTx = api.tx.nft.addCollectionAdmin(collectionId, bob.address);
+  // const adminListAfterRemoveAdmin: any = (await api.query.nft.adminList(collectionId));
+  // const tx = api.tx.nft.removeCollectionAdmin(collectionId, Alice.address);
+
+  // parseInt((await api.query.nft.createdCollectionCount()).toString(), 10);
+  // api.tx.nft.createCollection(strToUTF16(name), strToUTF16(description), strToUTF16(tokenPrefix), modeprm);
+
   const createCollection = useCallback(({ account, description, modeprm, name, tokenPrefix }: { account: string, name: string, description: string, tokenPrefix: string, modeprm?: string }) => {
     const transaction = api.tx.nft.createCollection(strToUTF16(name), strToUTF16(description), strToUTF16(tokenPrefix), modeprm);
 

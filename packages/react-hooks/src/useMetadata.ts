@@ -1,14 +1,14 @@
 // Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import type { TokenDetailsInterface } from '@polkadot/react-hooks/useToken';
+
 import { useCallback, useEffect, useRef } from 'react';
 
-import { MetadataType,
-  NftCollectionInterface,
-  TokenDetailsInterface,
-  useCollections } from '@polkadot/react-hooks/useCollections';
+import { MetadataType, NftCollectionInterface } from '@polkadot/react-hooks/useCollections';
 import { useDecoder } from '@polkadot/react-hooks/useDecoder';
 import { AttributesDecoded } from '@polkadot/react-hooks/useSchema';
+import { useToken } from '@polkadot/react-hooks/useToken';
 import { TypeRegistry } from '@polkadot/types';
 
 interface UseMetadataInterface {
@@ -73,7 +73,7 @@ interface UseMetadataInterface {
 export const useMetadata = (localRegistry?: TypeRegistry): UseMetadataInterface => {
   const { hex2a } = useDecoder();
   const cleanup = useRef<boolean>(false);
-  const { getDetailedReFungibleTokenInfo, getDetailedTokenInfo } = useCollections();
+  const { getDetailedReFungibleTokenInfo, getDetailedTokenInfo } = useToken();
 
   // TypeRegistry from ConstOnChainData, createType - from TypeRegistry
 
@@ -86,7 +86,7 @@ export const useMetadata = (localRegistry?: TypeRegistry): UseMetadataInterface 
 
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore {"Gender":"Female","Traits":["Smile"], "ImageHash": "123123"}
-        return localRegistry.createType('root', JSON.parse(data)).toHex();;
+        return localRegistry.createType('root', JSON.parse(data)).toHex();
       } catch (e) {
         console.log('encodeStruct error', e);
       }

@@ -4,10 +4,19 @@
 import { useCallback } from 'react';
 
 import { useApi } from '@polkadot/react-hooks/useApi';
-import { NftCollectionInterface, TokenDetailsInterface } from '@polkadot/react-hooks/useCollections';
+import { NftCollectionInterface } from '@polkadot/react-hooks/useCollections';
+
+export interface TokenDetailsInterface {
+  Owner?: any[];
+  ConstData?: string;
+  VariableData?: string;
+}
 
 export function useToken () {
   const { api } = useApi();
+  // const createData = {nft: {const_data: [], variable_data: []}};
+  // tx = api.tx.nft.createItem(collectionId, owner, createData);
+  // setVariableMetaData(collection_id, item_id, data)
 
   const getDetailedTokenInfo = useCallback(async (collectionId: string, tokenId: string): Promise<TokenDetailsInterface> => {
     if (!api) {

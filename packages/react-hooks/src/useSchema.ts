@@ -1,7 +1,8 @@
 // Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import type { NftCollectionInterface, TokenDetailsInterface } from '@polkadot/react-hooks/useCollections';
+import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollections';
+import type { TokenDetailsInterface } from '@polkadot/react-hooks/useToken';
 
 import BN from 'bn.js';
 import { useCallback, useEffect, useRef, useState } from 'react';

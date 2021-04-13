@@ -5,14 +5,15 @@ import './styles.scss';
 
 import React, { useCallback, useEffect, useState } from 'react';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
+import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
-import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 
 import { Dropdown, Input } from '@polkadot/react-components';
 import { useMetadata } from '@polkadot/react-hooks';
 import { TypeRegistry } from '@polkadot/types';
-import { AttributeType, AttributeTypes, CountType, convertScaleAttrFromJson, convertScaleAttrToJson } from './scaleUtils';
+
+import { AttributeType, AttributeTypes, convertScaleAttrFromJson, convertScaleAttrToJson, CountType } from '../util/scaleUtils';
 
 type TypeOption = {
   text: string;
@@ -51,6 +52,7 @@ interface Props {
   localRegistry?: TypeRegistry;
 }
 
+/*
 const testSchema = `{
   "Gender": {
     "_enum": {
@@ -70,11 +72,12 @@ const testSchema = `{
     "ImageHash": "Bytes"
   }
 }`;
+*/
 
 // [{ name: 'Name1', type: '_enum', values: ['enum1', 'enum2'] }, { name: 'Name2', type: 'Bytes' }];
 
 function ManageCollectionAttributes (props: Props): React.ReactElement<Props> {
-  const { account, localRegistry } = props;
+  const { localRegistry } = props;
   const [currentAttributeName, setCurrentAttributeName] = useState<string>('');
   const [currentAttributePluralName, setCurrentAttributePluralName] = useState<string>('');
   const [currentAttributeNameError, setCurrentAttributeNameError] = useState<string>();
@@ -86,6 +89,8 @@ function ManageCollectionAttributes (props: Props): React.ReactElement<Props> {
   const [currentAttributeValues, setCurrentAttributeValues] = useState<string[]>([]);
   const [attributes, setAttributes] = useState<AttributeType[]>([]);
   const { decodeStruct, encodeStruct } = useMetadata(localRegistry);
+
+  // const tx = api.tx.nft.setConstOnChainSchema(collection_id, schema)
 
   const clearCurrentAttribute = useCallback(() => {
     setCurrentAttributeName('');
@@ -278,21 +283,21 @@ function ManageCollectionAttributes (props: Props): React.ReactElement<Props> {
                     <Grid.Row>
                       <Grid.Column width={14}>
                         <Form.Field>
-                      <Input
-                        className='isSmall'
-                        defaultValue={currentAttributeName}
-                        isError={!!currentAttributeEnumValueError}
-                        label='Please enter an enum attribute'
-                        onChange={setCurrentAttributeEnumValue}
-                        placeholder='Enum attribute'
-                        value={currentAttributeEnumValue}
-                      />
-                      { currentAttributeEnumValueError && (
-                        <div className='field-error'>
-                          {currentAttributeEnumValueError}
-                        </div>
-                      )}
-                    </Form.Field>
+                          <Input
+                            className='isSmall'
+                            defaultValue={currentAttributeName}
+                            isError={!!currentAttributeEnumValueError}
+                            label='Please enter an enum attribute'
+                            onChange={setCurrentAttributeEnumValue}
+                            placeholder='Enum attribute'
+                            value={currentAttributeEnumValue}
+                          />
+                          { currentAttributeEnumValueError && (
+                            <div className='field-error'>
+                              {currentAttributeEnumValueError}
+                            </div>
+                          )}
+                        </Form.Field>
                       </Grid.Column>
                       <Grid.Column width={2}>
                         <Form.Field>

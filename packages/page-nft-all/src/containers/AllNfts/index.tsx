@@ -3,7 +3,8 @@
 
 import './styles.scss';
 
-import type { CollectionWithTokensCount, TokenDetailsInterface, TokenInterface } from '@polkadot/react-hooks/useCollections';
+import type { CollectionWithTokensCount, TokenInterface } from '@polkadot/react-hooks/useCollections';
+import type { TokenDetailsInterface } from '@polkadot/react-hooks/useToken';
 
 // external imports
 import React, { memo, ReactElement, useCallback, useEffect, useRef, useState } from 'react';
