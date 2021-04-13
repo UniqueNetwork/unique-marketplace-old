@@ -122,6 +122,7 @@ h4.ui.header {
 .ui.form {
   .ui.input {
     margin: 0;
+
     input {
       border: 1px solid var(--border-color);
       border-radius: calc(var(--bradius) * 2);
@@ -129,6 +130,13 @@ h4.ui.header {
       font: 400 16px/24px var(--font-roboto);
       padding: calc(var(--gap) / 2) var(--gap);
     }
+  }
+
+  textarea {
+    border: 1px solid var(--border-color);
+    border-radius: calc(var(--bradius) * 2);
+    font: 400 16px/24px var(--font-roboto);
+    padding: calc(var(--gap) / 2) var(--gap);
   }
 }
 

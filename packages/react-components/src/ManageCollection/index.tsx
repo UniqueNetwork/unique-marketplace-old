@@ -58,6 +58,10 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
     }
   }, []);
 
+  const onSetDescription = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setDescription(e.target.value);
+  }, []);
+
   const onDeleteCurrentAdmin = useCallback(() => {
     console.log('onDeleteCurrentAdmin');
   }, []);
@@ -76,7 +80,6 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
 
   return (
     <div className='manage-collection'>
-      <EnumsInput />
       <Header as='h3'>Collection advanced settings</Header>
       <Form className='manage-collection--form'>
         <Grid className='manage-collection--form--grid'>
@@ -91,10 +94,10 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
                 />
               </Form.Field>
               <Form.Field>
-                <Input
-                  className='isSmall'
-                  onChange={setDescription}
-                  placeholder='Enter collection description'
+                <textarea
+                  onChange={onSetDescription}
+                  placeholder={'Enter collection description'}
+                  rows={2}
                   value={description}
                 />
               </Form.Field>
@@ -106,8 +109,45 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
                   value={tokenPrefix}
                 />
               </Form.Field>
+            </Grid.Column>
+          </Grid.Row>
+        </Grid>
+      </Form>
+      <Header as='h3'>Collection sponsor</Header>
+      <Form className='manage-collection--form'>
+        <Grid className='manage-collection--form--grid'>
+          <Grid.Row>
+            <Grid.Column width={8}>
               <Form.Field>
-                Collection sponsor: currentSponsorAddress
+                <Input
+                  className='isSmall'
+                  isError={isSponsorAddressError}
+                  label='Please enter the sponsor address'
+                  onChange={onSetSponsorAddress}
+                  placeholder='Collection sponsor address'
+                  value={sponsorAddress}
+                />
+              </Form.Field>
+            </Grid.Column>
+            <Grid.Column
+              className='flex'
+              width={8}
+            >
+              <div className='button-group'>
+                <Button
+                  content={
+                    <>
+                      Set collection sponsor
+                      { settingSponsor && (
+                        <Loader
+                          active
+                          inline='centered'
+                        />
+                      )}
+                    </>
+                  }
+                  onClick={onSetSponsor}
+                />
                 <Button
                   content={
                     <>
@@ -122,39 +162,46 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
                   }
                   onClick={onApproveSponsor}
                 />
-              </Form.Field>
-              { showSponsorForm && (
-                <>
-                  <Form.Field>
-                    <Input
-                      className='isSmall'
-                      isError={isSponsorAddressError}
-                      label='Please enter the sponsor address'
-                      onChange={onSetSponsorAddress}
-                      placeholder='Collection sponsor address'
-                      value={sponsorAddress}
-                    />
-                  </Form.Field>
-                  <Form.Field>
-                    <Button
-                      content={
-                        <>
-                          Set collection sponsor
-                          { settingSponsor && (
-                            <Loader
-                              active
-                              inline='centered'
-                            />
-                          )}
-                        </>
-                      }
-                      onClick={onSetSponsor}
-                    />
-                  </Form.Field>
-                </>
-              )}
+              </div>
+            </Grid.Column>
+          </Grid.Row>
+        </Grid>
+      </Form>
+      <Header as='h3'>Collection admin</Header>
+      <Form className='manage-collection--form'>
+        <Grid className='manage-collection--form--grid'>
+          <Grid.Row>
+            <Grid.Column width={8}>
               <Form.Field>
-                Collection admin: currentAdminAddress
+                <Input
+                  className='isSmall'
+                  isError={isAdminAddressError}
+                  label='Please enter the admin address'
+                  onChange={onSetAdminAddress}
+                  placeholder='Collection admin address'
+                  value={adminAddress}
+                />
+              </Form.Field>
+            </Grid.Column>
+            <Grid.Column
+              className='flex'
+              width={8}
+            >
+              <div className='button-group'>
+                <Button
+                  content={
+                    <>
+                      Set collection admin
+                      { settingCurrentAdmin && (
+                        <Loader
+                          active
+                          inline='centered'
+                        />
+                      )}
+                    </>
+                  }
+                  onClick={onSetCurrentAdmin}
+                />
                 <Button
                   content={
                     <>
@@ -169,37 +216,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
                   }
                   onClick={onDeleteCurrentAdmin}
                 />
-              </Form.Field>
-              { showAdminForm && (
-                <>
-                  <Form.Field>
-                    <Input
-                      className='isSmall'
-                      isError={isAdminAddressError}
-                      label='Please enter the admin address'
-                      onChange={onSetAdminAddress}
-                      placeholder='Collection admin address'
-                      value={adminAddress}
-                    />
-                  </Form.Field>
-                  <Form.Field>
-                    <Button
-                      content={
-                        <>
-                          Set collection admin
-                          { settingCurrentAdmin && (
-                            <Loader
-                              active
-                              inline='centered'
-                            />
-                          )}
-                        </>
-                      }
-                      onClick={onSetCurrentAdmin}
-                    />
-                  </Form.Field>
-                </>
-              )}
+              </div>
             </Grid.Column>
           </Grid.Row>
         </Grid>

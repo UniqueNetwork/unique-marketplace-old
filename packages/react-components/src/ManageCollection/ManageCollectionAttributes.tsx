@@ -12,8 +12,15 @@ import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import { Dropdown, Input } from '@polkadot/react-components';
 import { useMetadata } from '@polkadot/react-hooks';
 import { TypeRegistry } from '@polkadot/types';
+import plus from './plus.svg';
+import floppy from './floppy.svg';
+import close from './close.svg';
+import pencil from './pencil.svg';
+import trash from './trash.svg';
 
 import { AttributeType, AttributeTypes, convertScaleAttrFromJson, convertScaleAttrToJson, CountType } from '../util/scaleUtils';
+import Loader from "semantic-ui-react/dist/commonjs/elements/Loader";
+import EnumsInput from "@polkadot/react-components/EnumsInput";
 
 type TypeOption = {
   text: string;
@@ -84,6 +91,7 @@ function ManageCollectionAttributes (props: Props): React.ReactElement<Props> {
   const [currentAttributePluralNameError, setCurrentAttributePluralNameError] = useState<string>();
   const [currentAttributeType, setCurrentAttributeType] = useState<AttributeTypes>('Bytes');
   const [currentAttributeCountType, setCurrentAttributeCountType] = useState<CountType>('single');
+
   const [currentAttributeEnumValue, setCurrentAttributeEnumValue] = useState<string>('');
   const [currentAttributeEnumValueError, setCurrentAttributeEnumValueError] = useState<string>();
   const [currentAttributeValues, setCurrentAttributeValues] = useState<string[]>([]);
@@ -152,6 +160,26 @@ function ManageCollectionAttributes (props: Props): React.ReactElement<Props> {
     setCurrentAttributeEnumValue('');
   }, [addEnumValue]);
 
+  const onAddItem = useCallback(() => {
+    console.log('onAddItem');
+  }, []);
+
+  const onDeleteItem = useCallback(() => {
+    console.log('onDeleteItem');
+  }, []);
+
+  const onEditItem = useCallback(() => {
+    console.log('onEditItem');
+  }, []);
+
+  const onSaveItem = useCallback(() => {
+    console.log('onSaveItem');
+  }, []);
+
+  const onCancelSavingItem = useCallback(() => {
+    console.log('onCancelSavingItem');
+  }, []);
+
   useEffect(() => {
     localStorage.setItem('collectionAttributes', JSON.stringify(attributes));
   }, [attributes]);
@@ -203,9 +231,172 @@ function ManageCollectionAttributes (props: Props): React.ReactElement<Props> {
   });
 
   return (
-    <div className='manage-collection'>
+    <div className='manage-collection-attributes'>
       <Header as='h3'>Manage collection ConstOnChainSchema</Header>
-      <Grid className='manage-collection--container'>
+      <div className='schema-table'>
+        <div className='table-header'>
+          <div className='tr'>
+            <div className='th'>
+              Name
+            </div>
+            <div className='th'>
+              Type
+            </div>
+            <div className='th'>
+              Possible values
+            </div>
+            <div className='th'>
+              <img
+                alt={'add'}
+                onClick={onAddItem}
+                src={plus as string}
+              />
+            </div>
+          </div>
+        </div>
+        <div className='table-body'>
+          <div className='tr'>
+            <div className='td'>
+              First Name
+            </div>
+            <div className='td'>
+              string
+            </div>
+            <div className='td'>
+              Petia
+            </div>
+            <div className='td action'>
+              <img
+                alt='edit'
+                src={pencil as string}
+              />
+            </div>
+            <div className='td action'>
+              <img
+                alt='delete'
+                src={trash as string}
+              />
+            </div>
+          </div>
+          <div className='tr'>
+            <div className='td'>
+              First Name
+            </div>
+            <div className='td'>
+              string
+            </div>
+            <div className='td'>
+              Petia
+            </div>
+            <div className='td action'>
+              <img
+                alt='edit'
+                onClick={onEditItem}
+                src={pencil as string}
+              />
+            </div>
+            <div className='td action'>
+              <img
+                alt='delete'
+                onClick={onDeleteItem}
+                src={trash as string}
+              />
+            </div>
+          </div>
+
+          <div className='tr edit'>
+            <div className='td'>
+              <Input
+                className='isSmall'
+                isError={!!currentAttributeNameError}
+                label='Please enter the Attribute name'
+                onChange={setCurrentAttributeName}
+                placeholder='Attribute name'
+                value={currentAttributeName}
+              />
+              { currentAttributeNameError && (
+                <div className='field-error'>
+                  {currentAttributeNameError}
+                </div>
+              )}
+            </div>
+            <div className='td'>
+              <Dropdown
+                onChange={setCurrentAttributeType}
+                options={TypeOptions}
+                placeholder='Select Attribute Type'
+                value={currentAttributeType}
+              />
+            </div>
+            <div className='td'>
+            </div>
+            <div className='td no-padded'>
+              <img
+                alt={'Save'}
+                onClick={onSaveItem}
+                src={floppy as string}
+              />
+            </div>
+            <div className='td no-padded'>
+              <img
+                alt={'Cancel'}
+                onClick={onCancelSavingItem}
+                src={close as string}
+              />
+            </div>
+          </div>
+
+          <div className='tr edit'>
+            <div className='td'>
+              <Input
+                className='isSmall'
+                isError={!!currentAttributeNameError}
+                label='Please enter the Attribute name'
+                onChange={setCurrentAttributeName}
+                placeholder='Attribute name'
+                value={currentAttributeName}
+              />
+              { currentAttributeNameError && (
+                <div className='field-error'>
+                  {currentAttributeNameError}
+                </div>
+              )}
+            </div>
+            <div className='td'>
+              <Dropdown
+                onChange={setCurrentAttributeType}
+                options={TypeOptions}
+                placeholder='Select Attribute Type'
+                value={currentAttributeType}
+              />
+            </div>
+            <div className='td'>
+              <EnumsInput />
+            </div>
+            <div className='td no-padded'>
+              <img
+                alt={'Save'}
+                onClick={onSaveItem}
+                src={floppy as string}
+              />
+            </div>
+            <div className='td no-padded'>
+              <img
+                alt={'Cancel'}
+                onClick={onCancelSavingItem}
+                src={close as string}
+              />
+            </div>
+          </div>
+        </div>
+        <div className='table-footer'>
+          <Button
+            content={'Save'}
+            onClick={onSaveAll}
+          />
+        </div>
+      </div>
+      {/* <Grid className='manage-collection--container'>
         <Grid.Row>
           <Grid.Column width={8}>
             <Form className='manage-collection--form'>
@@ -327,7 +518,7 @@ function ManageCollectionAttributes (props: Props): React.ReactElement<Props> {
             </div>
           </Grid.Column>
         </Grid.Row>
-      </Grid>
+      </Grid> */}
     </div>
   );
 }
