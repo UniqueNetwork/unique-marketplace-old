@@ -35,6 +35,7 @@ export { default as Digits } from './Digits';
 export { default as Dropdown } from './Dropdown';
 export { default as EditButton } from './EditButton';
 export { default as Editor } from './Editor';
+export { default as EnumsInput } from './EnumsInput';
 export { default as ErrorBoundary } from './ErrorBoundary';
 export { default as Event } from './Event';
 export { default as Expander } from './Expander';

@@ -15,6 +15,7 @@ import { TypeRegistry } from '@polkadot/types';
 import { keyring } from '@polkadot/ui-keyring';
 
 import ManageCollectionAttributes from './ManageCollectionAttributes';
+import EnumsInput from '@polkadot/react-components/EnumsInput';
 
 interface Props {
   account?: string;
@@ -75,6 +76,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
 
   return (
     <div className='manage-collection'>
+      <EnumsInput />
       <Header as='h3'>Collection advanced settings</Header>
       <Form className='manage-collection--form'>
         <Grid className='manage-collection--form--grid'>

@@ -1,0 +1,52 @@
+.enum-input {
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  width: 100%;
+  padding: 4px 8px;
+  font-family: var(--font-roboto) var(--font-mono);
+  background: white;
+  overflow: hidden;
+  overflow-x: scroll;
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  .enum-input--content {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    grid-column-gap: 4px;
+  }
+
+  .enum-input--item {
+    font-size: 14px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 3px 8px;
+    background-color: var(--link-color);
+    border-radius: 8px;
+    color: white;
+    grid-column-gap: 8px;
+    line-height: 16px;
+    white-space: nowrap;
+
+    img {
+      width: 12px;
+      height: 12px;
+      cursor: pointer;
+    }
+  }
+
+  .enum-input--input {
+    border: none !important;
+
+    &:active, &:hover, &:focus {
+      outline: none;
+    }
+  }
+}
