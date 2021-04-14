@@ -7,11 +7,9 @@ import React, { useMemo } from 'react';
 import { Route, Switch } from 'react-router';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header/Header';
 
-import { ManageCollection, Tabs } from '@polkadot/react-components';
+import { ManageCollection, Tabs, ManageToken } from '@polkadot/react-components';
 import { AppProps as Props } from '@polkadot/react-components/types';
 import { useRegistry } from '@polkadot/react-hooks';
-
-import NftCreator from './containers/NftMint';
 
 function App ({ account, basePath }: Props): React.ReactElement<Props> {
   const localRegistry = useRegistry();
@@ -40,7 +38,7 @@ function App ({ account, basePath }: Props): React.ReactElement<Props> {
       </header>
       <Switch>
         <Route path={`${basePath}/mint-token`}>
-          <NftCreator
+          <ManageToken
             account={account}
             localRegistry={localRegistry}
           />

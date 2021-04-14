@@ -10,17 +10,41 @@ import Button from 'semantic-ui-react/dist/commonjs/elements/Button';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
-import { Input } from '@polkadot/react-components';
+import {Dropdown, Input} from '@polkadot/react-components';
 import { TypeRegistry } from '@polkadot/types';
 import { keyring } from '@polkadot/ui-keyring';
 
 import ManageCollectionAttributes from './ManageCollectionAttributes';
-import EnumsInput from '@polkadot/react-components/EnumsInput';
 
 interface Props {
   account?: string;
   localRegistry?: TypeRegistry;
 }
+
+export type SchemaVersionTypes = 'ImageURL' | 'Unique';
+
+export type UniqueSchema = {
+  audio?: string;
+  image?: string;
+  page?: string;
+  video?: string;
+}
+
+type SchemaOption = {
+  text: string;
+  value: SchemaVersionTypes;
+}
+
+const SchemaOptions: SchemaOption[] = [
+  {
+    text: 'ImageUrl',
+    value: 'ImageURL'
+  },
+  {
+    text: 'Unique',
+    value: 'Unique'
+  }
+];
 
 function ManageCollection (props: Props): React.ReactElement<Props> {
   const { account, localRegistry } = props;
@@ -37,6 +61,17 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
   const [settingCurrentAdmin, toggleSettingCurrentAdmin] = useState<boolean>(false);
   const [settingSponsor, toggleSettingSponsor] = useState<boolean>(false);
   const [approvingSponsor, toggleApprovingSponsor] = useState<boolean>(false);
+  const [currentSchemaVersion, setCurrentSchemaVersion] = useState<SchemaVersionTypes>('Unique');
+  const [settingSchemaVersion, toggleSettingSchemaVersion] = useState<boolean>(false);
+  const [currentOffchainSchema, setCurrentOffchainSchema] = useState<SchemaVersionTypes>('Unique');
+  const [settingOffChainSchema, toggleSettingOffChainSchema] = useState<boolean>(false);
+
+  const [audioUrl, setAudioUrl] = useState<string>('');
+  const [imageUrl, setImageUrl] = useState<string>('');
+  const [pageUrl, setPageUrl] = useState<string>('');
+  const [isAudioUrlError, toggleAudioUrlError] = useState<boolean>(false);
+  const [isImageUrlError, toggleImageUrlError] = useState<boolean>(false);
+  const [isPageUrlError, togglePageUrlError] = useState<boolean>(false);
 
   const onSetAdminAddress = useCallback((value: string) => {
     try {
@@ -78,6 +113,20 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
     console.log('onApproveSponsor');
   }, []);
 
+  const onSetSchemaVersion = useCallback(() => {
+    console.log('onSetSchemaVersion');
+  }, []);
+
+  const onSetOffchainSchema = useCallback(() => {
+    console.log('onSetOffchainSchema');
+  }, []);
+
+  // collectionInfo.SchemaVersion.isImageUrl, imageUrl = hex2a(collectionInfo.OffchainSchema) + {id}
+  // collectionMetadata.metadata, collectionMetadata = hex2a(collectionInfo.OffchainSchema) - get metadata
+  // hex2a(collectionInfo.OffchainSchema)
+  // setSchemaVersion(collection_id, version)
+  // setOffchainSchema(collection_id, schema)
+
   return (
     <div className='manage-collection'>
       <Header as='h3'>Collection advanced settings</Header>
@@ -113,6 +162,137 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
           </Grid.Row>
         </Grid>
       </Form>
+      <Header as='h3'>Schema version</Header>
+      <Form className='manage-collection--form'>
+        <Grid className='manage-collection--form--grid'>
+          <Grid.Row>
+            <Grid.Column width={8}>
+              <Form.Field>
+                <Dropdown
+                  onChange={setCurrentSchemaVersion}
+                  options={SchemaOptions}
+                  placeholder='Select Attribute Type'
+                  value={currentSchemaVersion}
+                />
+              </Form.Field>
+            </Grid.Column>
+            <Grid.Column
+              className='flex'
+              width={8}
+            >
+              <Form.Field>
+                <Button
+                  content={
+                    <>
+                      Set schema version
+                      { settingSchemaVersion && (
+                        <Loader
+                          active
+                          inline='centered'
+                        />
+                      )}
+                    </>
+                  }
+                  onClick={onSetSchemaVersion}
+                />
+              </Form.Field>
+            </Grid.Column>
+          </Grid.Row>
+        </Grid>
+      </Form>
+
+      <Header as='h3'>Offchain Schema</Header>
+      <Form className='manage-collection--form'>
+        <Grid className='manage-collection--form--grid'>
+          <Grid.Row>
+            <Grid.Column width={8}>
+              <Form.Field>
+                <div className='schema-table offchain-schema'>
+                  <div className='table-header'>
+                    <div className='tr'>
+                      <div className='th'>
+                        Type
+                      </div>
+                      <div className='th'>
+                        Url
+                      </div>
+                    </div>
+                  </div>
+                  <div className='table-body'>
+                    <div className='tr edit'>
+                      <div className='td'>
+                        Audio
+                      </div>
+                      <div className='td'>
+                        <Input
+                          className='isSmall'
+                          isError={isAudioUrlError}
+                          label='Please enter the audio url'
+                          onChange={setAudioUrl}
+                          placeholder='Audio url address'
+                          value={audioUrl}
+                        />
+                      </div>
+                    </div>
+                    <div className='tr edit'>
+                      <div className='td'>
+                        Image
+                      </div>
+                      <div className='td'>
+                        <Input
+                          className='isSmall'
+                          isError={isImageUrlError}
+                          label='Please enter the image url'
+                          onChange={setImageUrl}
+                          placeholder='Image url address'
+                          value={imageUrl}
+                        />
+                      </div>
+                    </div>
+                    <div className='tr edit'>
+                      <div className='td'>
+                        Page
+                      </div>
+                      <div className='td'>
+                        <Input
+                          className='isSmall'
+                          isError={isPageUrlError}
+                          label='Please enter the page url'
+                          onChange={setPageUrl}
+                          placeholder='Page url address'
+                          value={pageUrl}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Form.Field>
+            </Grid.Column>
+            <Grid.Column
+              className='flex'
+              width={8}
+            >
+              <Form.Field>
+                <Button
+                  content={
+                    <>
+                      Set Offchain Schema
+                      { settingOffChainSchema && (
+                        <Loader
+                          active
+                          inline='centered'
+                        />
+                      )}
+                    </>
+                  }
+                  onClick={onSetOffchainSchema}
+                />
+              </Form.Field>
+            </Grid.Column>
+          </Grid.Row>
+        </Grid>
+      </Form>
+
       <Header as='h3'>Collection sponsor</Header>
       <Form className='manage-collection--form'>
         <Grid className='manage-collection--form--grid'>
@@ -137,7 +317,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
                 <Button
                   content={
                     <>
-                      Set collection sponsor
+                      Set sponsor
                       { settingSponsor && (
                         <Loader
                           active
@@ -191,7 +371,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
                 <Button
                   content={
                     <>
-                      Set collection admin
+                      Set admin
                       { settingCurrentAdmin && (
                         <Loader
                           active
@@ -205,7 +385,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
                 <Button
                   content={
                     <>
-                      Delete current admin
+                      Delete admin
                       { deletingCurrentAdmin && (
                         <Loader
                           active

@@ -32,6 +32,7 @@ export { useLoadingDelay } from './useLoadingDelay';
 export { useMarketplaceStages } from './useMarketplaceStages';
 export { useMembers } from './useMembers';
 export { useMetadata } from './useMetadata';
+export { useMintApi } from './useMintApi';
 export { useModal } from './useModal';
 export { useNftContract } from './useNftContract';
 export { useNonEmptyString } from './useNonEmptyString';

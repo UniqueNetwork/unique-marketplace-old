@@ -138,6 +138,53 @@ h4.ui.header {
     font: 400 16px/24px var(--font-roboto);
     padding: calc(var(--gap) / 2) var(--gap);
   }
+
+  .ui--Dropdown {
+    .ui.dropdown {
+      border: 1px solid var(--border-color);
+      border-radius: calc(var(--bradius) * 2);
+      font: 400 16px/24px var(--font-roboto) !important;
+      margin: 0;
+      height: 40px !important;
+      line-height: 25px !important;
+      min-height: 0;
+      padding: calc(var(--gap) / 2) var(--gap) !important;
+
+      .default.text {
+        margin: 0;
+      }
+
+      .menu {
+        border-color: var(--border-color);
+
+        .item {
+          font: 400 16px/24px var(--font-roboto) !important;
+          padding: calc(var(--gap) / 2) var(--gap) !important;
+        }
+      }
+
+      a.ui.label {
+        font-size: 14px;
+        padding: 3px 8px;
+        background-color: var(--link-color);
+        border-radius: 8px;
+        color: white;
+        grid-column-gap: 8px;
+        line-height: 16px;
+        white-space: nowrap;
+
+        .delete.icon {
+          background: url('../public/icons/closeIcon.svg') !important;
+          width: 13px;
+          height: 13px;
+
+          &::before {
+            content: none;
+          }
+        }
+      }
+    }
+  }
 }
 
 .ui.grid>.row {

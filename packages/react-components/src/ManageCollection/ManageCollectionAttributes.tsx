@@ -4,23 +4,20 @@
 import './styles.scss';
 
 import React, { useCallback, useEffect, useState } from 'react';
-import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
-import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 
 import { Dropdown, Input } from '@polkadot/react-components';
+import EnumsInput from '@polkadot/react-components/EnumsInput';
 import { useMetadata } from '@polkadot/react-hooks';
 import { TypeRegistry } from '@polkadot/types';
-import plus from './plus.svg';
-import floppy from './floppy.svg';
-import close from './close.svg';
-import pencil from './pencil.svg';
-import trash from './trash.svg';
 
 import { AttributeType, AttributeTypes, convertScaleAttrFromJson, convertScaleAttrToJson, CountType } from '../util/scaleUtils';
-import Loader from "semantic-ui-react/dist/commonjs/elements/Loader";
-import EnumsInput from "@polkadot/react-components/EnumsInput";
+import close from './close.svg';
+import floppy from './floppy.svg';
+import pencil from './pencil.svg';
+import plus from './plus.svg';
+import trash from './trash.svg';
 
 type TypeOption = {
   text: string;
@@ -233,7 +230,7 @@ function ManageCollectionAttributes (props: Props): React.ReactElement<Props> {
   return (
     <div className='manage-collection-attributes'>
       <Header as='h3'>Manage collection ConstOnChainSchema</Header>
-      <div className='schema-table'>
+      <div className='schema-table collection-attributes'>
         <div className='table-header'>
           <div className='tr'>
             <div className='th'>
