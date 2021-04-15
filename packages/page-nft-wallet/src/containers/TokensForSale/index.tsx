@@ -5,8 +5,10 @@ import './styles.scss';
 
 // external imports
 import React, { memo, ReactElement, useCallback, useEffect, useState } from 'react';
+import InfiniteScroll from 'react-infinite-scroller';
 import { useHistory } from 'react-router';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
+import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
 // local imports and components
 import NftTokenCard from '@polkadot/app-nft-market/components/NftTokenCard';
@@ -21,10 +23,13 @@ interface BuyTokensProps {
   shouldUpdateTokens?: string;
 }
 
+const perPage = 20;
+
 const TokensForSale = ({ account, localRegistry, setShouldUpdateTokens, shouldUpdateTokens }: BuyTokensProps): ReactElement => {
   const history = useHistory();
-  const { getOffers, offers } = useCollections();
+  const { getOffers, offers, offersCount } = useCollections();
   const [filteredOffers, setFilteredOffers] = useState<OfferType[]>([]);
+  const hasMore = !!(offers && offersCount) && Object.keys(offers).length < offersCount;
 
   const openDetailedInformationModal = useCallback((collectionId: string, tokenId: string) => {
     history.push(`/market/token-details?collectionId=${collectionId}&tokenId=${tokenId}`);
@@ -32,13 +37,17 @@ const TokensForSale = ({ account, localRegistry, setShouldUpdateTokens, shouldUp
 
   const filterOffers = useCallback(() => {
     if (offers && account) {
-      setFilteredOffers([...offers.filter((item) => item.seller === account)]);
+      setFilteredOffers([...Object.values(offers).filter((item) => item.seller === account)]);
     }
   }, [account, offers]);
 
+  const fetchData = useCallback((newPage: number) => {
+    getOffers(newPage, perPage);
+  }, [getOffers]);
+
   useEffect(() => {
     if (shouldUpdateTokens) {
-      void getOffers();
+      void getOffers(1, perPage);
       setShouldUpdateTokens(undefined);
     }
   }, [getOffers, shouldUpdateTokens, setShouldUpdateTokens]);
@@ -54,22 +63,36 @@ const TokensForSale = ({ account, localRegistry, setShouldUpdateTokens, shouldUp
   return (
     <div className='nft-market'>
       <Grid>
-        {(account && offers && offers.length > 0) && (
+        {(account && offers && Object.values(offers).length > 0) && (
           <Grid.Row>
             <Grid.Column width={16}>
               <div className='market-pallet'>
-                <div className='market-pallet__item'>
-                  {filteredOffers.map((token) => (
-                    <NftTokenCard
-                      account={account}
-                      collectionId={token.collectionId.toString()}
-                      key={token.tokenId}
-                      localRegistry={localRegistry}
-                      openDetailedInformationModal={openDetailedInformationModal}
-                      token={token}
-                    />
-                  ))}
-                </div>
+                <InfiniteScroll
+                  hasMore={hasMore}
+                  initialLoad={false}
+                  loadMore={fetchData}
+                  loader={<Loader
+                    active
+                    className='load-more'
+                    inline='centered'
+                  />}
+                  pageStart={1}
+                  threshold={200}
+                  useWindow={true}
+                >
+                  <div className='market-pallet__item'>
+                    {filteredOffers.map((token) => (
+                      <NftTokenCard
+                        account={account}
+                        collectionId={token.collectionId.toString()}
+                        key={token.tokenId}
+                        localRegistry={localRegistry}
+                        openDetailedInformationModal={openDetailedInformationModal}
+                        token={token}
+                      />
+                    ))}
+                  </div>
+                </InfiniteScroll>
               </div>
             </Grid.Column>
           </Grid.Row>

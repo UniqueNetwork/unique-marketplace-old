@@ -10,7 +10,7 @@ import Button from 'semantic-ui-react/dist/commonjs/elements/Button';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
-import {Dropdown, Input} from '@polkadot/react-components';
+import { Dropdown, Input } from '@polkadot/react-components';
 import { TypeRegistry } from '@polkadot/types';
 import { keyring } from '@polkadot/ui-keyring';
 

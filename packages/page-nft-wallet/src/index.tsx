@@ -9,7 +9,7 @@ import { Route, Switch } from 'react-router';
 import { useLocation } from 'react-router-dom';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header/Header';
 
-import { NftDetails } from '@polkadot/react-components';
+import { Dropdown, ManageCollection, ManageToken, NftDetails } from '@polkadot/react-components';
 import Tabs from '@polkadot/react-components/Tabs';
 // local imports and components
 import { AppProps as Props } from '@polkadot/react-components/types';
@@ -17,6 +17,17 @@ import { useRegistry } from '@polkadot/react-hooks';
 
 import NftWallet from './containers/NftWallet';
 import TokensForSale from './containers/TokensForSale';
+
+const createOptions = [
+  {
+    text: 'Create collection',
+    value: 'collection'
+  },
+  {
+    text: 'Create token',
+    value: 'token'
+  }
+];
 
 function App ({ account, basePath }: Props): React.ReactElement<Props> {
   const localRegistry = useRegistry();
@@ -36,16 +47,25 @@ function App ({ account, basePath }: Props): React.ReactElement<Props> {
   ], []);
 
   return (
-    <>
-      <Header as='h1'>My Tokens</Header>
-      <Header as='h4'>NFTs owned by me</Header>
-      { !location.pathname.includes('token-details') && (
-        <header>
-          <Tabs
-            basePath={basePath}
-            items={items}
+    <div className='my-tokens'>
+      { !location.pathname.includes('token-details') && !location.pathname.includes('edit-collection') && !location.pathname.includes('edit-token') && (
+        <>
+          <Header as='h1'>My Tokens</Header>
+          <Header as='h4'>NFTs owned by me</Header>
+          <Dropdown
+            className='dropdown-button create-button'
+            isItem
+            isSimple
+            options={createOptions}
+            text='Create'
           />
-        </header>
+          <header>
+            <Tabs
+              basePath={basePath}
+              items={items}
+            />
+          </header>
+        </>
       )}
       <Switch>
         <Route path={`${basePath}/token-details`}>
@@ -53,6 +73,18 @@ function App ({ account, basePath }: Props): React.ReactElement<Props> {
             account={account || ''}
             localRegistry={localRegistry}
             setShouldUpdateTokens={setShouldUpdateTokens}
+          />
+        </Route>
+        <Route path={`${basePath}/edit-collection`}>
+          <ManageCollection
+            account={account}
+            localRegistry={localRegistry}
+          />
+        </Route>
+        <Route path={`${basePath}/edit-token`}>
+          <ManageToken
+            account={account}
+            localRegistry={localRegistry}
           />
         </Route>
         <Route path={`${basePath}/tokens-for-sale`}>
@@ -72,7 +104,7 @@ function App ({ account, basePath }: Props): React.ReactElement<Props> {
           />
         </Route>
       </Switch>
-    </>
+    </div>
   );
 }
 

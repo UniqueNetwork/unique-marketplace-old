@@ -31,6 +31,10 @@ function NftTokenCard ({ account, canTransferTokens, collection, localRegistry, 
     history.push(`/wallet/token-details?collectionId=${collectionId}&tokenId=${tokenId}`);
   }, [history]);
 
+  const editToken = useCallback((collectionId: string, tokenId: string) => {
+    history.push(`/wallet/edit-token?collectionId=${collectionId}&tokenId=${tokenId}`);
+  }, [history]);
+
   const attrebutesToShow = useMemo(() => {
     if (attributes) {
       return [...Object.keys(attributes).map((attr: string) => {
@@ -72,6 +76,13 @@ function NftTokenCard ({ account, canTransferTokens, collection, localRegistry, 
         { attributes && Object.values(attributes).length > 0 && attrebutesToShow}
       </td>
       <td className='token-actions'>
+        <Button
+          disabled={!canTransferTokens}
+          onClick={editToken.bind(null, collection.id, token)}
+          primary
+        >
+          Edit
+        </Button>
         <Button
           disabled={!canTransferTokens}
           onClick={openTransferModal.bind(null, collection, token, reFungibleBalance)}

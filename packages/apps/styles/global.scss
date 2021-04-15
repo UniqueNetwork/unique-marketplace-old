@@ -46,6 +46,37 @@ h4.ui.header {
     display: none;
   }
 
+  &.ui--Dropdown {
+
+    &.dropdown-button {
+      width: 130px;
+      height: 40px;
+      margin: 0;
+
+      .ui.dropdown {
+        border-radius: 8px;
+        min-width: 0;
+        background: var(--link-color);
+        padding: 8px 24px !important;
+        margin: 0;
+        min-height: 0;
+        height: 40px;;
+
+        .text {
+          color: white !important;
+          font-family: var(--font-roboto) var(--font-mono);
+          font-size: 16px;
+        }
+
+        .menu {
+          .text {
+            color: var(--color-text) !important;
+          }
+        }
+      }
+    }
+  }
+
   .ui.dropdown .text {
     width: 100%;
   }

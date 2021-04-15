@@ -29,6 +29,7 @@
   }
 
   .token-actions {
-    width: 300px;
+    display: flex;
+    justify-content: flex-end;
   }
 }

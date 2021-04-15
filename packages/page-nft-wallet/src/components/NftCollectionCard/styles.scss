@@ -1,0 +1,26 @@
+.nft-collection-item {
+
+  .table {
+    margin: 15px 0;
+  }
+
+  .expander-content {
+    display: flex;
+    grid-column-gap: 50px;
+
+    .collection-info-row {
+      display: flex;
+      grid-column-gap: 0.5rem;
+
+      &>div {
+        max-width: 400px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+
+    a.link-button {
+      color: var(--link-color);
+    }
+  }
+}
