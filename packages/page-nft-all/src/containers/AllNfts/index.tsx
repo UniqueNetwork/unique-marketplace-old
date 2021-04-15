@@ -188,6 +188,7 @@ const AllNfts = ({ account, localRegistry, setShouldUpdateTokens }: BuyTokensPro
                     ? <></>
                     : <Loader
                       active
+                      className='load-more'
                       inline='centered'
                     />}
                   pageStart={1}

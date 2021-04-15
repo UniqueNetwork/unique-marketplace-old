@@ -7,6 +7,7 @@ import type { OfferType } from '@polkadot/react-hooks/useCollections';
 
 // external imports
 import React, { memo, ReactElement, useCallback, useEffect, useState } from 'react';
+import InfiniteScroll from 'react-infinite-scroller';
 import { useHistory } from 'react-router';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
@@ -32,15 +33,18 @@ interface OfferWithAttributes {
   [collectionId: string]: {[tokenId: string]: AttributesDecoded}
 }
 
+const perPage = 20;
+
 const BuyTokens = ({ account, localRegistry, setShouldUpdateTokens, shouldUpdateTokens }: BuyTokensProps): ReactElement => {
   const history = useHistory();
-  const { getOffers, loadingOffers, offers, presetMintTokenCollection } = useCollections();
+  const { getOffers, loadingOffers, offers, offersCount, presetMintTokenCollection } = useCollections();
   const [searchString, setSearchString] = useState<string>('');
   const [offersWithAttributes, setOffersWithAttributes] = useState<OfferWithAttributes>({});
   // const [collectionSearchString, setCollectionSearchString] = useState<string>('');
   const [collections, setCollections] = useState<NftCollectionInterface[]>([]);
   const [filteredOffers, setFilteredOffers] = useState<OfferType[]>([]);
   const { collectionName16Decoder } = useDecoder();
+  const hasMore = !!(offers && offersCount) && Object.keys(offers).length < offersCount;
 
   const openDetailedInformationModal = useCallback((collectionId: string, tokenId: string) => {
     history.push(`/market/token-details?collectionId=${collectionId}&tokenId=${tokenId}`);
@@ -66,10 +70,14 @@ const BuyTokens = ({ account, localRegistry, setShouldUpdateTokens, shouldUpdate
     });
   }, []);
 
+  const fetchData = useCallback((newPage: number) => {
+    getOffers(newPage, perPage);
+  }, [getOffers]);
+
   useEffect(() => {
     if (offers) {
       if (searchString && searchString.length) {
-        const filtered = offers.filter((item: OfferType) => {
+        const filtered = Object.values(offers).filter((item: OfferType) => {
           if (offersWithAttributes[item.collectionId] && offersWithAttributes[item.collectionId][item.tokenId]) {
             const offerItemAttrs = offersWithAttributes[item.collectionId][item.tokenId];
 
@@ -81,14 +89,14 @@ const BuyTokens = ({ account, localRegistry, setShouldUpdateTokens, shouldUpdate
 
         setFilteredOffers(filtered);
       } else {
-        setFilteredOffers(offers);
+        setFilteredOffers(Object.values(offers));
       }
     }
   }, [offers, offersWithAttributes, searchString]);
 
   useEffect(() => {
     if (shouldUpdateTokens) {
-      void getOffers();
+      void getOffers(1, perPage);
       setShouldUpdateTokens(undefined);
     }
   }, [getOffers, shouldUpdateTokens, setShouldUpdateTokens]);
@@ -162,19 +170,35 @@ const BuyTokens = ({ account, localRegistry, setShouldUpdateTokens, shouldUpdate
                 <Grid.Row>
                   <Grid.Column width={16}>
                     <div className='market-pallet'>
-                      <div className='market-pallet__item'>
-                        {filteredOffers.map((token) => (
-                          <NftTokenCard
-                            account={account}
-                            collectionId={token.collectionId.toString()}
-                            key={token.tokenId}
-                            localRegistry={localRegistry}
-                            onSetTokenAttributes={onSetTokenAttributes}
-                            openDetailedInformationModal={openDetailedInformationModal}
-                            token={token}
-                          />
-                        ))}
-                      </div>
+                      <InfiniteScroll
+                        hasMore={hasMore}
+                        initialLoad={false}
+                        loadMore={fetchData}
+                        loader={searchString && searchString.length
+                          ? <></>
+                          : <Loader
+                            active
+                            className='load-more'
+                            inline='centered'
+                          />}
+                        pageStart={1}
+                        threshold={200}
+                        useWindow={true}
+                      >
+                        <div className='market-pallet__item'>
+                          {filteredOffers.map((token) => (
+                            <NftTokenCard
+                              account={account}
+                              collectionId={token.collectionId.toString()}
+                              key={token.tokenId}
+                              localRegistry={localRegistry}
+                              onSetTokenAttributes={onSetTokenAttributes}
+                              openDetailedInformationModal={openDetailedInformationModal}
+                              token={token}
+                            />
+                          ))}
+                        </div>
+                      </InfiniteScroll>
                     </div>
                   </Grid.Column>
                 </Grid.Row>

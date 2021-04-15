@@ -98,7 +98,8 @@ export function useCollections () {
   const { api } = useApi();
   const { fetchData } = useFetch();
   const [error, setError] = useState<ErrorType>();
-  const [offers, setOffers] = useState<OfferType[]>();
+  const [offers, setOffers] = useState<{[key: string]: OfferType}>({});
+  const [offersCount, setOffersCount] = useState<number>();
   const [loadingOffers, setLoadingOffers] = useState<boolean>();
   const [trades, setTrades] = useState<TradeType[]>();
   const [myTrades, setMyTrades] = useState<TradeType[]>();
@@ -150,10 +151,10 @@ export function useCollections () {
   /**
    * Return the list of token sale offers
    */
-  const getOffers = useCallback(() => {
+  const getOffers = useCallback((page: number, pageSize: number) => {
     try {
       setLoadingOffers(true);
-      fetchData<OffersResponseType>('/offers/').subscribe((result: OffersResponseType | ErrorType) => {
+      fetchData<OffersResponseType>(`/offers?page=${page}&pageSize=${pageSize}`).subscribe((result: OffersResponseType | ErrorType) => {
         if (cleanup.current) {
           return;
         }
@@ -161,8 +162,24 @@ export function useCollections () {
         if ('error' in result) {
           setError(result);
         } else {
-          if (result && result.items.length) {
-            setOffers(result.items.map((offer: OfferType) => ({ ...offer, seller: encodeAddress(base64Decode(offer.seller)) })));
+          if (result) {
+            if (result.items.length) {
+              setOffers((prevState: {[key: string]: OfferType}) => {
+                const newState = { ...prevState };
+
+                result.items.forEach((offer: OfferType) => {
+                  if (!newState[`${offer.collectionId}-${offer.tokenId}`]) {
+                    newState[`${offer.collectionId}-${offer.tokenId}`] = { ...offer, seller: encodeAddress(base64Decode(offer.seller)) };
+                  }
+                });
+
+                return newState;
+              });
+            }
+
+            if (result.itemsCount) {
+              setOffersCount(result.itemsCount);
+            }
           }
         }
 
@@ -298,6 +315,7 @@ export function useCollections () {
     loadingOffers,
     myTrades,
     offers,
+    offersCount,
     presetMintTokenCollection,
     presetTokensCollections,
     trades
