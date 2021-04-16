@@ -55,7 +55,14 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
   const { account, localRegistry, setShouldUpdateTokens } = props;
   const query = new URLSearchParams(useLocation().search);
   const collectionId = query.get('collectionId') || '';
-  const { getDetailedCollectionInfo } = useCollection();
+  const { addCollectionAdmin,
+    confirmSponsorship,
+    createCollection,
+    getCollectionAdminList,
+    getDetailedCollectionInfo,
+    removeCollectionAdmin,
+    removeCollectionSponsor,
+    setCollectionSponsor } = useCollection();
   const [name, setName] = useState<string>();
   const [description, setDescription] = useState<string>();
   const [tokenPrefix, setTokenPrefix] = useState<string>();

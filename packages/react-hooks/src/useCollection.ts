@@ -128,6 +128,20 @@ export function useCollection () {
     });
   }, [api, queueExtrinsic]);
 
+  const getCollectionAdminList = useCallback(async (collectionId: string) => {
+    if (!api || !collectionId) {
+      return [];
+    }
+
+    try {
+      return await api.query.nft.adminList(collectionId);
+    } catch (e) {
+      console.log('getCollectionAdminList error', e);
+    }
+
+    return [];
+  }, [api]);
+
   const addCollectionAdmin = useCallback(({ account, collectionId, errorCallback, newAdminAddress, successCallback }: { account: string, collectionId: string, newAdminAddress: string, successCallback?: () => void, errorCallback?: () => void }) => {
     const transaction = api.tx.nft.addCollectionAdmin(collectionId, newAdminAddress);
 
@@ -193,6 +207,7 @@ export function useCollection () {
     addCollectionAdmin,
     confirmSponsorship,
     createCollection,
+    getCollectionAdminList,
     getCollectionTokensCount,
     getDetailedCollectionInfo,
     getTokensOfCollection,
