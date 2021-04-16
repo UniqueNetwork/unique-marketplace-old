@@ -15,7 +15,7 @@
       align-items: center;
 
       &>div {
-        max-width: 400px;
+        max-width: 475px;
         overflow: hidden;
         text-overflow: ellipsis;
       }
@@ -27,6 +27,23 @@
 
     a.link-button {
       color: var(--link-color);
+      position: absolute;
+      right: 0;
+    }
+  }
+
+  .ui--Expander-summary {
+    position: relative;
+
+    .ui--Expander-summary-header {
+
+      .expander-content {
+
+        .tokens-count {
+          font-family: var(--font-roboto) var(--font-mono);
+          font-size: 16px;
+        }
+      }
     }
   }
 }

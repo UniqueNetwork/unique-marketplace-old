@@ -4,8 +4,8 @@
 import './styles.scss';
 
 // external imports
-import React, { useMemo, useState } from 'react';
-import { Route, Switch } from 'react-router';
+import React, { useCallback, useMemo, useState } from 'react';
+import { Route, Switch, useHistory } from 'react-router';
 import { useLocation } from 'react-router-dom';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header/Header';
 
@@ -32,6 +32,7 @@ const createOptions = [
 function App ({ account, basePath }: Props): React.ReactElement<Props> {
   const localRegistry = useRegistry();
   const location = useLocation();
+  const history = useHistory();
   const [shouldUpdateTokens, setShouldUpdateTokens] = useState<string>();
 
   const items = useMemo(() => [
@@ -46,6 +47,14 @@ function App ({ account, basePath }: Props): React.ReactElement<Props> {
     }
   ], []);
 
+  const createItem = useCallback((value: string) => {
+    if (value === 'collection') {
+      history.push('/wallet/manage-collection');
+    } else if (value === 'token') {
+      history.push('/wallet/manage-token');
+    }
+  }, [history]);
+
   return (
     <div className='my-tokens'>
       { !location.pathname.includes('token-details') && !location.pathname.includes('manage-') && (
@@ -56,6 +65,7 @@ function App ({ account, basePath }: Props): React.ReactElement<Props> {
             className='dropdown-button create-button'
             isItem
             isSimple
+            onChange={createItem}
             options={createOptions}
             text='Create'
           />

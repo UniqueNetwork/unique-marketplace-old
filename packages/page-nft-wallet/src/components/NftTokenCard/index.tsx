@@ -80,17 +80,17 @@ function NftTokenCard ({ account, canTransferTokens, collection, localRegistry, 
       <td className='token-actions'>
         <Button
           disabled={!canTransferTokens}
-          onClick={editToken.bind(null, collection.id, token)}
-          primary
-        >
-          Edit
-        </Button>
-        <Button
-          disabled={!canTransferTokens}
           onClick={openTransferModal.bind(null, collection, token, reFungibleBalance)}
           primary
         >
           Transfer token
+        </Button>
+        <Button
+          disabled={!canTransferTokens}
+          onClick={editToken.bind(null, collection.id, token)}
+          primary
+        >
+          Edit
         </Button>
       </td>
     </tr>

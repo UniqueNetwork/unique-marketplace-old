@@ -59,6 +59,20 @@ export function useCollection () {
   // parseInt((await api.query.nft.createdCollectionCount()).toString(), 10);
   // api.tx.nft.createCollection(strToUTF16(name), strToUTF16(description), strToUTF16(tokenPrefix), modeprm);
 
+  const getCollectionTokensCount = useCallback(async (collectionId: string) => {
+    if (!api || !collectionId) {
+      return [];
+    }
+
+    try {
+      return await api.query.nft.itemListIndex(collectionId);
+    } catch (e) {
+      console.log('getTokensOfCollection error', e);
+    }
+
+    return 0;
+  }, [api]);
+
   const createCollection = useCallback(({ account, description, modeprm, name, tokenPrefix }: { account: string, name: string, description: string, tokenPrefix: string, modeprm?: string }) => {
     const transaction = api.tx.nft.createCollection(strToUTF16(name), strToUTF16(description), strToUTF16(tokenPrefix), modeprm);
 
@@ -108,6 +122,7 @@ export function useCollection () {
 
   return {
     createCollection,
+    getCollectionTokensCount,
     getDetailedCollectionInfo,
     getTokensOfCollection
   };

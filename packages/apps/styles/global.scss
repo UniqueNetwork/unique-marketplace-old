@@ -231,6 +231,37 @@ h4.ui.header {
   margin: 0;
 }
 
+.ui--Dropdown {
+  &.dropdown-button {
+    .ui.item.dropdown {
+
+      .text {
+        font-weight: 500;
+      }
+
+      .menu {
+        .text {
+          font-weight: 400;
+        }
+      }
+
+      .dropdown.icon {
+        background: url('../public/icons/arrowDown.svg') !important;
+        background-position: 100px 100px;
+        background-repeat: no-repeat;
+        height: 13px !important;
+        width: 13px !important;
+        padding: 0;
+        margin: 13px 20px 13px 0 !important;
+
+        &::before {
+          content: none;
+        }
+      }
+    }
+  }
+}
+
 .error-block {
   width: 100%;
   font-size: 20px;

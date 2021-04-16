@@ -12,6 +12,7 @@ import Item from 'semantic-ui-react/dist/commonjs/views/Item';
 
 import { Expander } from '@polkadot/react-components';
 import { useCollections, useDecoder, useMetadata } from '@polkadot/react-hooks';
+import { useCollection } from '@polkadot/react-hooks/useCollection';
 import { UNIQUE_COLLECTION_ID } from '@polkadot/react-hooks/utils';
 import { TypeRegistry } from '@polkadot/types';
 
@@ -30,8 +31,11 @@ interface Props {
 function NftCollectionCard ({ account, canTransferTokens, collection, localRegistry, openTransferModal, removeCollection, shouldUpdateTokens }: Props): React.ReactElement<Props> {
   const [opened, setOpened] = useState(true);
   const [collectionImageUrl, setCollectionImageUrl] = useState<string>();
+  const [ownTokensCount, setOwnTokensCount] = useState<number>();
+  const [allTokensCount, setAllTokensCount] = useState<number>();
   const [tokensOfCollection, setTokensOfCollection] = useState<Array<string>>([]);
   const { getTokensOfCollection } = useCollections();
+  const { getCollectionTokensCount } = useCollection();
   const { collectionName16Decoder } = useDecoder();
   const cleanup = useRef<boolean>(false);
   const history = useHistory();
@@ -56,6 +60,20 @@ function NftCollectionCard ({ account, canTransferTokens, collection, localRegis
     history.push(`/wallet/manage-collection?collectionId=${collectionId}`);
   }, [history]);
 
+  const getTokensCount = useCallback(async () => {
+    if (!collection) {
+      return;
+    }
+
+    const tokensCount: number = await getCollectionTokensCount(collection.id) as number;
+
+    if (cleanup.current) {
+      return;
+    }
+
+    setAllTokensCount(parseFloat(tokensCount.toString()));
+  }, [collection, getCollectionTokensCount]);
+
   const updateTokens = useCallback(async () => {
     if (!account) {
       return;
@@ -67,6 +85,7 @@ function NftCollectionCard ({ account, canTransferTokens, collection, localRegis
       return;
     }
 
+    setOwnTokensCount(tokensOfCollection.length);
     setTokensOfCollection(tokensOfCollection);
   }, [account, collection, getTokensOfCollection]);
 
@@ -87,6 +106,12 @@ function NftCollectionCard ({ account, canTransferTokens, collection, localRegis
       void defineCollectionImage();
     }
   }, [collection, collectionImageUrl, defineCollectionImage]);
+
+  useEffect(() => {
+    if (collection && allTokensCount === undefined) {
+      void getTokensCount();
+    }
+  }, [allTokensCount, collection, getTokensCount]);
 
   useEffect(() => {
     return () => {
@@ -118,6 +143,14 @@ function NftCollectionCard ({ account, canTransferTokens, collection, localRegis
             </div>
             { collection.Description && (
               <div title={collectionName16Decoder(collection.Description)}> - {collectionName16Decoder(collection.Description)}</div>
+            )}
+          </div>
+          <div className='tokens-count'>
+            { allTokensCount && (
+              <span>Total: {allTokensCount} {allTokensCount > 1 ? 'items' : 'item'}</span>
+            )}
+            { ownTokensCount && (
+              <span>, Own: {ownTokensCount} {ownTokensCount > 1 ? 'items' : 'item'}</span>
             )}
           </div>
           <a

@@ -111,13 +111,7 @@ export function useCollections () {
     }
 
     try {
-      const tokensOfCollection = await api.query.nft.addressTokens(collectionId, ownerId);
-
-      if (cleanup.current) {
-        return '';
-      }
-
-      return tokensOfCollection;
+      return await api.query.nft.addressTokens(collectionId, ownerId);
     } catch (e) {
       console.log('getTokensOfCollection error', e);
     }
