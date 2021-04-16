@@ -70,6 +70,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
   const [sponsorAddress, setSponsorAddress] = useState<string>();
   const [isAdminAddressError, setIsAdminAddressError] = useState<boolean>(false);
   const [isSponsorAddressError, setIsSponsorAddressError] = useState<boolean>(false);
+  const [collectionAdminList, setCcollectionAdminList] = useState<string[]>([]);
   const [deletingCurrentAdmin, toggleDeletingCurrentAdmin] = useState<boolean>(false);
   const [settingCurrentAdmin, toggleSettingCurrentAdmin] = useState<boolean>(false);
   const [settingSponsor, toggleSettingSponsor] = useState<boolean>(false);
@@ -79,6 +80,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
   const [currentOffchainSchema, setCurrentOffchainSchema] = useState<SchemaVersionTypes>('Unique');
   const [settingOffChainSchema, toggleSettingOffChainSchema] = useState<boolean>(false);
   const [collectionInfo, setCollectionInfo] = useState<NftCollectionInterface>();
+  const [isAddressCurrentlyInAdminList, setIsAddressCurrentlyInAdminList] = useState<boolean>(false);
 
   const [audioUrl, setAudioUrl] = useState<string>('');
   const [imageUrl, setImageUrl] = useState<string>('');
@@ -100,15 +102,26 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
     }
   }, [collectionId, getDetailedCollectionInfo]);
 
+  const fetchCollectionAdminList = useCallback(async () => {
+    if (collectionId) {
+      const adminList = await getCollectionAdminList(collectionId) as string[];
+
+      console.log('adminList', adminList);
+
+      setCcollectionAdminList(adminList);
+    }
+  }, [collectionId, getCollectionAdminList]);
+
   const onSetAdminAddress = useCallback((value: string) => {
     try {
       keyring.decodeAddress(value);
-      setIsSponsorAddressError(false);
-      setSponsorAddress(value);
+      setIsAdminAddressError(false);
+      setAdminAddress(value);
+      setIsAddressCurrentlyInAdminList(!!collectionAdminList.find((address: string) => address.toString() === value))
     } catch (e) {
-      setIsSponsorAddressError(true);
+      setIsAdminAddressError(true);
     }
-  }, []);
+  }, [collectionAdminList]);
 
   const onSetSponsorAddress = useCallback((value: string) => {
     try {
@@ -155,8 +168,14 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
   }, [setShouldUpdateTokens]);
 
   useEffect(() => {
-    void fetchCollectionInfo();
-  }, [fetchCollectionInfo]);
+    if (!currentSchemaVersion) {
+      void fetchCollectionInfo();
+    }
+  }, [currentSchemaVersion, fetchCollectionInfo]);
+
+  useEffect(() => {
+    void fetchCollectionAdminList();
+  }, [fetchCollectionAdminList]);
 
   // collectionInfo.SchemaVersion.isImageUrl, imageUrl = hex2a(collectionInfo.OffchainSchema) + {id}
   // collectionMetadata.metadata, collectionMetadata = hex2a(collectionInfo.OffchainSchema) - get metadata
@@ -398,7 +417,14 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
           </Grid.Row>
         </Grid>
       </Form>
-      <Header as='h3'>Collection admin</Header>
+      <Header as='h3'>Collection admin list</Header>
+      { collectionAdminList?.length > 0 && (
+        <ul>
+          { collectionAdminList.map((address) => (
+            <li key={address.toString()}>{address.toString()}</li>
+          ))}
+        </ul>
+      )}
       <Form className='manage-collection--form'>
         <Grid className='manage-collection--form--grid'>
           <Grid.Row>
@@ -422,7 +448,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
                 <Button
                   content={
                     <>
-                      Set admin
+                      Add admin
                       { settingCurrentAdmin && (
                         <Loader
                           active
@@ -436,7 +462,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
                 <Button
                   content={
                     <>
-                      Delete admin
+                      Remove admin
                       { deletingCurrentAdmin && (
                         <Loader
                           active
@@ -445,6 +471,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
                       )}
                     </>
                   }
+                  disabled={!adminAddress && isAddressCurrentlyInAdminList}
                   onClick={onDeleteCurrentAdmin}
                 />
               </div>
