@@ -8,6 +8,8 @@ import { StatusContext } from '@polkadot/react-components';
 import { useApi } from '@polkadot/react-hooks/useApi';
 import { strToUTF16 } from '@polkadot/react-hooks/utils';
 
+export type SchemaVersionTypes = 'ImageURL' | 'Unique';
+
 export interface NftCollectionInterface {
   Access?: 'Normal'
   id: string;
@@ -24,12 +26,11 @@ export interface NftCollectionInterface {
   Name: number[];
   OffchainSchema: string;
   Owner?: string;
-  SchemaVersion: {
-    isImageUrl: boolean;
-    isUnique: boolean;
+  SchemaVersion: SchemaVersionTypes;
+  Sponsorship: {
+    confirmed?: string;
+    disabled?: string | null;
   };
-  Sponsor?: string; // account
-  SponsorConfirmed?: boolean;
   Limits?: {
     AccountTokenOwnershipLimit: string;
     SponsoredMintSize: string;
@@ -49,8 +50,6 @@ export function useCollection () {
   // hex2a(collectionInfo.TokenPrefix)
   // collectionInfo.Sponsor
   // confirmSponsorship(collection_id)
-  // api.query.nft.contractSelfSponsoring(accountId)
-  // api.query.nft.contractSponsorBasket(accountId, accountId)
   // api.query.nft.contractOwner(AccountId)
   // const changeAdminTx = api.tx.nft.addCollectionAdmin(collectionId, bob.address);
   // const adminListAfterRemoveAdmin: any = (await api.query.nft.adminList(collectionId));
@@ -84,6 +83,76 @@ export function useCollection () {
       txStartCb: () => { console.log('create collection start'); },
       txSuccessCb: () => { console.log('create collection success'); },
       txUpdateCb: () => { console.log('create collection update'); }
+    });
+  }, [api, queueExtrinsic]);
+
+  const setCollectionSponsor = useCallback(({ account, collectionId, errorCallback, newSponsor, successCallback }: { account: string, collectionId: string, newSponsor: string, successCallback?: () => void, errorCallback?: () => void }) => {
+    const transaction = api.tx.nft.setCollectionSponsor(collectionId, newSponsor);
+
+    queueExtrinsic({
+      accountId: account && account.toString(),
+      extrinsic: transaction,
+      isUnsigned: false,
+      txFailedCb: () => { console.log('set collection sponsor fail'); errorCallback && errorCallback(); },
+      txStartCb: () => { console.log('set collection sponsor start'); },
+      txSuccessCb: () => { console.log('set collection sponsor success'); successCallback && successCallback(); },
+      txUpdateCb: () => { console.log('set collection sponsor update'); }
+    });
+  }, [api, queueExtrinsic]);
+
+  const removeCollectionSponsor = useCallback(({ account, collectionId, errorCallback, successCallback }: { account: string, collectionId: string, successCallback?: () => void, errorCallback?: () => void }) => {
+    const transaction = api.tx.nft.removeCollectionSponsor(collectionId);
+
+    queueExtrinsic({
+      accountId: account && account.toString(),
+      extrinsic: transaction,
+      isUnsigned: false,
+      txFailedCb: () => { console.log('remove collection sponsor fail'); errorCallback && errorCallback(); },
+      txStartCb: () => { console.log('remove collection sponsor start'); },
+      txSuccessCb: () => { console.log('remove collection sponsor success'); successCallback && successCallback(); },
+      txUpdateCb: () => { console.log('remove collection sponsor update'); }
+    });
+  }, [api, queueExtrinsic]);
+
+  const confirmSponsorship = useCallback(({ account, collectionId, errorCallback, successCallback }: { account: string, collectionId: string, successCallback?: () => void, errorCallback?: () => void }) => {
+    const transaction = api.tx.nft.confirmSponsorship(collectionId);
+
+    queueExtrinsic({
+      accountId: account && account.toString(),
+      extrinsic: transaction,
+      isUnsigned: false,
+      txFailedCb: () => { console.log('confirm sponsorship fail'); errorCallback && errorCallback(); },
+      txStartCb: () => { console.log('confirm sponsorship start'); },
+      txSuccessCb: () => { console.log('confirm sponsorship success'); successCallback && successCallback(); },
+      txUpdateCb: () => { console.log('confirm sponsorship update'); }
+    });
+  }, [api, queueExtrinsic]);
+
+  const addCollectionAdmin = useCallback(({ account, collectionId, errorCallback, newAdminAddress, successCallback }: { account: string, collectionId: string, newAdminAddress: string, successCallback?: () => void, errorCallback?: () => void }) => {
+    const transaction = api.tx.nft.addCollectionAdmin(collectionId, newAdminAddress);
+
+    queueExtrinsic({
+      accountId: account && account.toString(),
+      extrinsic: transaction,
+      isUnsigned: false,
+      txFailedCb: () => { console.log('add collection admin fail'); errorCallback && errorCallback(); },
+      txStartCb: () => { console.log('add collection admin start'); },
+      txSuccessCb: () => { console.log('add collection admin success'); successCallback && successCallback(); },
+      txUpdateCb: () => { console.log('add collection admin update'); }
+    });
+  }, [api, queueExtrinsic]);
+
+  const removeCollectionAdmin = useCallback(({ account, adminAddress, collectionId, errorCallback, successCallback }: { account: string, collectionId: string, adminAddress: string, successCallback?: () => void, errorCallback?: () => void }) => {
+    const transaction = api.tx.nft.removeCollectionAdmin(collectionId, adminAddress);
+
+    queueExtrinsic({
+      accountId: account && account.toString(),
+      extrinsic: transaction,
+      isUnsigned: false,
+      txFailedCb: () => { console.log('remove collection admin fail'); errorCallback && errorCallback(); },
+      txStartCb: () => { console.log('remove collection admin start'); },
+      txSuccessCb: () => { console.log('remove collection admin success'); successCallback && successCallback(); },
+      txUpdateCb: () => { console.log('remove collection admin update'); }
     });
   }, [api, queueExtrinsic]);
 
@@ -121,9 +190,14 @@ export function useCollection () {
   }, [api]);
 
   return {
+    addCollectionAdmin,
+    confirmSponsorship,
     createCollection,
     getCollectionTokensCount,
     getDetailedCollectionInfo,
-    getTokensOfCollection
+    getTokensOfCollection,
+    removeCollectionAdmin,
+    removeCollectionSponsor,
+    setCollectionSponsor
   };
 }

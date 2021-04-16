@@ -15,6 +15,7 @@ export { useCacheKey } from './useCacheKey';
 export { useCall } from './useCall';
 export { useCallMulti } from './useCallMulti';
 export { useContracts } from './useContracts';
+export { useCollection } from './useCollection';
 export { useCollections, MetadataType } from './useCollections';
 export { useDecoder } from './useDecoder';
 export { useFetch } from './useFetch';

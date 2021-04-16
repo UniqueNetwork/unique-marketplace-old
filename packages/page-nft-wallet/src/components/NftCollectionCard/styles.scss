@@ -1,7 +1,7 @@
 .nft-collection-item {
 
   .table {
-    margin: 15px 0;
+    margin: var(--gap) 0 var(--gap) var(--gap);
   }
 
   .expander-content {

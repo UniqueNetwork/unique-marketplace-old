@@ -3,7 +3,7 @@
 
 import './styles.scss';
 
-import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollections';
+import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header/Header';

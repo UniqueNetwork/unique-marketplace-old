@@ -151,7 +151,7 @@ export const useMetadata = (localRegistry?: TypeRegistry): UseMetadataInterface 
 
   const getTokenImageUrl = useCallback(async (collectionInfo: NftCollectionInterface, tokenId: string): Promise<string> => {
     if (collectionInfo) {
-      if (collectionInfo.SchemaVersion.isImageUrl) {
+      if (collectionInfo.SchemaVersion === 'ImageUrl') {
         return tokenImageUrl(hex2a(collectionInfo.OffchainSchema), tokenId);
       } else {
         return await setUnique(collectionInfo, tokenId);

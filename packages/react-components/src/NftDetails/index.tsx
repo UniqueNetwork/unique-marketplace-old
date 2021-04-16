@@ -114,7 +114,7 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
           <Grid.Column width={8}>
             { collectionInfo && (
               <Image
-                className='token-image'
+                className='token-image-big'
                 src={tokenUrl}
               />
             )}

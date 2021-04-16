@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import type { SubmittableExtrinsic } from '@polkadot/api/promise/types';
-import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollections';
+import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
 import type { TokenDetailsInterface } from '@polkadot/react-hooks/useToken';
 
 import { useMachine } from '@xstate/react';

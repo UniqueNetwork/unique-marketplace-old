@@ -3,11 +3,12 @@
 
 import type { ErrorType } from '@polkadot/react-hooks/useFetch';
 import type { TokenDetailsInterface } from '@polkadot/react-hooks/useToken';
+import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
 
 import BN from 'bn.js';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { useApi, useFetch } from '@polkadot/react-hooks';
+import { useApi, useFetch, useCollection } from '@polkadot/react-hooks';
 import { UNIQUE_COLLECTION_ID } from '@polkadot/react-hooks/utils';
 import { Constructor } from '@polkadot/types/types/codec';
 import { base64Decode, encodeAddress } from '@polkadot/util-crypto';
@@ -21,38 +22,6 @@ export type TokenAttribute = Record<string, Constructor | string | Record<string
 } | {
   _set: Record<string, number>;
 }>;
-
-export interface NftCollectionInterface {
-  Access?: 'Normal'
-  id: string;
-  DecimalPoints: BN | number;
-  Description: number[];
-  TokenPrefix: string;
-  MintMode?: boolean;
-  Mode: {
-    nft: null;
-    fungible: null;
-    reFungible: null;
-    invalid: null;
-  };
-  Name: number[];
-  OffchainSchema: string;
-  Owner?: string;
-  SchemaVersion: {
-    isImageUrl: boolean;
-    isUnique: boolean;
-  };
-  Sponsor?: string; // account
-  SponsorConfirmed?: boolean;
-  Limits?: {
-    AccountTokenOwnershipLimit: string;
-    SponsoredMintSize: string;
-    TokenLimit: string;
-    SponsorTimeout: string;
-  },
-  VariableOnChainSchema: string;
-  ConstOnChainSchema: string;
-}
 
 export interface TokenInterface extends TokenDetailsInterface {
   collectionId: string;
@@ -104,6 +73,7 @@ export function useCollections () {
   const [trades, setTrades] = useState<TradeType[]>();
   const [myTrades, setMyTrades] = useState<TradeType[]>();
   const cleanup = useRef<boolean>(false);
+  const { getDetailedCollectionInfo } = useCollection();
 
   const getTokensOfCollection = useCallback(async (collectionId: string, ownerId: string) => {
     if (!api || !collectionId || !ownerId) {
@@ -119,28 +89,7 @@ export function useCollections () {
     return [];
   }, [api]);
 
-  const getDetailedCollectionInfo = useCallback(async (collectionId: string) => {
-    if (!api) {
-      return null;
-    }
 
-    try {
-      const collectionInfo = (await api.query.nft.collectionById(collectionId)).toJSON() as unknown as NftCollectionInterface;
-
-      if (cleanup.current) {
-        return '';
-      }
-
-      return {
-        ...collectionInfo,
-        id: collectionId
-      };
-    } catch (e) {
-      console.log('getDetailedCollectionInfo error', e);
-    }
-
-    return {};
-  }, [api]);
 
   /**
    * Return the list of token sale offers

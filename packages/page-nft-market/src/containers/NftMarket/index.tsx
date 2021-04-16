@@ -3,6 +3,7 @@
 
 import './styles.scss';
 
+import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
 import type { OfferType } from '@polkadot/react-hooks/useCollections';
 
 // external imports
@@ -15,7 +16,6 @@ import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
 import { Input } from '@polkadot/react-components';
 import { useCollections, useDecoder } from '@polkadot/react-hooks';
-import { NftCollectionInterface } from '@polkadot/react-hooks/useCollections';
 import { AttributesDecoded } from '@polkadot/react-hooks/useSchema';
 import { TypeRegistry } from '@polkadot/types';
 

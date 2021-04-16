@@ -3,7 +3,7 @@
 
 import './styles.scss';
 
-import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollections';
+import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
 
 import React, { useCallback, useMemo } from 'react';
 import { useHistory } from 'react-router';

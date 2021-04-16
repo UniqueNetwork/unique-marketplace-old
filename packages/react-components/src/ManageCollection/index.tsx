@@ -3,7 +3,10 @@
 
 import './styles.scss';
 
-import React, { useCallback, useState } from 'react';
+import type { NftCollectionInterface, SchemaVersionTypes } from '@polkadot/react-hooks/useCollection';
+
+import React, { useCallback, useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button';
@@ -13,19 +16,17 @@ import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
 import { Dropdown, Input } from '@polkadot/react-components';
 import arrowLeft from '@polkadot/react-components/NftDetails/arrowLeft.svg';
+import { useCollection } from '@polkadot/react-hooks/useCollection';
 import { TypeRegistry } from '@polkadot/types';
 import { keyring } from '@polkadot/ui-keyring';
 
 import ManageCollectionAttributes from './ManageCollectionAttributes';
-import {useLocation} from "react-router-dom";
 
 interface Props {
   account?: string;
   localRegistry?: TypeRegistry;
   setShouldUpdateTokens?: (collectionId: string) => void;
 }
-
-export type SchemaVersionTypes = 'ImageURL' | 'Unique';
 
 export type UniqueSchema = {
   audio?: string;
@@ -54,23 +55,23 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
   const { account, localRegistry, setShouldUpdateTokens } = props;
   const query = new URLSearchParams(useLocation().search);
   const collectionId = query.get('collectionId') || '';
+  const { getDetailedCollectionInfo } = useCollection();
   const [name, setName] = useState<string>();
   const [description, setDescription] = useState<string>();
   const [tokenPrefix, setTokenPrefix] = useState<string>();
   const [adminAddress, setAdminAddress] = useState<string>();
   const [sponsorAddress, setSponsorAddress] = useState<string>();
-  const [showAdminForm, toggleAdminForm] = useState<boolean>(true);
-  const [showSponsorForm, toggleSponsorForm] = useState<boolean>(true);
   const [isAdminAddressError, setIsAdminAddressError] = useState<boolean>(false);
   const [isSponsorAddressError, setIsSponsorAddressError] = useState<boolean>(false);
   const [deletingCurrentAdmin, toggleDeletingCurrentAdmin] = useState<boolean>(false);
   const [settingCurrentAdmin, toggleSettingCurrentAdmin] = useState<boolean>(false);
   const [settingSponsor, toggleSettingSponsor] = useState<boolean>(false);
   const [approvingSponsor, toggleApprovingSponsor] = useState<boolean>(false);
-  const [currentSchemaVersion, setCurrentSchemaVersion] = useState<SchemaVersionTypes>('Unique');
+  const [currentSchemaVersion, setCurrentSchemaVersion] = useState<SchemaVersionTypes>();
   const [settingSchemaVersion, toggleSettingSchemaVersion] = useState<boolean>(false);
   const [currentOffchainSchema, setCurrentOffchainSchema] = useState<SchemaVersionTypes>('Unique');
   const [settingOffChainSchema, toggleSettingOffChainSchema] = useState<boolean>(false);
+  const [collectionInfo, setCollectionInfo] = useState<NftCollectionInterface>();
 
   const [audioUrl, setAudioUrl] = useState<string>('');
   const [imageUrl, setImageUrl] = useState<string>('');
@@ -78,6 +79,19 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
   const [isAudioUrlError, toggleAudioUrlError] = useState<boolean>(false);
   const [isImageUrlError, toggleImageUrlError] = useState<boolean>(false);
   const [isPageUrlError, togglePageUrlError] = useState<boolean>(false);
+
+  const fetchCollectionInfo = useCallback(async () => {
+    // collectionInfo.SchemaVersion.isImageUrl
+    if (collectionId) {
+      const info = (await getDetailedCollectionInfo(collectionId)) as NftCollectionInterface;
+
+      if (info) {
+        setCurrentSchemaVersion(info.SchemaVersion);
+      }
+
+      console.log('info', info);
+    }
+  }, [collectionId, getDetailedCollectionInfo]);
 
   const onSetAdminAddress = useCallback((value: string) => {
     try {
@@ -132,6 +146,10 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
     setShouldUpdateTokens && setShouldUpdateTokens('all');
     history.back();
   }, [setShouldUpdateTokens]);
+
+  useEffect(() => {
+    void fetchCollectionInfo();
+  }, [fetchCollectionInfo]);
 
   // collectionInfo.SchemaVersion.isImageUrl, imageUrl = hex2a(collectionInfo.OffchainSchema) + {id}
   // collectionMetadata.metadata, collectionMetadata = hex2a(collectionInfo.OffchainSchema) - get metadata
