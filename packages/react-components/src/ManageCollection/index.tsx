@@ -8,17 +8,21 @@ import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
+import Image from 'semantic-ui-react/dist/commonjs/elements/Image';
 import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
 import { Dropdown, Input } from '@polkadot/react-components';
+import arrowLeft from '@polkadot/react-components/NftDetails/arrowLeft.svg';
 import { TypeRegistry } from '@polkadot/types';
 import { keyring } from '@polkadot/ui-keyring';
 
 import ManageCollectionAttributes from './ManageCollectionAttributes';
+import {useLocation} from "react-router-dom";
 
 interface Props {
   account?: string;
   localRegistry?: TypeRegistry;
+  setShouldUpdateTokens?: (collectionId: string) => void;
 }
 
 export type SchemaVersionTypes = 'ImageURL' | 'Unique';
@@ -47,7 +51,9 @@ const SchemaOptions: SchemaOption[] = [
 ];
 
 function ManageCollection (props: Props): React.ReactElement<Props> {
-  const { account, localRegistry } = props;
+  const { account, localRegistry, setShouldUpdateTokens } = props;
+  const query = new URLSearchParams(useLocation().search);
+  const collectionId = query.get('collectionId') || '';
   const [name, setName] = useState<string>();
   const [description, setDescription] = useState<string>();
   const [tokenPrefix, setTokenPrefix] = useState<string>();
@@ -121,6 +127,12 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
     console.log('onSetOffchainSchema');
   }, []);
 
+  const goBack = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    setShouldUpdateTokens && setShouldUpdateTokens('all');
+    history.back();
+  }, [setShouldUpdateTokens]);
+
   // collectionInfo.SchemaVersion.isImageUrl, imageUrl = hex2a(collectionInfo.OffchainSchema) + {id}
   // collectionMetadata.metadata, collectionMetadata = hex2a(collectionInfo.OffchainSchema) - get metadata
   // hex2a(collectionInfo.OffchainSchema)
@@ -129,6 +141,20 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
 
   return (
     <div className='manage-collection'>
+      <Header as='h1'>
+        { collectionId ? 'Manage Collection' : 'Create collection' }
+      </Header>
+      <a
+        className='go-back'
+        href='/'
+        onClick={goBack}
+      >
+        <Image
+          className='go-back'
+          src={arrowLeft}
+        />
+        back
+      </a>
       <Header as='h3'>Collection advanced settings</Header>
       <Form className='manage-collection--form'>
         <Grid className='manage-collection--form--grid'>

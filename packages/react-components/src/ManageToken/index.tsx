@@ -21,15 +21,22 @@ import { TypeRegistry } from '@polkadot/types';
 import Replace from './images/ArrowCounterClockwise.svg';
 import Picture from './images/picture.svg';
 import Delete from './images/TrashSimple.svg';
+import {useLocation} from "react-router-dom";
+import Header from "semantic-ui-react/dist/commonjs/elements/Header";
+import arrowLeft from "@polkadot/react-components/NftDetails/arrowLeft.svg";
 
 const maxFileSize = 5000000;
 
 interface Props {
   account?: string;
   localRegistry?: TypeRegistry;
+  setShouldUpdateTokens?: (collectionId: string) => void;
 }
 
-function ManageToken ({ account }: Props): React.ReactElement {
+function ManageToken ({ account, setShouldUpdateTokens }: Props): React.ReactElement {
+  const query = new URLSearchParams(useLocation().search);
+  const tokenId = query.get('tokenId') || '';
+  const collectionId = query.get('collectionId') || '';
   const [images, setImages] = useState<ImageType[]>([]);
   const [imageBase64, setImageBase64] = useState<string>();
   const [imageFileName, setImageFileName] = useState<string>();
@@ -72,8 +79,29 @@ function ManageToken ({ account }: Props): React.ReactElement {
     }
   }, [account, imageBase64, imageFileName, imageName, serverIsReady, uploadImage]);
 
+  const goBack = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    setShouldUpdateTokens && setShouldUpdateTokens('all');
+    history.back();
+  }, [setShouldUpdateTokens]);
+
   return (
-    <>
+    <div className='manage-token'>
+      <Header as='h1'>
+        { collectionId && tokenId ? 'Manage token' : 'Create token' }
+      </Header>
+      <a
+        className='go-back'
+        href='/'
+        onClick={goBack}
+      >
+        <Image
+          className='go-back'
+          src={arrowLeft}
+        />
+        back
+      </a>
+      <br />
       <ManageTokenAttributes />
       <Form className='collection-search'>
         <Grid className='mint-grid'>
@@ -197,7 +225,7 @@ function ManageToken ({ account }: Props): React.ReactElement {
           )
         }
       </Form >
-    </>
+    </div>
   );
 }
 

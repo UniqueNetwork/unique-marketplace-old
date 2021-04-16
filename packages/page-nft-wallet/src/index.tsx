@@ -48,7 +48,7 @@ function App ({ account, basePath }: Props): React.ReactElement<Props> {
 
   return (
     <div className='my-tokens'>
-      { !location.pathname.includes('token-details') && !location.pathname.includes('edit-collection') && !location.pathname.includes('edit-token') && (
+      { !location.pathname.includes('token-details') && !location.pathname.includes('manage-') && (
         <>
           <Header as='h1'>My Tokens</Header>
           <Header as='h4'>NFTs owned by me</Header>
@@ -75,16 +75,18 @@ function App ({ account, basePath }: Props): React.ReactElement<Props> {
             setShouldUpdateTokens={setShouldUpdateTokens}
           />
         </Route>
-        <Route path={`${basePath}/edit-collection`}>
+        <Route path={`${basePath}/manage-collection`}>
           <ManageCollection
             account={account}
             localRegistry={localRegistry}
+            setShouldUpdateTokens={setShouldUpdateTokens}
           />
         </Route>
-        <Route path={`${basePath}/edit-token`}>
+        <Route path={`${basePath}/manage-token`}>
           <ManageToken
             account={account}
             localRegistry={localRegistry}
+            setShouldUpdateTokens={setShouldUpdateTokens}
           />
         </Route>
         <Route path={`${basePath}/tokens-for-sale`}>

@@ -7,15 +7,21 @@
   .expander-content {
     display: flex;
     grid-column-gap: 50px;
+    align-items: center;
 
     .collection-info-row {
       display: flex;
       grid-column-gap: 0.5rem;
+      align-items: center;
 
       &>div {
         max-width: 400px;
         overflow: hidden;
         text-overflow: ellipsis;
+      }
+
+      .token-image {
+        margin-right: 8px;
       }
     }
 

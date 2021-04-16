@@ -32,7 +32,7 @@ function NftTokenCard ({ account, canTransferTokens, collection, localRegistry, 
   }, [history]);
 
   const editToken = useCallback((collectionId: string, tokenId: string) => {
-    history.push(`/wallet/edit-token?collectionId=${collectionId}&tokenId=${tokenId}`);
+    history.push(`/wallet/manage-token?collectionId=${collectionId}&tokenId=${tokenId}`);
   }, [history]);
 
   const attrebutesToShow = useMemo(() => {
@@ -60,10 +60,12 @@ function NftTokenCard ({ account, canTransferTokens, collection, localRegistry, 
     >
       <td className='token-image'>
         <a onClick={openDetailedInformationModal.bind(null, collection.id, token)}>
-          <Item.Image
-            size='mini'
-            src={tokenUrl}
-          />
+          { tokenUrl && (
+            <Item.Image
+              size='mini'
+              src={tokenUrl}
+            />
+          )}
         </a>
       </td>
       <td className='token-name'>

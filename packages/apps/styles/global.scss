@@ -359,3 +359,18 @@ button.ui.button,
   justify-content: center;
   align-items: center;
 }
+
+.go-back {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  color: var(--link-color) !important;;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+
+  img {
+    margin-right: 8px;
+  }
+}
