@@ -9,7 +9,7 @@
 }
 
 .app-header {
-  background-color: var(--white-color);
+  background-color: var(--header-background);
   margin-bottom: 0;
   padding: var(--gap) 0;
 
@@ -54,6 +54,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    max-width: 100%;
   }
 }
 

@@ -71,8 +71,12 @@ export interface NullContract {
   address: null;
 }
 
+export type ThemeType = 'Unique' | 'NF3Digital' | 'LUVNFT' | 'Vernissage';
+
 export interface ThemeDef {
-  theme: 'dark' | 'light';
+  domain?: string;
+  ip?: string;
+  theme: ThemeType;
 }
 
 export interface ThemeProps {

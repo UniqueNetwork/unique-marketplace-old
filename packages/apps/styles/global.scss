@@ -405,3 +405,31 @@ button.ui.button,
     margin-right: 8px;
   }
 }
+
+.app-header {
+  .ui.tabular.menu {
+    .item {
+      text-transform: var(--menu-text-transform);
+      font-size: var(--menu-font-size);
+    }
+  }
+}
+
+.sub-header {
+  color: var(--sub-header-color) !important;
+  font-size: var(--sub-header-font-size) !important;
+  text-transform: var(--sub-header-text-transform) !important;
+}
+
+.ui.input.ui--Input {
+  input {
+    background: var(--input-background-color);
+
+    &:active {
+      background: var(--input-background-color);
+    }
+    &:focus {
+      background: var(--input-background-color);
+    }
+  }
+}

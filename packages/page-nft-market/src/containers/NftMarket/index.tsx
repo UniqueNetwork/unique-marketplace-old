@@ -116,7 +116,12 @@ const BuyTokens = ({ account, localRegistry, setShouldUpdateTokens, shouldUpdate
       <Grid>
         <Grid.Row>
           <Grid.Column width={4}>
-            <Header as='h5'>Collections</Header>
+            <Header
+              as='h5'
+              className='sub-header'
+            >
+              Collections
+            </Header>
             {/* <Input
               className='isSmall search'
               help={<span>Find and select tokens collection.</span>}
@@ -149,7 +154,7 @@ const BuyTokens = ({ account, localRegistry, setShouldUpdateTokens, shouldUpdate
                   <Input
                     className='isSmall search'
                     help={<span>Find and select token.</span>}
-                    isDisabled={!offers || !offers.length}
+                    isDisabled={!offers || !Object.values(offers).length}
                     label={'Find token by name or collection'}
                     onChange={setSearchString}
                     placeholder='Search...'
