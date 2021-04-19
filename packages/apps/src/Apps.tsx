@@ -140,12 +140,6 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                                     to='/all-tokens'
                                   />
                                   <Menu.Item
-                                    active={location.pathname === '/mint'}
-                                    as={NavLink}
-                                    name='mint'
-                                    to='/mint'
-                                  />
-                                  <Menu.Item
                                     active={location.pathname === '/my-tokens'}
                                     as={NavLink}
                                     name='myTokens'

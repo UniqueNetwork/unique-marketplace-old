@@ -4,26 +4,39 @@
 import './styles.scss';
 
 import type { ImageType } from 'react-images-uploading/dist/typings';
+import type { ImageInterface } from '@polkadot/react-hooks/useMintApi';
 
 import React, { useCallback, useState } from 'react';
 import ImageUploading from 'react-images-uploading';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button';
-import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import Image from 'semantic-ui-react/dist/commonjs/elements/Image';
 import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
-import { Input } from '@polkadot/react-components';
+import { Input, ManageTokenAttributes } from '@polkadot/react-components';
+import { useMintApi } from '@polkadot/react-hooks';
+import { TypeRegistry } from '@polkadot/types';
 
-import useMintApi, { ImageInterface } from '../../hooks/useMintApi';
-import Replace from '../../images/ArrowCounterClockwise.svg';
-import Picture from '../../images/picture.svg';
-import Delete from '../../images/TrashSimple.svg';
+import Replace from './images/ArrowCounterClockwise.svg';
+import Picture from './images/picture.svg';
+import Delete from './images/TrashSimple.svg';
+import {useLocation} from "react-router-dom";
+import Header from "semantic-ui-react/dist/commonjs/elements/Header";
+import arrowLeft from "@polkadot/react-components/NftDetails/arrowLeft.svg";
 
 const maxFileSize = 5000000;
 
-function NftMint ({ account }: { account?: string }): React.ReactElement {
+interface Props {
+  account?: string;
+  localRegistry?: TypeRegistry;
+  setShouldUpdateTokens?: (collectionId: string) => void;
+}
+
+function ManageToken ({ account, setShouldUpdateTokens }: Props): React.ReactElement {
+  const query = new URLSearchParams(useLocation().search);
+  const tokenId = query.get('tokenId') || '';
+  const collectionId = query.get('collectionId') || '';
   const [images, setImages] = useState<ImageType[]>([]);
   const [imageBase64, setImageBase64] = useState<string>();
   const [imageFileName, setImageFileName] = useState<string>();
@@ -66,9 +79,30 @@ function NftMint ({ account }: { account?: string }): React.ReactElement {
     }
   }, [account, imageBase64, imageFileName, imageName, serverIsReady, uploadImage]);
 
+  const goBack = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    setShouldUpdateTokens && setShouldUpdateTokens('all');
+    history.back();
+  }, [setShouldUpdateTokens]);
+
   return (
-    <>
-      <Header as='h1'>Mint</Header>
+    <div className='manage-token'>
+      <Header as='h1'>
+        { collectionId && tokenId ? 'Manage token' : 'Create token' }
+      </Header>
+      <a
+        className='go-back'
+        href='/'
+        onClick={goBack}
+      >
+        <Image
+          className='go-back'
+          src={arrowLeft}
+        />
+        back
+      </a>
+      <br />
+      <ManageTokenAttributes />
       <Form className='collection-search'>
         <Grid className='mint-grid'>
           <Grid.Row>
@@ -191,8 +225,8 @@ function NftMint ({ account }: { account?: string }): React.ReactElement {
           )
         }
       </Form >
-    </>
+    </div>
   );
 }
 
-export default React.memo(NftMint);
+export default React.memo(ManageToken);

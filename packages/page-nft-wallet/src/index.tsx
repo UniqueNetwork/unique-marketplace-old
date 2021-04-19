@@ -4,12 +4,12 @@
 import './styles.scss';
 
 // external imports
-import React, { useMemo, useState } from 'react';
-import { Route, Switch } from 'react-router';
+import React, { useCallback, useMemo, useState } from 'react';
+import { Route, Switch, useHistory } from 'react-router';
 import { useLocation } from 'react-router-dom';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header/Header';
 
-import { NftDetails } from '@polkadot/react-components';
+import { Dropdown, ManageCollection, ManageToken, NftDetails } from '@polkadot/react-components';
 import Tabs from '@polkadot/react-components/Tabs';
 // local imports and components
 import { AppProps as Props } from '@polkadot/react-components/types';
@@ -18,9 +18,21 @@ import { useRegistry } from '@polkadot/react-hooks';
 import NftWallet from './containers/NftWallet';
 import TokensForSale from './containers/TokensForSale';
 
+const createOptions = [
+  {
+    text: 'Create collection',
+    value: 'collection'
+  },
+  {
+    text: 'Create token',
+    value: 'token'
+  }
+];
+
 function App ({ account, basePath }: Props): React.ReactElement<Props> {
   const localRegistry = useRegistry();
   const location = useLocation();
+  const history = useHistory();
   const [shouldUpdateTokens, setShouldUpdateTokens] = useState<string>();
 
   const items = useMemo(() => [
@@ -35,22 +47,54 @@ function App ({ account, basePath }: Props): React.ReactElement<Props> {
     }
   ], []);
 
+  const createItem = useCallback((value: string) => {
+    if (value === 'collection') {
+      history.push('/wallet/manage-collection');
+    } else if (value === 'token') {
+      history.push('/wallet/manage-token');
+    }
+  }, [history]);
+
   return (
-    <>
-      <Header as='h1'>My Tokens</Header>
-      <Header as='h4'>NFTs owned by me</Header>
-      { !location.pathname.includes('token-details') && (
-        <header>
-          <Tabs
-            basePath={basePath}
-            items={items}
+    <div className='my-tokens'>
+      { !location.pathname.includes('token-details') && !location.pathname.includes('manage-') && (
+        <>
+          <Header as='h1'>My Tokens</Header>
+          <Header as='h4'>NFTs owned by me</Header>
+          <Dropdown
+            className='dropdown-button create-button'
+            isItem
+            isSimple
+            onChange={createItem}
+            options={createOptions}
+            text='Create'
           />
-        </header>
+          <header>
+            <Tabs
+              basePath={basePath}
+              items={items}
+            />
+          </header>
+        </>
       )}
       <Switch>
         <Route path={`${basePath}/token-details`}>
           <NftDetails
             account={account || ''}
+            localRegistry={localRegistry}
+            setShouldUpdateTokens={setShouldUpdateTokens}
+          />
+        </Route>
+        <Route path={`${basePath}/manage-collection`}>
+          <ManageCollection
+            account={account}
+            localRegistry={localRegistry}
+            setShouldUpdateTokens={setShouldUpdateTokens}
+          />
+        </Route>
+        <Route path={`${basePath}/manage-token`}>
+          <ManageToken
+            account={account}
             localRegistry={localRegistry}
             setShouldUpdateTokens={setShouldUpdateTokens}
           />
@@ -72,7 +116,7 @@ function App ({ account, basePath }: Props): React.ReactElement<Props> {
           />
         </Route>
       </Switch>
-    </>
+    </div>
   );
 }
 

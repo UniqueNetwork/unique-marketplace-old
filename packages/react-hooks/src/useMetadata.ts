@@ -1,45 +1,117 @@
 // Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import type { TokenDetailsInterface } from '@polkadot/react-hooks/useToken';
+
 import { useCallback, useEffect, useRef } from 'react';
 
-import { MetadataType,
-  NftCollectionInterface,
-  TokenDetailsInterface,
-  useCollections } from '@polkadot/react-hooks/useCollections';
+import { MetadataType, NftCollectionInterface } from '@polkadot/react-hooks/useCollections';
 import { useDecoder } from '@polkadot/react-hooks/useDecoder';
 import { AttributesDecoded } from '@polkadot/react-hooks/useSchema';
-import { Struct, TypeRegistry } from '@polkadot/types';
+import { useToken } from '@polkadot/react-hooks/useToken';
+import { TypeRegistry } from '@polkadot/types';
 
 interface UseMetadataInterface {
+  decodeStruct: ({ attr, data }: { attr?: any, data?: string }) => AttributesDecoded;
+  encodeStruct: ({ attr, data }: { attr?: any, data?: string }) => string;
   getOnChainSchema: (collectionInfo: NftCollectionInterface) => { attributesConst: string, attributesVar: string };
   getTokenAttributes: (collectionInfo: NftCollectionInterface, tokenId: string) => Promise<AttributesDecoded>;
   getTokenImageUrl: (collectionInfo: NftCollectionInterface, tokenId: string) => Promise<string>;
-  mergeData: ({ attr, data }: { attr?: any, data?: string }) => AttributesDecoded;
   setUnique: (collectionInfo: NftCollectionInterface, tokenId: string) => Promise<string>;
   tokenImageUrl: (urlString: string, tokenId: string) => string;
 }
 
+/* const testSchema = `{
+  "Gender": {
+    "_enum": {
+      "Male": null,
+      "Female": null
+    }
+  },
+  "Trait": {
+    "_enum": {
+      "Black Lipstick": null,
+      "Red Lipstick": null,
+      "Smile": null,
+      "Teeth Smile": null,
+      "Purple Lipstick": null,
+      "Nose Ring": null,
+      "Asian Eyes": null,
+      "Sun Glasses": null,
+      "Red Glasses": null,
+      "Round Eyes": null,
+      "Left Earring": null,
+      "Right Earring": null,
+      "Two Earrings": null,
+      "Brown Beard": null,
+      "Mustache-Beard": null,
+      "Mustache": null,
+      "Regular Beard": null,
+      "Up Hair": null,
+      "Down Hair": null,
+      "Mahawk": null,
+      "Red Mahawk": null,
+      "Orange Hair": null,
+      "Bubble Hair": null,
+      "Emo Hair": null,
+      "Thin Hair": null,
+      "Bald": null,
+      "Blonde Hair": null,
+      "Caret Hair": null,
+      "Pony Tails": null,
+      "Cigar": null,
+      "Pipe": null
+    }
+  },
+  "root": {
+    "Gender": "Gender",
+    "Traits": "Vec<Trait>",
+    "ImageHash": "Bytes"
+  }
+}`; */
+
 export const useMetadata = (localRegistry?: TypeRegistry): UseMetadataInterface => {
   const { hex2a } = useDecoder();
   const cleanup = useRef<boolean>(false);
-  const { getDetailedReFungibleTokenInfo, getDetailedTokenInfo } = useCollections();
+  const { getDetailedReFungibleTokenInfo, getDetailedTokenInfo } = useToken();
 
-  const mergeData = useCallback(({ attr, data }: { attr?: any, data?: string }): AttributesDecoded => {
+  // TypeRegistry from ConstOnChainData, createType - from TypeRegistry
+
+  const encodeStruct = useCallback(({ attr, data }: { attr?: any, data?: string }): string => {
     if (attr && data && localRegistry) {
       try {
-        const s = new Struct(localRegistry, (JSON.parse(attr) as { root: any }).root, data);
-        const attributesDecoded = JSON.parse(s.toString()) as AttributesDecoded;
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        localRegistry.register(JSON.parse(attr));
+
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore {"Gender":"Female","Traits":["Smile"], "ImageHash": "123123"}
+        return localRegistry.createType('root', JSON.parse(data)).toHex();
+      } catch (e) {
+        console.log('encodeStruct error', e);
+      }
+    }
+
+    return '';
+  }, [localRegistry]);
+
+  const decodeStruct = useCallback(({ attr, data }: { attr?: any, data?: string }): AttributesDecoded => {
+    if (attr && data && localRegistry) {
+      try {
+        localRegistry.register(JSON.parse(attr));
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        const attributesDecoded: { [key: string]: string } = localRegistry.createType('root', data).toJSON() as { [key: string]: string };
 
         for (const attr in attributesDecoded) {
           if (attr.toLocaleLowerCase().includes('str')) {
-            attributesDecoded[attr] = hex2a(attributesDecoded[attr] as string);
+            attributesDecoded[attr] = hex2a(attributesDecoded[attr]);
           }
         }
 
         return attributesDecoded;
       } catch (e) {
-        console.log('mergeData error', e);
+        console.log('decodeStruct error', e);
       }
     }
 
@@ -54,6 +126,7 @@ export const useMetadata = (localRegistry?: TypeRegistry): UseMetadataInterface 
     return '';
   }, []);
 
+  // uses for token image path
   const setUnique = useCallback(async (collectionInfo: NftCollectionInterface, tokenId: string): Promise<string> => {
     try {
       const collectionMetadata = JSON.parse(hex2a(collectionInfo.OffchainSchema)) as MetadataType;
@@ -78,7 +151,7 @@ export const useMetadata = (localRegistry?: TypeRegistry): UseMetadataInterface 
 
   const getTokenImageUrl = useCallback(async (collectionInfo: NftCollectionInterface, tokenId: string): Promise<string> => {
     if (collectionInfo) {
-      if (collectionInfo.SchemaVersion.isImageUrl) {
+      if (collectionInfo.SchemaVersion === 'ImageUrl') {
         return tokenImageUrl(hex2a(collectionInfo.OffchainSchema), tokenId);
       } else {
         return await setUnique(collectionInfo, tokenId);
@@ -90,6 +163,9 @@ export const useMetadata = (localRegistry?: TypeRegistry): UseMetadataInterface 
 
   const getOnChainSchema = useCallback((collectionInf: NftCollectionInterface): { attributesConst: string, attributesVar: string } => {
     if (collectionInf) {
+      console.log('collection ConstOnChainSchema', collectionInf.ConstOnChainSchema);
+      console.log('collection VariableOnChainSchema', hex2a(collectionInf.VariableOnChainSchema));
+
       return {
         attributesConst: hex2a(collectionInf.ConstOnChainSchema),
         attributesVar: hex2a(collectionInf.VariableOnChainSchema)
@@ -125,10 +201,10 @@ export const useMetadata = (localRegistry?: TypeRegistry): UseMetadataInterface 
     const tokenDetails = await getTokenDetails(collectionInfo, tokenId);
 
     return {
-      ...mergeData({ attr: onChainSchema.attributesConst, data: tokenDetails?.ConstData }),
-      ...mergeData({ attr: onChainSchema.attributesVar, data: tokenDetails?.VariableData })
+      ...decodeStruct({ attr: onChainSchema.attributesConst, data: tokenDetails?.ConstData }),
+      ...decodeStruct({ attr: onChainSchema.attributesVar, data: tokenDetails?.VariableData })
     };
-  }, [getOnChainSchema, getTokenDetails, mergeData]);
+  }, [getOnChainSchema, getTokenDetails, decodeStruct]);
 
   useEffect(() => {
     return () => {
@@ -137,10 +213,11 @@ export const useMetadata = (localRegistry?: TypeRegistry): UseMetadataInterface 
   }, []);
 
   return {
+    decodeStruct,
+    encodeStruct,
     getOnChainSchema,
     getTokenAttributes,
     getTokenImageUrl,
-    mergeData,
     setUnique,
     tokenImageUrl
   };

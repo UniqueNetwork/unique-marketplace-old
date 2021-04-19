@@ -1,22 +1,5 @@
 .token-row {
 
-  .token-image {
-    width: 60px;
-
-    .ui.mini.image {
-        width: 60px;
-        height: 60px;
-        overflow: hidden;
-        border-radius: 50%;
-        margin-right: var(--gap);
-      img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-      }
-    }
-  }
-
   .token-name {
     font: 700 18px/27px var(--font-inter);
   }
@@ -29,6 +12,8 @@
   }
 
   .token-actions {
-    width: 300px;
+    display: flex;
+    justify-content: flex-end;
+    padding: 18px 0;
   }
 }

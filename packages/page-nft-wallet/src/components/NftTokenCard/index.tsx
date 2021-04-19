@@ -3,7 +3,7 @@
 
 import './styles.scss';
 
-import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollections';
+import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
 
 import React, { useCallback, useMemo } from 'react';
 import { useHistory } from 'react-router';
@@ -31,6 +31,10 @@ function NftTokenCard ({ account, canTransferTokens, collection, localRegistry, 
     history.push(`/wallet/token-details?collectionId=${collectionId}&tokenId=${tokenId}`);
   }, [history]);
 
+  const editToken = useCallback((collectionId: string, tokenId: string) => {
+    history.push(`/wallet/manage-token?collectionId=${collectionId}&tokenId=${tokenId}`);
+  }, [history]);
+
   const attrebutesToShow = useMemo(() => {
     if (attributes) {
       return [...Object.keys(attributes).map((attr: string) => {
@@ -56,10 +60,12 @@ function NftTokenCard ({ account, canTransferTokens, collection, localRegistry, 
     >
       <td className='token-image'>
         <a onClick={openDetailedInformationModal.bind(null, collection.id, token)}>
-          <Item.Image
-            size='mini'
-            src={tokenUrl}
-          />
+          { tokenUrl && (
+            <Item.Image
+              size='mini'
+              src={tokenUrl}
+            />
+          )}
         </a>
       </td>
       <td className='token-name'>
@@ -78,6 +84,13 @@ function NftTokenCard ({ account, canTransferTokens, collection, localRegistry, 
           primary
         >
           Transfer token
+        </Button>
+        <Button
+          disabled={!canTransferTokens}
+          onClick={editToken.bind(null, collection.id, token)}
+          primary
+        >
+          Edit
         </Button>
       </td>
     </tr>

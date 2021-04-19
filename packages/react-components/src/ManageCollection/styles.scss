@@ -1,0 +1,149 @@
+.manage-collection {
+
+  .column {
+
+    &.flex {
+      display: flex !important;
+      align-items: center;
+    }
+  }
+
+  .ui.form {
+    .field {
+      margin: 1rem 0;
+    }
+  }
+
+  .button-group {
+    display: flex;
+  }
+}
+
+.schema-table {
+  background-color: white;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-family: var(--font-roboto) var(--font-mono);
+
+  &.collection-attributes {
+    .table-header {
+      .tr {
+        display: grid;
+        grid-template-columns: 200px 200px 1fr 24px;
+        grid-column-gap: 16px;
+      }
+    }
+    .table-body {
+      .tr {
+        display: grid;
+        grid-template-columns: 200px 200px 1fr 24px 24px;
+        grid-column-gap: 16px;
+      }
+    }
+  }
+
+  &.offchain-schema {
+    .table-header {
+      .tr {
+        display: grid;
+        grid-template-columns: 100px 1fr;
+        grid-column-gap: 16px;
+      }
+    }
+    .table-body {
+      .tr {
+        display: grid;
+        grid-template-columns: 100px 1fr;
+        grid-column-gap: 16px;
+      }
+    }
+  }
+
+  .tr {
+    align-items: center;
+    height: 40px;
+
+    img {
+      cursor: pointer;
+    }
+  }
+
+  .table-header {
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 24px;
+    margin-bottom: 1rem;
+
+    .tr {
+      padding: 0 10px;
+    }
+  }
+
+  .table-body {
+    font-size: 16px;
+    font-weight: normal;
+
+    .tr {
+      padding: 0 10px;
+
+      &:hover {
+        background-color: var(--table-row-hover);
+
+        img {
+          display: block;
+        }
+      }
+
+      img {
+        display: none;
+      }
+
+      .td {
+        padding: 0 10px;
+
+        &.action {
+          padding: 0;
+        }
+      }
+
+      &.edit {
+        .td {
+          padding: 0 10px 0 0;
+        }
+
+        .ui--Labelled {
+          .ui--Labelled-content {
+            .ui.input {
+              margin: 0;
+
+              input {
+                height: 30px;
+              }
+            }
+
+            .ui.selection.dropdown {
+              margin: 0;
+              height: 30px;
+              padding-left: 10px !important;
+              font-size: 16px;
+              min-width: 0;
+              min-height: 30px;
+              line-height: 16px;
+
+              .menu {
+                .item {
+                  padding-left: 10px !important;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .table-footer {
+    margin-top: 1rem;
+    padding: 10px;
+  }
+}

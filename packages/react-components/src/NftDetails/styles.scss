@@ -16,21 +16,6 @@
     margin-bottom: 0;
   }
 
-  .go-back {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    color: var(--link-color) !important;;
-    font-style: normal;
-    font-weight: 500;
-    font-size: 16px;
-    line-height: 24px;
-
-    img {
-      margin-right: 8px;
-    }
-  }
-
   .token-info {
     margin-top: 40px;
     padding: 24px;

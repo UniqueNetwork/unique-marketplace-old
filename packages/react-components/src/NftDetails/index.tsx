@@ -76,6 +76,8 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
 
   console.log('deposited', parseFloat(formatKsmBalance(deposited)));
 
+  const showMarketActions = true;
+
   return (
     <div className='toke-details'>
       <Header as='h1'>
@@ -112,7 +114,7 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
           <Grid.Column width={8}>
             { collectionInfo && (
               <Image
-                className='token-image'
+                className='token-image-big'
                 src={tokenUrl}
               />
             )}
@@ -168,47 +170,51 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
             )}
 
             <div className='buttons'>
-              { (!uOwnIt && !transferStep && tokenAsk) && (
-                <Button
-                  content={`Buy it - ${formatKsmBalance(tokenAsk.price.add(tokenAsk.price.muln(2).divRound(new BN(100))))} KSM`}
-                  disabled={lowBalanceToBuy || lowKsmBalanceToBuy}
-                  onClick={sendCurrentUserAction.bind(null, 'BUY')}
-                />
-              )}
-              { (parseFloat(formatKsmBalance(deposited)) > 0) && (
-                <Button
-                  content='Withdraw ksm deposit'
-                  onClick={setReadyToWithdraw.bind(null, !readyToWithdraw)}
-                />
-              )}
-              { (uOwnIt && !uSellIt) && (
-                <Button
-                  content='Sell'
-                  disabled={lowBalanceToSell}
-                  onClick={sendCurrentUserAction.bind(null, 'SELL')}
-                />
-              )}
               { (uOwnIt && !uSellIt) && (
                 <Button
                   content='Transfer'
                   onClick={setShowTransferForm.bind(null, !showTransferForm)}
                 />
               )}
-              { (uSellIt && !transferStep) && (
-                <Button
-                  content={
-                    <>
-                      Delist
-                      { cancelStep && (
-                        <Loader
-                          active
-                          inline='centered'
-                        />
-                      )}
-                    </>
-                  }
-                  onClick={sendCurrentUserAction.bind(null, 'CANCEL')}
-                />
+              { showMarketActions && (
+                <>
+                  { (!uOwnIt && !transferStep && tokenAsk) && (
+                    <Button
+                      content={`Buy it - ${formatKsmBalance(tokenAsk.price.add(tokenAsk.price.muln(2).divRound(new BN(100))))} KSM`}
+                      disabled={lowBalanceToBuy || lowKsmBalanceToBuy}
+                      onClick={sendCurrentUserAction.bind(null, 'BUY')}
+                    />
+                  )}
+                  { (parseFloat(formatKsmBalance(deposited)) > 0) && (
+                    <Button
+                      content='Withdraw ksm deposit'
+                      onClick={setReadyToWithdraw.bind(null, !readyToWithdraw)}
+                    />
+                  )}
+                  { (uOwnIt && !uSellIt) && (
+                    <Button
+                      content='Sell'
+                      disabled={lowBalanceToSell}
+                      onClick={sendCurrentUserAction.bind(null, 'SELL')}
+                    />
+                  )}
+                  { (uSellIt && !transferStep) && (
+                    <Button
+                      content={
+                        <>
+                          Delist
+                          { cancelStep && (
+                            <Loader
+                              active
+                              inline='centered'
+                            />
+                          )}
+                        </>
+                      }
+                      onClick={sendCurrentUserAction.bind(null, 'CANCEL')}
+                    />
+                  )}
+                </>
               )}
             </div>
 

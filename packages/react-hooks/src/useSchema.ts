@@ -1,12 +1,14 @@
 // Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import type { NftCollectionInterface, TokenDetailsInterface } from '@polkadot/react-hooks/useCollections';
+import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
+import type { TokenDetailsInterface } from '@polkadot/react-hooks/useToken';
 
 import BN from 'bn.js';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { useCollections, useMetadata } from '@polkadot/react-hooks';
+import { useMetadata, useToken } from '@polkadot/react-hooks';
+import { useCollection } from '@polkadot/react-hooks/useCollection';
 import { TypeRegistry } from '@polkadot/types';
 
 export type AttributesDecoded = {
@@ -33,9 +35,10 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
   const [attributesVar, setAttributesVar] = useState<string>();
   const [attributes, setAttributes] = useState<AttributesDecoded>();
   const [tokenDetails, setTokenDetails] = useState<TokenDetailsInterface>();
-  const { getDetailedCollectionInfo, getTokenInfo } = useCollections();
+  const { getTokenInfo } = useToken();
+  const { getDetailedCollectionInfo } = useCollection();
   const cleanup = useRef<boolean>(false);
-  const { getOnChainSchema, getTokenImageUrl, mergeData } = useMetadata(localRegistry);
+  const { decodeStruct, getOnChainSchema, getTokenImageUrl } = useMetadata(localRegistry);
 
   const getReFungibleDetails = useCallback(() => {
     try {
@@ -91,12 +94,12 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
 
   const mergeTokenAttributes = useCallback(() => {
     const tokenAttributes: any = {
-      ...mergeData({ attr: attributesConst, data: tokenDetails?.ConstData }),
-      ...mergeData({ attr: attributesVar, data: tokenDetails?.VariableData })
+      ...decodeStruct({ attr: attributesConst, data: tokenDetails?.ConstData }),
+      ...decodeStruct({ attr: attributesVar, data: tokenDetails?.VariableData })
     };
 
     setAttributes(tokenAttributes);
-  }, [attributesConst, attributesVar, mergeData, tokenDetails]);
+  }, [attributesConst, attributesVar, decodeStruct, tokenDetails]);
 
   const saveTokenImageUrl = useCallback(async (collectionInf: NftCollectionInterface, tokenId: string) => {
     const tokenImageUrl = await getTokenImageUrl(collectionInf, tokenId);

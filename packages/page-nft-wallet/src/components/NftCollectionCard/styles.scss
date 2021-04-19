@@ -1,0 +1,49 @@
+.nft-collection-item {
+
+  .table {
+    margin: var(--gap) 0 var(--gap) var(--gap);
+  }
+
+  .expander-content {
+    display: flex;
+    grid-column-gap: 50px;
+    align-items: center;
+
+    .collection-info-row {
+      display: flex;
+      grid-column-gap: 0.5rem;
+      align-items: center;
+
+      &>div {
+        max-width: 475px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .token-image {
+        margin-right: 8px;
+      }
+    }
+
+    a.link-button {
+      color: var(--link-color);
+      position: absolute;
+      right: 0;
+    }
+  }
+
+  .ui--Expander-summary {
+    position: relative;
+
+    .ui--Expander-summary-header {
+
+      .expander-content {
+
+        .tokens-count {
+          font-family: var(--font-roboto) var(--font-mono);
+          font-size: 16px;
+        }
+      }
+    }
+  }
+}

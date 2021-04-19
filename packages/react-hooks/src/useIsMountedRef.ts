@@ -1,9 +1,9 @@
-// Copyright 2017-2021 @polkadot/react-hooks authors & contributors
+// Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { useEffect, useRef } from 'react';
+import { MutableRefObject, useEffect, useRef } from 'react';
 
-export type MountedRef = React.MutableRefObject<boolean>;
+export type MountedRef = MutableRefObject<boolean>;
 
 export function useIsMountedRef (): MountedRef {
   const isMounted = useRef(false);

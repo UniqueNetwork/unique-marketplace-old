@@ -2,14 +2,15 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import type { SubmittableExtrinsic } from '@polkadot/api/promise/types';
-import type { NftCollectionInterface, TokenDetailsInterface } from '@polkadot/react-hooks/useCollections';
+import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
+import type { TokenDetailsInterface } from '@polkadot/react-hooks/useToken';
 
 import { useMachine } from '@xstate/react';
 import BN from 'bn.js';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 import { StatusContext } from '@polkadot/react-components/Status';
-import { useApi, useBalance, useCollections, useKusamaApi, useNftContract } from '@polkadot/react-hooks';
+import { useApi, useBalance, useKusamaApi, useNftContract, useToken } from '@polkadot/react-hooks';
 import { BalanceInterface } from '@polkadot/react-hooks/useBalance';
 import { escrowAddress, findCallMethodByName, KUSAMA_DECIMALS, maxGas, quoteId } from '@polkadot/react-hooks/utils';
 
@@ -47,7 +48,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
   const [tokenInfo, setTokenInfo] = useState<TokenDetailsInterface>();
   const [saleFee, setSaleFee] = useState<BN>();
   const [buyFee, setBuyFee] = useState<BN>();
-  const { getDetailedReFungibleTokenInfo, getDetailedTokenInfo } = useCollections();
+  const { getDetailedReFungibleTokenInfo, getDetailedTokenInfo } = useToken();
   const { contractInstance, deposited, depositor, getDepositor, getTokenAsk, getUserDeposit, isContractReady, tokenAsk } = useNftContract(account);
   const { balance } = useBalance(account);
   const [error, setError] = useState<string | null>(null);
