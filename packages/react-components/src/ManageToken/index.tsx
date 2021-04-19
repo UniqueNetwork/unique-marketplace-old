@@ -8,22 +8,22 @@ import type { ImageInterface } from '@polkadot/react-hooks/useMintApi';
 
 import React, { useCallback, useState } from 'react';
 import ImageUploading from 'react-images-uploading';
+import { useLocation } from 'react-router-dom';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button';
+import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import Image from 'semantic-ui-react/dist/commonjs/elements/Image';
 import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
 import { Input, ManageTokenAttributes } from '@polkadot/react-components';
+import arrowLeft from '@polkadot/react-components/NftDetails/arrowLeft.svg';
 import { useMintApi } from '@polkadot/react-hooks';
 import { TypeRegistry } from '@polkadot/types';
 
 import Replace from './images/ArrowCounterClockwise.svg';
 import Picture from './images/picture.svg';
 import Delete from './images/TrashSimple.svg';
-import {useLocation} from "react-router-dom";
-import Header from "semantic-ui-react/dist/commonjs/elements/Header";
-import arrowLeft from "@polkadot/react-components/NftDetails/arrowLeft.svg";
 
 const maxFileSize = 5000000;
 
@@ -85,6 +85,8 @@ function ManageToken ({ account, setShouldUpdateTokens }: Props): React.ReactEle
     history.back();
   }, [setShouldUpdateTokens]);
 
+  const canManageTokenAttributes = false;
+
   return (
     <div className='manage-token'>
       <Header as='h1'>
@@ -102,7 +104,9 @@ function ManageToken ({ account, setShouldUpdateTokens }: Props): React.ReactEle
         back
       </a>
       <br />
-      <ManageTokenAttributes />
+      { canManageTokenAttributes && (
+        <ManageTokenAttributes />
+      )}
       <Form className='collection-search'>
         <Grid className='mint-grid'>
           <Grid.Row>

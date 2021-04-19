@@ -8,9 +8,10 @@ import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
+import Button from 'semantic-ui-react/dist/commonjs/elements/Button';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 
-import { Button, Input, LabelHelp, Table } from '@polkadot/react-components';
+import { Input, LabelHelp, Table } from '@polkadot/react-components';
 import { useCollections, useDecoder } from '@polkadot/react-hooks';
 
 interface Props {
@@ -82,24 +83,24 @@ function CollectionSearch ({ account, addCollection, collections }: Props): Reac
 
   return (
     <div className='collection-search'>
-      <Grid>
-        <Grid.Row>
-          <Grid.Column width={16}>
-            <Header as='h2'>
-              Find token collection
-              <LabelHelp
-                className='small-help'
-                help={'Enter the collection number or name'}
-              />
-            </Header>
-          </Grid.Column>
-        </Grid.Row>
-        <Grid.Row>
-          <Grid.Column width={16}>
-            <Form
-              className='collection-search-form'
-              onSubmit={searchCollection}
-            >
+      <Form
+        className='collection-search-form'
+        onSubmit={searchCollection}
+      >
+        <Grid>
+          <Grid.Row>
+            <Grid.Column width={16}>
+              <Header as='h3'>
+                Find token collection
+                <LabelHelp
+                  className='small-help'
+                  help={'Enter the collection number or name'}
+                />
+              </Header>
+            </Grid.Column>
+          </Grid.Row>
+          <Grid.Row>
+            <Grid.Column width={14}>
               { account && (
                 <Form.Field>
                   <Input
@@ -112,53 +113,56 @@ function CollectionSearch ({ account, addCollection, collections }: Props): Reac
                     placeholder='Search...'
                     value={searchString}
                     withLabel
-                  >
-                    <Button
-                      icon='play'
-                      onClick={searchCollection}
-                    />
-                  </Input>
+                  />
                 </Form.Field>
               )}
-            </Form>
-          </Grid.Column>
-        </Grid.Row>
-        <Grid.Row>
-          <Grid.Column width={16}>
-            <Header as='h3'>
-                Search results
-              <LabelHelp
-                className='small-help'
-                help={'Add the collection you want'}
-              />
-            </Header>
-            <Table
-              empty={'No results'}
-              header={[]}
-            >
-              {collectionsMatched.map((item) => (
-                <tr
-                  className='collection-row'
-                  key={item.id}
-                >
-                  <td className='collection-name'>
-                  Collection name: <strong>{collectionName16Decoder(item.Name)}</strong>
-                  </td>
-                  <td className='collection-actions'>
-                    <Button
-                      icon='plus'
-                      isBasic
-                      isDisabled={hasThisCollection(item)}
-                      label='Add collection'
-                      onClick={addCollectionToAccount.bind(null, item)}
-                    />
-                  </td>
-                </tr>
-              ))}
-            </Table>
-          </Grid.Column>
-        </Grid.Row>
-      </Grid>
+            </Grid.Column>
+            <Grid.Column width={2}>
+              <Form.Field>
+                <Button
+                  content={'Search'}
+                  onClick={searchCollection}
+                />
+              </Form.Field>
+            </Grid.Column>
+          </Grid.Row>
+          <Grid.Row>
+            <Grid.Column width={16}>
+              <Header as='h3'>
+                  Search results
+                <LabelHelp
+                  className='small-help'
+                  help={'Add the collection you want'}
+                />
+              </Header>
+              <Table
+                empty={'No results'}
+                header={[]}
+              >
+                {collectionsMatched.map((item) => (
+                  <tr
+                    className='collection-row'
+                    key={item.id}
+                  >
+                    <td className='collection-name'>
+                    Collection name: <strong>{collectionName16Decoder(item.Name)}</strong>
+                    </td>
+                    <td className='collection-actions'>
+                      <Button
+                        icon='plus'
+                        isBasic
+                        isDisabled={hasThisCollection(item)}
+                        label='Add collection'
+                        onClick={addCollectionToAccount.bind(null, item)}
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </Table>
+            </Grid.Column>
+          </Grid.Row>
+        </Grid>
+      </Form>
     </div>
   );
 }

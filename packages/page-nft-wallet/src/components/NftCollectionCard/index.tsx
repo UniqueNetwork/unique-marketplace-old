@@ -119,6 +119,8 @@ function NftCollectionCard ({ account, canTransferTokens, collection, localRegis
     };
   }, []);
 
+  const canEditCollection = false;
+
   return (
     <Expander
       className='nft-collection-item'
@@ -153,12 +155,14 @@ function NftCollectionCard ({ account, canTransferTokens, collection, localRegis
               <span>, Own: {ownTokensCount} {ownTokensCount > 1 ? 'items' : 'item'}</span>
             )}
           </div>
-          <a
-            className='link-button'
-            onClick={editCollection.bind(null, collection.id)}
-          >
-            Edit
-          </a>
+          { canEditCollection && (
+            <a
+              className='link-button'
+              onClick={editCollection.bind(null, collection.id)}
+            >
+              Edit
+            </a>
+          )}
         </div>
       }
     >

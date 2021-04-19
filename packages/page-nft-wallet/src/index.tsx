@@ -19,10 +19,10 @@ import NftWallet from './containers/NftWallet';
 import TokensForSale from './containers/TokensForSale';
 
 const createOptions = [
-  {
+  /* {
     text: 'Create collection',
     value: 'collection'
-  },
+  }, */
   {
     text: 'Create token',
     value: 'token'

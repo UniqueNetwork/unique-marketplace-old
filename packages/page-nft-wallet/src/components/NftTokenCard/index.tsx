@@ -49,6 +49,8 @@ function NftTokenCard ({ account, canTransferTokens, collection, localRegistry, 
     return '';
   }, [attributes]);
 
+  const canEditToken = false;
+
   if (!reFungibleBalance && collection?.Mode?.reFungible) {
     return <></>;
   }
@@ -85,13 +87,15 @@ function NftTokenCard ({ account, canTransferTokens, collection, localRegistry, 
         >
           Transfer token
         </Button>
-        <Button
-          disabled={!canTransferTokens}
-          onClick={editToken.bind(null, collection.id, token)}
-          primary
-        >
-          Edit
-        </Button>
+        { canEditToken && (
+          <Button
+            disabled={!canTransferTokens}
+            onClick={editToken.bind(null, collection.id, token)}
+            primary
+          >
+            Edit
+          </Button>
+        )}
       </td>
     </tr>
   );
