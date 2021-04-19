@@ -3,7 +3,8 @@
 
 import './styles.scss';
 
-import type { CollectionWithTokensCount, TokenDetailsInterface, TokenInterface } from '@polkadot/react-hooks/useCollections';
+import type { CollectionWithTokensCount, TokenInterface } from '@polkadot/react-hooks/useCollections';
+import type { TokenDetailsInterface } from '@polkadot/react-hooks/useToken';
 
 // external imports
 import React, { memo, ReactElement, useCallback, useEffect, useRef, useState } from 'react';
@@ -14,7 +15,7 @@ import Header from 'semantic-ui-react/dist/commonjs/elements/Header/Header';
 import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
 // import { Input } from '@polkadot/react-components';
-import { useCollections } from '@polkadot/react-hooks';
+import { useCollections, useToken } from '@polkadot/react-hooks';
 import { AttributesDecoded } from '@polkadot/react-hooks/useSchema';
 import { UNIQUE_COLLECTION_ID } from '@polkadot/react-hooks/utils';
 import { TypeRegistry } from '@polkadot/types';
@@ -37,7 +38,8 @@ const perPage = 20;
 
 const AllNfts = ({ account, localRegistry, setShouldUpdateTokens }: BuyTokensProps): ReactElement => {
   const history = useHistory();
-  const { getCollectionWithTokenCount, getTokenInfo } = useCollections();
+  const { getCollectionWithTokenCount } = useCollections();
+  const { getTokenInfo } = useToken();
   const [searchString] = useState<string>('');
   const [collectionWithTokensCount, setCollectionWithTokensCount] = useState<CollectionWithTokensCount>();
   const [tokensLoading, setTokensLoading] = useState<boolean>(false);
@@ -186,6 +188,7 @@ const AllNfts = ({ account, localRegistry, setShouldUpdateTokens }: BuyTokensPro
                     ? <></>
                     : <Loader
                       active
+                      className='load-more'
                       inline='centered'
                     />}
                   pageStart={1}
