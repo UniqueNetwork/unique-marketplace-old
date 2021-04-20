@@ -4,6 +4,69 @@ hr {
   border-top: 1px solid var(--border-color);
 }
 
+.ui.header {
+  color: var(--title-color);
+}
+
+.ui.modal {
+  border: 1px solid var(--modal-border-color);
+  color: var(--modal-text-color);
+
+  .header {
+    color: var(--modal-text-color) !important;
+  }
+
+  .ui.dropdown.selection.disabled {
+    background: var(--account-selector-background);
+
+    .ui--KeyPair {
+      .name {
+        .ui--AccountName {
+          color: var(--account-selector-name-color);
+        }
+      }
+      .address {
+        color: var(--account-selector-address-color);
+      }
+    }
+  }
+
+  h2 {
+    color: var(--modal-text-color);
+  }
+
+  .actions {
+
+    .ui--Button {
+      background: var(--link-color);
+      color: var(--text-color);
+      margin: 0 1rem;
+
+      &:active {
+        background: var(--link-color);
+        color: var(--text-color);
+      }
+
+      &:hover {
+        background: var(--link-color);
+        color: var(--text-color);
+      }
+
+      &.isDisabled {
+        opacity: 0.5;
+      }
+
+      &:last-child {
+        margin: 0;
+      }
+
+      .ui--Icon {
+        background: var(--link-color) !important;
+      }
+    }
+  }
+}
+
 h1.ui.header {
   font: 700 36px/48px var(--font-inter);
   color: var(--title-color);
@@ -60,25 +123,45 @@ h4.ui.header {
         padding: 8px 24px !important;
         margin: 0;
         min-height: 0;
-        height: 40px;;
+        height: 40px;
+
+        &.selection {
+          .menu {
+            .item {
+              border-color: var(--border-color);
+            }
+          }
+        }
 
         .text {
-          color: white !important;
+          color: var(--text-color) !important;
           font-family: var(--font-roboto) var(--font-mono);
           font-size: 16px;
         }
 
         .menu {
+          border-color: var(--border-color);
+
           .text {
-            color: var(--color-text) !important;
+            color: var(--text-color) !important;
           }
+
         }
       }
     }
   }
 
-  .ui.dropdown .text {
-    width: 100%;
+  .ui.dropdown {
+
+    &.active {
+      &:hover {
+        border: 1px solid var(--account-selector-background);
+      }
+    }
+
+    .text {
+      width: 100%;
+    }
   }
 
   .ui.disabled.search {
@@ -114,20 +197,20 @@ h4.ui.header {
     height: 100%;
   }
 
-  .dyvfBJ > .icon {
-    top: 50% !important;
-    left: -28px !important;
-    transform: translate(0, -50%);
-    width: 24px;
-    height: 24px;
-    border: 0px;
-    border-radius: 0;
-  }
-
   .ui--KeyPair {
     flex-direction: column;
     color: var(--link-color);
     font: 500 14px/14px var(--font-roboto);
+
+    .icon {
+      top: 50% !important;
+      left: -28px !important;
+      transform: translate(0, -50%);
+      width: 24px;
+      height: 24px;
+      border: 0px;
+      border-radius: 0;
+    }
 
     & > .address {
       margin-left: 0;
@@ -218,9 +301,17 @@ h4.ui.header {
   }
 }
 
-.ui.loader.load-more {
-  margin-top: 1rem;
-  margin-bottom: 1rem;
+.ui.loader {
+  color: var(--text-color);
+
+  &:after {
+    left: 40% !important;
+  }
+
+  .load-more {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
 }
 
 .ui.grid>.row {
@@ -324,7 +415,6 @@ button.ui.button,
   display: flex;
   align-items: center;
   letter-spacing: 0.11em;
-  color: var(--link-color) !important;
   font: 500 16px/24px var(--font-roboto) !important;
 
   img {
@@ -395,13 +485,13 @@ button.ui.button,
   display: flex;
   flex-direction: row;
   align-items: center;
-  color: var(--link-color) !important;;
+  color: var(--card-link-color) !important;
   font-style: normal;
   font-weight: 500;
   font-size: 16px;
   line-height: 24px;
 
-  img {
+  svg {
     margin-right: 8px;
   }
 }
@@ -431,5 +521,40 @@ button.ui.button,
     &:focus {
       background: var(--input-background-color);
     }
+  }
+}
+
+.template--AccountSelector {
+  background: var(--account-selector-background);
+  border-radius: 6px;
+
+  .ui.dropdown {
+    .menu {
+      background: var(--account-selector-background);
+
+      &::-webkit-scrollbar-track {
+        background: var(--dropdown-scrollbar-track-color);
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: var(--dropdown-scrollbar-color);
+      }
+
+      &::-webkit-scrollbar-thumb:hover {
+        background: var(--dropdown-scrollbar-color);
+      }
+
+      .header {
+        color: var(--account-selector-name-color);
+      }
+    }
+  }
+
+  .ui--AccountName {
+    color: var(--account-selector-name-color);
+  }
+
+  .address {
+    color: var(--account-selector-address-color);
   }
 }

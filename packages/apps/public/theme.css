@@ -33,7 +33,7 @@
   --link-color: #40BCFF;
   --bg-page: #F9FAFF;
   --header-background: #fff;
-  --sub-header-color: #FE019A;
+  --sub-header-color: #000;
   --sub-header-font-size: 14px;
   --sub-header-text-transform: #040B1D;
   --menu-text-transform: none;
@@ -41,6 +41,16 @@
   --text-color: #000;
   --title-color: #040B1D;
   --input-background-color: #FAFAFA;
+  --max-header-width: 100%;
+  --card-border-color: #ECECEC;
+  --card-background: #FAFAFA;
+  --card-text-color: #000;
+  --card-link-color: #40BCFF;
+  --account-selector-background: #F9FAFF;
+  --account-selector-name-color: #000;
+  --account-selector-address-color: #000;
+  --dropdown-scrollbar-color: #000;
+  --modal-border-color: transparent;
 }
 
 [data-theme="NF3Digital"] {
@@ -76,12 +86,15 @@
   --text-color: white;
   --title-color: #040B1D;
   --input-background-color: #FAFAFA;
+  --max-header-width: 100%;
+  --card-border-color: #ECECEC;
+  --card-background: #FAFAFA;
+  --dropdown-scrollbar-color: #FAFAFA;
 }
 
 [data-theme="LUVNFT"] {
   --white-color: #fff;
   --black-color: #000;
-  --border-color: #ECECEC;
   --link-text-color: #FE019A;
   --error-color: #FF6335;
   --divider-color: #F5F5F5;
@@ -101,8 +114,9 @@
   --font-inter: 'Inter', Frutiger, 'Frutiger Linotype', 'Dejavu Sans',
   'Helvetica Neue', Arial, sans-serif;
 
-  --link-color: #40BCFF;
+  --link-color: #1400C6;
   --bg-page: #000000;
+  --border-color: #1400C6;
   --header-background: #BEEF00;
   --sub-header-color: #FE019A;
   --sub-header-font-size: 24px;
@@ -112,6 +126,18 @@
   --text-color: white;
   --title-color: white;
   --input-background-color: #FAFAFA;
+  --max-header-width: 1200px;
+  --card-border-color: #000000;
+  --card-background: #000000;
+  --card-text-color: white;
+  --card-link-color: #FE019A;
+  --account-selector-background: #1400C6;
+  --account-selector-name-color: white;
+  --account-selector-address-color: white;
+  --dropdown-scrollbar-color: black;
+  --dropdown-scrollbar-track-color: white;
+  --modal-border-color: white;
+  --modal-text-color: white;
 }
 
 [data-theme="Vernissage"] {
@@ -147,4 +173,7 @@
   --text-color: white;
   --title-color: white;
   --input-background-color: #FAFAFA;
+  --max-header-width: 100%;
+  --card-border-color: #ECECEC;
+  --card-background: #FAFAFA;
 }

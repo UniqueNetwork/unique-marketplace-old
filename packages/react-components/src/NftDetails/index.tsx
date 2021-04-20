@@ -18,7 +18,6 @@ import { useBalance, useDecoder, useMarketplaceStages, useSchema } from '@polkad
 import { KUSAMA_DECIMALS } from '@polkadot/react-hooks/utils';
 import { TypeRegistry } from '@polkadot/types';
 
-import arrowLeft from './arrowLeft.svg';
 import BuySteps from './BuySteps';
 import SaleSteps from './SaleSteps';
 import SetPriceModal from './SetPriceModal';
@@ -39,13 +38,14 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
   const { hex2a } = useDecoder();
   const { attributes, collectionInfo, reFungibleBalance, tokenUrl } = useSchema(account, collectionId, tokenId, localRegistry);
   const [tokenPriceForSale, setTokenPriceForSale] = useState<string>('');
-  const { buyFee, cancelStep, deposited, escrowAddress, formatKsmBalance, kusamaBalance, readyToAskPrice, saleFee, sendCurrentUserAction, setPrice, setReadyToAskPrice, setWithdrawAmount, tokenAsk, tokenInfo, transferStep, withdrawAmount } = useMarketplaceStages(account, collectionInfo, tokenId);
+  const { buyFee, cancelStep, deposited, escrowAddress, formatKsmBalance, kusamaBalance, readyToAskPrice, sendCurrentUserAction, setPrice, setReadyToAskPrice, setWithdrawAmount, tokenAsk, tokenInfo, transferStep, withdrawAmount } = useMarketplaceStages(account, collectionInfo, tokenId);
 
   const uOwnIt = tokenInfo?.Owner?.toString() === account || (tokenAsk && tokenAsk.owner === account);
   const uSellIt = tokenAsk && tokenAsk.owner === account;
   const lowBalanceToBuy = !!(buyFee && !balance?.free.gte(buyFee));
   const lowKsmBalanceToBuy = tokenAsk?.price && kusamaBalance?.free.add(deposited || new BN(0)).lte(tokenAsk.price);
-  const lowBalanceToSell = !!(saleFee && !balance?.free.gte(saleFee));
+  // sponsoring is enabled
+  // const lowBalanceToSell = !!(saleFee && !balance?.free.gte(saleFee));
 
   const goBack = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
@@ -97,10 +97,20 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
         href='/'
         onClick={goBack}
       >
-        <Image
-          className='go-back'
-          src={arrowLeft}
-        />
+        <svg fill='none'
+          height='16'
+          viewBox='0 0 16 16'
+          width='16'
+          xmlns='http://www.w3.org/2000/svg'>
+          <path d='M13.5 8H2.5'
+            stroke='var(--card-link-color)'
+            strokeLinecap='round'
+            strokeLinejoin='round'/>
+          <path d='M7 3.5L2.5 8L7 12.5'
+            stroke='var(--card-link-color)'
+            strokeLinecap='round'
+            strokeLinejoin='round'/>
+        </svg>
         back
       </a>
       <Grid className='token-info'>
@@ -135,11 +145,11 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
                   {formatKsmBalance(tokenAsk.price.add(tokenAsk.price.muln(2).divRound(new BN(100))))} KSM
                 </Header>
                 <p>Fee: {formatKsmBalance(tokenAsk.price.muln(2).divRound(new BN(100)))} KSM, Price: {formatKsmBalance(tokenAsk.price)} KSM</p>
-                { uOwnIt && !uSellIt && lowBalanceToSell && (
+                {/* { uOwnIt && !uSellIt && lowBalanceToSell && (
                   <div className='warning-block'>Your balance is too low to pay fees. <a href='https://t.me/unique2faucetbot'
                     rel='noreferrer nooperer'
                     target='_blank'>Get testUnq here</a></div>
-                )}
+                )} */}
                 { (!uOwnIt && !transferStep && tokenAsk) && lowBalanceToBuy && (
                   <div className='warning-block'>Your balance is too low to pay fees. <a href='https://t.me/unique2faucetbot'
                     rel='noreferrer nooperer'
@@ -194,7 +204,6 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
                   { (uOwnIt && !uSellIt) && (
                     <Button
                       content='Sell'
-                      disabled={lowBalanceToSell}
                       onClick={sendCurrentUserAction.bind(null, 'SELL')}
                     />
                   )}

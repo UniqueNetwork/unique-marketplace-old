@@ -48,7 +48,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
   const [tokenInfo, setTokenInfo] = useState<TokenDetailsInterface>();
   const [saleFee, setSaleFee] = useState<BN>();
   const [buyFee, setBuyFee] = useState<BN>();
-  const { getDetailedReFungibleTokenInfo, getDetailedTokenInfo } = useToken();
+  const { getTokenInfo } = useToken();
   const { contractInstance, deposited, depositor, getDepositor, getTokenAsk, getUserDeposit, isContractReady, tokenAsk } = useNftContract(account);
   const { balance } = useBalance(account);
   const [error, setError] = useState<string | null>(null);
@@ -61,30 +61,14 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
     send(userAction);
   }, [send]);
 
-  const getTokenInfo = useCallback(async () => {
-    let info;
-
-    if (!collectionInfo) {
-      return;
-    }
-
-    if (Object.prototype.hasOwnProperty.call(collectionInfo.Mode, 'reFungible')) {
-      info = await getDetailedReFungibleTokenInfo(collectionInfo.id, tokenId);
-    } else {
-      info = await getDetailedTokenInfo(collectionInfo.id, tokenId);
-    }
-
-    setTokenInfo(info);
-
-    return info;
-  }, [collectionInfo, getDetailedReFungibleTokenInfo, getDetailedTokenInfo, tokenId]);
-
   const loadingTokenInfo = useCallback(async () => {
     if (!collectionInfo) {
       return;
     }
 
-    const info = await getTokenInfo();
+    const info: TokenDetailsInterface = await getTokenInfo(collectionInfo, tokenId);
+
+    setTokenInfo(info);
     const ask = await getTokenAsk(collectionInfo.id, tokenId);
 
     await getUserDeposit();

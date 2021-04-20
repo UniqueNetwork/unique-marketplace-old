@@ -31,7 +31,7 @@ interface Props {
   isMultiple?: boolean;
   label?: React.ReactNode;
   labelExtra?: React.ReactNode;
-  onChange?: (value: string | null) => void;
+  onChange?: (value: string | undefined) => void;
   onChangeMulti?: (value: string[]) => void;
   options?: KeyringSectionOption[];
   optionsAll?: Record<string, Option[]>;
@@ -66,15 +66,15 @@ function transformToAddress (value?: string | Uint8Array | null): string | null 
   return null;
 }
 
-function transformToAccountId (value: string): string | null {
+function transformToAccountId (value: string): string | undefined {
   if (!value) {
-    return null;
+    return undefined;
   }
 
   const accountId = transformToAddress(value);
 
   return !accountId
-    ? null
+    ? undefined
     : accountId;
 }
 
@@ -219,7 +219,7 @@ class InputAddress extends React.PureComponent<Props, State> {
       : undefined;
   }
 
-  private hasValue (test?: Uint8Array | string | null): boolean {
+  private hasValue (test?: Uint8Array | string | undefined): boolean {
     return this.getFiltered().some(({ value }) => test === value);
   }
 
@@ -239,7 +239,7 @@ class InputAddress extends React.PureComponent<Props, State> {
     onChange && onChange(
       this.hasValue(address)
         ? transformToAccountId(address)
-        : null
+        : undefined
     );
   }
 

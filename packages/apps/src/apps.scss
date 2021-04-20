@@ -54,7 +54,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    max-width: 100%;
+    max-width: var(--max-header-width);
   }
 }
 
@@ -66,6 +66,10 @@
 
 .app-balances {
   display: flex;
+
+  &--item {
+
+  }
 
   .app-balance--item {
     border-right: 1px solid var(--border-color);

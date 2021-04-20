@@ -8,6 +8,7 @@ import type { BareProps as Props, ThemeDef } from '@polkadot/react-components/ty
 import React, { Suspense, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import Menu from 'semantic-ui-react/dist/commonjs/collections/Menu';
+import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 import store from 'store';
 import { ThemeContext } from 'styled-components';
 
@@ -92,8 +93,6 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
   }, [api]);
 
   useEffect(() => {
-    console.log('process.env', process.env);
-
     void detectWeb3();
   }, [detectWeb3]);
 
@@ -106,7 +105,12 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
             {needsApi && (!isApiReady || !isApiConnected)
               ? (
                 <div className='connecting'>
-                  <Spinner label='Initializing connection' />
+                  <Loader
+                    active
+                    inline='centered'
+                  >
+                    Initializing connection
+                  </Loader>
                 </div>
               )
               : (

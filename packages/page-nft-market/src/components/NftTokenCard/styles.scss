@@ -1,16 +1,31 @@
 .ui.card {
   box-shadow: none;
   border-radius: 0;
-  border: 1px solid var(--border-color) !important;
 
   &.token-card {
     width: auto;
     margin: 0;
+    border: 1px solid var(--card-border-color) !important;
+    background: var(--card-background);
+
+    .link {
+      color: var(--card-link-color);
+    }
+
+    &:hover {
+      border: 1px solid var(--card-border-color) !important;
+      background: var(--card-background);
+    }
 
     .content {
       display: flex;
       flex-direction: column;
       border-top: 0;
+      color: var(--card-text-color);
+
+      .description {
+        color: var(--card-text-color);
+      }
     }
 
     & > .image {

@@ -14,8 +14,6 @@ import { formatKsmBalance } from '@polkadot/react-hooks/useKusamaApi';
 import { AttributesDecoded } from '@polkadot/react-hooks/useSchema';
 import { TypeRegistry } from '@polkadot/types';
 
-import Arrow from '../../../../apps/public/icons/arrowRight.svg';
-
 interface Props {
   account: string;
   collectionId: string;
@@ -63,9 +61,20 @@ const NftTokenCard = ({ account, collectionId, localRegistry, onSetTokenAttribut
           </Card.Description>
           <Card.Meta>
             <span className='link'>View
-              <Image
-                src={Arrow}
-              />
+              <svg fill='none'
+                height='16'
+                viewBox='0 0 16 16'
+                width='16'
+                xmlns='http://www.w3.org/2000/svg'>
+                <path d='M2.5 8H13.5'
+                  stroke='var(--card-link-color)'
+                  strokeLinecap='round'
+                  strokeLinejoin='round'/>
+                <path d='M9 3.5L13.5 8L9 12.5'
+                  stroke='var(--card-link-color)'
+                  strokeLinecap='round'
+                  strokeLinejoin='round'/>
+              </svg>
             </span>
           </Card.Meta>
         </Card.Content>

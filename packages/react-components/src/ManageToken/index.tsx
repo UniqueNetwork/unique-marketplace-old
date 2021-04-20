@@ -17,7 +17,6 @@ import Image from 'semantic-ui-react/dist/commonjs/elements/Image';
 import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
 import { Input, ManageTokenAttributes } from '@polkadot/react-components';
-import arrowLeft from '@polkadot/react-components/NftDetails/arrowLeft.svg';
 import { useMintApi } from '@polkadot/react-hooks';
 import { TypeRegistry } from '@polkadot/types';
 
@@ -97,10 +96,20 @@ function ManageToken ({ account, setShouldUpdateTokens }: Props): React.ReactEle
         href='/'
         onClick={goBack}
       >
-        <Image
-          className='go-back'
-          src={arrowLeft}
-        />
+        <svg fill='none'
+          height='16'
+          viewBox='0 0 16 16'
+          width='16'
+          xmlns='http://www.w3.org/2000/svg'>
+          <path d='M13.5 8H2.5'
+            stroke='var(--card-link-color)'
+            strokeLinecap='round'
+            strokeLinejoin='round'/>
+          <path d='M7 3.5L2.5 8L7 12.5'
+            stroke='var(--card-link-color)'
+            strokeLinecap='round'
+            strokeLinejoin='round'/>
+        </svg>
         back
       </a>
       <br />
