@@ -89,7 +89,7 @@ function NftWallet ({ account, localRegistry, setShouldUpdateTokens, shouldUpdat
         collections={collections}
       />
       <br />
-      <Header as='h2'>
+      <Header as='h3'>
         My collections
         <LabelHelp
           className='small-help'

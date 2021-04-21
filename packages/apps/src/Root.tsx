@@ -14,7 +14,7 @@ import { BlockAuthors, Events } from '@polkadot/react-query';
 import { settings } from '@polkadot/ui-settings';
 
 import Apps from './Apps';
-import { luvTheme, nf3Theme, Themes, uniqueTheme, vernissageTheme } from './themes';
+import { Themes, uniqueTheme } from './themes';
 import WindowDimensions from './WindowDimensions';
 
 interface Props {
@@ -29,16 +29,7 @@ function createTheme ({ uiTheme }: { uiTheme: string }): ThemeDef {
   document && document.documentElement &&
     document.documentElement.setAttribute('data-theme', validTheme ? validTheme.theme : 'Unique');
 
-  switch (uiTheme) {
-    case 'NF3Digital':
-      return nf3Theme;
-    case 'LUVNFT':
-      return luvTheme;
-    case 'Vernissage':
-      return vernissageTheme;
-    default:
-      return uniqueTheme;
-  }
+  return validTheme || uniqueTheme;
 }
 
 function Root ({ store }: Props): React.ReactElement<Props> {

@@ -31,12 +31,29 @@
         margin-top: 0;
         font-weight: 500;
       }
+
+      &.app-logo {
+        background-color: transparent;
+        padding: 0;
+        width: auto;
+        margin-right: 50px;
+
+        img {
+          width: auto;
+          max-width: 130px;
+        }
+      }
     }
   }
 }
 
 .app-user {
-  width: 230px;
+  display: flex;
+  align-items: center;
+
+  .account-selector-block {
+    width: 230px;
+  }
 }
 
 .app-main {

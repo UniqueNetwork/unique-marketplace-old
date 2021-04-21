@@ -3,18 +3,23 @@
 
 import type { ThemeDef } from '@polkadot/react-components/types';
 
+import nf4Digital from '../public/logos/nf4Digital.png';
+import UniqueLogo from '../public/logos/unique.svg';
+
 export const uniqueTheme: ThemeDef = {
   domain: 'whitelabel.market',
+  logo: UniqueLogo as string,
   theme: 'Unique'
 };
 
 export const nf3Theme: ThemeDef = {
   domain: 'nf3digital.com',
+  logo: nf4Digital as string,
   theme: 'NF3Digital'
 };
 
 export const luvTheme: ThemeDef = {
-  ip: 'localhost', // '18.206.14.88',
+  ip: '18.206.14.88',
   theme: 'LUVNFT'
 };
 

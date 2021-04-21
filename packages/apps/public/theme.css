@@ -51,6 +51,7 @@
   --account-selector-address-color: #000;
   --dropdown-scrollbar-color: #000;
   --modal-border-color: transparent;
+  --modal-text-color: #000;
 }
 
 [data-theme="NF3Digital"] {
@@ -76,20 +77,27 @@
   'Helvetica Neue', Arial, sans-serif;
 
   --link-color: #40BCFF;
-  --bg-page: #000000;
-  --header-background: #BEEF00;
-  --sub-header-color: #FE019A;
-  --sub-header-font-size: 24px;
-  --sub-header-text-transform: uppercase;
-  --menu-text-transform: uppercase;
+  --bg-page: #F9FAFF;
+  --header-background: #fff;
+  --sub-header-color: #000;
+  --sub-header-font-size: 14px;
+  --sub-header-text-transform: #040B1D;
+  --menu-text-transform: none;
   --menu-font-size: 16px;
-  --text-color: white;
+  --text-color: #000;
   --title-color: #040B1D;
   --input-background-color: #FAFAFA;
   --max-header-width: 100%;
   --card-border-color: #ECECEC;
   --card-background: #FAFAFA;
-  --dropdown-scrollbar-color: #FAFAFA;
+  --card-text-color: #000;
+  --card-link-color: #40BCFF;
+  --account-selector-background: #F9FAFF;
+  --account-selector-name-color: #000;
+  --account-selector-address-color: #000;
+  --dropdown-scrollbar-color: #000;
+  --modal-border-color: transparent;
+  --modal-text-color: #000;
 }
 
 [data-theme="LUVNFT"] {
@@ -163,17 +171,25 @@
   'Helvetica Neue', Arial, sans-serif;
 
   --link-color: #40BCFF;
-  --bg-page: #000000;
-  --header-background: #BEEF00;
-  --sub-header-color: #FE019A;
-  --sub-header-font-size: 24px;
-  --sub-header-text-transform: uppercase;
-  --menu-text-transform: uppercase;
+  --bg-page: #F9FAFF;
+  --header-background: #fff;
+  --sub-header-color: #000;
+  --sub-header-font-size: 14px;
+  --sub-header-text-transform: #040B1D;
+  --menu-text-transform: none;
   --menu-font-size: 16px;
-  --text-color: white;
-  --title-color: white;
+  --text-color: #000;
+  --title-color: #040B1D;
   --input-background-color: #FAFAFA;
   --max-header-width: 100%;
   --card-border-color: #ECECEC;
   --card-background: #FAFAFA;
+  --card-text-color: #000;
+  --card-link-color: #40BCFF;
+  --account-selector-background: #F9FAFF;
+  --account-selector-name-color: #000;
+  --account-selector-address-color: #000;
+  --dropdown-scrollbar-color: #000;
+  --modal-border-color: transparent;
+  --modal-text-color: #000;
 }

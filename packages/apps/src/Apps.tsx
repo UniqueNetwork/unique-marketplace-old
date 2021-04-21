@@ -21,7 +21,7 @@ import { getSystemChainColor } from '@polkadot/apps-config';
 import createRoutes from '@polkadot/apps-routing';
 import { Route } from '@polkadot/apps-routing/types';
 import { web3Enable } from '@polkadot/extension-dapp';
-import { AccountSelector, ErrorBoundary, Spinner, StatusContext } from '@polkadot/react-components';
+import { AccountSelector, ErrorBoundary, StatusContext } from '@polkadot/react-components';
 import GlobalStyle from '@polkadot/react-components/styles';
 import { useApi } from '@polkadot/react-hooks';
 import Signer from '@polkadot/react-signer';
@@ -49,7 +49,7 @@ const NOT_FOUND: Route = {
 function Apps ({ className = '' }: Props): React.ReactElement<Props> {
   const location = useLocation();
   const { t } = useTranslation();
-  const { theme } = useContext<ThemeDef>(ThemeContext);
+  const theme = useContext<ThemeDef>(ThemeContext);
   const { api, isApiConnected, isApiReady, systemChain, systemName } = useApi();
   const { queueAction } = useContext(StatusContext);
   const [account, setAccount] = useState<string>();
@@ -96,10 +96,12 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
     void detectWeb3();
   }, [detectWeb3]);
 
+  console.log('theme', theme);
+
   return (
     <>
       <GlobalStyle uiHighlight={uiHighlight} />
-      <div className={`app-wrapper theme--${theme} ${className}`}>
+      <div className={`app-wrapper theme--${theme.theme} ${className}`}>
         <AccountSidebar>
           <Signer>
             {needsApi && (!isApiReady || !isApiConnected)
@@ -131,6 +133,20 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                             <header className='app-header'>
                               <div className='app-container app-container--header'>
                                 <Menu tabular>
+                                  { theme.logo && (
+                                    <Menu.Item
+                                      active={location.pathname === '/'}
+                                      as={NavLink}
+                                      className='app-logo'
+                                      icon={
+                                        <img
+                                          alt={`logo ${theme.theme}`}
+                                          src={theme.logo}
+                                        />
+                                      }
+                                      to='/'
+                                    />
+                                  )}
                                   <Menu.Item
                                     active={location.pathname === '/market'}
                                     as={NavLink}
@@ -156,11 +172,13 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                                     to='/trades'
                                   />
                                 </Menu>
-                                { isApiReady && (
-                                  <BalancesHeader account={account} />
-                                )}
                                 <div className='app-user'>
-                                  <AccountSelector onChange={setAccount} />
+                                  { isApiReady && (
+                                    <BalancesHeader account={account} />
+                                  )}
+                                  <div className='account-selector-block'>
+                                    <AccountSelector onChange={setAccount} />
+                                  </div>
                                 </div>
                               </div>
                             </header>

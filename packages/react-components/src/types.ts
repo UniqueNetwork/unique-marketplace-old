@@ -77,6 +77,7 @@ export interface ThemeDef {
   domain?: string;
   ip?: string;
   theme: ThemeType;
+  logo?: string;
 }
 
 export interface ThemeProps {
