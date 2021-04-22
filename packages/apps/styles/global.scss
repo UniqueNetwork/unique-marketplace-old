@@ -499,16 +499,13 @@ button.ui.button,
 .go-back {
   display: flex;
   flex-direction: row;
+  grid-column-gap: 10px;
   align-items: center;
   color: var(--card-link-color) !important;
   font-style: normal;
   font-weight: 500;
   font-size: 16px;
   line-height: 24px;
-
-  svg {
-    margin-right: 8px;
-  }
 }
 
 .app-header {
@@ -537,6 +534,20 @@ button.ui.button,
     }
     &:focus {
       background: var(--input-background-color);
+    }
+  }
+}
+
+.TextAreaWithDropdown {
+  textarea {
+    color: var(--input-text-color) !important;
+    background: var(--input-background-color) !important;
+
+    &:active {
+      background: var(--input-background-color) !important;
+    }
+    &:focus {
+      background: var(--input-background-color) !important;
     }
   }
 }
