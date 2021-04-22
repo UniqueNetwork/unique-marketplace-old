@@ -108,6 +108,10 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
           setDescription(collectionName16Decoder(info.Description));
           setTokenPrefix(hex2a(info.TokenPrefix));
 
+          if (info.Sponsorship.confirmed) {
+            setSponsorAddress(info.Sponsorship.confirmed);
+          }
+
           const schema: { metadata: string, metadataJson: MetadataJsonType } = await getEndParseOffchainSchemaMetadata(info);
 
           setCurrentOffchainSchema(schema.metadata);
@@ -127,6 +131,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
           if (schema.metadataJson.video) {
             setVideoUrl(schema.metadataJson.video);
           }
+
           // strToUTF16(tokenPrefix)
           console.log('info', info, 'offChainSchema', schema);
         }
@@ -472,6 +477,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
                       )}
                     </>
                   }
+                  disabled={sponsorAddress !== account}
                   onClick={onApproveSponsor}
                 />
               </div>
