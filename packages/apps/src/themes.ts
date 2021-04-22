@@ -15,6 +15,7 @@ export const uniqueTheme: ThemeDef = {
 
 export const nf3Theme: ThemeDef = {
   domain: 'nf3digital.com',
+  ip: '35.168.59.239',
   logo: nf4Digital as string,
   theme: 'NF3Digital'
 };
