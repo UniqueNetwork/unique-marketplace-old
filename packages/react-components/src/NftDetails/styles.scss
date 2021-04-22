@@ -19,7 +19,15 @@
   .token-info {
     margin-top: 40px;
     padding: 24px;
-    background-color: (--card-background);
+    background-color: var(--card-background);
+
+    h2 {
+      color: var(--card-text-color);
+
+      &.ui.header {
+        color: var(--card-text-color);
+      }
+    }
 
     h3 {
       font-family: var(--font-inter);
@@ -28,6 +36,10 @@
       font-size: 28px;
       line-height: 42px;
       color: var(--card-text-color);
+
+      &.ui.header {
+        color: var(--card-text-color);
+      }
     }
 
     h4, h5 {
@@ -38,11 +50,19 @@
       line-height: 24px;
       min-height: 0 !important;
       color: var(--card-text-color);
+
+      &.ui.header {
+        color: var(--card-text-color);
+      }
     }
 
     .h5 {
       font-size: 14px;
       line-height: 20px;
+
+      &.ui.header {
+        color: var(--card-text-color);
+      }
     }
 
     p {
