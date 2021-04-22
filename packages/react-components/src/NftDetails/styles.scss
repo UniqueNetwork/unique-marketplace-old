@@ -134,6 +134,18 @@
         margin-bottom: 0;
       }
 
+      .ui.loader {
+        color: var(--text-color);
+
+        &:after {
+          left: 0;
+        }
+
+        &:before {
+          left: 0;
+        }
+      }
+
       .inactive {
         width: 25px;
         height: 25px;

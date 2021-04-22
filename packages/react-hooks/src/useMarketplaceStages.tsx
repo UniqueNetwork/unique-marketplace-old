@@ -10,7 +10,7 @@ import BN from 'bn.js';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 import { StatusContext } from '@polkadot/react-components/Status';
-import { useApi, useBalance, useKusamaApi, useNftContract, useToken } from '@polkadot/react-hooks';
+import { useApi, useKusamaApi, useNftContract, useToken } from '@polkadot/react-hooks';
 import { BalanceInterface } from '@polkadot/react-hooks/useBalance';
 import { escrowAddress, findCallMethodByName, KUSAMA_DECIMALS, maxGas, quoteId } from '@polkadot/react-hooks/utils';
 
@@ -50,7 +50,6 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
   const [buyFee, setBuyFee] = useState<BN>();
   const { getTokenInfo } = useToken();
   const { contractInstance, deposited, depositor, getDepositor, getTokenAsk, getUserDeposit, isContractReady, tokenAsk } = useNftContract(account);
-  const { balance } = useBalance(account);
   const [error, setError] = useState<string | null>(null);
   const { queueExtrinsic } = useContext(StatusContext);
   const [readyToAskPrice, setReadyToAskPrice] = useState<boolean>(false);
@@ -144,7 +143,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
   /** user actions **/
   const sell = useCallback(() => {
     // check balance to have enough fee
-    if (saleFee && balance?.free.gte(saleFee) && collectionInfo) {
+    if (collectionInfo) {
       queueTransaction(
         api.tx.nft
           .transfer(escrowAddress, collectionInfo.id, tokenId, 0),
@@ -154,10 +153,8 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
         'deposit nft to contract update'
       );
       send('TRANSACTION_READY');
-    } else {
-      alert('Your unique balance is not enough to sell');
     }
-  }, [api.tx.nft, balance?.free, collectionInfo, saleFee, queueTransaction, send, tokenId]);
+  }, [api.tx.nft, collectionInfo, queueTransaction, send, tokenId]);
 
   const waitForNftDeposit = useCallback(async () => {
     if (collectionInfo) {
@@ -176,16 +173,18 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
   }, [account, collectionInfo, getDepositor, send, tokenAsk, tokenId]);
 
   const waitForTokenRevert = useCallback(async () => {
-    const info = await getTokenInfo();
+    if (collectionInfo) {
+      const info = await getTokenInfo(collectionInfo, tokenId);
 
-    if (info?.Owner?.toString() === account) {
-      send('TOKEN_REVERT_SUCCESS');
-    } else {
-      setTimeout(() => {
-        void waitForTokenRevert();
-      }, 5000);
+      if (info?.Owner?.toString() === account) {
+        send('TOKEN_REVERT_SUCCESS');
+      } else {
+        setTimeout(() => {
+          void waitForTokenRevert();
+        }, 5000);
+      }
     }
-  }, [account, getTokenInfo, send]);
+  }, [account, collectionInfo, getTokenInfo, send, tokenId]);
 
   const depositNeeded = useCallback((userDeposit: BN, tokenPrice: BN): BN => {
     const feeFull = getFee(tokenPrice);

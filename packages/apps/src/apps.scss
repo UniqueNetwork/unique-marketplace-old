@@ -9,7 +9,7 @@
 }
 
 .app-header {
-  background-color: var(--header-background);
+  background: var(--header-background);
   margin-bottom: 0;
   padding: var(--gap) 0;
 
@@ -89,6 +89,7 @@
   }
 
   .app-balance--item {
+    color: var(--header-text-color);
     border-right: 1px solid var(--border-color);
     font-family: var(--font-roboto) var(--font-mono);
     font-size: 14px;

@@ -5,6 +5,7 @@ import type { ThemeDef } from '@polkadot/react-components/types';
 
 import nf4Digital from '../public/logos/nf4Digital.png';
 import UniqueLogo from '../public/logos/unique.svg';
+import Vernissage from '../public/logos/vernissage.svg';
 
 export const uniqueTheme: ThemeDef = {
   domain: 'whitelabel.market',
@@ -24,7 +25,8 @@ export const luvTheme: ThemeDef = {
 };
 
 export const vernissageTheme: ThemeDef = {
-  domain: '',
+  domain: 'localhost',
+  logo: Vernissage as string,
   theme: 'Vernissage'
 };
 

@@ -1,3 +1,15 @@
+body {
+  color: var(--text-color);
+}
+
+.ui.popup {
+  background: var(--bg-page) !important;
+
+  &:before, &:after {
+    background: var(--bg-page) !important;
+  }
+}
+
 hr {
   height: 0;
   border: 0;
@@ -305,7 +317,11 @@ h4.ui.header {
   color: var(--text-color);
 
   &:after {
-    left: 40% !important;
+    left: 40%;
+  }
+
+  &:before {
+    left: 40%;
   }
 
   .load-more {
@@ -462,7 +478,6 @@ button.ui.button,
   }
 
   &:after {
-    left: 0;
     border-width: 0.1em;
     border-color: var(--link-color) transparent transparent;
   }
@@ -499,6 +514,7 @@ button.ui.button,
 .app-header {
   .ui.tabular.menu {
     .item {
+      color: var(--sub-header-color);
       text-transform: var(--menu-text-transform);
       font-size: var(--menu-font-size);
     }
@@ -513,6 +529,7 @@ button.ui.button,
 
 .ui.input.ui--Input {
   input {
+    color: var(--input-text-color);
     background: var(--input-background-color);
 
     &:active {

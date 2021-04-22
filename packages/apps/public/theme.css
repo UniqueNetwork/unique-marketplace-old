@@ -33,6 +33,7 @@
   --link-color: #40BCFF;
   --bg-page: #F9FAFF;
   --header-background: #fff;
+  --header-text-color: #000000;
   --sub-header-color: #000;
   --sub-header-font-size: 14px;
   --sub-header-text-transform: #040B1D;
@@ -41,6 +42,7 @@
   --text-color: #000;
   --title-color: #040B1D;
   --input-background-color: #FAFAFA;
+  --input-text-color: #000;
   --max-header-width: 100%;
   --card-border-color: #ECECEC;
   --card-background: #FAFAFA;
@@ -79,6 +81,7 @@
   --link-color: #40BCFF;
   --bg-page: #F9FAFF;
   --header-background: #fff;
+  --header-text-color: #000000;
   --sub-header-color: #000;
   --sub-header-font-size: 14px;
   --sub-header-text-transform: #040B1D;
@@ -126,6 +129,7 @@
   --bg-page: #000000;
   --border-color: #1400C6;
   --header-background: #BEEF00;
+  --header-text-color: #000000;
   --sub-header-color: #FE019A;
   --sub-header-font-size: 24px;
   --sub-header-text-transform: uppercase;
@@ -134,6 +138,7 @@
   --text-color: white;
   --title-color: white;
   --input-background-color: #FAFAFA;
+  --input-text-color: #000;
   --max-header-width: 1200px;
   --card-border-color: #000000;
   --card-background: #000000;
@@ -170,26 +175,28 @@
   --font-inter: 'Inter', Frutiger, 'Frutiger Linotype', 'Dejavu Sans',
   'Helvetica Neue', Arial, sans-serif;
 
-  --link-color: #40BCFF;
-  --bg-page: #F9FAFF;
-  --header-background: #fff;
-  --sub-header-color: #000;
+  --link-color: #f200a8;
+  --bg-page: #2D004D;
+  --header-background: linear-gradient(133deg, rgba(60,31,160,1) 0%, rgba(230,0,167,1) 69%, rgba(242,0,168,1) 100%);
+  --header-text-color: white;
+  --sub-header-color: white;
   --sub-header-font-size: 14px;
-  --sub-header-text-transform: #040B1D;
+  --sub-header-text-transform: white;
   --menu-text-transform: none;
   --menu-font-size: 16px;
-  --text-color: #000;
-  --title-color: #040B1D;
-  --input-background-color: #FAFAFA;
+  --text-color: white;
+  --title-color: white;
+  --input-background-color: white;
+  --input-text-color: #000;
   --max-header-width: 100%;
-  --card-border-color: #ECECEC;
-  --card-background: #FAFAFA;
-  --card-text-color: #000;
-  --card-link-color: #40BCFF;
-  --account-selector-background: #F9FAFF;
-  --account-selector-name-color: #000;
-  --account-selector-address-color: #000;
-  --dropdown-scrollbar-color: #000;
+  --card-border-color: #fdfdfd;
+  --card-background: #fdfdfd;
+  --card-text-color: #3c1fa0;
+  --card-link-color: #f200a8;
+  --account-selector-background: #3c1fa0;
+  --account-selector-name-color: white;
+  --account-selector-address-color: white;
+  --dropdown-scrollbar-color: white;
   --modal-border-color: transparent;
-  --modal-text-color: #000;
+  --modal-text-color: white;
 }
