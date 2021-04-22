@@ -119,7 +119,7 @@ function NftCollectionCard ({ account, canTransferTokens, collection, localRegis
     };
   }, []);
 
-  const canEditCollection = false;
+  const canEditCollection = true;
 
   return (
     <Expander
