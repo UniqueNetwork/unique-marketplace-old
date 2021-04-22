@@ -41,6 +41,7 @@
   }
 
   &__name {
+    color: var(--text-color);
     font: 400 14px/24px var(--font-roboto);
     overflow: hidden;
     white-space: nowrap;

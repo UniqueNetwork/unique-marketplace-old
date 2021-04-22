@@ -19,7 +19,15 @@
   .token-info {
     margin-top: 40px;
     padding: 24px;
-    background-color: white;
+    background-color: var(--card-background);
+
+    h2 {
+      color: var(--card-text-color);
+
+      &.ui.header {
+        color: var(--card-text-color);
+      }
+    }
 
     h3 {
       font-family: var(--font-inter);
@@ -27,6 +35,11 @@
       font-weight: bold;
       font-size: 28px;
       line-height: 42px;
+      color: var(--card-text-color);
+
+      &.ui.header {
+        color: var(--card-text-color);
+      }
     }
 
     h4, h5 {
@@ -36,11 +49,24 @@
       font-size: 16px;
       line-height: 24px;
       min-height: 0 !important;
+      color: var(--card-text-color);
+
+      &.ui.header {
+        color: var(--card-text-color);
+      }
     }
 
     .h5 {
       font-size: 14px;
       line-height: 20px;
+
+      &.ui.header {
+        color: var(--card-text-color);
+      }
+    }
+
+    p {
+      color: var(--card-text-color);
     }
 
     .accessories {
@@ -61,6 +87,7 @@
         line-height: 24px;
         margin-right: 24px;
         margin-bottom: 0;
+        color: var(--card-text-color);
       }
     }
 
@@ -121,9 +148,22 @@
       grid-column-gap: 8px;
       align-items: center;
       margin-bottom: 16px;
+      color: var(--card-text-color);
 
       &:last-child {
         margin-bottom: 0;
+      }
+
+      .ui.loader {
+        color: var(--text-color);
+
+        &:after {
+          left: 0;
+        }
+
+        &:before {
+          left: 0;
+        }
       }
 
       .inactive {

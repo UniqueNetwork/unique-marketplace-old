@@ -100,18 +100,15 @@ function TransferModal ({ account, balance, closeModal, collection, tokenId, upd
           label='Cancel'
           onClick={closeModal}
         />
-        {/* if tokenPart === 0 - it will transfer all parts of token */}
-        {!isAddressError && (
-          <TxButton
-            accountId={account}
-            isDisabled={!recipient || isError}
-            label='Submit'
-            onStart={closeModal}
-            onSuccess={updateTokens.bind(null, collection.id)}
-            params={[recipient, collection.id, tokenId, (tokenPart * Math.pow(10, decimalPoints))]}
-            tx={api.tx.nft.transfer}
-          />
-        )}
+        <TxButton
+          accountId={account}
+          isDisabled={!recipient || isError || isAddressError}
+          label='Submit'
+          onStart={closeModal}
+          onSuccess={updateTokens.bind(null, collection.id)}
+          params={[recipient, collection.id, tokenId, (tokenPart * Math.pow(10, decimalPoints))]}
+          tx={api.tx.nft.transfer}
+        />
       </Modal.Actions>
     </Modal>
   );

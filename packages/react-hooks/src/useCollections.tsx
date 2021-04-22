@@ -1,27 +1,20 @@
 // Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
 import type { ErrorType } from '@polkadot/react-hooks/useFetch';
 import type { TokenDetailsInterface } from '@polkadot/react-hooks/useToken';
-import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
 
 import BN from 'bn.js';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { useApi, useFetch, useCollection } from '@polkadot/react-hooks';
+import { useApi, useCollection, useFetch } from '@polkadot/react-hooks';
 import { UNIQUE_COLLECTION_ID } from '@polkadot/react-hooks/utils';
-import { Constructor } from '@polkadot/types/types/codec';
 import { base64Decode, encodeAddress } from '@polkadot/util-crypto';
 
 export type MetadataType = {
   metadata?: string;
 }
-
-export type TokenAttribute = Record<string, Constructor | string | Record<string, string> | {
-  _enum: string[] | Record<string, string | null>;
-} | {
-  _set: Record<string, number>;
-}>;
 
 export interface TokenInterface extends TokenDetailsInterface {
   collectionId: string;

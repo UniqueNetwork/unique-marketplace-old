@@ -1,20 +1,16 @@
-// Copyright 2017-2021 @polkadot/app-123code authors & contributors
-// This software may be modified and distributed under the terms
-// of the Apache-2.0 license. See the LICENSE file for details.
-
-// only here, needs to be available for the rest of the codebase
-/* eslint-disable react/jsx-max-props-per-line */
+// Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
+// SPDX-License-Identifier: Apache-2.0
 
 import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
+
 import { InputAddress } from '@polkadot/react-components';
 
 interface Props {
-  onChange: (accountId: string | null) => void;
+  onChange: (accountId: string | undefined) => void;
 }
 
 function AccountSelector ({ onChange }: Props): React.ReactElement<Props> {
-  const [accountId, setAccountId] = useState<string | null>(null);
+  const [accountId, setAccountId] = useState<string>();
 
   useEffect(
     (): void => onChange(accountId),
@@ -32,10 +28,4 @@ function AccountSelector ({ onChange }: Props): React.ReactElement<Props> {
   );
 }
 
-export default React.memo(styled(AccountSelector)`
-  align-items: flex-end;
-
-  .summary {
-    text-align: center;
-  }
-`);
+export default React.memo(AccountSelector);

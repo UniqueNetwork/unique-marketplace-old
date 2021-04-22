@@ -3,10 +3,31 @@
 
 import type { ThemeDef } from '@polkadot/react-components/types';
 
-export const darkTheme: ThemeDef = {
-  theme: 'dark'
+import nf4Digital from '../public/logos/nf4Digital.png';
+import UniqueLogo from '../public/logos/unique.svg';
+import Vernissage from '../public/logos/vernissage.svg';
+
+export const uniqueTheme: ThemeDef = {
+  domain: 'whitelabel.market',
+  logo: UniqueLogo as string,
+  theme: 'Unique'
 };
 
-export const lightTheme: ThemeDef = {
-  theme: 'light'
+export const nf3Theme: ThemeDef = {
+  domain: 'nf3digital.com',
+  logo: nf4Digital as string,
+  theme: 'NF3Digital'
 };
+
+export const luvTheme: ThemeDef = {
+  ip: '18.206.14.88',
+  theme: 'LUVNFT'
+};
+
+export const vernissageTheme: ThemeDef = {
+  domain: '',
+  logo: Vernissage as string,
+  theme: 'Vernissage'
+};
+
+export const Themes: ThemeDef[] = [uniqueTheme, nf3Theme, luvTheme, vernissageTheme];

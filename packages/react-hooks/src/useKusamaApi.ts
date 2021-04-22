@@ -38,6 +38,8 @@ export const useKusamaApi = (account?: string): UseKusamaApiInterface => {
   const [kusamaBalance, setKusamaBalance] = useState<BalanceInterface>();
   const [encodedKusamaAccount, setEncodedKusamaAccount] = useState<string>();
   const { queueExtrinsic } = useContext(StatusContext);
+  const kusamaParity = 'wss://kusama-rpc.polkadot.io';
+  const kusamaFinality = 'wss://polkadot.api.onfinality.io/public-ws';
 
   const getKusamaBalance = useCallback(async () => {
     try {
@@ -51,9 +53,9 @@ export const useKusamaApi = (account?: string): UseKusamaApiInterface => {
     }
   }, [encodedKusamaAccount, kusamaApi]);
 
-  const initKusamaApi = useCallback(() => {
+  const initKusamaApi = useCallback((kusamaUrl) => {
     const registry = new TypeRegistry();
-    const provider = new WsProvider('wss://kusama-rpc.polkadot.io');
+    const provider = new WsProvider(kusamaUrl);
     const signer = new ApiSigner(registry, queuePayload, queueSetTxStatus);
     const types = {} as Record<string, Record<string, string>>;
 
@@ -62,6 +64,14 @@ export const useKusamaApi = (account?: string): UseKusamaApiInterface => {
     api.on('ready', (): void => {
       console.log('kusama api ready');
       setKusamaApi(api);
+    });
+
+    api.on('error', (): void => {
+      console.log('kusama api error');
+
+      void api.disconnect().then(() => {
+        initKusamaApi(kusamaFinality);
+      });
     });
   }, [queuePayload, queueSetTxStatus]);
 
@@ -91,8 +101,9 @@ export const useKusamaApi = (account?: string): UseKusamaApiInterface => {
   }, [getKusamaBalance]);
 
   useEffect(() => {
-    initKusamaApi();
-  }, [initKusamaApi]);
+    initKusamaApi(kusamaParity);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return {
     formatKsmBalance,

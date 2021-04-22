@@ -9,7 +9,7 @@
 }
 
 .app-header {
-  background-color: var(--white-color);
+  background: var(--header-background);
   margin-bottom: 0;
   padding: var(--gap) 0;
 
@@ -31,12 +31,29 @@
         margin-top: 0;
         font-weight: 500;
       }
+
+      &.app-logo {
+        background-color: transparent;
+        padding: 0;
+        width: auto;
+        margin-right: 50px;
+
+        img {
+          width: auto;
+          max-width: 130px;
+        }
+      }
     }
   }
 }
 
 .app-user {
-  width: 230px;
+  display: flex;
+  align-items: center;
+
+  .account-selector-block {
+    width: 230px;
+  }
 }
 
 .app-main {
@@ -54,6 +71,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    max-width: var(--max-header-width);
   }
 }
 
@@ -66,7 +84,12 @@
 .app-balances {
   display: flex;
 
+  &--item {
+
+  }
+
   .app-balance--item {
+    color: var(--header-text-color);
     border-right: 1px solid var(--border-color);
     font-family: var(--font-roboto) var(--font-mono);
     font-size: 14px;

@@ -148,12 +148,8 @@ function NftCollectionCard ({ account, canTransferTokens, collection, localRegis
             )}
           </div>
           <div className='tokens-count'>
-            { allTokensCount && (
-              <span>Total: {allTokensCount} {allTokensCount > 1 ? 'items' : 'item'}</span>
-            )}
-            { ownTokensCount && (
-              <span>, Own: {ownTokensCount} {ownTokensCount > 1 ? 'items' : 'item'}</span>
-            )}
+            <span>Total: {allTokensCount} {!allTokensCount || allTokensCount > 1 ? 'items' : 'item'}</span>
+            <span>, Own: {ownTokensCount} {!ownTokensCount || ownTokensCount > 1 ? 'items' : 'item'}</span>
           </div>
           { canEditCollection && (
             <a

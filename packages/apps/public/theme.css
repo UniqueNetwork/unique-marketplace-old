@@ -1,0 +1,202 @@
+:root {
+  --font-mono: 0.9em Consolas, monaco, "Ubuntu Mono", "Liberation Mono", "Courier New", Courier, monospace;
+  --font-sans: 1em "-apple-system", BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  --font-weight-bold: 700;
+  --font-weight-light: 200;
+  --font-weight-normal: 400;
+  --width-full: 1750px;
+  --width-half: 875px;
+}
+
+[data-theme="Unique"] {
+  --white-color: #fff;
+  --black-color: #000;
+  --border-color: #ECECEC;
+  --error-color: #FF6335;
+  --divider-color: #F5F5F5;
+  --tabs-color: #81858E;
+  --table-row-hover: #EEF0F7;
+
+  --gap: 16px;
+  --bradius: 4px;
+  --max-width: 1200px;
+
+  --font-roboto: 'Roboto', Frutiger, 'Frutiger Linotype', 'Dejavu Sans',
+  'Helvetica Neue', Arial, sans-serif;
+
+  --font-raleway: 'Raleway', Frutiger, 'Frutiger Linotype', 'Dejavu Sans',
+  'Helvetica Neue', Arial, sans-serif;
+
+  --font-inter: 'Inter', Frutiger, 'Frutiger Linotype', 'Dejavu Sans',
+  'Helvetica Neue', Arial, sans-serif;
+
+  --link-color: #40BCFF;
+  --bg-page: #F9FAFF;
+  --header-background: #fff;
+  --header-text-color: #000000;
+  --sub-header-color: #000;
+  --sub-header-font-size: 14px;
+  --sub-header-text-transform: #040B1D;
+  --menu-text-transform: none;
+  --menu-font-size: 16px;
+  --text-color: #000;
+  --title-color: #040B1D;
+  --input-background-color: #FAFAFA;
+  --input-text-color: #000;
+  --max-header-width: 100%;
+  --card-border-color: #ECECEC;
+  --card-background: #FAFAFA;
+  --card-text-color: #000;
+  --card-link-color: #40BCFF;
+  --account-selector-background: #F9FAFF;
+  --account-selector-name-color: #000;
+  --account-selector-address-color: #000;
+  --dropdown-scrollbar-color: #000;
+  --modal-border-color: transparent;
+  --modal-text-color: #000;
+}
+
+[data-theme="NF3Digital"] {
+  --white-color: #fff;
+  --black-color: #000;
+  --border-color: #ECECEC;
+  --error-color: #FF6335;
+  --divider-color: #F5F5F5;
+  --tabs-color: #81858E;
+  --table-row-hover: #EEF0F7;
+
+  --gap: 16px;
+  --bradius: 4px;
+  --max-width: 1200px;
+
+  --font-roboto: 'Roboto', Frutiger, 'Frutiger Linotype', 'Dejavu Sans',
+  'Helvetica Neue', Arial, sans-serif;
+
+  --font-raleway: 'Raleway', Frutiger, 'Frutiger Linotype', 'Dejavu Sans',
+  'Helvetica Neue', Arial, sans-serif;
+
+  --font-inter: 'Inter', Frutiger, 'Frutiger Linotype', 'Dejavu Sans',
+  'Helvetica Neue', Arial, sans-serif;
+
+  --link-color: #40BCFF;
+  --bg-page: #F9FAFF;
+  --header-background: #fff;
+  --header-text-color: #000000;
+  --sub-header-color: #000;
+  --sub-header-font-size: 14px;
+  --sub-header-text-transform: #040B1D;
+  --menu-text-transform: none;
+  --menu-font-size: 16px;
+  --text-color: #000;
+  --title-color: #040B1D;
+  --input-background-color: #FAFAFA;
+  --max-header-width: 100%;
+  --card-border-color: #ECECEC;
+  --card-background: #FAFAFA;
+  --card-text-color: #000;
+  --card-link-color: #40BCFF;
+  --account-selector-background: #F9FAFF;
+  --account-selector-name-color: #000;
+  --account-selector-address-color: #000;
+  --dropdown-scrollbar-color: #000;
+  --modal-border-color: transparent;
+  --modal-text-color: #000;
+}
+
+[data-theme="LUVNFT"] {
+  --white-color: #fff;
+  --black-color: #000;
+  --link-text-color: #FE019A;
+  --error-color: #FF6335;
+  --divider-color: #F5F5F5;
+  --tabs-color: #81858E;
+  --table-row-hover: #EEF0F7;
+
+  --gap: 16px;
+  --bradius: 4px;
+  --max-width: 1200px;
+
+  --font-roboto: 'Roboto', Frutiger, 'Frutiger Linotype', 'Dejavu Sans',
+  'Helvetica Neue', Arial, sans-serif;
+
+  --font-raleway: 'Raleway', Frutiger, 'Frutiger Linotype', 'Dejavu Sans',
+  'Helvetica Neue', Arial, sans-serif;
+
+  --font-inter: 'Inter', Frutiger, 'Frutiger Linotype', 'Dejavu Sans',
+  'Helvetica Neue', Arial, sans-serif;
+
+  --link-color: #1400C6;
+  --bg-page: #000000;
+  --border-color: #1400C6;
+  --header-background: #BEEF00;
+  --header-text-color: #000000;
+  --sub-header-color: #FE019A;
+  --sub-header-font-size: 24px;
+  --sub-header-text-transform: uppercase;
+  --menu-text-transform: uppercase;
+  --menu-font-size: 16px;
+  --text-color: white;
+  --title-color: white;
+  --input-background-color: #FAFAFA;
+  --input-text-color: #000;
+  --max-header-width: 1200px;
+  --card-border-color: #000000;
+  --card-background: #000000;
+  --card-text-color: white;
+  --card-link-color: #FE019A;
+  --account-selector-background: #1400C6;
+  --account-selector-name-color: white;
+  --account-selector-address-color: white;
+  --dropdown-scrollbar-color: black;
+  --dropdown-scrollbar-track-color: white;
+  --modal-border-color: white;
+  --modal-text-color: white;
+}
+
+[data-theme="Vernissage"] {
+  --white-color: #fff;
+  --black-color: #000;
+  --border-color: #ECECEC;
+  --error-color: #FF6335;
+  --divider-color: #F5F5F5;
+  --tabs-color: #81858E;
+  --table-row-hover: #EEF0F7;
+
+  --gap: 16px;
+  --bradius: 4px;
+  --max-width: 1200px;
+
+  --font-roboto: 'Roboto', Frutiger, 'Frutiger Linotype', 'Dejavu Sans',
+  'Helvetica Neue', Arial, sans-serif;
+
+  --font-raleway: 'Raleway', Frutiger, 'Frutiger Linotype', 'Dejavu Sans',
+  'Helvetica Neue', Arial, sans-serif;
+
+  --font-inter: 'Inter', Frutiger, 'Frutiger Linotype', 'Dejavu Sans',
+  'Helvetica Neue', Arial, sans-serif;
+
+  --link-color: #f200a8;
+  --bg-page: #2D004D;
+  --header-background: linear-gradient(133deg, rgba(60,31,160,1) 0%, rgba(230,0,167,1) 69%, rgba(242,0,168,1) 100%);
+  --header-text-color: white;
+  --sub-header-color: white;
+  --sub-header-font-size: 14px;
+  --sub-header-text-transform: white;
+  --menu-text-transform: none;
+  --menu-font-size: 16px;
+  --text-color: white;
+  --title-color: white;
+  --input-background-color: white;
+  --input-text-color: #000;
+  --max-header-width: 100%;
+  --card-border-color: #fdfdfd;
+  --card-background: #fdfdfd;
+  --card-text-color: #3c1fa0;
+  --card-link-color: #f200a8;
+  --account-selector-background: #3c1fa0;
+  --account-selector-name-color: white;
+  --account-selector-address-color: white;
+  --dropdown-scrollbar-color: white;
+  --modal-border-color: transparent;
+  --modal-text-color: white;
+}

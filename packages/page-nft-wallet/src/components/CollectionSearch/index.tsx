@@ -8,7 +8,7 @@ import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
-import Button from 'semantic-ui-react/dist/commonjs/elements/Button';
+import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 
 import { Input, LabelHelp, Table } from '@polkadot/react-components';
@@ -149,12 +149,11 @@ function CollectionSearch ({ account, addCollection, collections }: Props): Reac
                     </td>
                     <td className='collection-actions'>
                       <Button
-                        icon='plus'
-                        isBasic
                         isDisabled={hasThisCollection(item)}
-                        label='Add collection'
                         onClick={addCollectionToAccount.bind(null, item)}
-                      />
+                      >
+                        Add collection
+                      </Button>
                     </td>
                   </tr>
                 ))}
