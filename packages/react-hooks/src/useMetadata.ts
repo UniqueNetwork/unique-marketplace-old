@@ -1,11 +1,12 @@
 // Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
+import type { MetadataType } from '@polkadot/react-hooks/useCollections';
 import type { TokenDetailsInterface } from '@polkadot/react-hooks/useToken';
 
 import { useCallback, useEffect, useRef } from 'react';
 
-import { MetadataType, NftCollectionInterface } from '@polkadot/react-hooks/useCollections';
 import { useDecoder } from '@polkadot/react-hooks/useDecoder';
 import { AttributesDecoded } from '@polkadot/react-hooks/useSchema';
 import { useToken } from '@polkadot/react-hooks/useToken';
@@ -14,11 +15,19 @@ import { TypeRegistry } from '@polkadot/types';
 interface UseMetadataInterface {
   decodeStruct: ({ attr, data }: { attr?: any, data?: string }) => AttributesDecoded;
   encodeStruct: ({ attr, data }: { attr?: any, data?: string }) => string;
+  getEndParseOffchainSchemaMetadata: (collectionInfo: NftCollectionInterface) => Promise<{ metadata: string, metadataJson: MetadataJsonType }>
   getOnChainSchema: (collectionInfo: NftCollectionInterface) => { attributesConst: string, attributesVar: string };
   getTokenAttributes: (collectionInfo: NftCollectionInterface, tokenId: string) => Promise<AttributesDecoded>;
   getTokenImageUrl: (collectionInfo: NftCollectionInterface, tokenId: string) => Promise<string>;
   setUnique: (collectionInfo: NftCollectionInterface, tokenId: string) => Promise<string>;
   tokenImageUrl: (urlString: string, tokenId: string) => string;
+}
+
+export type MetadataJsonType = {
+  audio?: string;
+  image?: string;
+  page?: string;
+  video?: string;
 }
 
 /* const testSchema = `{
@@ -151,7 +160,7 @@ export const useMetadata = (localRegistry?: TypeRegistry): UseMetadataInterface 
 
   const getTokenImageUrl = useCallback(async (collectionInfo: NftCollectionInterface, tokenId: string): Promise<string> => {
     if (collectionInfo) {
-      if (collectionInfo.SchemaVersion === 'ImageUrl') {
+      if (collectionInfo.SchemaVersion === 'ImageURL') {
         return tokenImageUrl(hex2a(collectionInfo.OffchainSchema), tokenId);
       } else {
         return await setUnique(collectionInfo, tokenId);
@@ -160,6 +169,29 @@ export const useMetadata = (localRegistry?: TypeRegistry): UseMetadataInterface 
 
     return '';
   }, [hex2a, setUnique, tokenImageUrl]);
+
+  const getEndParseOffchainSchemaMetadata = useCallback(async (collectionInfo: NftCollectionInterface) => {
+    try {
+      const offChainSchema: { metadata: string } = JSON.parse(hex2a(collectionInfo.OffchainSchema)) as unknown as { metadata: string };
+
+      const metadataResponse = await fetch(offChainSchema.metadata.replace('{id}', '1'));
+      const metadataJson = await metadataResponse.json() as MetadataJsonType;
+
+      console.log('info metadataJson', metadataJson);
+
+      return {
+        metadata: offChainSchema.metadata,
+        metadataJson
+      };
+    } catch (e) {
+      console.log('getEndParseOffchainSchemaMetadata error', e);
+    }
+
+    return {
+      metadata: '',
+      metadataJson: {}
+    };
+  }, [hex2a]);
 
   const getOnChainSchema = useCallback((collectionInf: NftCollectionInterface): { attributesConst: string, attributesVar: string } => {
     if (collectionInf) {
@@ -215,6 +247,7 @@ export const useMetadata = (localRegistry?: TypeRegistry): UseMetadataInterface 
   return {
     decodeStruct,
     encodeStruct,
+    getEndParseOffchainSchemaMetadata,
     getOnChainSchema,
     getTokenAttributes,
     getTokenImageUrl,

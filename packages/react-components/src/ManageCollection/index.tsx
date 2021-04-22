@@ -4,6 +4,7 @@
 import './styles.scss';
 
 import type { NftCollectionInterface, SchemaVersionTypes } from '@polkadot/react-hooks/useCollection';
+import type { MetadataJsonType } from '@polkadot/react-hooks/useMetadata';
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
@@ -14,8 +15,9 @@ import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import Image from 'semantic-ui-react/dist/commonjs/elements/Image';
 import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
-import { Dropdown, Input } from '@polkadot/react-components';
+import { Dropdown, Input, TextArea } from '@polkadot/react-components';
 import arrowLeft from '@polkadot/react-components/NftDetails/arrowLeft.svg';
+import { useDecoder, useMetadata } from '@polkadot/react-hooks';
 import { useCollection } from '@polkadot/react-hooks/useCollection';
 import { TypeRegistry } from '@polkadot/types';
 import { keyring } from '@polkadot/ui-keyring';
@@ -63,11 +65,13 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
     removeCollectionAdmin,
     removeCollectionSponsor,
     setCollectionSponsor } = useCollection();
-  const [name, setName] = useState<string>();
-  const [description, setDescription] = useState<string>();
-  const [tokenPrefix, setTokenPrefix] = useState<string>();
-  const [adminAddress, setAdminAddress] = useState<string>();
-  const [sponsorAddress, setSponsorAddress] = useState<string>();
+  const { getEndParseOffchainSchemaMetadata } = useMetadata(localRegistry);
+  const { collectionName16Decoder, hex2a } = useDecoder();
+  const [name, setName] = useState<string>('');
+  const [description, setDescription] = useState<string>('');
+  const [tokenPrefix, setTokenPrefix] = useState<string>('');
+  const [adminAddress, setAdminAddress] = useState<string>('');
+  const [sponsorAddress, setSponsorAddress] = useState<string>('');
   const [isAdminAddressError, setIsAdminAddressError] = useState<boolean>(false);
   const [isSponsorAddressError, setIsSponsorAddressError] = useState<boolean>(false);
   const [collectionAdminList, setCcollectionAdminList] = useState<string[]>([]);
@@ -77,7 +81,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
   const [approvingSponsor, toggleApprovingSponsor] = useState<boolean>(false);
   const [currentSchemaVersion, setCurrentSchemaVersion] = useState<SchemaVersionTypes>();
   const [settingSchemaVersion, toggleSettingSchemaVersion] = useState<boolean>(false);
-  const [currentOffchainSchema, setCurrentOffchainSchema] = useState<SchemaVersionTypes>('Unique');
+  const [currentOffchainSchema, setCurrentOffchainSchema] = useState<string>('');
   const [settingOffChainSchema, toggleSettingOffChainSchema] = useState<boolean>(false);
   const [collectionInfo, setCollectionInfo] = useState<NftCollectionInterface>();
   const [isAddressCurrentlyInAdminList, setIsAddressCurrentlyInAdminList] = useState<boolean>(false);
@@ -85,22 +89,57 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
   const [audioUrl, setAudioUrl] = useState<string>('');
   const [imageUrl, setImageUrl] = useState<string>('');
   const [pageUrl, setPageUrl] = useState<string>('');
+  const [videoUrl, setVideoUrl] = useState<string>('');
+
   const [isAudioUrlError, toggleAudioUrlError] = useState<boolean>(false);
   const [isImageUrlError, toggleImageUrlError] = useState<boolean>(false);
   const [isPageUrlError, togglePageUrlError] = useState<boolean>(false);
+  const [isVideoUrlError, toggleVideoUrlError] = useState<boolean>(false);
 
   const fetchCollectionInfo = useCallback(async () => {
     // collectionInfo.SchemaVersion.isImageUrl
-    if (collectionId) {
-      const info = (await getDetailedCollectionInfo(collectionId)) as NftCollectionInterface;
+    try {
+      if (collectionId) {
+        const info = (await getDetailedCollectionInfo(collectionId)) as NftCollectionInterface;
 
-      if (info) {
-        setCurrentSchemaVersion(info.SchemaVersion);
+        if (info) {
+          setCurrentSchemaVersion(info.SchemaVersion);
+          setName(collectionName16Decoder(info.Name));
+          setDescription(collectionName16Decoder(info.Description));
+          setTokenPrefix(hex2a(info.TokenPrefix));
+
+          if (info.Sponsorship.confirmed) {
+            setSponsorAddress(info.Sponsorship.confirmed);
+          }
+
+          const schema: { metadata: string, metadataJson: MetadataJsonType } = await getEndParseOffchainSchemaMetadata(info);
+
+          setCurrentOffchainSchema(schema.metadata);
+
+          if (schema.metadataJson.audio) {
+            setImageUrl(schema.metadataJson.audio);
+          }
+
+          if (schema.metadataJson.image) {
+            setImageUrl(schema.metadataJson.image);
+          }
+
+          if (schema.metadataJson.page) {
+            setPageUrl(schema.metadataJson.page);
+          }
+
+          if (schema.metadataJson.video) {
+            setVideoUrl(schema.metadataJson.video);
+          }
+
+          // strToUTF16(tokenPrefix)
+          console.log('info', info, 'offChainSchema', schema);
+        }
       }
-
-      console.log('info', info);
+    } catch (e) {
+      console.log('fetchCollectionInfo error', e);
     }
-  }, [collectionId, getDetailedCollectionInfo]);
+  }, [collectionId, collectionName16Decoder, getDetailedCollectionInfo, hex2a]);
 
   const fetchCollectionAdminList = useCallback(async () => {
     if (collectionId) {
@@ -133,8 +172,8 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
     }
   }, []);
 
-  const onSetDescription = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setDescription(e.target.value);
+  const onSetDescription = useCallback((value: string) => {
+    setDescription(value);
   }, []);
 
   const onDeleteCurrentAdmin = useCallback(() => {
@@ -183,6 +222,8 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
   // setSchemaVersion(collection_id, version)
   // setOffchainSchema(collection_id, schema)
 
+  console.log('info currentOffchainSchema', currentOffchainSchema);
+
   return (
     <div className='manage-collection'>
       <Header as='h1'>
@@ -213,11 +254,10 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
                 />
               </Form.Field>
               <Form.Field>
-                <textarea
+                <TextArea
                   onChange={onSetDescription}
                   placeholder={'Enter collection description'}
-                  rows={2}
-                  value={description}
+                  seed={description}
                 />
               </Form.Field>
               <Form.Field>
@@ -239,6 +279,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
             <Grid.Column width={8}>
               <Form.Field>
                 <Dropdown
+                  defaultValue={currentSchemaVersion}
                   onChange={setCurrentSchemaVersion}
                   options={SchemaOptions}
                   placeholder='Select Attribute Type'
@@ -275,7 +316,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
       <Form className='manage-collection--form'>
         <Grid className='manage-collection--form--grid'>
           <Grid.Row>
-            <Grid.Column width={8}>
+            <Grid.Column width={16}>
               <Form.Field>
                 <div className='schema-table offchain-schema'>
                   <div className='table-header'>
@@ -291,47 +332,73 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
                   <div className='table-body'>
                     <div className='tr edit'>
                       <div className='td'>
-                        Audio
+                        OffChain schema url
                       </div>
                       <div className='td'>
                         <Input
                           className='isSmall'
                           isError={isAudioUrlError}
-                          label='Please enter the audio url'
-                          onChange={setAudioUrl}
-                          placeholder='Audio url address'
-                          value={audioUrl}
+                          label='Please enter the OffChain schema url'
+                          onChange={setCurrentOffchainSchema}
+                          placeholder='OffChain schema url'
+                          value={currentOffchainSchema}
                         />
                       </div>
                     </div>
                     <div className='tr edit'>
                       <div className='td'>
-                        Image
+                        Audio, token #1
                       </div>
                       <div className='td'>
-                        <Input
-                          className='isSmall'
-                          isError={isImageUrlError}
-                          label='Please enter the image url'
-                          onChange={setImageUrl}
-                          placeholder='Image url address'
-                          value={imageUrl}
-                        />
+                        <a
+                          href={audioUrl}
+                          rel='noopener noreferrer'
+                          target='_blank'
+                        >
+                          {audioUrl}
+                        </a>
                       </div>
                     </div>
                     <div className='tr edit'>
                       <div className='td'>
-                        Page
+                        Image, token #1
                       </div>
                       <div className='td'>
-                        <Input
-                          className='isSmall'
-                          isError={isPageUrlError}
-                          label='Please enter the page url'
-                          onChange={setPageUrl}
-                          placeholder='Page url address'
-                          value={pageUrl}
-                        />
+                        <a
+                          href={imageUrl}
+                          rel='noopener noreferrer'
+                          target='_blank'
+                        >
+                          {imageUrl}
+                        </a>
+                      </div>
+                    </div>
+                    <div className='tr edit'>
+                      <div className='td'>
+                        Page, token #1
+                      </div>
+                      <div className='td'>
+                        <a
+                          href={pageUrl}
+                          rel='noopener noreferrer'
+                          target='_blank'
+                        >
+                          {pageUrl}
+                        </a>
+                      </div>
+                    </div>
+                    <div className='tr edit'>
+                      <div className='td'>
+                        Video, token #1
+                      </div>
+                      <div className='td'>
+                        <a
+                          href={videoUrl}
+                          rel='noopener noreferrer'
+                          target='_blank'
+                        >
+                          {videoUrl}
+                        </a>
                       </div>
                     </div>
                   </div>
@@ -410,6 +477,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
                       )}
                     </>
                   }
+                  disabled={sponsorAddress !== account}
                   onClick={onApproveSponsor}
                 />
               </div>
