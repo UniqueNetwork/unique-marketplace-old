@@ -7,7 +7,11 @@ import React, { memo, useCallback, useState } from 'react';
 
 import closeIcon from './closeIcon.svg';
 
-function EnumInput (): React.ReactElement {
+interface Props {
+  isDisabled?: boolean;
+}
+
+function EnumInput ({ isDisabled }: Props): React.ReactElement {
   const [allEnums, setAllEnums] = useState<string[]>([
     'Yellow jacket',
     'Pink cap'
@@ -31,9 +35,12 @@ function EnumInput (): React.ReactElement {
   }, [allEnums, currentEnum]);
 
   const deleteItem = useCallback((enumItem: string) => {
-    console.log('deleteItem');
+    if (isDisabled) {
+      return;
+    }
+
     setAllEnums((prevState: string[]) => prevState.filter((item: string) => item.toLowerCase() !== enumItem.toLowerCase()));
-  }, []);
+  }, [isDisabled]);
 
   const changeCurrentEnum = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setCurrentEnum(e.target.value);
@@ -66,6 +73,7 @@ function EnumInput (): React.ReactElement {
         ))}
         <input
           className='enum-input--input'
+          disabled={isDisabled}
           onBlur={addItem}
           onChange={changeCurrentEnum}
           onKeyDown={onKeyDown}

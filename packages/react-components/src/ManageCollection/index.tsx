@@ -65,16 +65,17 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
     removeCollectionAdmin,
     removeCollectionSponsor,
     setCollectionSponsor } = useCollection();
-  const { getEndParseOffchainSchemaMetadata } = useMetadata(localRegistry);
+  const { getAndParseOffchainSchemaMetadata } = useMetadata(localRegistry);
   const { collectionName16Decoder, hex2a } = useDecoder();
   const [name, setName] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [tokenPrefix, setTokenPrefix] = useState<string>('');
   const [adminAddress, setAdminAddress] = useState<string>('');
   const [sponsorAddress, setSponsorAddress] = useState<string>('');
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [isAdminAddressError, setIsAdminAddressError] = useState<boolean>(false);
   const [isSponsorAddressError, setIsSponsorAddressError] = useState<boolean>(false);
-  const [collectionAdminList, setCcollectionAdminList] = useState<string[]>([]);
+  const [collectionAdminList, setCollectionAdminList] = useState<string[]>([]);
   const [deletingCurrentAdmin, toggleDeletingCurrentAdmin] = useState<boolean>(false);
   const [settingCurrentAdmin, toggleSettingCurrentAdmin] = useState<boolean>(false);
   const [settingSponsor, toggleSettingSponsor] = useState<boolean>(false);
@@ -112,7 +113,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
             setSponsorAddress(info.Sponsorship.confirmed);
           }
 
-          const schema: { metadata: string, metadataJson: MetadataJsonType } = await getEndParseOffchainSchemaMetadata(info);
+          const schema: { metadata: string, metadataJson: MetadataJsonType } = await getAndParseOffchainSchemaMetadata(info);
 
           setCurrentOffchainSchema(schema.metadata);
 
@@ -139,24 +140,23 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
     } catch (e) {
       console.log('fetchCollectionInfo error', e);
     }
-  }, [collectionId, collectionName16Decoder, getDetailedCollectionInfo, hex2a]);
+  }, [collectionId, collectionName16Decoder, getAndParseOffchainSchemaMetadata, getDetailedCollectionInfo, hex2a]);
 
   const fetchCollectionAdminList = useCallback(async () => {
     if (collectionId) {
       const adminList = await getCollectionAdminList(collectionId) as string[];
 
-      console.log('adminList', adminList);
-
-      setCcollectionAdminList(adminList);
+      setIsAdmin(!!adminList.find((address: string) => address.toString() === account));
+      setCollectionAdminList(adminList);
     }
-  }, [collectionId, getCollectionAdminList]);
+  }, [account, collectionId, getCollectionAdminList]);
 
   const onSetAdminAddress = useCallback((value: string) => {
     try {
       keyring.decodeAddress(value);
       setIsAdminAddressError(false);
       setAdminAddress(value);
-      setIsAddressCurrentlyInAdminList(!!collectionAdminList.find((address: string) => address.toString() === value))
+      setIsAddressCurrentlyInAdminList(!!collectionAdminList.find((address: string) => address.toString() === value));
     } catch (e) {
       setIsAdminAddressError(true);
     }
@@ -222,7 +222,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
   // setSchemaVersion(collection_id, version)
   // setOffchainSchema(collection_id, schema)
 
-  console.log('info currentOffchainSchema', currentOffchainSchema);
+  console.log('info currentOffchainSchema', currentOffchainSchema, 'isAdmin', isAdmin);
 
   return (
     <div className='manage-collection'>
@@ -248,6 +248,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
               <Form.Field>
                 <Input
                   className='isSmall'
+                  isDisabled={!isAdmin}
                   onChange={setName}
                   placeholder='Enter collection name'
                   value={name}
@@ -255,6 +256,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
               </Form.Field>
               <Form.Field>
                 <TextArea
+                  isDisabled={!isAdmin}
                   onChange={onSetDescription}
                   placeholder={'Enter collection description'}
                   seed={description}
@@ -263,6 +265,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
               <Form.Field>
                 <Input
                   className='isSmall'
+                  isDisabled={!isAdmin}
                   onChange={setTokenPrefix}
                   placeholder='Enter token prefix'
                   value={tokenPrefix}
@@ -280,6 +283,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
               <Form.Field>
                 <Dropdown
                   defaultValue={currentSchemaVersion}
+                  isDisabled={!isAdmin}
                   onChange={setCurrentSchemaVersion}
                   options={SchemaOptions}
                   placeholder='Select Attribute Type'
@@ -304,6 +308,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
                       )}
                     </>
                   }
+                  disabled={!isAdmin}
                   onClick={onSetSchemaVersion}
                 />
               </Form.Field>
@@ -337,6 +342,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
                       <div className='td'>
                         <Input
                           className='isSmall'
+                          isDisabled={!isAdmin}
                           isError={isAudioUrlError}
                           label='Please enter the OffChain schema url'
                           onChange={setCurrentOffchainSchema}
@@ -438,6 +444,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
               <Form.Field>
                 <Input
                   className='isSmall'
+                  isDisabled={!isAdmin}
                   isError={isSponsorAddressError}
                   label='Please enter the sponsor address'
                   onChange={onSetSponsorAddress}
@@ -463,6 +470,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
                       )}
                     </>
                   }
+                  disabled={!isAdmin}
                   onClick={onSetSponsor}
                 />
                 <Button
@@ -500,6 +508,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
               <Form.Field>
                 <Input
                   className='isSmall'
+                  isDisabled={!isAdmin}
                   isError={isAdminAddressError}
                   label='Please enter the admin address'
                   onChange={onSetAdminAddress}
@@ -525,6 +534,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
                       )}
                     </>
                   }
+                  disabled={!isAdmin}
                   onClick={onSetCurrentAdmin}
                 />
                 <Button
@@ -539,7 +549,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
                       )}
                     </>
                   }
-                  disabled={!adminAddress && isAddressCurrentlyInAdminList}
+                  disabled={!adminAddress || isAddressCurrentlyInAdminList || !isAdmin}
                   onClick={onDeleteCurrentAdmin}
                 />
               </div>
@@ -549,6 +559,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
       </Form>
       <ManageCollectionAttributes
         account={account}
+        isAdmin={isAdmin}
         localRegistry={localRegistry}
       />
     </div>

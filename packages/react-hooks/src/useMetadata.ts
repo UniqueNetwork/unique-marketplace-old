@@ -15,7 +15,7 @@ import { TypeRegistry } from '@polkadot/types';
 interface UseMetadataInterface {
   decodeStruct: ({ attr, data }: { attr?: any, data?: string }) => AttributesDecoded;
   encodeStruct: ({ attr, data }: { attr?: any, data?: string }) => string;
-  getEndParseOffchainSchemaMetadata: (collectionInfo: NftCollectionInterface) => Promise<{ metadata: string, metadataJson: MetadataJsonType }>
+  getAndParseOffchainSchemaMetadata: (collectionInfo: NftCollectionInterface) => Promise<{ metadata: string, metadataJson: MetadataJsonType }>
   getOnChainSchema: (collectionInfo: NftCollectionInterface) => { attributesConst: string, attributesVar: string };
   getTokenAttributes: (collectionInfo: NftCollectionInterface, tokenId: string) => Promise<AttributesDecoded>;
   getTokenImageUrl: (collectionInfo: NftCollectionInterface, tokenId: string) => Promise<string>;
@@ -170,7 +170,7 @@ export const useMetadata = (localRegistry?: TypeRegistry): UseMetadataInterface 
     return '';
   }, [hex2a, setUnique, tokenImageUrl]);
 
-  const getEndParseOffchainSchemaMetadata = useCallback(async (collectionInfo: NftCollectionInterface) => {
+  const getAndParseOffchainSchemaMetadata = useCallback(async (collectionInfo: NftCollectionInterface) => {
     try {
       const offChainSchema: { metadata: string } = JSON.parse(hex2a(collectionInfo.OffchainSchema)) as unknown as { metadata: string };
 
@@ -247,7 +247,7 @@ export const useMetadata = (localRegistry?: TypeRegistry): UseMetadataInterface 
   return {
     decodeStruct,
     encodeStruct,
-    getEndParseOffchainSchemaMetadata,
+    getAndParseOffchainSchemaMetadata,
     getOnChainSchema,
     getTokenAttributes,
     getTokenImageUrl,

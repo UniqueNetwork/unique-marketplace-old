@@ -9,6 +9,7 @@ interface Props {
   children?: React.ReactNode;
   className?: string;
   help?: React.ReactNode;
+  isDisabled?: boolean;
   isError?: boolean;
   isReadOnly?: boolean;
   label?: React.ReactNode;
@@ -18,7 +19,7 @@ interface Props {
   withLabel?: boolean;
 }
 
-function TextArea ({ children, className, help, isError, isReadOnly, label, onChange, placeholder, seed, withLabel }: Props): React.ReactElement<Props> {
+function TextArea ({ children, className, help, isError, isDisabled, isReadOnly, label, onChange, placeholder, seed, withLabel }: Props): React.ReactElement<Props> {
   const _onChange = useCallback(
     ({ target: { value } }: React.ChangeEvent<HTMLTextAreaElement>): void => {
       onChange && onChange(value);
@@ -39,6 +40,7 @@ function TextArea ({ children, className, help, isError, isReadOnly, label, onCh
           autoCorrect='off'
           autoFocus={false}
           className={isError ? 'ui-textArea-withError' : ''}
+          disabled={isDisabled}
           onChange={_onChange}
           placeholder={placeholder}
           readOnly={isReadOnly}

@@ -53,6 +53,7 @@ const CountOptions: CountOption[] = [
 
 interface Props {
   account?: string;
+  isAdmin?: boolean;
   localRegistry?: TypeRegistry;
 }
 
@@ -81,7 +82,7 @@ const testSchema = `{
 // [{ name: 'Name1', type: '_enum', values: ['enum1', 'enum2'] }, { name: 'Name2', type: 'Bytes' }];
 
 function ManageCollectionAttributes (props: Props): React.ReactElement<Props> {
-  const { localRegistry } = props;
+  const { isAdmin, localRegistry } = props;
   const [currentAttributeName, setCurrentAttributeName] = useState<string>('');
   const [currentAttributePluralName, setCurrentAttributePluralName] = useState<string>('');
   const [currentAttributeNameError, setCurrentAttributeNameError] = useState<string>();
@@ -170,12 +171,20 @@ function ManageCollectionAttributes (props: Props): React.ReactElement<Props> {
   }, []);
 
   const onSaveItem = useCallback(() => {
+    if (!isAdmin) {
+      return;
+    }
+
     console.log('onSaveItem');
-  }, []);
+  }, [isAdmin]);
 
   const onCancelSavingItem = useCallback(() => {
+    if (!isAdmin) {
+      return;
+    }
+
     console.log('onCancelSavingItem');
-  }, []);
+  }, [isAdmin]);
 
   useEffect(() => {
     localStorage.setItem('collectionAttributes', JSON.stringify(attributes));
@@ -305,6 +314,7 @@ function ManageCollectionAttributes (props: Props): React.ReactElement<Props> {
             <div className='td'>
               <Input
                 className='isSmall'
+                isDisabled={!isAdmin}
                 isError={!!currentAttributeNameError}
                 label='Please enter the Attribute name'
                 onChange={setCurrentAttributeName}
@@ -319,6 +329,7 @@ function ManageCollectionAttributes (props: Props): React.ReactElement<Props> {
             </div>
             <div className='td'>
               <Dropdown
+                isDisabled={!isAdmin}
                 onChange={setCurrentAttributeType}
                 options={TypeOptions}
                 placeholder='Select Attribute Type'
@@ -347,6 +358,7 @@ function ManageCollectionAttributes (props: Props): React.ReactElement<Props> {
             <div className='td'>
               <Input
                 className='isSmall'
+                isDisabled={!isAdmin}
                 isError={!!currentAttributeNameError}
                 label='Please enter the Attribute name'
                 onChange={setCurrentAttributeName}
@@ -361,6 +373,7 @@ function ManageCollectionAttributes (props: Props): React.ReactElement<Props> {
             </div>
             <div className='td'>
               <Dropdown
+                isDisabled={!isAdmin}
                 onChange={setCurrentAttributeType}
                 options={TypeOptions}
                 placeholder='Select Attribute Type'
@@ -368,7 +381,9 @@ function ManageCollectionAttributes (props: Props): React.ReactElement<Props> {
               />
             </div>
             <div className='td'>
-              <EnumsInput />
+              <EnumsInput
+                isDisabled={!isAdmin}
+              />
             </div>
             <div className='td no-padded'>
               <img
@@ -389,6 +404,7 @@ function ManageCollectionAttributes (props: Props): React.ReactElement<Props> {
         <div className='table-footer'>
           <Button
             content={'Save'}
+            disabled={!isAdmin}
             onClick={onSaveAll}
           />
         </div>
