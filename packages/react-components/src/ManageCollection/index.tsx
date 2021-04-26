@@ -545,7 +545,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
                         )}
                       </>
                     }
-                    disabled={!isAdmin}
+                    disabled={!sponsorAddress || !isAdmin}
                     onClick={onSetSponsor}
                   />
                 </Grid.Column>
@@ -653,7 +653,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
                           )}
                         </>
                       }
-                      disabled={!isAdmin}
+                      disabled={!adminAddress || !isAdmin}
                       onClick={onSetCurrentAdmin}
                     />
                   </div>
