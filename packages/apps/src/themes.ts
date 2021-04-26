@@ -26,7 +26,7 @@ export const luvTheme: ThemeDef = {
 };
 
 export const vernissageTheme: ThemeDef = {
-  domain: '',
+  domain: 'vernissage.art',
   logo: Vernissage as string,
   theme: 'Vernissage'
 };
