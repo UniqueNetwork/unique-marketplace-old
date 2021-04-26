@@ -53,8 +53,6 @@ function EnumInput ({ isDisabled }: Props): React.ReactElement {
     }
   }, [addItem]);
 
-  console.log('allEnums', allEnums);
-
   return (
     <div className='enum-input'>
       <div className='enum-input--content'>

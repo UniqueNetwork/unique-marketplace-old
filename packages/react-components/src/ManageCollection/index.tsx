@@ -7,7 +7,7 @@ import type { NftCollectionInterface, SchemaVersionTypes } from '@polkadot/react
 import type { MetadataJsonType } from '@polkadot/react-hooks/useMetadata';
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button';
@@ -26,6 +26,7 @@ import ManageCollectionAttributes from './ManageCollectionAttributes';
 
 interface Props {
   account?: string;
+  addCollection: (collection: NftCollectionInterface) => void;
   localRegistry?: TypeRegistry;
   setShouldUpdateTokens?: (collectionId: string) => void;
 }
@@ -54,17 +55,21 @@ const SchemaOptions: SchemaOption[] = [
 ];
 
 function ManageCollection (props: Props): React.ReactElement<Props> {
-  const { account, localRegistry, setShouldUpdateTokens } = props;
+  const { account, addCollection, localRegistry, setShouldUpdateTokens } = props;
+  const history = useHistory();
   const query = new URLSearchParams(useLocation().search);
   const collectionId = query.get('collectionId') || '';
   const { addCollectionAdmin,
     confirmSponsorship,
     createCollection,
     getCollectionAdminList,
+    getCreatedCollectionCount,
     getDetailedCollectionInfo,
     removeCollectionAdmin,
     removeCollectionSponsor,
-    setCollectionSponsor } = useCollection();
+    setCollectionSponsor,
+    setOffChainSchema,
+    setSchemaVersion } = useCollection();
   const { getAndParseOffchainSchemaMetadata } = useMetadata(localRegistry);
   const { collectionName16Decoder, hex2a } = useDecoder();
   const [name, setName] = useState<string>('');
@@ -101,55 +106,60 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
     // collectionInfo.SchemaVersion.isImageUrl
     try {
       if (collectionId) {
-        const info = (await getDetailedCollectionInfo(collectionId)) as NftCollectionInterface;
+        const info: NftCollectionInterface = (await getDetailedCollectionInfo(collectionId)) as NftCollectionInterface;
 
         if (info) {
+          setCollectionInfo(info);
           setCurrentSchemaVersion(info.SchemaVersion);
           setName(collectionName16Decoder(info.Name));
           setDescription(collectionName16Decoder(info.Description));
           setTokenPrefix(hex2a(info.TokenPrefix));
+          setCurrentOffchainSchema(hex2a(info.OffchainSchema));
+
+          // add collection to storage
+          addCollection(info);
 
           if (info.Sponsorship.confirmed) {
             setSponsorAddress(info.Sponsorship.confirmed);
           }
 
-          const schema: { metadata: string, metadataJson: MetadataJsonType } = await getAndParseOffchainSchemaMetadata(info);
+          if (info.SchemaVersion === 'Unique') {
+            const schema: { metadata: string, metadataJson: MetadataJsonType } = await getAndParseOffchainSchemaMetadata(info);
 
-          setCurrentOffchainSchema(schema.metadata);
+            if (schema.metadataJson.audio) {
+              setImageUrl(schema.metadataJson.audio);
+            }
 
-          if (schema.metadataJson.audio) {
-            setImageUrl(schema.metadataJson.audio);
+            if (schema.metadataJson.image) {
+              setImageUrl(schema.metadataJson.image);
+            }
+
+            if (schema.metadataJson.page) {
+              setPageUrl(schema.metadataJson.page);
+            }
+
+            if (schema.metadataJson.video) {
+              setVideoUrl(schema.metadataJson.video);
+            }
+          } else if (info.SchemaVersion === 'ImageURL') {
+            if (info.OffchainSchema) {
+              setImageUrl(hex2a(info.OffchainSchema).replace('{id}', '1'));
+            }
           }
-
-          if (schema.metadataJson.image) {
-            setImageUrl(schema.metadataJson.image);
-          }
-
-          if (schema.metadataJson.page) {
-            setPageUrl(schema.metadataJson.page);
-          }
-
-          if (schema.metadataJson.video) {
-            setVideoUrl(schema.metadataJson.video);
-          }
-
-          // strToUTF16(tokenPrefix)
-          console.log('info', info, 'offChainSchema', schema);
         }
       }
     } catch (e) {
       console.log('fetchCollectionInfo error', e);
     }
-  }, [collectionId, collectionName16Decoder, getAndParseOffchainSchemaMetadata, getDetailedCollectionInfo, hex2a]);
+  }, [addCollection, collectionId, collectionName16Decoder, getAndParseOffchainSchemaMetadata, getDetailedCollectionInfo, hex2a]);
 
   const fetchCollectionAdminList = useCallback(async () => {
     if (collectionId) {
       const adminList = await getCollectionAdminList(collectionId) as string[];
 
-      setIsAdmin(!!adminList.find((address: string) => address.toString() === account));
-      setCollectionAdminList(adminList);
+      setCollectionAdminList(adminList || []);
     }
-  }, [account, collectionId, getCollectionAdminList]);
+  }, [collectionId, getCollectionAdminList]);
 
   const onSetAdminAddress = useCallback((value: string) => {
     try {
@@ -193,18 +203,41 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
   }, []);
 
   const onSetSchemaVersion = useCallback(() => {
-    console.log('onSetSchemaVersion');
-  }, []);
+    if (account && collectionId && currentSchemaVersion) {
+      setSchemaVersion({ account, collectionId, schemaVersion: currentSchemaVersion, successCallback: fetchCollectionInfo });
+    }
+  }, [account, collectionId, currentSchemaVersion, fetchCollectionInfo, setSchemaVersion]);
 
   const onSetOffchainSchema = useCallback(() => {
-    console.log('onSetOffchainSchema');
-  }, []);
+    if (account && collectionId) {
+      setOffChainSchema({ account, collectionId, schema: currentOffchainSchema, successCallback: fetchCollectionInfo });
+    }
+  }, [account, collectionId, currentOffchainSchema, fetchCollectionInfo, setOffChainSchema]);
+
+  const goToCollection = useCallback(async () => {
+    const collectionCount = await getCreatedCollectionCount();
+
+    history.push(`/wallet/manage-collection?collectionId=${collectionCount}`);
+  }, [getCreatedCollectionCount, history]);
+
+  const onCreateCollection = useCallback(() => {
+    if (account && name && tokenPrefix) {
+      createCollection(account, {
+        description,
+        modeprm: { nft: null },
+        name,
+        tokenPrefix
+      }, {
+        onSuccess: goToCollection
+      });
+    }
+  }, [account, createCollection, description, goToCollection, name, tokenPrefix]);
 
   const goBack = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     setShouldUpdateTokens && setShouldUpdateTokens('all');
-    history.back();
-  }, [setShouldUpdateTokens]);
+    history.push('/wallet/');
+  }, [history, setShouldUpdateTokens]);
 
   useEffect(() => {
     if (!currentSchemaVersion) {
@@ -216,11 +249,17 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
     void fetchCollectionAdminList();
   }, [fetchCollectionAdminList]);
 
-  // collectionInfo.SchemaVersion.isImageUrl, imageUrl = hex2a(collectionInfo.OffchainSchema) + {id}
-  // collectionMetadata.metadata, collectionMetadata = hex2a(collectionInfo.OffchainSchema) - get metadata
+  useEffect(() => {
+    console.log('collectionInfo.Owner', collectionInfo?.Owner, 'account', account, 'collectionAdminList', collectionAdminList);
+
+    if (collectionInfo && collectionAdminList) {
+      setIsAdmin(!!collectionAdminList.find((address: string) => address.toString() === account) || collectionInfo.Owner === account);
+    }
+  }, [account, collectionAdminList, collectionInfo]);
+
   // hex2a(collectionInfo.OffchainSchema)
   // setSchemaVersion(collection_id, version)
-  // setOffchainSchema(collection_id, schema)
+  // https://whitelabel.market/metadata/{id}
 
   console.log('info currentOffchainSchema', currentOffchainSchema, 'isAdmin', isAdmin);
 
@@ -248,7 +287,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
               <Form.Field>
                 <Input
                   className='isSmall'
-                  isDisabled={!isAdmin}
+                  isDisabled={!!collectionId}
                   onChange={setName}
                   placeholder='Enter collection name'
                   value={name}
@@ -256,7 +295,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
               </Form.Field>
               <Form.Field>
                 <TextArea
-                  isDisabled={!isAdmin}
+                  isDisabled={!!collectionId}
                   onChange={onSetDescription}
                   placeholder={'Enter collection description'}
                   seed={description}
@@ -265,7 +304,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
               <Form.Field>
                 <Input
                   className='isSmall'
-                  isDisabled={!isAdmin}
+                  isDisabled={!!collectionId}
                   onChange={setTokenPrefix}
                   placeholder='Enter token prefix'
                   value={tokenPrefix}
@@ -283,7 +322,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
               <Form.Field>
                 <Dropdown
                   defaultValue={currentSchemaVersion}
-                  isDisabled={!isAdmin}
+                  isDisabled={!isAdmin && !!collectionId}
                   onChange={setCurrentSchemaVersion}
                   options={SchemaOptions}
                   placeholder='Select Attribute Type'
@@ -295,273 +334,305 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
               className='flex'
               width={8}
             >
-              <Form.Field>
-                <Button
-                  content={
-                    <>
-                      Set schema version
-                      { settingSchemaVersion && (
-                        <Loader
-                          active
-                          inline='centered'
-                        />
-                      )}
-                    </>
-                  }
-                  disabled={!isAdmin}
-                  onClick={onSetSchemaVersion}
-                />
-              </Form.Field>
+              { isAdmin && (
+                <Form.Field>
+                  <Button
+                    content={
+                      <>
+                        Set schema version
+                        {settingSchemaVersion && (
+                          <Loader
+                            active
+                            inline='centered'
+                          />
+                        )}
+                      </>
+                    }
+                    onClick={onSetSchemaVersion}
+                  />
+                </Form.Field>
+              )}
             </Grid.Column>
           </Grid.Row>
         </Grid>
       </Form>
-
-      <Header as='h3'>Offchain Schema</Header>
-      <Form className='manage-collection--form'>
-        <Grid className='manage-collection--form--grid'>
-          <Grid.Row>
-            <Grid.Column width={16}>
-              <Form.Field>
-                <div className='schema-table offchain-schema'>
-                  <div className='table-header'>
-                    <div className='tr'>
-                      <div className='th'>
-                        Type
-                      </div>
-                      <div className='th'>
-                        Url
-                      </div>
-                    </div>
-                  </div>
-                  <div className='table-body'>
-                    <div className='tr edit'>
-                      <div className='td'>
-                        OffChain schema url
-                      </div>
-                      <div className='td'>
-                        <Input
-                          className='isSmall'
-                          isDisabled={!isAdmin}
-                          isError={isAudioUrlError}
-                          label='Please enter the OffChain schema url'
-                          onChange={setCurrentOffchainSchema}
-                          placeholder='OffChain schema url'
-                          value={currentOffchainSchema}
-                        />
-                      </div>
-                    </div>
-                    <div className='tr edit'>
-                      <div className='td'>
-                        Audio, token #1
-                      </div>
-                      <div className='td'>
-                        <a
-                          href={audioUrl}
-                          rel='noopener noreferrer'
-                          target='_blank'
-                        >
-                          {audioUrl}
-                        </a>
-                      </div>
-                    </div>
-                    <div className='tr edit'>
-                      <div className='td'>
-                        Image, token #1
-                      </div>
-                      <div className='td'>
-                        <a
-                          href={imageUrl}
-                          rel='noopener noreferrer'
-                          target='_blank'
-                        >
-                          {imageUrl}
-                        </a>
-                      </div>
-                    </div>
-                    <div className='tr edit'>
-                      <div className='td'>
-                        Page, token #1
-                      </div>
-                      <div className='td'>
-                        <a
-                          href={pageUrl}
-                          rel='noopener noreferrer'
-                          target='_blank'
-                        >
-                          {pageUrl}
-                        </a>
-                      </div>
-                    </div>
-                    <div className='tr edit'>
-                      <div className='td'>
-                        Video, token #1
-                      </div>
-                      <div className='td'>
-                        <a
-                          href={videoUrl}
-                          rel='noopener noreferrer'
-                          target='_blank'
-                        >
-                          {videoUrl}
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </Form.Field>
-            </Grid.Column>
-            <Grid.Column
-              className='flex'
-              width={8}
-            >
-              <Form.Field>
-                <Button
-                  content={
-                    <>
-                      Set Offchain Schema
-                      { settingOffChainSchema && (
-                        <Loader
-                          active
-                          inline='centered'
-                        />
-                      )}
-                    </>
-                  }
-                  onClick={onSetOffchainSchema}
-                />
-              </Form.Field>
-            </Grid.Column>
-          </Grid.Row>
-        </Grid>
-      </Form>
-
-      <Header as='h3'>Collection sponsor</Header>
-      <Form className='manage-collection--form'>
-        <Grid className='manage-collection--form--grid'>
-          <Grid.Row>
-            <Grid.Column width={8}>
-              <Form.Field>
-                <Input
-                  className='isSmall'
-                  isDisabled={!isAdmin}
-                  isError={isSponsorAddressError}
-                  label='Please enter the sponsor address'
-                  onChange={onSetSponsorAddress}
-                  placeholder='Collection sponsor address'
-                  value={sponsorAddress}
-                />
-              </Form.Field>
-            </Grid.Column>
-            <Grid.Column
-              className='flex'
-              width={8}
-            >
-              <div className='button-group'>
-                <Button
-                  content={
-                    <>
-                      Set sponsor
-                      { settingSponsor && (
-                        <Loader
-                          active
-                          inline='centered'
-                        />
-                      )}
-                    </>
-                  }
-                  disabled={!isAdmin}
-                  onClick={onSetSponsor}
-                />
-                <Button
-                  content={
-                    <>
-                      Approve sponsor
-                      { approvingSponsor && (
-                        <Loader
-                          active
-                          inline='centered'
-                        />
-                      )}
-                    </>
-                  }
-                  disabled={sponsorAddress !== account}
-                  onClick={onApproveSponsor}
-                />
-              </div>
-            </Grid.Column>
-          </Grid.Row>
-        </Grid>
-      </Form>
-      <Header as='h3'>Collection admin list</Header>
-      { collectionAdminList?.length > 0 && (
-        <ul>
-          { collectionAdminList.map((address) => (
-            <li key={address.toString()}>{address.toString()}</li>
-          ))}
-        </ul>
+      { !collectionId && (
+        <Button
+          content={'Create'}
+          disabled={!name || !tokenPrefix}
+          onClick={onCreateCollection}
+        />
       )}
-      <Form className='manage-collection--form'>
-        <Grid className='manage-collection--form--grid'>
-          <Grid.Row>
-            <Grid.Column width={8}>
-              <Form.Field>
-                <Input
-                  className='isSmall'
-                  isDisabled={!isAdmin}
-                  isError={isAdminAddressError}
-                  label='Please enter the admin address'
-                  onChange={onSetAdminAddress}
-                  placeholder='Collection admin address'
-                  value={adminAddress}
-                />
-              </Form.Field>
-            </Grid.Column>
-            <Grid.Column
-              className='flex'
-              width={8}
-            >
-              <div className='button-group'>
-                <Button
-                  content={
-                    <>
-                      Add admin
-                      { settingCurrentAdmin && (
-                        <Loader
-                          active
-                          inline='centered'
-                        />
-                      )}
-                    </>
-                  }
-                  disabled={!isAdmin}
-                  onClick={onSetCurrentAdmin}
-                />
-                <Button
-                  content={
-                    <>
-                      Remove admin
-                      { deletingCurrentAdmin && (
-                        <Loader
-                          active
-                          inline='centered'
-                        />
-                      )}
-                    </>
-                  }
-                  disabled={!adminAddress || isAddressCurrentlyInAdminList || !isAdmin}
-                  onClick={onDeleteCurrentAdmin}
-                />
-              </div>
-            </Grid.Column>
-          </Grid.Row>
-        </Grid>
-      </Form>
-      <ManageCollectionAttributes
-        account={account}
-        isAdmin={isAdmin}
-        localRegistry={localRegistry}
-      />
+
+      { (isAdmin || collectionId) && (
+        <>
+          <Header as='h3'>Offchain Schema</Header>
+          <Form className='manage-collection--form'>
+            <Grid className='manage-collection--form--grid'>
+              <Grid.Row>
+                <Grid.Column width={16}>
+                  <Form.Field>
+                    <div className='schema-table offchain-schema'>
+                      <div className='table-header'>
+                        <div className='tr'>
+                          <div className='th'>
+                            Type
+                          </div>
+                          <div className='th'>
+                            Url
+                          </div>
+                        </div>
+                      </div>
+                      <div className='table-body'>
+                        <div className='tr edit'>
+                          <div className='td'>
+                            OffChain schema url
+                          </div>
+                          <div className='td'>
+                            <Input
+                              className='isSmall'
+                              isDisabled={!isAdmin}
+                              isError={isAudioUrlError}
+                              label='Please enter the OffChain schema url'
+                              onChange={setCurrentOffchainSchema}
+                              placeholder='OffChain schema url'
+                              value={currentOffchainSchema}
+                            />
+                          </div>
+                        </div>
+                        { currentOffchainSchema && collectionInfo?.SchemaVersion === 'ImageURL' && (
+                          <div className='tr edit'>
+                            <div className='td'>
+                              Image, token #1
+                            </div>
+                            <div className='td'>
+                              <a
+                                href={imageUrl}
+                                rel='noopener noreferrer'
+                                target='_blank'
+                              >
+                                {imageUrl}
+                              </a>
+                            </div>
+                          </div>
+                        )}
+                        { currentOffchainSchema && collectionInfo?.SchemaVersion === 'Unique' && (
+                          <>
+                            <div className='tr edit'>
+                              <div className='td'>
+                                Audio, token #1
+                              </div>
+                              <div className='td'>
+                                <a
+                                  href={audioUrl}
+                                  rel='noopener noreferrer'
+                                  target='_blank'
+                                >
+                                  {audioUrl}
+                                </a>
+                              </div>
+                            </div>
+                            <div className='tr edit'>
+                              <div className='td'>
+                                Image, token #1
+                              </div>
+                              <div className='td'>
+                                <a
+                                  href={imageUrl}
+                                  rel='noopener noreferrer'
+                                  target='_blank'
+                                >
+                                  {imageUrl}
+                                </a>
+                              </div>
+                            </div>
+                            <div className='tr edit'>
+                              <div className='td'>
+                                Page, token #1
+                              </div>
+                              <div className='td'>
+                                <a
+                                  href={pageUrl}
+                                  rel='noopener noreferrer'
+                                  target='_blank'
+                                >
+                                  {pageUrl}
+                                </a>
+                              </div>
+                            </div>
+                            <div className='tr edit'>
+                              <div className='td'>
+                                Video, token #1
+                              </div>
+                              <div className='td'>
+                                <a
+                                  href={videoUrl}
+                                  rel='noopener noreferrer'
+                                  target='_blank'
+                                >
+                                  {videoUrl}
+                                </a>
+                              </div>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </Form.Field>
+                </Grid.Column>
+                <Grid.Column
+                  className='flex'
+                  width={8}
+                >
+                  <Form.Field>
+                    <Button
+                      content={
+                        <>
+                          Set Offchain Schema
+                          { settingOffChainSchema && (
+                            <Loader
+                              active
+                              inline='centered'
+                            />
+                          )}
+                        </>
+                      }
+                      onClick={onSetOffchainSchema}
+                    />
+                  </Form.Field>
+                </Grid.Column>
+              </Grid.Row>
+            </Grid>
+          </Form>
+
+          <Header as='h3'>Collection sponsor</Header>
+          <Form className='manage-collection--form'>
+            <Grid className='manage-collection--form--grid'>
+              <Grid.Row>
+                <Grid.Column width={8}>
+                  <Form.Field>
+                    <Input
+                      className='isSmall'
+                      isDisabled={!isAdmin}
+                      isError={isSponsorAddressError}
+                      label='Please enter the sponsor address'
+                      onChange={onSetSponsorAddress}
+                      placeholder='Collection sponsor address'
+                      value={sponsorAddress}
+                    />
+                  </Form.Field>
+                </Grid.Column>
+                <Grid.Column
+                  className='flex'
+                  width={8}
+                >
+                  <div className='button-group'>
+                    <Button
+                      content={
+                        <>
+                          Set sponsor
+                          { settingSponsor && (
+                            <Loader
+                              active
+                              inline='centered'
+                            />
+                          )}
+                        </>
+                      }
+                      disabled={!isAdmin}
+                      onClick={onSetSponsor}
+                    />
+                    <Button
+                      content={
+                        <>
+                          Approve sponsor
+                          { approvingSponsor && (
+                            <Loader
+                              active
+                              inline='centered'
+                            />
+                          )}
+                        </>
+                      }
+                      disabled={sponsorAddress !== account}
+                      onClick={onApproveSponsor}
+                    />
+                  </div>
+                </Grid.Column>
+              </Grid.Row>
+            </Grid>
+          </Form>
+          <Header as='h3'>Collection admin list</Header>
+          { collectionAdminList?.length > 0 && (
+            <ul>
+              { collectionAdminList.map((address) => (
+                <li key={address.toString()}>{address.toString()}</li>
+              ))}
+            </ul>
+          )}
+          <Form className='manage-collection--form'>
+            <Grid className='manage-collection--form--grid'>
+              <Grid.Row>
+                <Grid.Column width={8}>
+                  <Form.Field>
+                    <Input
+                      className='isSmall'
+                      isDisabled={!isAdmin}
+                      isError={isAdminAddressError}
+                      label='Please enter the admin address'
+                      onChange={onSetAdminAddress}
+                      placeholder='Collection admin address'
+                      value={adminAddress}
+                    />
+                  </Form.Field>
+                </Grid.Column>
+                <Grid.Column
+                  className='flex'
+                  width={8}
+                >
+                  <div className='button-group'>
+                    <Button
+                      content={
+                        <>
+                          Add admin
+                          { settingCurrentAdmin && (
+                            <Loader
+                              active
+                              inline='centered'
+                            />
+                          )}
+                        </>
+                      }
+                      disabled={!isAdmin}
+                      onClick={onSetCurrentAdmin}
+                    />
+                    <Button
+                      content={
+                        <>
+                          Remove admin
+                          { deletingCurrentAdmin && (
+                            <Loader
+                              active
+                              inline='centered'
+                            />
+                          )}
+                        </>
+                      }
+                      disabled={!adminAddress || isAddressCurrentlyInAdminList || !isAdmin}
+                      onClick={onDeleteCurrentAdmin}
+                    />
+                  </div>
+                </Grid.Column>
+              </Grid.Row>
+            </Grid>
+          </Form>
+          <ManageCollectionAttributes
+            account={account}
+            isAdmin={isAdmin}
+            localRegistry={localRegistry}
+          />
+        </>
+      )}
     </div>
   );
 }

@@ -14,6 +14,7 @@ import Tabs from '@polkadot/react-components/Tabs';
 // local imports and components
 import { AppProps as Props } from '@polkadot/react-components/types';
 import { useRegistry } from '@polkadot/react-hooks';
+import { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
 
 import NftWallet from './containers/NftWallet';
 import TokensForSale from './containers/TokensForSale';
@@ -34,6 +35,8 @@ function App ({ account, basePath }: Props): React.ReactElement<Props> {
   const location = useLocation();
   const history = useHistory();
   const [shouldUpdateTokens, setShouldUpdateTokens] = useState<string>();
+  const collectionsStorage: NftCollectionInterface[] = JSON.parse(localStorage.getItem('tokenCollections') || '[]') as NftCollectionInterface[];
+  const [collections, setCollections] = useState<NftCollectionInterface[]>(collectionsStorage);
 
   const items = useMemo(() => [
     {
@@ -54,6 +57,20 @@ function App ({ account, basePath }: Props): React.ReactElement<Props> {
       history.push('/wallet/manage-token');
     }
   }, [history]);
+
+  const addCollection = useCallback((collection: NftCollectionInterface) => {
+    setCollections((prevCollections: NftCollectionInterface[]) => {
+      let newCollections = [...prevCollections];
+
+      if (!prevCollections.find((prevCollection) => prevCollection.id === collection.id)) {
+        newCollections = [...prevCollections, collection];
+      }
+
+      localStorage.setItem('tokenCollections', JSON.stringify(newCollections));
+
+      return newCollections;
+    });
+  }, []);
 
   return (
     <div className='my-tokens'>
@@ -88,6 +105,7 @@ function App ({ account, basePath }: Props): React.ReactElement<Props> {
         <Route path={`${basePath}/manage-collection`}>
           <ManageCollection
             account={account}
+            addCollection={addCollection}
             localRegistry={localRegistry}
             setShouldUpdateTokens={setShouldUpdateTokens}
           />
@@ -110,7 +128,10 @@ function App ({ account, basePath }: Props): React.ReactElement<Props> {
         <Route path={basePath}>
           <NftWallet
             account={account}
+            addCollection={addCollection}
+            collections={collections}
             localRegistry={localRegistry}
+            setCollections={setCollections}
             setShouldUpdateTokens={setShouldUpdateTokens}
             shouldUpdateTokens={shouldUpdateTokens}
           />

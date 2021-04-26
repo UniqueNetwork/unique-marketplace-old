@@ -41,6 +41,13 @@ export interface NftCollectionInterface {
   ConstOnChainSchema: string;
 }
 
+interface TransactionCallBacks {
+  onFailed?: () => void;
+  onStart?: () => void;
+  onSuccess?: () => void;
+  onUpdate?: () => void;
+}
+
 export function useCollection () {
   const { api } = useApi();
   const { queueExtrinsic } = useContext(StatusContext);
@@ -72,17 +79,27 @@ export function useCollection () {
     return 0;
   }, [api]);
 
-  const createCollection = useCallback(({ account, description, modeprm, name, tokenPrefix }: { account: string, name: string, description: string, tokenPrefix: string, modeprm?: string }) => {
+  const getCreatedCollectionCount = useCallback(async () => {
+    try {
+      return parseInt((await api.query.nft.createdCollectionCount()).toString(), 10);
+    } catch (e) {
+      console.log('getCreatedCollectionCount error', e);
+    }
+
+    return 0;
+  }, [api]);
+
+  const createCollection = useCallback((account: string, { description, modeprm, name, tokenPrefix }: { name: string, description: string, tokenPrefix: string, modeprm: { nft?: null, fungible?: null, refungible?: null, invalid?: null }}, callBacks?: TransactionCallBacks) => {
     const transaction = api.tx.nft.createCollection(strToUTF16(name), strToUTF16(description), strToUTF16(tokenPrefix), modeprm);
 
     queueExtrinsic({
       accountId: account && account.toString(),
       extrinsic: transaction,
       isUnsigned: false,
-      txFailedCb: () => { console.log('create collection failed'); },
-      txStartCb: () => { console.log('create collection start'); },
-      txSuccessCb: () => { console.log('create collection success'); },
-      txUpdateCb: () => { console.log('create collection update'); }
+      txFailedCb: () => { callBacks?.onFailed && callBacks.onFailed(); console.log('create collection failed'); },
+      txStartCb: () => { callBacks?.onStart && callBacks.onStart(); console.log('create collection start'); },
+      txSuccessCb: () => { callBacks?.onSuccess && callBacks.onSuccess(); console.log('create collection success'); },
+      txUpdateCb: () => { callBacks?.onUpdate && callBacks.onUpdate(); console.log('create collection update'); }
     });
   }, [api, queueExtrinsic]);
 
@@ -141,6 +158,34 @@ export function useCollection () {
 
     return [];
   }, [api]);
+
+  const setSchemaVersion = useCallback(({ account, collectionId, errorCallback, schemaVersion, successCallback }: { account: string, schemaVersion: SchemaVersionTypes, collectionId: string, successCallback?: () => void, errorCallback?: () => void }) => {
+    const transaction = api.tx.nft.setSchemaVersion(collectionId, schemaVersion);
+
+    queueExtrinsic({
+      accountId: account && account.toString(),
+      extrinsic: transaction,
+      isUnsigned: false,
+      txFailedCb: () => { console.log('set schema version fail'); errorCallback && errorCallback(); },
+      txStartCb: () => { console.log('set schema version  start'); },
+      txSuccessCb: () => { console.log('set schema version  success'); successCallback && successCallback(); },
+      txUpdateCb: () => { console.log('set schema version  update'); }
+    });
+  }, [api, queueExtrinsic]);
+
+  const setOffChainSchema = useCallback(({ account, collectionId, errorCallback, schema, successCallback }: { account: string, schema: string, collectionId: string, successCallback?: () => void, errorCallback?: () => void }) => {
+    const transaction = api.tx.nft.setOffchainSchema(collectionId, schema);
+
+    queueExtrinsic({
+      accountId: account && account.toString(),
+      extrinsic: transaction,
+      isUnsigned: false,
+      txFailedCb: () => { console.log('set offChain schema fail'); errorCallback && errorCallback(); },
+      txStartCb: () => { console.log('set offChain schema start'); },
+      txSuccessCb: () => { console.log('set offChain schema success'); successCallback && successCallback(); },
+      txUpdateCb: () => { console.log('set offChain schema update'); }
+    });
+  }, [api, queueExtrinsic]);
 
   const addCollectionAdmin = useCallback(({ account, collectionId, errorCallback, newAdminAddress, successCallback }: { account: string, collectionId: string, newAdminAddress: string, successCallback?: () => void, errorCallback?: () => void }) => {
     const transaction = api.tx.nft.addCollectionAdmin(collectionId, newAdminAddress);
@@ -209,10 +254,13 @@ export function useCollection () {
     createCollection,
     getCollectionAdminList,
     getCollectionTokensCount,
+    getCreatedCollectionCount,
     getDetailedCollectionInfo,
     getTokensOfCollection,
     removeCollectionAdmin,
     removeCollectionSponsor,
-    setCollectionSponsor
+    setCollectionSponsor,
+    setOffChainSchema,
+    setSchemaVersion
   };
 }

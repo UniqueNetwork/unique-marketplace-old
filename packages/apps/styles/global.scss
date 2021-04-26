@@ -269,6 +269,7 @@ h4.ui.header {
     .ui.dropdown {
       border: 1px solid var(--border-color);
       border-radius: calc(var(--bradius) * 2);
+      background: var(--input-background-color) !important;
       font: 400 16px/24px var(--font-roboto) !important;
       margin: 0;
       height: 40px !important;
@@ -282,6 +283,7 @@ h4.ui.header {
 
       .menu {
         border-color: var(--border-color);
+        background: var(--input-background-color) !important;
 
         .item {
           font: 400 16px/24px var(--font-roboto) !important;
