@@ -371,6 +371,24 @@ h4.ui.header {
   }
 }
 
+.text-block {
+  width: 100%;
+  font-size: 20px;
+  line-height: 40px;
+
+  &.success {
+
+  }
+
+  &.error {
+    color: var(--error-color);
+  }
+
+  &.disabled {
+    color: var(--tabs-color);
+  }
+}
+
 .error-block {
   width: 100%;
   font-size: 20px;

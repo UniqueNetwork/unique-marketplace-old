@@ -30,6 +30,7 @@ export interface NftCollectionInterface {
   Sponsorship: {
     confirmed?: string;
     disabled?: string | null;
+    unconfirmed?: string | null;
   };
   Limits?: {
     AccountTokenOwnershipLimit: string;

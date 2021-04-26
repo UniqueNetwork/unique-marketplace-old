@@ -23,6 +23,7 @@ import { TypeRegistry } from '@polkadot/types';
 import { keyring } from '@polkadot/ui-keyring';
 
 import ManageCollectionAttributes from './ManageCollectionAttributes';
+import trash from "@polkadot/react-components/ManageCollection/trash.svg";
 
 interface Props {
   account?: string;
@@ -175,10 +176,10 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
   const onSetSponsorAddress = useCallback((value: string) => {
     try {
       keyring.decodeAddress(value);
-      setIsAdminAddressError(false);
-      setAdminAddress(value);
+      setIsSponsorAddressError(false);
+      setSponsorAddress(value);
     } catch (e) {
-      setIsAdminAddressError(true);
+      setIsSponsorAddressError(true);
     }
   }, []);
 
@@ -186,21 +187,29 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
     setDescription(value);
   }, []);
 
-  const onDeleteCurrentAdmin = useCallback(() => {
-    console.log('onDeleteCurrentAdmin');
-  }, []);
+  const onDeleteAdmin = useCallback((address: string) => {
+    if (account && collectionId && isAdmin) {
+      removeCollectionAdmin({ account, adminAddress: address, collectionId, successCallback: fetchCollectionAdminList });
+    }
+  }, [account, collectionId, fetchCollectionAdminList, isAdmin, removeCollectionAdmin]);
 
   const onSetCurrentAdmin = useCallback(() => {
-    console.log('onSetCurrentAdmin');
-  }, []);
+    if (account && collectionId && adminAddress) {
+      addCollectionAdmin({ account, collectionId, newAdminAddress: adminAddress, successCallback: fetchCollectionAdminList });
+    }
+  }, [account, addCollectionAdmin, adminAddress, collectionId, fetchCollectionAdminList]);
 
   const onSetSponsor = useCallback(() => {
-    console.log('onSetSponsor');
-  }, []);
+    if (account && collectionId && sponsorAddress) {
+      setCollectionSponsor({ account, collectionId, newSponsor: sponsorAddress, successCallback: fetchCollectionInfo });
+    }
+  }, [account, collectionId, fetchCollectionInfo, setCollectionSponsor, sponsorAddress]);
 
   const onApproveSponsor = useCallback(() => {
-    console.log('onApproveSponsor');
-  }, []);
+    if (account && collectionId) {
+      confirmSponsorship({ account, collectionId, successCallback: fetchCollectionInfo });
+    }
+  }, [account, collectionId, confirmSponsorship, fetchCollectionInfo]);
 
   const onSetSchemaVersion = useCallback(() => {
     if (account && collectionId && currentSchemaVersion) {
@@ -250,8 +259,6 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
   }, [fetchCollectionAdminList]);
 
   useEffect(() => {
-    console.log('collectionInfo.Owner', collectionInfo?.Owner, 'account', account, 'collectionAdminList', collectionAdminList);
-
     if (collectionInfo && collectionAdminList) {
       setIsAdmin(!!collectionAdminList.find((address: string) => address.toString() === account) || collectionInfo.Owner === account);
     }
@@ -261,7 +268,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
   // setSchemaVersion(collection_id, version)
   // https://whitelabel.market/metadata/{id}
 
-  console.log('info currentOffchainSchema', currentOffchainSchema, 'isAdmin', isAdmin);
+  console.log('info', collectionInfo);
 
   return (
     <div className='manage-collection'>
@@ -372,7 +379,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
               <Grid.Row>
                 <Grid.Column width={16}>
                   <Form.Field>
-                    <div className='schema-table offchain-schema'>
+                    <div className='custom-table offchain-schema'>
                       <div className='table-header'>
                         <div className='tr'>
                           <div className='th'>
@@ -526,49 +533,92 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
                   className='flex'
                   width={8}
                 >
-                  <div className='button-group'>
-                    <Button
-                      content={
-                        <>
-                          Set sponsor
-                          { settingSponsor && (
-                            <Loader
-                              active
-                              inline='centered'
-                            />
-                          )}
-                        </>
-                      }
-                      disabled={!isAdmin}
-                      onClick={onSetSponsor}
-                    />
-                    <Button
-                      content={
-                        <>
-                          Approve sponsor
-                          { approvingSponsor && (
-                            <Loader
-                              active
-                              inline='centered'
-                            />
-                          )}
-                        </>
-                      }
-                      disabled={sponsorAddress !== account}
-                      onClick={onApproveSponsor}
-                    />
-                  </div>
+                  <Button
+                    content={
+                      <>
+                        Set sponsor
+                        { settingSponsor && (
+                          <Loader
+                            active
+                            inline='centered'
+                          />
+                        )}
+                      </>
+                    }
+                    disabled={!isAdmin}
+                    onClick={onSetSponsor}
+                  />
+                </Grid.Column>
+              </Grid.Row>
+              <Grid.Row>
+                <Grid.Column width={8}>
+                  { collectionInfo?.Sponsorship.unconfirmed && (
+                    <div className='text-block error'>
+                      {collectionInfo?.Sponsorship.unconfirmed}
+                    </div>
+                  )}
+                  { collectionInfo?.Sponsorship.disabled && (
+                    <div className='text-block disabled'>
+                      {collectionInfo?.Sponsorship.unconfirmed}
+                    </div>
+                  )}
+                  { collectionInfo?.Sponsorship.confirmed && (
+                    <div className='text-block confirmed'>
+                      {collectionInfo?.Sponsorship.unconfirmed}
+                    </div>
+                  )}
+                </Grid.Column>
+                <Grid.Column width={8}>
+                  <Button
+                    content={
+                      <>
+                        Confirm sponsor
+                        { approvingSponsor && (
+                          <Loader
+                            active
+                            inline='centered'
+                          />
+                        )}
+                      </>
+                    }
+                    disabled={sponsorAddress !== account}
+                    onClick={onApproveSponsor}
+                  />
                 </Grid.Column>
               </Grid.Row>
             </Grid>
           </Form>
           <Header as='h3'>Collection admin list</Header>
           { collectionAdminList?.length > 0 && (
-            <ul>
-              { collectionAdminList.map((address) => (
-                <li key={address.toString()}>{address.toString()}</li>
-              ))}
-            </ul>
+            <div className='custom-table admin-table'>
+              <div className='table-header'>
+                <div className='tr'>
+                  <div className='th'>
+                    Address
+                  </div>
+                  <div className='th' />
+                </div>
+              </div>
+              <div className='table-body'>
+                { collectionAdminList.map((address) => (
+                  <div
+                    className='tr edit'
+                    key={address}
+                  >
+                    <div className='td'>
+                      {address.toString()}
+                    </div>
+                    <div className='td'>
+                      <img
+                        alt='delete'
+                        onClick={onDeleteAdmin.bind(null, address)}
+                        src={trash as string}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           )}
           <Form className='manage-collection--form'>
             <Grid className='manage-collection--form--grid'>
@@ -605,21 +655,6 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
                       }
                       disabled={!isAdmin}
                       onClick={onSetCurrentAdmin}
-                    />
-                    <Button
-                      content={
-                        <>
-                          Remove admin
-                          { deletingCurrentAdmin && (
-                            <Loader
-                              active
-                              inline='centered'
-                            />
-                          )}
-                        </>
-                      }
-                      disabled={!adminAddress || isAddressCurrentlyInAdminList || !isAdmin}
-                      onClick={onDeleteCurrentAdmin}
                     />
                   </div>
                 </Grid.Column>

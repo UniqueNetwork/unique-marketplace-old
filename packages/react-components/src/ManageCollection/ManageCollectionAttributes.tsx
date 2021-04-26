@@ -239,7 +239,7 @@ function ManageCollectionAttributes (props: Props): React.ReactElement<Props> {
   return (
     <div className='manage-collection-attributes'>
       <Header as='h3'>Manage collection ConstOnChainSchema</Header>
-      <div className='schema-table collection-attributes'>
+      <div className='custom-table collection-attributes'>
         <div className='table-header'>
           <div className='tr'>
             <div className='th'>
