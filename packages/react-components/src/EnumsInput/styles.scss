@@ -1,10 +1,10 @@
 .enum-input {
   border: 1px solid var(--border-color);
+  background: var(--input-background-color) !important;
   border-radius: 8px;
   width: 100%;
   padding: 4px 8px;
   font-family: var(--font-roboto) var(--font-mono);
-  background: white;
   overflow: hidden;
   overflow-x: scroll;
   -ms-overflow-style: none;  /* IE and Edge */
@@ -46,6 +46,7 @@
   .enum-input--input {
     border: none !important;
     width: 100%;
+    background: var(--input-background-color) !important;
 
     &:active, &:hover, &:focus {
       outline: none;

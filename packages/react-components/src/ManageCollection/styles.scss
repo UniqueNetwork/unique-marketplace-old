@@ -131,6 +131,12 @@
           padding: 0 10px 0 0;
         }
 
+        .enum-field {
+          display: grid;
+          grid-template-columns: 100px 1fr;
+          grid-column-gap: var(--gap);
+        }
+
         .ui--Labelled {
           .ui--Labelled-content {
             .ui.input {
@@ -138,6 +144,8 @@
 
               input {
                 height: 30px;
+                border-color: var(--border-color);
+                background: var(--input-background-color) !important;
               }
             }
 
@@ -149,9 +157,13 @@
               min-width: 0;
               min-height: 30px;
               line-height: 16px;
+              border-color: var(--border-color);
+              background: var(--input-background-color) !important;
 
               .menu {
                 .item {
+                  border-color: var(--border-color);
+                  background: var(--input-background-color) !important;
                   padding-left: 10px !important;
                 }
               }

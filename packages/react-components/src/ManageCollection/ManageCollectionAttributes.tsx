@@ -57,30 +57,6 @@ interface Props {
   localRegistry?: TypeRegistry;
 }
 
-/*
-const testSchema = `{
-  "Gender": {
-    "_enum": {
-      "Male": null,
-      "Female": null
-    }
-  },
-  "Trait": {
-    "_enum": {
-      "Black Lipstick": null,
-      "Smile": null
-    }
-  },
-  "root": {
-    "Gender": "Gender",
-    "Traits": "Vec<Trait>",
-    "ImageHash": "Bytes"
-  }
-}`;
-*/
-
-// [{ name: 'Name1', type: '_enum', values: ['enum1', 'enum2'] }, { name: 'Name2', type: 'Bytes' }];
-
 function ManageCollectionAttributes (props: Props): React.ReactElement<Props> {
   const { isAdmin, localRegistry } = props;
   const [currentAttributeName, setCurrentAttributeName] = useState<string>('');
@@ -199,42 +175,6 @@ function ManageCollectionAttributes (props: Props): React.ReactElement<Props> {
       console.log('AttrLocalStorage parse error', e);
     }
   }, []);
-
-  /* useEffect(() => {
-    const exampleJson: AttributeType[] = [
-      {
-        count: 'array',
-        name: 'Trait',
-        pluralName: 'Traits',
-        type: '_enum',
-        values: ['Black Lipstick', 'Smile']
-      },
-      {
-        count: 'single',
-        name: 'Gender',
-        pluralName: '',
-        type: '_enum',
-        values: ['Male', 'Female']
-      },
-      {
-        count: 'single',
-        name: 'ImageHash',
-        pluralName: '',
-        type: 'Bytes',
-        values: []
-      }
-    ];
-
-    const scaleStr = convertScaleAttrFromJson(exampleJson);
-    const scaleJson = convertScaleAttrToJson(scaleStr);
-
-    const encoded = encodeStruct({ attr: scaleStr, data: '{"Gender":"Female", "Traits":["Smile"], "ImageHash": "123123"}' });
-    const decoded = decodeStruct({ attr: scaleStr, data: encoded });
-
-    console.log('encoded', encoded, 'decoded', decoded);
-
-    console.log('scaleStr', scaleStr, 'scaleJson', scaleJson);
-  }); */
 
   return (
     <div className='manage-collection-attributes'>
@@ -381,9 +321,17 @@ function ManageCollectionAttributes (props: Props): React.ReactElement<Props> {
               />
             </div>
             <div className='td'>
-              <EnumsInput
-                isDisabled={!isAdmin}
-              />
+              <div className='enum-field'>
+                <Dropdown
+                  onChange={setCurrentAttributeCountType}
+                  options={CountOptions}
+                  placeholder='Select Attribute Count Type'
+                  value={currentAttributeCountType}
+                />
+                <EnumsInput
+                  isDisabled={!isAdmin}
+                />
+              </div>
             </div>
             <div className='td no-padded'>
               <img
@@ -409,129 +357,6 @@ function ManageCollectionAttributes (props: Props): React.ReactElement<Props> {
           />
         </div>
       </div>
-      {/* <Grid className='manage-collection--container'>
-        <Grid.Row>
-          <Grid.Column width={8}>
-            <Form className='manage-collection--form'>
-              <Grid className='attribute-form'>
-                <Grid.Row>
-                  <Grid.Column width={7}>
-                    <Form.Field>
-                      <Input
-                        className='isSmall'
-                        isError={!!currentAttributeNameError}
-                        label='Please enter the Attribute name'
-                        onChange={setCurrentAttributeName}
-                        placeholder='Attribute name'
-                        value={currentAttributeName}
-                      />
-                      { currentAttributeNameError && (
-                        <div className='field-error'>
-                          {currentAttributeNameError}
-                        </div>
-                      )}
-                    </Form.Field>
-                  </Grid.Column>
-                  <Grid.Column width={7}>
-                    <Form.Field>
-                      <Dropdown
-                        onChange={setCurrentAttributeType}
-                        options={TypeOptions}
-                        placeholder='Select Attribute Type'
-                        value={currentAttributeType}
-                      />
-                    </Form.Field>
-                  </Grid.Column>
-                  <Grid.Column width={2}>
-                    <Button
-                      content='+'
-                      disabled={!currentAttributeType || !currentAttributeName || (currentAttributeType === '_enum' && currentAttributeValues.length < 2)}
-                      onClick={onAddField}
-                    />
-                  </Grid.Column>
-                </Grid.Row>
-              </Grid>
-              {currentAttributeType === '_enum' && (
-                <Grid className='attribute-additional-form'>
-                  <Grid.Row>
-                    <Grid.Column width={8}>
-                      <Form.Field>
-                        <Dropdown
-                          onChange={setCurrentAttributeCountType}
-                          options={CountOptions}
-                          placeholder='Select Attribute Count Type'
-                          value={currentAttributeCountType}
-                        />
-                      </Form.Field>
-                    </Grid.Column>
-                    <Grid.Column width={8}>
-                      <Form.Field>
-                        <Input
-                          className='isSmall'
-                          isDisabled={currentAttributeCountType === 'single'}
-                          isError={!!currentAttributePluralNameError}
-                          label='Please enter the Attribute plural name'
-                          onChange={setCurrentAttributePluralName}
-                          placeholder='Attribute plural name'
-                          value={currentAttributePluralName}
-                        />
-                      </Form.Field>
-                    </Grid.Column>
-                  </Grid.Row>
-                </Grid>
-              )}
-              {currentAttributeType === '_enum' && (
-                <>
-                  Enums:
-                  <Grid className='attribute-enum-form'>
-                    <Grid.Row>
-                      <Grid.Column width={14}>
-                        <Form.Field>
-                          <Input
-                            className='isSmall'
-                            defaultValue={currentAttributeName}
-                            isError={!!currentAttributeEnumValueError}
-                            label='Please enter an enum attribute'
-                            onChange={setCurrentAttributeEnumValue}
-                            placeholder='Enum attribute'
-                            value={currentAttributeEnumValue}
-                          />
-                          { currentAttributeEnumValueError && (
-                            <div className='field-error'>
-                              {currentAttributeEnumValueError}
-                            </div>
-                          )}
-                        </Form.Field>
-                      </Grid.Column>
-                      <Grid.Column width={2}>
-                        <Form.Field>
-                          <Button
-                            content='+'
-                            onClick={onAddEnumField}
-                          />
-                        </Form.Field>
-                      </Grid.Column>
-                    </Grid.Row>
-                  </Grid>
-                  Enum values: {currentAttributeValues.join(', ')}
-                </>
-              )}
-              <Form.Field>
-                <Button
-                  content='Save'
-                  disabled={!attributes.length}
-                  onClick={onSaveAll}
-                />
-              </Form.Field>
-            </Form>
-          </Grid.Column>
-          <Grid.Column width={8}>
-            <div>
-              <pre>{JSON.stringify(attributes, null, 2) }</pre>
-            </div>
-          </Grid.Column>
-        </Grid.Row>
-      </Grid> */}
     </div>
   );
 }

@@ -5,6 +5,8 @@ import './styles.scss';
 
 import React, { memo, useCallback, useState } from 'react';
 
+import { Popup } from '@polkadot/react-components';
+
 import closeIcon from './closeIcon.svg';
 
 interface Props {
@@ -23,14 +25,17 @@ function EnumInput ({ isDisabled }: Props): React.ReactElement {
       return;
     }
 
-    if (!allEnums.find((item: string) => item.toLowerCase() === currentEnum.toLowerCase())) {
+    const newItem = currentEnum.replace(/\s/g, '');
+
+    if (newItem.length && !allEnums.find((item: string) => item.toLowerCase() === newItem.toLowerCase())) {
       setAllEnums([
         ...allEnums,
-        currentEnum
+        newItem
       ]);
       setCurrentEnum('');
     } else {
       alert('Warning. You are trying to add already existed item');
+      setCurrentEnum('');
     }
   }, [allEnums, currentEnum]);
 
@@ -50,24 +55,37 @@ function EnumInput ({ isDisabled }: Props): React.ReactElement {
     if (e.key === 'Enter') {
       console.log('do validate');
       addItem();
+    } else if (e.code === 'Space') {
+      console.log('do validate');
+      addItem();
     }
   }, [addItem]);
+
+  console.log('allEnums', allEnums);
 
   return (
     <div className='enum-input'>
       <div className='enum-input--content'>
         { allEnums.map((enumItem: string) => (
-          <div
-            className='enum-input--item'
+          <Popup
+            basic
             key={enumItem}
+            style={{ top: '-50px' }}
+            trigger={
+              <div
+                className='enum-input--item'
+              >
+                {enumItem}
+                <img
+                  alt='delete item'
+                  onClick={deleteItem.bind(null, enumItem)}
+                  src={closeIcon as string}
+                />
+              </div>
+            }
           >
-            {enumItem}
-            <img
-              alt='delete item'
-              onClick={deleteItem.bind(null, enumItem)}
-              src={closeIcon as string}
-            />
-          </div>
+            popup content
+          </Popup>
         ))}
         <input
           className='enum-input--input'

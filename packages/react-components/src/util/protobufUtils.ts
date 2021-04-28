@@ -58,8 +58,17 @@ function defineMessage () {
                 rule: 'required',
                 type: 'Gender'
               },
-              traits: {
+              imageHash: {
                 id: 2,
+                rule: 'required',
+                type: 'string'
+              },
+              name: {
+                id: 3,
+                type: 'string'
+              },
+              traits: {
+                id: 4,
                 rule: 'repeated',
                 type: 'PunkTrait'
               }
@@ -93,7 +102,7 @@ function defineMessage () {
   });
 }
 
-function serializeNft (payload: { [key: string]: number | number[] }) {
+function serializeNft (payload: { [key: string]: number | number[] | string }) {
   const root = defineMessage();
   const NFTMeta = root.lookupType('onchainmetadata.NFTMeta');
 
@@ -172,6 +181,8 @@ export function initProtobuf () {
   // Exemplary payload
   const payload = {
     gender: Gender.Female,
+    imageHash: 'hash',
+    name: 'TokenName',
     traits: [PunkTrait.PURPLE_LIPSTICK, PunkTrait.NOSE_RING, PunkTrait.ASIAN_EYES, PunkTrait.SUNGLASSES]
   };
 
