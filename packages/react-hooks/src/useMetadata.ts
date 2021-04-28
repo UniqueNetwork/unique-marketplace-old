@@ -195,7 +195,7 @@ export const useMetadata = (localRegistry?: TypeRegistry): UseMetadataInterface 
 
   const getOnChainSchema = useCallback((collectionInf: NftCollectionInterface): { attributesConst: string, attributesVar: string } => {
     if (collectionInf) {
-      console.log('collection ConstOnChainSchema', collectionInf.ConstOnChainSchema);
+      console.log('collection ConstOnChainSchema', hex2a(collectionInf.ConstOnChainSchema));
       console.log('collection VariableOnChainSchema', hex2a(collectionInf.VariableOnChainSchema));
 
       return {

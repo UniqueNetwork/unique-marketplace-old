@@ -16,14 +16,15 @@ import Image from 'semantic-ui-react/dist/commonjs/elements/Image';
 import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
 import { Dropdown, Input, TextArea } from '@polkadot/react-components';
+import trash from '@polkadot/react-components/ManageCollection/trash.svg';
 import arrowLeft from '@polkadot/react-components/NftDetails/arrowLeft.svg';
 import { useDecoder, useMetadata } from '@polkadot/react-hooks';
 import { useCollection } from '@polkadot/react-hooks/useCollection';
 import { TypeRegistry } from '@polkadot/types';
 import { keyring } from '@polkadot/ui-keyring';
+import { initProtobuf } from '@polkadot/react-components/util/protobufUtils';
 
 import ManageCollectionAttributes from './ManageCollectionAttributes';
-import trash from "@polkadot/react-components/ManageCollection/trash.svg";
 
 interface Props {
   account?: string;
@@ -267,6 +268,10 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
   // hex2a(collectionInfo.OffchainSchema)
   // setSchemaVersion(collection_id, version)
   // https://whitelabel.market/metadata/{id}
+
+  useEffect(() => {
+    initProtobuf();
+  }, []);
 
   console.log('info', collectionInfo);
 

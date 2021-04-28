@@ -212,23 +212,18 @@ export function useCollections () {
 
   const presetMintTokenCollection = useCallback(async (): Promise<NftCollectionInterface[]> => {
     try {
-      const collections: Array<NftCollectionInterface> = JSON.parse(localStorage.getItem('tokenCollections') || '[]') as NftCollectionInterface[];
+      const collections: Array<NftCollectionInterface> = [];
       const mintCollectionInfo = await getDetailedCollectionInfo(UNIQUE_COLLECTION_ID) as unknown as NftCollectionInterface;
-
-      console.log('mintCollectionInfo', mintCollectionInfo);
 
       if (cleanup.current) {
         return [];
       }
 
-      if (mintCollectionInfo &&
-        mintCollectionInfo.Owner &&
-        mintCollectionInfo.Owner.toString() !== '5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM' &&
-        !collections.find((collection: NftCollectionInterface) => collection.id === UNIQUE_COLLECTION_ID)) {
-        console.log('add collection', mintCollectionInfo);
+      if (mintCollectionInfo && mintCollectionInfo.Owner && mintCollectionInfo.Owner.toString() !== '5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM') {
         collections.push({ ...mintCollectionInfo, id: UNIQUE_COLLECTION_ID });
-        localStorage.setItem('tokenCollections', JSON.stringify(collections));
       }
+
+      localStorage.setItem('tokenCollections', JSON.stringify(collections));
 
       return collections;
     } catch (e) {

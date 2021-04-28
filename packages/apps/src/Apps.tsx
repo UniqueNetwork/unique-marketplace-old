@@ -96,8 +96,6 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
     void detectWeb3();
   }, [detectWeb3]);
 
-  console.log('theme', theme);
-
   return (
     <>
       <GlobalStyle uiHighlight={uiHighlight} />

@@ -200,7 +200,7 @@ function ManageCollectionAttributes (props: Props): React.ReactElement<Props> {
     }
   }, []);
 
-  useEffect(() => {
+  /* useEffect(() => {
     const exampleJson: AttributeType[] = [
       {
         count: 'array',
@@ -234,7 +234,7 @@ function ManageCollectionAttributes (props: Props): React.ReactElement<Props> {
     console.log('encoded', encoded, 'decoded', decoded);
 
     console.log('scaleStr', scaleStr, 'scaleJson', scaleJson);
-  });
+  }); */
 
   return (
     <div className='manage-collection-attributes'>
