@@ -3,6 +3,8 @@
 
 import './styles.scss';
 
+import type { AttributeItemType, FieldRuleType, FieldType, ProtobufAttributeType } from '../util/protobufUtils';
+
 import React, { useCallback, useEffect, useState } from 'react';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
@@ -12,7 +14,7 @@ import EnumsInput from '@polkadot/react-components/EnumsInput';
 import { useMetadata } from '@polkadot/react-hooks';
 import { TypeRegistry } from '@polkadot/types';
 
-import { AttributeType, AttributeTypes, convertScaleAttrFromJson, convertScaleAttrToJson, CountType } from '../util/scaleUtils';
+import protobufJsonExample from '../util/protobufJsonExample';
 import close from './close.svg';
 import floppy from './floppy.svg';
 import pencil from './pencil.svg';
@@ -21,33 +23,37 @@ import trash from './trash.svg';
 
 type TypeOption = {
   text: string;
-  value: AttributeTypes;
+  value: FieldType;
 }
 
 const TypeOptions: TypeOption[] = [
   {
     text: 'string',
-    value: 'Bytes'
+    value: 'string'
   },
   {
     text: 'enumerable',
-    value: '_enum'
+    value: 'enum'
   }
 ];
 
 type CountOption = {
   text: string;
-  value: CountType;
+  value: FieldRuleType;
 }
 
 const CountOptions: CountOption[] = [
   {
-    text: 'single',
-    value: 'single'
+    text: 'optional',
+    value: 'optional'
   },
   {
-    text: 'array',
-    value: 'array'
+    text: 'required',
+    value: 'required'
+  },
+  {
+    text: 'repeated',
+    value: 'repeated'
   }
 ];
 
@@ -59,6 +65,8 @@ interface Props {
 
 function ManageCollectionAttributes (props: Props): React.ReactElement<Props> {
   const { isAdmin, localRegistry } = props;
+  const [attributes, setAttributes] = useState<AttributeType[]>([]);
+
   const [currentAttributeName, setCurrentAttributeName] = useState<string>('');
   const [currentAttributePluralName, setCurrentAttributePluralName] = useState<string>('');
   const [currentAttributeNameError, setCurrentAttributeNameError] = useState<string>();
@@ -69,7 +77,6 @@ function ManageCollectionAttributes (props: Props): React.ReactElement<Props> {
   const [currentAttributeEnumValue, setCurrentAttributeEnumValue] = useState<string>('');
   const [currentAttributeEnumValueError, setCurrentAttributeEnumValueError] = useState<string>();
   const [currentAttributeValues, setCurrentAttributeValues] = useState<string[]>([]);
-  const [attributes, setAttributes] = useState<AttributeType[]>([]);
   const { decodeStruct, encodeStruct } = useMetadata(localRegistry);
 
   // const tx = api.tx.nft.setConstOnChainSchema(collection_id, schema)

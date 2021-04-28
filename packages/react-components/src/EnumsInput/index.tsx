@@ -5,8 +5,7 @@ import './styles.scss';
 
 import React, { memo, useCallback, useState } from 'react';
 
-import { Popup } from '@polkadot/react-components';
-
+// import { Popup } from '@polkadot/react-components';
 import closeIcon from './closeIcon.svg';
 
 interface Props {
@@ -25,12 +24,10 @@ function EnumInput ({ isDisabled }: Props): React.ReactElement {
       return;
     }
 
-    const newItem = currentEnum.replace(/\s/g, '');
-
-    if (newItem.length && !allEnums.find((item: string) => item.toLowerCase() === newItem.toLowerCase())) {
+    if (currentEnum.length && !allEnums.find((item: string) => item.toLowerCase() === currentEnum.toLowerCase())) {
       setAllEnums([
         ...allEnums,
-        newItem
+        currentEnum
       ]);
       setCurrentEnum('');
     } else {
@@ -55,9 +52,6 @@ function EnumInput ({ isDisabled }: Props): React.ReactElement {
     if (e.key === 'Enter') {
       console.log('do validate');
       addItem();
-    } else if (e.code === 'Space') {
-      console.log('do validate');
-      addItem();
     }
   }, [addItem]);
 
@@ -67,7 +61,18 @@ function EnumInput ({ isDisabled }: Props): React.ReactElement {
     <div className='enum-input'>
       <div className='enum-input--content'>
         { allEnums.map((enumItem: string) => (
-          <Popup
+          <div
+            className='enum-input--item'
+            key={enumItem}
+          >
+            {enumItem}
+            <img
+              alt='delete item'
+              onClick={deleteItem.bind(null, enumItem)}
+              src={closeIcon as string}
+            />
+          </div>
+          /* <Popup
             basic
             key={enumItem}
             style={{ top: '-50px' }}
@@ -85,7 +90,7 @@ function EnumInput ({ isDisabled }: Props): React.ReactElement {
             }
           >
             popup content
-          </Popup>
+          </Popup> */
         ))}
         <input
           className='enum-input--input'
