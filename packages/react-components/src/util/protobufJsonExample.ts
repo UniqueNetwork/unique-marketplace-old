@@ -3,7 +3,7 @@
 
 const protobufJsonExample = {
   nested: {
-    onchainmetadata: {
+    onChainMetaData: {
       nested: {
         Gender: {
           options: {
@@ -24,11 +24,12 @@ const protobufJsonExample = {
             },
             imageHash: {
               id: 2,
-              rule: 'required',
+              rule: 'optional',
               type: 'string'
             },
             name: {
               id: 3,
+              rule: 'required',
               type: 'string'
             },
             traits: {
@@ -40,24 +41,24 @@ const protobufJsonExample = {
         },
         PunkTrait: {
           options: {
-            ASIAN_EYES: '{"cn": "亚洲眼", "en": "Asian Eyes", "ru": "Азиатский тип глаз"}',
-            BLACK_LIPSTICK: '{"cn": "黑唇", "en": "Black Lipstick", "ru": "Чёрная помада"}',
-            NOSE_RING: '{"cn": "鼻环", "en": "Nose Ring", "ru": "Пирсинг в носу"}',
-            PURPLE_LIPSTICK: '{"cn": "紫唇", "en": "Purple Lipstick", "ru": "Фиолетовая помада"}',
-            RED_LIPSTICK: '{"cn": "红唇", "en": "Red Lipstick", "ru": "Красная помада"}',
-            SMILE: '{"cn": "笑脸", "en": "Smile", "ru": "Улыбка"}',
-            SUNGLASSES: '{"cn": "太阳镜", "en": "Sunglasses", "ru": "Солнечные очки"}',
-            TEETH_SMILE: '{"cn": "露齿笑脸", "en": "Teeth Smile", "ru": "Улыбка с зубами"}'
+            field1: '{"cn": "亚洲眼", "en": "Asian Eyes", "ru": "Азиатский тип глаз"}',
+            field2: '{"cn": "黑唇", "en": "Black Lipstick", "ru": "Чёрная помада"}',
+            field3: '{"cn": "鼻环", "en": "Nose Ring", "ru": "Пирсинг в носу"}',
+            field4: '{"cn": "紫唇", "en": "Purple Lipstick", "ru": "Фиолетовая помада"}',
+            field5: '{"cn": "红唇", "en": "Red Lipstick", "ru": "Красная помада"}',
+            field6: '{"cn": "笑脸", "en": "Smile", "ru": "Улыбка"}',
+            field7: '{"cn": "太阳镜", "en": "Sunglasses", "ru": "Солнечные очки"}',
+            field8: '{"cn": "露齿笑脸", "en": "Teeth Smile", "ru": "Улыбка с зубами"}'
           },
           values: {
-            ASIAN_EYES: 6,
-            BLACK_LIPSTICK: 0,
-            NOSE_RING: 5,
-            PURPLE_LIPSTICK: 4,
-            RED_LIPSTICK: 1,
-            SMILE: 2,
-            SUNGLASSES: 7,
-            TEETH_SMILE: 3
+            field1: 6,
+            field2: 0,
+            field3: 5,
+            field4: 4,
+            field5: 1,
+            field6: 2,
+            field7: 7,
+            field8: 3
           }
         }
       }

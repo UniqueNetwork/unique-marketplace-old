@@ -30,14 +30,14 @@
     .table-header {
       .tr {
         display: grid;
-        grid-template-columns: 200px 200px 1fr 24px;
+        grid-template-columns: 200px 200px 200px 1fr 24px;
         grid-column-gap: var(--gap);
       }
     }
     .table-body {
       .tr {
         display: grid;
-        grid-template-columns: 200px 200px 1fr 24px 24px;
+        grid-template-columns: 200px 200px 200px 1fr 24px 24px;
         grid-column-gap: var(--gap);
       }
     }
@@ -129,12 +129,6 @@
       &.edit {
         .td {
           padding: 0 10px 0 0;
-        }
-
-        .enum-field {
-          display: grid;
-          grid-template-columns: 150px 1fr;
-          grid-column-gap: var(--gap);
         }
 
         .ui--Labelled {

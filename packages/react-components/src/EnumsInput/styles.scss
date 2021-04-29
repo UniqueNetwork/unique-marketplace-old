@@ -3,6 +3,7 @@
   background: var(--input-background-color) !important;
   border-radius: 8px;
   width: 100%;
+  max-width: 360px;
   padding: 4px 8px;
   font-family: var(--font-roboto) var(--font-mono);
   overflow: hidden;
@@ -47,6 +48,7 @@
     border: none !important;
     width: 100%;
     background: var(--input-background-color) !important;
+    min-width: 100px;
 
     &:active, &:hover, &:focus {
       outline: none;

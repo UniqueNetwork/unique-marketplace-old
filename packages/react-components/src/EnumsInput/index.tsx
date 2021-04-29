@@ -10,13 +10,11 @@ import closeIcon from './closeIcon.svg';
 
 interface Props {
   isDisabled?: boolean;
+  values: string[];
 }
 
-function EnumInput ({ isDisabled }: Props): React.ReactElement {
-  const [allEnums, setAllEnums] = useState<string[]>([
-    'Yellow jacket',
-    'Pink cap'
-  ]);
+function EnumInput ({ isDisabled, values }: Props): React.ReactElement {
+  const [allEnums, setAllEnums] = useState<string[]>(values);
   const [currentEnum, setCurrentEnum] = useState<string>('');
 
   const addItem = useCallback(() => {

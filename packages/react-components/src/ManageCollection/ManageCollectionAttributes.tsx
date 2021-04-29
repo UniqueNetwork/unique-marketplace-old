@@ -65,14 +65,12 @@ interface Props {
 
 function ManageCollectionAttributes (props: Props): React.ReactElement<Props> {
   const { isAdmin, localRegistry } = props;
-  const [attributes, setAttributes] = useState<AttributeType[]>([]);
+  const [attributes, setAttributes] = useState<AttributeItemType[]>([]);
 
   const [currentAttributeName, setCurrentAttributeName] = useState<string>('');
-  const [currentAttributePluralName, setCurrentAttributePluralName] = useState<string>('');
   const [currentAttributeNameError, setCurrentAttributeNameError] = useState<string>();
-  const [currentAttributePluralNameError, setCurrentAttributePluralNameError] = useState<string>();
-  const [currentAttributeType, setCurrentAttributeType] = useState<AttributeTypes>('Bytes');
-  const [currentAttributeCountType, setCurrentAttributeCountType] = useState<CountType>('single');
+  const [currentAttributeType, setCurrentAttributeType] = useState<FieldType>('string');
+  const [currentAttributeCountType, setCurrentAttributeCountType] = useState<FieldRuleType>('optional');
 
   const [currentAttributeEnumValue, setCurrentAttributeEnumValue] = useState<string>('');
   const [currentAttributeEnumValueError, setCurrentAttributeEnumValueError] = useState<string>();
@@ -83,21 +81,14 @@ function ManageCollectionAttributes (props: Props): React.ReactElement<Props> {
 
   const clearCurrentAttribute = useCallback(() => {
     setCurrentAttributeName('');
-    setCurrentAttributePluralName('');
-    setCurrentAttributeType('Bytes');
+    setCurrentAttributeType('string');
     setCurrentAttributeValues([]);
     setCurrentAttributeEnumValue('');
   }, []);
 
   const addAttribute = useCallback(() => {
-    if (attributes.find((item: AttributeType) => item.name === currentAttributeName)) {
+    if (attributes.find((item: AttributeItemType) => item.name === currentAttributeName)) {
       setCurrentAttributeNameError('You already have attribute with same name!');
-
-      return;
-    }
-
-    if (attributes.find((item: AttributeType) => item.pluralName === currentAttributeName && currentAttributeName !== '')) {
-      setCurrentAttributePluralNameError('You already have attribute with same plural name!');
 
       return;
     }
@@ -105,10 +96,10 @@ function ManageCollectionAttributes (props: Props): React.ReactElement<Props> {
     if (currentAttributeName && currentAttributeType) {
       setAttributes([
         ...attributes, {
-          count: currentAttributeCountType,
+          fieldType: currentAttributeType,
+          id: attributes.length,
           name: currentAttributeName,
-          pluralName: currentAttributePluralName,
-          type: currentAttributeType,
+          rule: currentAttributeCountType,
           values: currentAttributeValues
         }
       ]
@@ -116,7 +107,7 @@ function ManageCollectionAttributes (props: Props): React.ReactElement<Props> {
       clearCurrentAttribute();
       setCurrentAttributeNameError(undefined);
     }
-  }, [attributes, clearCurrentAttribute, currentAttributeCountType, currentAttributeName, currentAttributePluralName, currentAttributeType, currentAttributeValues]);
+  }, [attributes, clearCurrentAttribute, currentAttributeCountType, currentAttributeName, currentAttributeType, currentAttributeValues]);
 
   const onSaveAll = useCallback(() => {
     console.log('onSaveAll');
@@ -169,19 +160,56 @@ function ManageCollectionAttributes (props: Props): React.ReactElement<Props> {
     console.log('onCancelSavingItem');
   }, [isAdmin]);
 
+  const fillAttributes = useCallback(() => {
+    const attrs: AttributeItemType[] = [];
+
+    try {
+      const protobufStruct: ProtobufAttributeType = protobufJsonExample as unknown as ProtobufAttributeType;
+      const fields: {
+        [key: string]: {
+          id: number;
+          rule: FieldRuleType;
+          type: string;
+        }
+      } = protobufStruct?.nested?.onChainMetaData?.nested?.NFTMeta?.fields || {};
+
+      if (fields) {
+        Object.keys(fields).forEach((fieldKey: string) => {
+          const options: { [key: string]: string } = protobufStruct?.nested?.onChainMetaData?.nested[fields[fieldKey].type]?.options || {};
+          const valuesJson = fields[fieldKey].type === 'string' ? [] : Object.values(options);
+          const values: string[] = [];
+
+          // for now we only use 'en' translation value
+          valuesJson.forEach((valueJson) => {
+            const parsed = JSON.parse(valueJson) as { en: string };
+
+            values.push(parsed.en);
+          });
+
+          attrs.push({
+            fieldType: fields[fieldKey].type === 'string' ? 'string' : 'enum',
+            id: fields[fieldKey].id,
+            name: fieldKey,
+            rule: fields[fieldKey].rule,
+            values: values
+          });
+        });
+      }
+    } catch (e) {
+      console.log('fillAttributes error', e);
+    }
+
+    setAttributes(attrs);
+    console.log('attrs', attrs);
+  }, []);
+
+  useEffect(() => {
+    fillAttributes();
+  }, [fillAttributes]);
+
   useEffect(() => {
     localStorage.setItem('collectionAttributes', JSON.stringify(attributes));
   }, [attributes]);
-
-  useEffect(() => {
-    try {
-      const attrs: AttributeType[] = JSON.parse(localStorage.getItem('collectionAttributes') || '{}') as AttributeType[];
-
-      setAttributes(attrs);
-    } catch (e) {
-      console.log('AttrLocalStorage parse error', e);
-    }
-  }, []);
 
   return (
     <div className='manage-collection-attributes'>
@@ -196,6 +224,9 @@ function ManageCollectionAttributes (props: Props): React.ReactElement<Props> {
               Type
             </div>
             <div className='th'>
+              rule
+            </div>
+            <div className='th'>
               Possible values
             </div>
             <div className='th'>
@@ -208,153 +239,91 @@ function ManageCollectionAttributes (props: Props): React.ReactElement<Props> {
           </div>
         </div>
         <div className='table-body'>
-          <div className='tr'>
-            <div className='td'>
-              First Name
-            </div>
-            <div className='td'>
-              string
-            </div>
-            <div className='td'>
-              Petia
-            </div>
-            <div className='td action'>
-              <img
-                alt='edit'
-                src={pencil as string}
-              />
-            </div>
-            <div className='td action'>
-              <img
-                alt='delete'
-                src={trash as string}
-              />
-            </div>
-          </div>
-          <div className='tr'>
-            <div className='td'>
-              First Name
-            </div>
-            <div className='td'>
-              string
-            </div>
-            <div className='td'>
-              Petia
-            </div>
-            <div className='td action'>
-              <img
-                alt='edit'
-                onClick={onEditItem}
-                src={pencil as string}
-              />
-            </div>
-            <div className='td action'>
-              <img
-                alt='delete'
-                onClick={onDeleteItem}
-                src={trash as string}
-              />
-            </div>
-          </div>
-
-          <div className='tr edit'>
-            <div className='td'>
-              <Input
-                className='isSmall'
-                isDisabled={!isAdmin}
-                isError={!!currentAttributeNameError}
-                label='Please enter the Attribute name'
-                onChange={setCurrentAttributeName}
-                placeholder='Attribute name'
-                value={currentAttributeName}
-              />
-              { currentAttributeNameError && (
-                <div className='field-error'>
-                  {currentAttributeNameError}
+          { attributes.map((attribute: AttributeItemType) => (
+            <>
+              <div className='tr'>
+                <div className='td'>
+                  {attribute.name}
                 </div>
-              )}
-            </div>
-            <div className='td'>
-              <Dropdown
-                isDisabled={!isAdmin}
-                onChange={setCurrentAttributeType}
-                options={TypeOptions}
-                placeholder='Select Attribute Type'
-                value={currentAttributeType}
-              />
-            </div>
-            <div className='td'>
-            </div>
-            <div className='td no-padded'>
-              <img
-                alt={'Save'}
-                onClick={onSaveItem}
-                src={floppy as string}
-              />
-            </div>
-            <div className='td no-padded'>
-              <img
-                alt={'Cancel'}
-                onClick={onCancelSavingItem}
-                src={close as string}
-              />
-            </div>
-          </div>
-
-          <div className='tr edit'>
-            <div className='td'>
-              <Input
-                className='isSmall'
-                isDisabled={!isAdmin}
-                isError={!!currentAttributeNameError}
-                label='Please enter the Attribute name'
-                onChange={setCurrentAttributeName}
-                placeholder='Attribute name'
-                value={currentAttributeName}
-              />
-              { currentAttributeNameError && (
-                <div className='field-error'>
-                  {currentAttributeNameError}
+                <div className='td'>
+                  {attribute.fieldType}
                 </div>
-              )}
-            </div>
-            <div className='td'>
-              <Dropdown
-                isDisabled={!isAdmin}
-                onChange={setCurrentAttributeType}
-                options={TypeOptions}
-                placeholder='Select Attribute Type'
-                value={currentAttributeType}
-              />
-            </div>
-            <div className='td'>
-              <div className='enum-field'>
-                <Dropdown
-                  onChange={setCurrentAttributeCountType}
-                  options={CountOptions}
-                  placeholder='Select Attribute Count Type'
-                  value={currentAttributeCountType}
-                />
-                <EnumsInput
-                  isDisabled={!isAdmin}
-                />
+                <div className='td'>
+                  {attribute.rule}
+                </div>
+                <div className='td'>
+                  {attribute.values.join(', ')}
+                </div>
+                <div className='td action'>
+                  <img
+                    alt='edit'
+                    src={pencil as string}
+                  />
+                </div>
+                <div className='td action'>
+                  <img
+                    alt='delete'
+                    src={trash as string}
+                  />
+                </div>
               </div>
-            </div>
-            <div className='td no-padded'>
-              <img
-                alt={'Save'}
-                onClick={onSaveItem}
-                src={floppy as string}
-              />
-            </div>
-            <div className='td no-padded'>
-              <img
-                alt={'Cancel'}
-                onClick={onCancelSavingItem}
-                src={close as string}
-              />
-            </div>
-          </div>
+              <div className='tr edit'>
+                <div className='td'>
+                  <Input
+                    className='isSmall'
+                    isDisabled={!isAdmin}
+                    isError={!!currentAttributeNameError}
+                    label='Please enter the Attribute name'
+                    onChange={setCurrentAttributeName}
+                    placeholder='Attribute name'
+                    value={attribute.name}
+                  />
+                  { currentAttributeNameError && (
+                    <div className='field-error'>
+                      {currentAttributeNameError}
+                    </div>
+                  )}
+                </div>
+                <div className='td'>
+                  <Dropdown
+                    isDisabled={!isAdmin}
+                    onChange={setCurrentAttributeType}
+                    options={TypeOptions}
+                    placeholder='Select Attribute Type'
+                    value={attribute.fieldType}
+                  />
+                </div>
+                <div className='td'>
+                  <Dropdown
+                    onChange={setCurrentAttributeCountType}
+                    options={CountOptions}
+                    placeholder='Select Attribute Count Type'
+                    value={attribute.rule}
+                  />
+                </div>
+                <div className='td'>
+                  <EnumsInput
+                    isDisabled={!isAdmin}
+                    values={attribute.values}
+                  />
+                </div>
+                <div className='td no-padded'>
+                  <img
+                    alt={'Save'}
+                    onClick={onSaveItem}
+                    src={floppy as string}
+                  />
+                </div>
+                <div className='td no-padded'>
+                  <img
+                    alt={'Cancel'}
+                    onClick={onCancelSavingItem}
+                    src={close as string}
+                  />
+                </div>
+              </div>
+            </>
+          ))}
         </div>
         <div className='table-footer'>
           <Button

@@ -14,7 +14,7 @@ export type AttributeItemType = {
   fieldType: FieldType;
   name: string;
   rule: FieldRuleType;
-  value: string | string[];
+  values: string[];
 }
 
 export type ProtobufAttributeType = {
@@ -22,16 +22,15 @@ export type ProtobufAttributeType = {
     onChainMetaData: {
       nested: {
         [key: string]: {
-          options: { [key: string]: string };
-          values: { [key: string]: number };
-        } | {
-          fields: {
+          fields?: {
             [key: string]: {
               id: number;
-              rule: string;
+              rule: FieldRuleType;
               type: string;
             }
           }
+          options?: { [key: string]: string };
+          values?: { [key: string]: number };
         }
       }
     }
@@ -60,7 +59,7 @@ function defineMessage () {
 
 function serializeNft (payload: { [key: string]: number | number[] | string }) {
   const root = defineMessage();
-  const NFTMeta = root.lookupType('onchainmetadata.NFTMeta');
+  const NFTMeta = root.lookupType('onChainMetaData.NFTMeta');
 
   // Verify the payload if necessary (i.e. when possibly incomplete or invalid)
   const errMsg = NFTMeta.verify(payload);
@@ -100,7 +99,7 @@ function deserializeNft (buffer: Uint8Array, locale: string) {
   const root = defineMessage();
 
   // Obtain the message type
-  const NFTMeta = root.lookupType('onchainmetadata.NFTMeta');
+  const NFTMeta = root.lookupType('onChainMetaData.NFTMeta');
 
   // Decode a Uint8Array (browser) or Buffer (node) to a message
   const message = NFTMeta.decode(buffer);
