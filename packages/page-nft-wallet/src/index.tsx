@@ -9,7 +9,7 @@ import { Route, Switch, useHistory } from 'react-router';
 import { useLocation } from 'react-router-dom';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header/Header';
 
-import { Dropdown, ManageCollection, ManageToken, NftDetails } from '@polkadot/react-components';
+import { Dropdown, ManageCollection, ManageTokenAttributes, NftDetails } from '@polkadot/react-components';
 import Tabs from '@polkadot/react-components/Tabs';
 // local imports and components
 import { AppProps as Props } from '@polkadot/react-components/types';
@@ -112,9 +112,8 @@ function App ({ account, basePath }: Props): React.ReactElement<Props> {
           />
         </Route>
         <Route path={`${basePath}/manage-token`}>
-          <ManageToken
+          <ManageTokenAttributes
             account={account}
-            localRegistry={localRegistry}
             setShouldUpdateTokens={setShouldUpdateTokens}
           />
         </Route>

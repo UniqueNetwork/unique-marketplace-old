@@ -15,9 +15,9 @@ import StatusContext from '@polkadot/react-components/Status/Context';
 import { AttributeItemType,
   FieldRuleType,
   FieldType,
+  fillAttributes,
   fillProtobufJson,
   ProtobufAttributeType } from '@polkadot/react-components/util/protobufUtils';
-import { useCollection } from '@polkadot/react-hooks';
 
 import { CountOptions, TypeOptions } from './types';
 
@@ -26,14 +26,13 @@ interface Props {
   collectionId?: string;
   fetchCollectionInfo: () => void;
   isAdmin?: boolean;
-  onChainSchema?: string;
-  type?: string;
+  onChainSchema?: ProtobufAttributeType;
+  saveOnChainSchema: (args: { account: string, collectionId: string, schema: string, successCallback?: () => void, errorCallback?: () => void }) => void;
 }
 
 function ManageOnChainSchema (props: Props): React.ReactElement<Props> {
-  const { account, collectionId, fetchCollectionInfo, isAdmin, type = 'const' } = props;
+  const { account, collectionId, fetchCollectionInfo, isAdmin, onChainSchema, saveOnChainSchema } = props;
   const { queueAction } = useContext(StatusContext);
-  const { setConstOnChainSchema, setVariableOnChainSchema } = useCollection();
   const [attributes, setAttributes] = useState<AttributeItemType[]>([]);
 
   const [currentAttributeName, setCurrentAttributeName] = useState<string>('');
@@ -65,16 +64,12 @@ function ManageOnChainSchema (props: Props): React.ReactElement<Props> {
       const protobufJson: ProtobufAttributeType = fillProtobufJson(attributes);
 
       if (account && collectionId) {
-        if (type === 'const') {
-          setConstOnChainSchema({ account, collectionId, schema: JSON.stringify(protobufJson), successCallback: resetInfo });
-        } else {
-          setVariableOnChainSchema({ account, collectionId, schema: JSON.stringify(protobufJson), successCallback: resetInfo });
-        }
+        saveOnChainSchema({ account, collectionId, schema: JSON.stringify(protobufJson), successCallback: resetInfo });
       }
     } catch (e) {
       console.log('save onChain schema error', e);
     }
-  }, [account, attributes, collectionId, resetInfo, setConstOnChainSchema, setVariableOnChainSchema, type]);
+  }, [account, attributes, collectionId, resetInfo, saveOnChainSchema]);
 
   const onAddItem = useCallback(() => {
     if (!isAdmin) {
@@ -83,17 +78,18 @@ function ManageOnChainSchema (props: Props): React.ReactElement<Props> {
 
     setCurrentAttribute({
       fieldType: 'string',
-      id: attributes.length + 1,
       name: '',
       rule: 'optional',
       values: []
     });
-  }, [attributes, isAdmin]);
+  }, [isAdmin]);
 
   const onSaveItem = useCallback(() => {
     if (!isAdmin) {
       return;
     }
+
+    console.log('currentAttribute', currentAttribute);
 
     // edit existed attribute
     if (currentAttribute?.id) {
@@ -136,8 +132,7 @@ function ManageOnChainSchema (props: Props): React.ReactElement<Props> {
             rule: currentAttributeCountType,
             values: currentAttributeValues
           }
-        ]
-        );
+        ]);
         clearCurrentAttribute();
       }
     }
@@ -152,7 +147,6 @@ function ManageOnChainSchema (props: Props): React.ReactElement<Props> {
   }, [isAdmin, clearCurrentAttribute]);
 
   const editAttribute = useCallback((attribute: AttributeItemType) => {
-    console.log('edit', attribute);
     setCurrentAttribute(attribute);
     setCurrentAttributeName(attribute.name);
     setCurrentAttributeType(attribute.fieldType);
@@ -166,15 +160,19 @@ function ManageOnChainSchema (props: Props): React.ReactElement<Props> {
     ]);
   }, [attributes]);
 
-  /* useEffect(() => {
-    setAttributes(fillAttributes(protobufJsonExample as unknown as ProtobufAttributeType));
-  }, []); */
-
   useEffect(() => {
-    localStorage.setItem('collectionAttributes', JSON.stringify(attributes));
-  }, [attributes]);
+    if (onChainSchema) {
+      setAttributes(fillAttributes(onChainSchema));
+    } else {
+      setAttributes([]);
+    }
+  }, [onChainSchema]);
 
-  console.log('attributes', attributes);
+  /* useEffect(() => {
+    localStorage.setItem('collectionAttributes', JSON.stringify(attributes));
+  }, [attributes]); */
+
+  console.log('onChainSchema', onChainSchema, 'attributes', attributes, 'isAdmin', isAdmin);
 
   return (
     <div className='on-chain-schema'>

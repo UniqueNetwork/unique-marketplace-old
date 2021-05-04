@@ -3,56 +3,65 @@
 
 import './styles.scss';
 
+import type { AttributeItemType, ProtobufAttributeType } from '@polkadot/react-components/util/protobufUtils';
+import type { TokenDetailsInterface } from '@polkadot/react-hooks/useToken';
+
 import React, { memo, useCallback, useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 
 import { Dropdown, Input } from '@polkadot/react-components';
-import { TypeRegistry } from '@polkadot/types';
+import { useCollection, useToken } from '@polkadot/react-hooks';
+import { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
 
 export type TokenAttribute = {
   name: string;
-  value?: string;
   values: string[];
 }
 
 interface Props {
   account?: string;
-  localRegistry?: TypeRegistry;
+  setShouldUpdateTokens?: (collectionId: string) => void;
 }
 
 function ManageTokenAttributes (props: Props): React.ReactElement<Props> {
-  const [collectionAttributes, setCollectionAttributes] = useState<AttributeType[]>([{
-    count: 'single',
-    name: 'Path1',
-    pluralName: 'Path1',
-    type: 'Bytes',
-    values: []
-  },
-  {
-    count: 'single',
-    name: 'Path2',
-    pluralName: 'Paths2',
-    type: '_enum',
-    values: ['value1', 'value2', 'value3', 'value4']
-  },
-  {
-    count: 'array',
-    name: 'Path3',
-    pluralName: 'Paths3',
-    type: '_enum',
-    values: ['value11', 'value22', 'value33', 'value44']
-  }
-  ]);
+  const query = new URLSearchParams(useLocation().search);
+  const tokenId = query.get('tokenId') || '';
+  const collectionId = query.get('collectionId') || '';
+  const { constOnChainSchema, getDetailedCollectionInfo, variableOnChainSchema } = useCollection();
+  const { getDetailedTokenInfo } = useToken();
+  const [collectionAttributes, setCollectionAttributes] = useState<AttributeItemType[]>([]);
   const [tokenAttributes, setTokenAttributes] = useState<{ [key: string]: TokenAttribute }>({});
+  const [collectionInfo, setCollectionInfo] = useState<NftCollectionInterface>();
+  const [tokenInfo, setTokenInfo] = useState<TokenDetailsInterface>();
+
+  const fetchCollectionAndTokenInfo = useCallback(async () => {
+    // collectionInfo.SchemaVersion.isImageUrl
+    try {
+      if (collectionId) {
+        const info: NftCollectionInterface = (await getDetailedCollectionInfo(collectionId)) as NftCollectionInterface;
+
+        setCollectionInfo(info);
+
+        if (tokenId) {
+          const tokenInfo: TokenDetailsInterface = (await getDetailedTokenInfo(collectionId, tokenId));
+
+          setTokenInfo(tokenInfo);
+        }
+      }
+    } catch (e) {
+      console.log('fetchCollectionAndTokenInfo error', e);
+    }
+  }, [collectionId, getDetailedCollectionInfo, getDetailedTokenInfo, tokenId]);
 
   const setAttributeValue = useCallback(() => {
     console.log('setAttributeValue');
   }, []);
 
   const presetTokenAttributes = useCallback(() => {
-    if (collectionAttributes && collectionAttributes.length) {
+    /* if (collectionAttributes && collectionAttributes.length) {
       const tokenAttrs: {[key: string]: TokenAttribute} = {};
 
       collectionAttributes.forEach((collectionAttr: AttributeType) => {
@@ -64,12 +73,17 @@ function ManageTokenAttributes (props: Props): React.ReactElement<Props> {
       });
 
       setTokenAttributes(tokenAttrs);
-    }
+    } */
   }, [collectionAttributes]);
 
   useEffect(() => {
-    presetTokenAttributes();
-  }, [presetTokenAttributes]);
+    void fetchCollectionAndTokenInfo();
+  }, [fetchCollectionAndTokenInfo]);
+
+  console.log('info collectionInfo', collectionInfo);
+  console.log('info tokenInfo', tokenInfo);
+  console.log('info constOnChainSchema', constOnChainSchema);
+  console.log('info variableOnChainSchema', variableOnChainSchema);
 
   return (
     <div className='manage-collection'>

@@ -64,15 +64,19 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
   const collectionId = query.get('collectionId') || '';
   const { addCollectionAdmin,
     confirmSponsorship,
+    constOnChainSchema,
     createCollection,
     getCollectionAdminList,
     getCreatedCollectionCount,
     getDetailedCollectionInfo,
     removeCollectionAdmin,
     removeCollectionSponsor,
+    saveConstOnChainSchema,
+    saveVariableOnChainSchema,
     setCollectionSponsor,
     setOffChainSchema,
-    setSchemaVersion } = useCollection();
+    setSchemaVersion,
+    variableOnChainSchema } = useCollection();
   const { getAndParseOffchainSchemaMetadata } = useMetadata(localRegistry);
   const { collectionName16Decoder, hex2a } = useDecoder();
   const [name, setName] = useState<string>('');
@@ -212,6 +216,12 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
       confirmSponsorship({ account, collectionId, successCallback: fetchCollectionInfo });
     }
   }, [account, collectionId, confirmSponsorship, fetchCollectionInfo]);
+
+  const onRemoveSponsor = useCallback(() => {
+    if (account && collectionId) {
+      removeCollectionSponsor({ account, collectionId, successCallback: fetchCollectionInfo });
+    }
+  }, [account, collectionId, fetchCollectionInfo, removeCollectionSponsor]);
 
   const onSetSchemaVersion = useCallback(() => {
     if (account && collectionId && currentSchemaVersion) {
@@ -575,20 +585,30 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
                   )}
                 </Grid.Column>
                 <Grid.Column width={8}>
+                  { sponsorAddress === account && (
+                    <Button
+                      content={
+                        <>
+                          Confirm sponsor
+                          { approvingSponsor && (
+                            <Loader
+                              active
+                              inline='centered'
+                            />
+                          )}
+                        </>
+                      }
+                      onClick={onApproveSponsor}
+                    />
+                  )}
                   <Button
                     content={
                       <>
-                        Confirm sponsor
-                        { approvingSponsor && (
-                          <Loader
-                            active
-                            inline='centered'
-                          />
-                        )}
+                        Remove sponsor
                       </>
                     }
-                    disabled={sponsorAddress !== account}
-                    onClick={onApproveSponsor}
+                    disabled={!isAdmin}
+                    onClick={onRemoveSponsor}
                   />
                 </Grid.Column>
               </Grid.Row>
@@ -671,10 +691,12 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
             account={account}
             basePath={basePath}
             collectionId={collectionId}
-            constOnChainSchema={collectionInfo?.ConstOnChainSchema}
+            constOnChainSchema={constOnChainSchema}
             fetchCollectionInfo={fetchCollectionInfo}
             isAdmin={isAdmin}
-            variableOnChainSchema={collectionInfo?.VariableOnChainSchema}
+            saveConstOnChainSchema={saveConstOnChainSchema}
+            saveVariableOnChainSchema={saveVariableOnChainSchema}
+            variableOnChainSchema={variableOnChainSchema}
           />
         </>
       )}

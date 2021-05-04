@@ -8,7 +8,7 @@ export type FieldType = 'string' | 'enum';
 export type FieldRuleType = 'optional' | 'required' | 'repeated';
 
 export type AttributeItemType = {
-  id: number,
+  id?: number,
   fieldType: FieldType;
   name: string;
   rule: FieldRuleType;

@@ -2,10 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import BN from 'bn.js';
-import { useCallback, useContext } from 'react';
+import { useCallback, useContext, useState } from 'react';
 
 import { StatusContext } from '@polkadot/react-components';
+import { ProtobufAttributeType } from '@polkadot/react-components/util/protobufUtils';
 import { useApi } from '@polkadot/react-hooks/useApi';
+import { useDecoder } from '@polkadot/react-hooks/useDecoder';
 import { strToUTF16 } from '@polkadot/react-hooks/utils';
 
 export type SchemaVersionTypes = 'ImageURL' | 'Unique';
@@ -52,6 +54,9 @@ interface TransactionCallBacks {
 export function useCollection () {
   const { api } = useApi();
   const { queueExtrinsic } = useContext(StatusContext);
+  const { hex2a } = useDecoder();
+  const [constOnChainSchema, setConstOnChainSchema] = useState<ProtobufAttributeType>();
+  const [variableOnChainSchema, setVariableOnChainSchema] = useState<ProtobufAttributeType>();
 
   // collectionName16Decoder(collection.Name);
   // collectionName16Decoder(collection.Description)
@@ -216,7 +221,7 @@ export function useCollection () {
     });
   }, [api, queueExtrinsic]);
 
-  const setConstOnChainSchema = useCallback(({ account, collectionId, errorCallback, schema, successCallback }: { account: string, collectionId: string, schema: string, successCallback?: () => void, errorCallback?: () => void }) => {
+  const saveConstOnChainSchema = useCallback(({ account, collectionId, errorCallback, schema, successCallback }: { account: string, collectionId: string, schema: string, successCallback?: () => void, errorCallback?: () => void }) => {
     const transaction = api.tx.nft.setConstOnChainSchema(collectionId, schema);
 
     queueExtrinsic({
@@ -230,7 +235,7 @@ export function useCollection () {
     });
   }, [api, queueExtrinsic]);
 
-  const setVariableOnChainSchema = useCallback(({ account, collectionId, errorCallback, schema, successCallback }: { account: string, collectionId: string, schema: string, successCallback?: () => void, errorCallback?: () => void }) => {
+  const saveVariableOnChainSchema = useCallback(({ account, collectionId, errorCallback, schema, successCallback }: { account: string, collectionId: string, schema: string, successCallback?: () => void, errorCallback?: () => void }) => {
     const transaction = api.tx.nft.setVariableOnChainSchema(collectionId, schema);
 
     queueExtrinsic({
@@ -251,6 +256,17 @@ export function useCollection () {
 
     try {
       const collectionInfo = (await api.query.nft.collectionById(collectionId)).toJSON() as unknown as NftCollectionInterface;
+
+      const constSchema = hex2a(collectionInfo.ConstOnChainSchema);
+      const varSchema = hex2a(collectionInfo.VariableOnChainSchema);
+
+      if (constSchema && constSchema.length) {
+        setConstOnChainSchema(JSON.parse(hex2a(collectionInfo.ConstOnChainSchema)));
+      }
+
+      if (varSchema && varSchema.length) {
+        setVariableOnChainSchema(JSON.parse(hex2a(collectionInfo.VariableOnChainSchema)));
+      }
 
       return {
         ...collectionInfo,
@@ -280,6 +296,7 @@ export function useCollection () {
   return {
     addCollectionAdmin,
     confirmSponsorship,
+    constOnChainSchema,
     createCollection,
     getCollectionAdminList,
     getCollectionTokensCount,
@@ -288,10 +305,11 @@ export function useCollection () {
     getTokensOfCollection,
     removeCollectionAdmin,
     removeCollectionSponsor,
+    saveConstOnChainSchema,
+    saveVariableOnChainSchema,
     setCollectionSponsor,
-    setConstOnChainSchema,
     setOffChainSchema,
     setSchemaVersion,
-    setVariableOnChainSchema
+    variableOnChainSchema
   };
 }

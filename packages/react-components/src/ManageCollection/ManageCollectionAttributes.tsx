@@ -6,20 +6,24 @@ import './styles.scss';
 import React, { useMemo } from 'react';
 import Tab from 'semantic-ui-react/dist/commonjs/modules/Tab/Tab';
 
+import { ProtobufAttributeType } from '@polkadot/react-components/util/protobufUtils';
+
 import ManageOnChainSchema from './ManageOnChainSchema';
 
 interface Props {
   account?: string;
   basePath: string;
   collectionId?: string;
-  constOnChainSchema?: string;
+  constOnChainSchema?: ProtobufAttributeType;
   fetchCollectionInfo: () => void;
   isAdmin?: boolean;
-  variableOnChainSchema?: string;
+  saveConstOnChainSchema: (args: { account: string, collectionId: string, schema: string, successCallback?: () => void, errorCallback?: () => void }) => void;
+  saveVariableOnChainSchema: (args: { account: string, collectionId: string, schema: string, successCallback?: () => void, errorCallback?: () => void }) => void;
+  variableOnChainSchema?: ProtobufAttributeType;
 }
 
 function ManageCollectionAttributes (props: Props): React.ReactElement<Props> {
-  const { account, collectionId, constOnChainSchema, fetchCollectionInfo, isAdmin, variableOnChainSchema } = props;
+  const { account, collectionId, constOnChainSchema, fetchCollectionInfo, isAdmin, saveConstOnChainSchema, saveVariableOnChainSchema, variableOnChainSchema } = props;
 
   const panes = useMemo(() => [
     {
@@ -32,7 +36,7 @@ function ManageCollectionAttributes (props: Props): React.ReactElement<Props> {
           fetchCollectionInfo={fetchCollectionInfo}
           isAdmin={isAdmin}
           onChainSchema={constOnChainSchema}
-          type={'const'}
+          saveOnChainSchema={saveConstOnChainSchema}
         />
       )
     },
@@ -46,11 +50,11 @@ function ManageCollectionAttributes (props: Props): React.ReactElement<Props> {
           fetchCollectionInfo={fetchCollectionInfo}
           isAdmin={isAdmin}
           onChainSchema={variableOnChainSchema}
-          type={'variable'}
+          saveOnChainSchema={saveVariableOnChainSchema}
         />
       )
     }
-  ], [account, collectionId, constOnChainSchema, fetchCollectionInfo, isAdmin, variableOnChainSchema]);
+  ], [account, collectionId, constOnChainSchema, fetchCollectionInfo, isAdmin, saveConstOnChainSchema, saveVariableOnChainSchema, variableOnChainSchema]);
 
   return (
     <div className='manage-collection-attributes'>
