@@ -3,8 +3,6 @@
 
 import { Root, Type } from 'protobufjs';
 
-import protobufJsonExample from './protobufJsonExample';
-
 export type FieldType = 'string' | 'enum';
 
 export type FieldRuleType = 'optional' | 'required' | 'repeated';
@@ -15,6 +13,17 @@ export type AttributeItemType = {
   name: string;
   rule: FieldRuleType;
   values: string[];
+}
+
+type EnumElemType = { options: { [key: string]: string}, values: { [key: string]: number } };
+type NFTMetaType = {
+  fields: {
+    [key: string]: {
+      id: number;
+      rule: FieldRuleType;
+      type: string;
+    }
+  }
 }
 
 export type ProtobufAttributeType = {
@@ -37,24 +46,10 @@ export type ProtobufAttributeType = {
   }
 }
 
-const Gender = {
-  Female: 1,
-  Male: 0
-};
-
-const PunkTrait = {
-  ASIAN_EYES: 6,
-  BLACK_LIPSTICK: 0,
-  NOSE_RING: 5,
-  PURPLE_LIPSTICK: 4,
-  RED_LIPSTICK: 1,
-  SMILE: 2,
-  SUNGLASSES: 7,
-  TEETH_SMILE: 3
-};
-
 function defineMessage () {
-  return Root.fromJSON(protobufJsonExample);
+  const protobufJson = fillProtobufJson(JSON.parse('[{"fieldType":"enum","id":1,"name":"gender","rule":"required","values":["Female","Male"]},{"fieldType":"string","id":2,"name":"imageHash","rule":"optional","values":[]},{"fieldType":"string","id":3,"name":"name","rule":"required","values":[]},{"fieldType":"enum","id":4,"name":"traits","rule":"repeated","values":["Asian Eyes","Black Lipstick","Nose Ring","Purple Lipstick","Red Lipstick","Smile","Sunglasses","Teeth Smile","Teeth Smile","Teeth Smile","Teeth Smile"]}]'));
+
+  return Root.fromJSON(protobufJson);
 }
 
 function serializeNft (payload: { [key: string]: number | number[] | string }) {
@@ -135,10 +130,10 @@ function deserializeNft (buffer: Uint8Array, locale: string) {
 export function initProtobuf () {
   // Exemplary payload
   const payload = {
-    gender: Gender.Female,
+    gender: 1, // Gender.Female,
     imageHash: 'hash',
     name: 'TokenName',
-    traits: [PunkTrait.PURPLE_LIPSTICK, PunkTrait.NOSE_RING, PunkTrait.ASIAN_EYES, PunkTrait.SUNGLASSES]
+    traits: [4, 5, 6, 7] // [PunkTrait.PURPLE_LIPSTICK, PunkTrait.NOSE_RING, PunkTrait.ASIAN_EYES, PunkTrait.SUNGLASSES]
   };
 
   const buffer = serializeNft(payload);
@@ -152,6 +147,91 @@ export function initProtobuf () {
   deserializedObject = deserializeNft(buffer, 'en');
   console.log('deserializedObject ENGLISH: ', deserializedObject);
 }
+
+export const fillAttributes = (protobufJson: ProtobufAttributeType): AttributeItemType[] => {
+  const attrs: AttributeItemType[] = [];
+
+  try {
+    const protobufStruct: ProtobufAttributeType = protobufJson;
+    const fields: {
+      [key: string]: {
+        id: number;
+        rule: FieldRuleType;
+        type: string;
+      }
+    } = protobufStruct?.nested?.onChainMetaData?.nested?.NFTMeta?.fields || {};
+
+    if (fields) {
+      Object.keys(fields).forEach((fieldKey: string) => {
+        const options: { [key: string]: string } = protobufStruct?.nested?.onChainMetaData?.nested[fields[fieldKey].type]?.options || {};
+        const valuesJson = fields[fieldKey].type === 'string' ? [] : Object.values(options);
+        const values: string[] = [];
+
+        // for now we only use 'en' translation value
+        valuesJson.forEach((valueJson) => {
+          const parsed = JSON.parse(valueJson) as { en: string };
+
+          values.push(parsed.en);
+        });
+
+        attrs.push({
+          fieldType: fields[fieldKey].type === 'string' ? 'string' : 'enum',
+          id: fields[fieldKey].id,
+          name: fieldKey,
+          rule: fields[fieldKey].rule,
+          values: values
+        });
+      });
+    }
+  } catch (e) {
+    console.log('fillAttributes error', e);
+  }
+
+  return attrs;
+};
+
+export const fillProtobufJson = (attrs: AttributeItemType[]): ProtobufAttributeType => {
+  const protobufJson: ProtobufAttributeType = {
+    nested: {
+      onChainMetaData: {
+        nested: {
+          NFTMeta: {
+            fields: {}
+          }
+        }
+      }
+    }
+  };
+
+  try {
+    if (attrs && attrs.length) {
+      attrs.forEach((attr: AttributeItemType, ind: number) => {
+        if (attr.fieldType === 'enum') {
+          protobufJson.nested.onChainMetaData.nested[attr.name] = {
+            options: {},
+            values: {}
+          };
+          attr.values.forEach((value: string, index: number) => {
+            (protobufJson.nested.onChainMetaData.nested[attr.name] as EnumElemType).values[`field${index + 1}`] = index;
+            (protobufJson.nested.onChainMetaData.nested[attr.name] as EnumElemType).options[`field${index + 1}`] = `{"en":"${value}"}`;
+          });
+        }
+
+        (protobufJson.nested.onChainMetaData.nested.NFTMeta as NFTMetaType).fields[attr.name] = {
+          id: ind + 1,
+          rule: attr.rule,
+          type: attr.fieldType === 'string' ? 'string' : attr.name
+        };
+      });
+    }
+
+    console.log('protobufJson', protobufJson);
+  } catch (e) {
+    console.log('fillProtobufJson error', e);
+  }
+
+  return protobufJson;
+};
 
 export const convertProtobufAttrToJson = (scaleAttrStr: string): ProtobufAttributeType[] => {
   /*

@@ -49,7 +49,7 @@ function NftTokenCard ({ account, canTransferTokens, collection, localRegistry, 
     return '';
   }, [attributes]);
 
-  const canEditToken = false;
+  const canEditToken = true;
 
   if (!reFungibleBalance && collection?.Mode?.reFungible) {
     return <></>;

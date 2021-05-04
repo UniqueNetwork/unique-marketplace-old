@@ -18,17 +18,18 @@ import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 import { Dropdown, Input, TextArea } from '@polkadot/react-components';
 import trash from '@polkadot/react-components/ManageCollection/trash.svg';
 import arrowLeft from '@polkadot/react-components/NftDetails/arrowLeft.svg';
+import { initProtobuf } from '@polkadot/react-components/util/protobufUtils';
 import { useDecoder, useMetadata } from '@polkadot/react-hooks';
 import { useCollection } from '@polkadot/react-hooks/useCollection';
 import { TypeRegistry } from '@polkadot/types';
 import { keyring } from '@polkadot/ui-keyring';
-import { initProtobuf } from '@polkadot/react-components/util/protobufUtils';
 
 import ManageCollectionAttributes from './ManageCollectionAttributes';
 
 interface Props {
   account?: string;
   addCollection: (collection: NftCollectionInterface) => void;
+  basePath: string;
   localRegistry?: TypeRegistry;
   setShouldUpdateTokens?: (collectionId: string) => void;
 }
@@ -57,7 +58,7 @@ const SchemaOptions: SchemaOption[] = [
 ];
 
 function ManageCollection (props: Props): React.ReactElement<Props> {
-  const { account, addCollection, localRegistry, setShouldUpdateTokens } = props;
+  const { account, addCollection, basePath, localRegistry, setShouldUpdateTokens } = props;
   const history = useHistory();
   const query = new URLSearchParams(useLocation().search);
   const collectionId = query.get('collectionId') || '';
@@ -273,7 +274,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
     initProtobuf();
   }, []);
 
-  console.log('info', collectionInfo);
+  console.log('info', collectionInfo, 'isOwner', collectionInfo?.Owner === account);
 
   return (
     <div className='manage-collection'>
@@ -668,8 +669,12 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
           </Form>
           <ManageCollectionAttributes
             account={account}
+            basePath={basePath}
+            collectionId={collectionId}
+            constOnChainSchema={collectionInfo?.ConstOnChainSchema}
+            fetchCollectionInfo={fetchCollectionInfo}
             isAdmin={isAdmin}
-            localRegistry={localRegistry}
+            variableOnChainSchema={collectionInfo?.VariableOnChainSchema}
           />
         </>
       )}

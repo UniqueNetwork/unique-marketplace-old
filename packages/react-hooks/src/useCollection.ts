@@ -216,6 +216,34 @@ export function useCollection () {
     });
   }, [api, queueExtrinsic]);
 
+  const setConstOnChainSchema = useCallback(({ account, collectionId, errorCallback, schema, successCallback }: { account: string, collectionId: string, schema: string, successCallback?: () => void, errorCallback?: () => void }) => {
+    const transaction = api.tx.nft.setConstOnChainSchema(collectionId, schema);
+
+    queueExtrinsic({
+      accountId: account && account.toString(),
+      extrinsic: transaction,
+      isUnsigned: false,
+      txFailedCb: () => { console.log('set collection constOnChain fail'); errorCallback && errorCallback(); },
+      txStartCb: () => { console.log('set collection constOnChain start'); },
+      txSuccessCb: () => { console.log('set collection constOnChain success'); successCallback && successCallback(); },
+      txUpdateCb: () => { console.log('set collection constOnChain update'); }
+    });
+  }, [api, queueExtrinsic]);
+
+  const setVariableOnChainSchema = useCallback(({ account, collectionId, errorCallback, schema, successCallback }: { account: string, collectionId: string, schema: string, successCallback?: () => void, errorCallback?: () => void }) => {
+    const transaction = api.tx.nft.setVariableOnChainSchema(collectionId, schema);
+
+    queueExtrinsic({
+      accountId: account && account.toString(),
+      extrinsic: transaction,
+      isUnsigned: false,
+      txFailedCb: () => { console.log('set collection varOnChain fail'); errorCallback && errorCallback(); },
+      txStartCb: () => { console.log('set collection varOnChain start'); },
+      txSuccessCb: () => { console.log('set collection varOnChain success'); successCallback && successCallback(); },
+      txUpdateCb: () => { console.log('set collection varOnChain update'); }
+    });
+  }, [api, queueExtrinsic]);
+
   const getDetailedCollectionInfo = useCallback(async (collectionId: string) => {
     if (!api) {
       return null;
@@ -261,7 +289,9 @@ export function useCollection () {
     removeCollectionAdmin,
     removeCollectionSponsor,
     setCollectionSponsor,
+    setConstOnChainSchema,
     setOffChainSchema,
-    setSchemaVersion
+    setSchemaVersion,
+    setVariableOnChainSchema
   };
 }

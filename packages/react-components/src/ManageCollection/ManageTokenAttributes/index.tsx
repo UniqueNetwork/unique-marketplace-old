@@ -3,8 +3,6 @@
 
 import './styles.scss';
 
-import type { AttributeType } from '../util/scaleUtils';
-
 import React, { memo, useCallback, useEffect, useState } from 'react';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';

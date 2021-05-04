@@ -48,7 +48,10 @@ const protobufJsonExample = {
             field5: '{"cn": "红唇", "en": "Red Lipstick", "ru": "Красная помада"}',
             field6: '{"cn": "笑脸", "en": "Smile", "ru": "Улыбка"}',
             field7: '{"cn": "太阳镜", "en": "Sunglasses", "ru": "Солнечные очки"}',
-            field8: '{"cn": "露齿笑脸", "en": "Teeth Smile", "ru": "Улыбка с зубами"}'
+            field8: '{"cn": "露齿笑脸", "en": "Teeth Smile", "ru": "Улыбка с зубами"}',
+            field9: '{"cn": "露齿笑脸1", "en": "Teeth Smile1", "ru": "Улыбка с зубами1"}',
+            field91: '{"cn": "露齿笑脸2", "en": "Teeth Smile2", "ru": "Улыбка с зубами2"}',
+            field92: '{"cn": "露齿笑脸3", "en": "Teeth Smile3", "ru": "Улыбка с зубами3"}'
           },
           values: {
             field1: 6,
@@ -58,7 +61,10 @@ const protobufJsonExample = {
             field5: 1,
             field6: 2,
             field7: 7,
-            field8: 3
+            field8: 3,
+            field9: 8,
+            field91: 9,
+            field92: 10
           }
         }
       }

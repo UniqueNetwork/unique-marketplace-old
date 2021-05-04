@@ -106,6 +106,7 @@ function App ({ account, basePath }: Props): React.ReactElement<Props> {
           <ManageCollection
             account={account}
             addCollection={addCollection}
+            basePath={`${basePath}/manage-collection`}
             localRegistry={localRegistry}
             setShouldUpdateTokens={setShouldUpdateTokens}
           />

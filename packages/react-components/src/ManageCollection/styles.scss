@@ -81,7 +81,7 @@
 
   .tr {
     align-items: center;
-    height: 40px;
+    min-height: 40px;
 
     img {
       cursor: pointer;
@@ -123,6 +123,11 @@
 
         &.action {
           padding: 0;
+        }
+
+        .enum-attributes {
+          min-height: 40px;
+          overflow-x: auto;
         }
       }
 

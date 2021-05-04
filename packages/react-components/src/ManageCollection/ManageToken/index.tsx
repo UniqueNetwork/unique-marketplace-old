@@ -84,7 +84,7 @@ function ManageToken ({ account, setShouldUpdateTokens }: Props): React.ReactEle
     history.back();
   }, [setShouldUpdateTokens]);
 
-  const canManageTokenAttributes = false;
+  const canManageTokenAttributes = true;
 
   return (
     <div className='manage-token'>

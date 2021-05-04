@@ -10,11 +10,12 @@ import closeIcon from './closeIcon.svg';
 
 interface Props {
   isDisabled?: boolean;
+  setValues: (values: string[]) => void;
   values: string[];
 }
 
-function EnumInput ({ isDisabled, values }: Props): React.ReactElement {
-  const [allEnums, setAllEnums] = useState<string[]>(values);
+function EnumInput ({ isDisabled, setValues, values }: Props): React.ReactElement {
+  // const [allEnums, setAllEnums] = useState<string[]>(values);
   const [currentEnum, setCurrentEnum] = useState<string>('');
 
   const addItem = useCallback(() => {
@@ -22,9 +23,9 @@ function EnumInput ({ isDisabled, values }: Props): React.ReactElement {
       return;
     }
 
-    if (currentEnum.length && !allEnums.find((item: string) => item.toLowerCase() === currentEnum.toLowerCase())) {
-      setAllEnums([
-        ...allEnums,
+    if (currentEnum.length && !values.find((item: string) => item.toLowerCase() === currentEnum.toLowerCase())) {
+      setValues([
+        ...values,
         currentEnum
       ]);
       setCurrentEnum('');
@@ -32,15 +33,15 @@ function EnumInput ({ isDisabled, values }: Props): React.ReactElement {
       alert('Warning. You are trying to add already existed item');
       setCurrentEnum('');
     }
-  }, [allEnums, currentEnum]);
+  }, [currentEnum, setValues, values]);
 
   const deleteItem = useCallback((enumItem: string) => {
     if (isDisabled) {
       return;
     }
 
-    setAllEnums((prevState: string[]) => prevState.filter((item: string) => item.toLowerCase() !== enumItem.toLowerCase()));
-  }, [isDisabled]);
+    setValues(values.filter((item: string) => item.toLowerCase() !== enumItem.toLowerCase()));
+  }, [isDisabled, setValues, values]);
 
   const changeCurrentEnum = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setCurrentEnum(e.target.value);
@@ -48,48 +49,47 @@ function EnumInput ({ isDisabled, values }: Props): React.ReactElement {
 
   const onKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      console.log('do validate');
       addItem();
     }
   }, [addItem]);
 
-  console.log('allEnums', allEnums);
-
   return (
     <div className='enum-input'>
       <div className='enum-input--content'>
-        { allEnums.map((enumItem: string) => (
-          <div
-            className='enum-input--item'
-            key={enumItem}
-          >
-            {enumItem}
-            <img
-              alt='delete item'
-              onClick={deleteItem.bind(null, enumItem)}
-              src={closeIcon as string}
-            />
-          </div>
-          /* <Popup
-            basic
-            key={enumItem}
-            style={{ top: '-50px' }}
-            trigger={
-              <div
-                className='enum-input--item'
-              >
-                {enumItem}
-                <img
-                  alt='delete item'
-                  onClick={deleteItem.bind(null, enumItem)}
-                  src={closeIcon as string}
-                />
-              </div>
-            }
-          >
-            popup content
-          </Popup> */
-        ))}
+        <div className='enum-input--content--elements'>
+          { values.map((enumItem: string) => (
+            <div
+              className='enum-input--item'
+              key={enumItem}
+            >
+              {enumItem}
+              <img
+                alt='delete item'
+                onClick={deleteItem.bind(null, enumItem)}
+                src={closeIcon as string}
+              />
+            </div>
+            /* <Popup
+              basic
+              key={enumItem}
+              style={{ top: '-50px' }}
+              trigger={
+                <div
+                  className='enum-input--item'
+                >
+                  {enumItem}
+                  <img
+                    alt='delete item'
+                    onClick={deleteItem.bind(null, enumItem)}
+                    src={closeIcon as string}
+                  />
+                </div>
+              }
+            >
+              popup content
+            </Popup> */
+          ))}
+        </div>
         <input
           className='enum-input--input'
           disabled={isDisabled}
