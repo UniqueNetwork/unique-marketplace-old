@@ -304,7 +304,7 @@ function ManageTokenAttributes ({ account, setShouldUpdateTokens }: Props): Reac
         onClick={goBack}
       >
         <Image
-          className='go-back'
+          alt='go back'
           src={arrowLeft}
         />
         back
