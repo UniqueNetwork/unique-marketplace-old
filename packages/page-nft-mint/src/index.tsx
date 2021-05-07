@@ -45,7 +45,6 @@ function App ({ account, basePath }: Props): React.ReactElement<Props> {
         <Route path={`${basePath}`}>
           <ManageCollection
             account={account}
-            localRegistry={localRegistry}
           />
         </Route>
       </Switch>

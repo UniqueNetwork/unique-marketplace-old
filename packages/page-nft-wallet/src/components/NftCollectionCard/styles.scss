@@ -15,7 +15,7 @@
       align-items: center;
 
       &>div {
-        max-width: 475px;
+        max-width: 375px;
         overflow: hidden;
         text-overflow: ellipsis;
       }
@@ -25,10 +25,15 @@
       }
     }
 
-    a.link-button {
-      color: var(--link-color);
+    .link-button {
       position: absolute;
       right: 0;
+      display: flex;
+      grid-column-gap: 2rem;
+
+      a {
+        color: var(--link-color);
+      }
     }
   }
 

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import BN from 'bn.js';
-import { useCallback, useContext, useState } from 'react';
+import { useCallback, useContext } from 'react';
 
 import { StatusContext } from '@polkadot/react-components';
 import { ProtobufAttributeType } from '@polkadot/react-components/util/protobufUtils';
@@ -55,8 +55,6 @@ export function useCollection () {
   const { api } = useApi();
   const { queueExtrinsic } = useContext(StatusContext);
   const { hex2a } = useDecoder();
-  const [constOnChainSchema, setConstOnChainSchema] = useState<ProtobufAttributeType>();
-  const [variableOnChainSchema, setVariableOnChainSchema] = useState<ProtobufAttributeType>();
 
   // collectionName16Decoder(collection.Name);
   // collectionName16Decoder(collection.Description)
@@ -257,17 +255,6 @@ export function useCollection () {
     try {
       const collectionInfo = (await api.query.nft.collectionById(collectionId)).toJSON() as unknown as NftCollectionInterface;
 
-      const constSchema = hex2a(collectionInfo.ConstOnChainSchema);
-      const varSchema = hex2a(collectionInfo.VariableOnChainSchema);
-
-      if (constSchema && constSchema.length) {
-        setConstOnChainSchema(JSON.parse(hex2a(collectionInfo.ConstOnChainSchema)));
-      }
-
-      if (varSchema && varSchema.length) {
-        setVariableOnChainSchema(JSON.parse(hex2a(collectionInfo.VariableOnChainSchema)));
-      }
-
       return {
         ...collectionInfo,
         id: collectionId
@@ -278,6 +265,35 @@ export function useCollection () {
 
     return {};
   }, [api]);
+
+  const getCollectionOnChainSchema = useCallback((collectionInfo: NftCollectionInterface): { constSchema: ProtobufAttributeType | undefined, variableSchema: ProtobufAttributeType | undefined } => {
+    const result: {
+      constSchema: ProtobufAttributeType | undefined,
+      variableSchema: ProtobufAttributeType | undefined,
+    } = {
+      constSchema: undefined,
+      variableSchema: undefined
+    };
+
+    try {
+      const constSchema = hex2a(collectionInfo.ConstOnChainSchema);
+      const varSchema = hex2a(collectionInfo.VariableOnChainSchema);
+
+      if (constSchema && constSchema.length) {
+        result.constSchema = JSON.parse(constSchema) as ProtobufAttributeType;
+      }
+
+      if (varSchema && varSchema.length) {
+        result.variableSchema = JSON.parse(varSchema) as ProtobufAttributeType;
+      }
+
+      return result;
+    } catch (e) {
+      console.log('getCollectionOnChainSchema error');
+    }
+
+    return result;
+  }, [hex2a]);
 
   const getTokensOfCollection = useCallback(async (collectionId: string, ownerId: string) => {
     if (!api || !collectionId || !ownerId) {
@@ -296,9 +312,9 @@ export function useCollection () {
   return {
     addCollectionAdmin,
     confirmSponsorship,
-    constOnChainSchema,
     createCollection,
     getCollectionAdminList,
+    getCollectionOnChainSchema,
     getCollectionTokensCount,
     getCreatedCollectionCount,
     getDetailedCollectionInfo,
@@ -309,7 +325,6 @@ export function useCollection () {
     saveVariableOnChainSchema,
     setCollectionSponsor,
     setOffChainSchema,
-    setSchemaVersion,
-    variableOnChainSchema
+    setSchemaVersion
   };
 }

@@ -18,10 +18,9 @@ import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 import { Dropdown, Input, TextArea } from '@polkadot/react-components';
 import trash from '@polkadot/react-components/ManageCollection/trash.svg';
 import arrowLeft from '@polkadot/react-components/NftDetails/arrowLeft.svg';
-import { initProtobuf } from '@polkadot/react-components/util/protobufUtils';
+import { ProtobufAttributeType } from '@polkadot/react-components/util/protobufUtils';
 import { useDecoder, useMetadata } from '@polkadot/react-hooks';
 import { useCollection } from '@polkadot/react-hooks/useCollection';
-import { TypeRegistry } from '@polkadot/types';
 import { keyring } from '@polkadot/ui-keyring';
 
 import ManageCollectionAttributes from './ManageCollectionAttributes';
@@ -30,15 +29,7 @@ interface Props {
   account?: string;
   addCollection: (collection: NftCollectionInterface) => void;
   basePath: string;
-  localRegistry?: TypeRegistry;
   setShouldUpdateTokens?: (collectionId: string) => void;
-}
-
-export type UniqueSchema = {
-  audio?: string;
-  image?: string;
-  page?: string;
-  video?: string;
 }
 
 type SchemaOption = {
@@ -58,15 +49,15 @@ const SchemaOptions: SchemaOption[] = [
 ];
 
 function ManageCollection (props: Props): React.ReactElement<Props> {
-  const { account, addCollection, basePath, localRegistry, setShouldUpdateTokens } = props;
+  const { account, addCollection, basePath, setShouldUpdateTokens } = props;
   const history = useHistory();
   const query = new URLSearchParams(useLocation().search);
   const collectionId = query.get('collectionId') || '';
   const { addCollectionAdmin,
     confirmSponsorship,
-    constOnChainSchema,
     createCollection,
     getCollectionAdminList,
+    getCollectionOnChainSchema,
     getCreatedCollectionCount,
     getDetailedCollectionInfo,
     removeCollectionAdmin,
@@ -75,26 +66,28 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
     saveVariableOnChainSchema,
     setCollectionSponsor,
     setOffChainSchema,
-    setSchemaVersion,
-    variableOnChainSchema } = useCollection();
-  const { getAndParseOffchainSchemaMetadata } = useMetadata(localRegistry);
+    setSchemaVersion } = useCollection();
+  const { getAndParseOffchainSchemaMetadata } = useMetadata();
   const { collectionName16Decoder, hex2a } = useDecoder();
   const [name, setName] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [tokenPrefix, setTokenPrefix] = useState<string>('');
   const [adminAddress, setAdminAddress] = useState<string>('');
   const [sponsorAddress, setSponsorAddress] = useState<string>('');
+  const [constOnChainSchema, setConstOnChainSchema] = useState<ProtobufAttributeType>();
+  const [variableOnChainSchema, setVariableOnChainSchema] = useState<ProtobufAttributeType>();
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [isAdminAddressError, setIsAdminAddressError] = useState<boolean>(false);
   const [isSponsorAddressError, setIsSponsorAddressError] = useState<boolean>(false);
   const [collectionAdminList, setCollectionAdminList] = useState<string[]>([]);
-  const [deletingCurrentAdmin, toggleDeletingCurrentAdmin] = useState<boolean>(false);
+  // const [deletingCurrentAdmin, toggleDeletingCurrentAdmin] = useState<boolean>(false);
   const [settingCurrentAdmin, toggleSettingCurrentAdmin] = useState<boolean>(false);
   const [settingSponsor, toggleSettingSponsor] = useState<boolean>(false);
   const [approvingSponsor, toggleApprovingSponsor] = useState<boolean>(false);
   const [currentSchemaVersion, setCurrentSchemaVersion] = useState<SchemaVersionTypes>();
   const [settingSchemaVersion, toggleSettingSchemaVersion] = useState<boolean>(false);
   const [currentOffchainSchema, setCurrentOffchainSchema] = useState<string>('');
+  const [offchainSchemaError, setOffchainSchemaError] = useState<boolean>(false);
   const [settingOffChainSchema, toggleSettingOffChainSchema] = useState<boolean>(false);
   const [collectionInfo, setCollectionInfo] = useState<NftCollectionInterface>();
   const [isAddressCurrentlyInAdminList, setIsAddressCurrentlyInAdminList] = useState<boolean>(false);
@@ -104,10 +97,10 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
   const [pageUrl, setPageUrl] = useState<string>('');
   const [videoUrl, setVideoUrl] = useState<string>('');
 
-  const [isAudioUrlError, toggleAudioUrlError] = useState<boolean>(false);
-  const [isImageUrlError, toggleImageUrlError] = useState<boolean>(false);
-  const [isPageUrlError, togglePageUrlError] = useState<boolean>(false);
-  const [isVideoUrlError, toggleVideoUrlError] = useState<boolean>(false);
+  // const [isAudioUrlError, toggleAudioUrlError] = useState<boolean>(false);
+  // const [isImageUrlError, toggleImageUrlError] = useState<boolean>(false);
+  // const [isPageUrlError, togglePageUrlError] = useState<boolean>(false);
+  // const [isVideoUrlError, toggleVideoUrlError] = useState<boolean>(false);
 
   const fetchCollectionInfo = useCallback(async () => {
     // collectionInfo.SchemaVersion.isImageUrl
@@ -134,7 +127,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
             const schema: { metadata: string, metadataJson: MetadataJsonType } = await getAndParseOffchainSchemaMetadata(info);
 
             if (schema.metadataJson.audio) {
-              setImageUrl(schema.metadataJson.audio);
+              setAudioUrl(schema.metadataJson.audio);
             }
 
             if (schema.metadataJson.image) {
@@ -260,6 +253,24 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
     history.push('/wallet/');
   }, [history, setShouldUpdateTokens]);
 
+  const presetOnChainData = useCallback(() => {
+    if (collectionInfo) {
+      const onChainSchema = getCollectionOnChainSchema(collectionInfo);
+
+      if (onChainSchema) {
+        const { constSchema, variableSchema } = onChainSchema;
+
+        if (constSchema) {
+          setConstOnChainSchema(constSchema);
+        }
+
+        if (variableSchema) {
+          setVariableOnChainSchema(variableSchema);
+        }
+      }
+    }
+  }, [collectionInfo, getCollectionOnChainSchema]);
+
   useEffect(() => {
     if (!currentSchemaVersion) {
       void fetchCollectionInfo();
@@ -276,13 +287,11 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
     }
   }, [account, collectionAdminList, collectionInfo]);
 
-  // hex2a(collectionInfo.OffchainSchema)
-  // setSchemaVersion(collection_id, version)
-  // https://whitelabel.market/metadata/{id}
-
   useEffect(() => {
-    initProtobuf();
-  }, []);
+    if (collectionInfo) {
+      presetOnChainData();
+    }
+  }, [collectionInfo, presetOnChainData]);
 
   console.log('info', collectionInfo, 'isOwner', collectionInfo?.Owner === account);
 
@@ -415,7 +424,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
                             <Input
                               className='isSmall'
                               isDisabled={!isAdmin}
-                              isError={isAudioUrlError}
+                              isError={offchainSchemaError}
                               label='Please enter the OffChain schema url'
                               onChange={setCurrentOffchainSchema}
                               placeholder='OffChain schema url'
@@ -584,8 +593,8 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
                     </div>
                   )}
                 </Grid.Column>
-                <Grid.Column width={8}>
-                  { sponsorAddress === account && (
+                { sponsorAddress === account && (
+                  <Grid.Column width={4}>
                     <Button
                       content={
                         <>
@@ -600,7 +609,9 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
                       }
                       onClick={onApproveSponsor}
                     />
-                  )}
+                  </Grid.Column>
+                )}
+                <Grid.Column width={4}>
                   <Button
                     content={
                       <>
@@ -654,7 +665,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
                     <Input
                       className='isSmall'
                       isDisabled={!isAdmin}
-                      isError={isAdminAddressError}
+                      isError={isAdminAddressError || isAddressCurrentlyInAdminList}
                       label='Please enter the admin address'
                       onChange={onSetAdminAddress}
                       placeholder='Collection admin address'

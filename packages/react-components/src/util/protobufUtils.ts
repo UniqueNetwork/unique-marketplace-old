@@ -46,31 +46,37 @@ export type ProtobufAttributeType = {
   }
 }
 
-function defineMessage () {
-  const protobufJson = fillProtobufJson(JSON.parse('[{"fieldType":"enum","id":1,"name":"gender","rule":"required","values":["Female","Male"]},{"fieldType":"string","id":2,"name":"imageHash","rule":"optional","values":[]},{"fieldType":"string","id":3,"name":"name","rule":"required","values":[]},{"fieldType":"enum","id":4,"name":"traits","rule":"repeated","values":["Asian Eyes","Black Lipstick","Nose Ring","Purple Lipstick","Red Lipstick","Smile","Sunglasses","Teeth Smile","Teeth Smile","Teeth Smile","Teeth Smile"]}]'));
+function defineMessage (protobufJson: ProtobufAttributeType) {
+  // const protobufJson = fillProtobufJson(JSON.parse('[{"fieldType":"enum","id":1,"name":"gender","rule":"required","values":["Female","Male"]},{"fieldType":"string","id":2,"name":"imageHash","rule":"optional","values":[]},{"fieldType":"string","id":3,"name":"name","rule":"required","values":[]},{"fieldType":"enum","id":4,"name":"traits","rule":"repeated","values":["Asian Eyes","Black Lipstick","Nose Ring","Purple Lipstick","Red Lipstick","Smile","Sunglasses","Teeth Smile","Teeth Smile","Teeth Smile","Teeth Smile"]}]'));
 
   return Root.fromJSON(protobufJson);
 }
 
-function serializeNft (payload: { [key: string]: number | number[] | string }) {
-  const root = defineMessage();
-  const NFTMeta = root.lookupType('onChainMetaData.NFTMeta');
+export function serializeNft (onChainSchema: ProtobufAttributeType, payload: { [key: string]: number | number[] | string }): Uint8Array {
+  try {
+    const root = defineMessage(onChainSchema);
+    const NFTMeta = root.lookupType('onChainMetaData.NFTMeta');
 
-  // Verify the payload if necessary (i.e. when possibly incomplete or invalid)
-  const errMsg = NFTMeta.verify(payload);
+    // Verify the payload if necessary (i.e. when possibly incomplete or invalid)
+    const errMsg = NFTMeta.verify(payload);
 
-  if (errMsg) {
-    throw Error(errMsg);
+    if (errMsg) {
+      throw Error(errMsg);
+    }
+
+    // Create a new message
+    const message = NFTMeta.create(payload);
+
+    // Encode a message to an Uint8Array (browser) or Buffer (node)
+    return NFTMeta.encode(message).finish();
+  } catch (e) {
+    console.log('serializeNft error', e);
   }
 
-  // Create a new message
-  const message = NFTMeta.create(payload);
-
-  // Encode a message to an Uint8Array (browser) or Buffer (node)
-  return NFTMeta.encode(message).finish();
+  return new Uint8Array();
 }
 
-function convertEnumToString (value: string, key: string, NFTMeta: Type, locale: string) {
+export function convertEnumToString (value: string, key: string, NFTMeta: Type, locale: string) {
   let result = value;
 
   console.log('Serialized value', value, 'key', key, 'NFTMeta', NFTMeta, 'NFTMeta?.fields[key]?.resolvedType?', NFTMeta?.fields[key]?.resolvedType);
@@ -90,44 +96,48 @@ function convertEnumToString (value: string, key: string, NFTMeta: Type, locale:
   return result;
 }
 
-function deserializeNft (buffer: Uint8Array, locale: string) {
-  const root = defineMessage();
+export function deserializeNft (onChainSchema: ProtobufAttributeType, buffer: Uint8Array, locale: string): { [key: string]: any } {
+  try {
+    const root = defineMessage(onChainSchema);
+    // Obtain the message type
+    const NFTMeta = root.lookupType('onChainMetaData.NFTMeta');
+    // Decode a Uint8Array (browser) or Buffer (node) to a message
+    const message = NFTMeta.decode(buffer);
+    // Maybe convert the message back to a plain object
+    const objectItem = NFTMeta.toObject(message, {
+      arrays: true, // populates empty arrays (repeated fields) even if defaults=false
+      bytes: String, // bytes as base64 encoded strings
+      defaults: true, // includes default values
+      enums: String, // enums as string names
+      longs: String, // longs as strings (requires long.js)
+      objects: true, // populates empty objects (map fields) even if defaults=false
+      oneofs: true
+    });
+    const newObjectItem = { ...objectItem };
 
-  // Obtain the message type
-  const NFTMeta = root.lookupType('onChainMetaData.NFTMeta');
+    for (const key in objectItem) {
+      if (NFTMeta?.fields[key]?.resolvedType?.constructor.name === 'Enum') {
+        if (Array.isArray(objectItem[key])) {
+          const item = objectItem[key] as string[];
 
-  // Decode a Uint8Array (browser) or Buffer (node) to a message
-  const message = NFTMeta.decode(buffer);
-
-  // Maybe convert the message back to a plain object
-  const objectItem = NFTMeta.toObject(message, {
-    arrays: true, // populates empty arrays (repeated fields) even if defaults=false
-    bytes: String, // bytes as base64 encoded strings
-    defaults: true, // includes default values
-    enums: String, // enums as string names
-    longs: String, // longs as strings (requires long.js)
-    objects: true, // populates empty objects (map fields) even if defaults=false
-    oneofs: true
-  });
-
-  for (const key in objectItem) {
-    if (NFTMeta?.fields[key]?.resolvedType?.constructor.name === 'Enum') {
-      if (Array.isArray(objectItem[key])) {
-        const item = objectItem[key] as string[];
-
-        item.forEach((value: any) => {
-          objectItem[key] = convertEnumToString(value, key, NFTMeta, locale);
-        });
-      } else {
-        objectItem[key] = convertEnumToString(objectItem[key], key, NFTMeta, locale);
+          item.forEach((value: string, index) => {
+            (newObjectItem[key] as string[])[index] = convertEnumToString(value, key, NFTMeta, locale);
+          });
+        } else {
+          newObjectItem[key] = convertEnumToString(objectItem[key], key, NFTMeta, locale);
+        }
       }
     }
+
+    return newObjectItem;
+  } catch (e) {
+    console.log('deserializeNft error', e);
   }
 
-  return objectItem;
+  return {};
 }
 
-export function initProtobuf () {
+/* export function initProtobuf () {
   // Exemplary payload
   const payload = {
     gender: 1, // Gender.Female,
@@ -146,7 +156,7 @@ export function initProtobuf () {
 
   deserializedObject = deserializeNft(buffer, 'en');
   console.log('deserializedObject ENGLISH: ', deserializedObject);
-}
+} */
 
 export const fillAttributes = (protobufJson: ProtobufAttributeType): AttributeItemType[] => {
   const attrs: AttributeItemType[] = [];
@@ -231,65 +241,4 @@ export const fillProtobufJson = (attrs: AttributeItemType[]): ProtobufAttributeT
   }
 
   return protobufJson;
-};
-
-export const convertProtobufAttrToJson = (scaleAttrStr: string): ProtobufAttributeType[] => {
-  /*
-  try {
-    const jsonObj: ScaleJsonType = JSON.parse(scaleAttrStr) as ScaleJsonType;
-
-    return Object.keys(jsonObj.root).map((key: string) => {
-      const resArray = /^Vec<(.*)>$/.exec(jsonObj.root[key]);
-      const isBytes = jsonObj.root[key] === 'Bytes';
-
-      return {
-        count: resArray !== null ? 'array' : 'single',
-        name: resArray !== null ? resArray[1] : key,
-        pluralName: resArray !== null ? key : '',
-        type: isBytes ? 'Bytes' : '_enum',
-        values: resArray !== null ? Object.keys(jsonObj[resArray[1]]._enum) : isBytes ? [] : Object.keys(jsonObj[key]._enum)
-      };
-    });
-  } catch (e) {
-    console.log('convertScaleAttrToJson error', e);
-  }
-   */
-
-  return [];
-};
-
-export const convertProtobufAttrFromJson = (jsonStr: ProtobufAttributeType[]): string => {
-  /* let parentObj: AttributeItemType = {};
-  const rootObj: {[key: string]: string} = {};
-
-  try {
-    jsonStr.forEach((jsonStrItem: AttributeType) => {
-      if (jsonStrItem.type === 'Bytes') {
-        rootObj[jsonStrItem.name] = 'Bytes';
-      } else if (jsonStrItem.type === '_enum') {
-        const objValues = jsonStrItem.values.map((value: string) => [value, null]);
-
-        parentObj[jsonStrItem.name] = {
-          _enum: Object.fromEntries(objValues) as {[key: string]: null}
-        };
-
-        if (jsonStrItem.count === 'single') {
-          rootObj[jsonStrItem.name] = jsonStrItem.name;
-        } else if (jsonStrItem.count === 'array') {
-          rootObj[jsonStrItem.pluralName] = `Vec<${jsonStrItem.name}>`;
-        }
-      }
-    });
-
-    parentObj = {
-      ...parentObj,
-      root: rootObj
-    };
-
-    return JSON.stringify(parentObj);
-  } catch (e) {
-    console.log('convertScaleAttrFromJson error', e);
-  }
-   */
-  return '';
 };

@@ -7,9 +7,10 @@ import './styles.scss';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Route, Switch, useHistory } from 'react-router';
 import { useLocation } from 'react-router-dom';
+import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header/Header';
 
-import { Dropdown, ManageCollection, ManageTokenAttributes, NftDetails } from '@polkadot/react-components';
+import { ManageCollection, ManageTokenAttributes, NftDetails } from '@polkadot/react-components';
 import Tabs from '@polkadot/react-components/Tabs';
 // local imports and components
 import { AppProps as Props } from '@polkadot/react-components/types';
@@ -18,17 +19,6 @@ import { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
 
 import NftWallet from './containers/NftWallet';
 import TokensForSale from './containers/TokensForSale';
-
-const createOptions = [
-  {
-    text: 'Create collection',
-    value: 'collection'
-  },
-  {
-    text: 'Create token',
-    value: 'token'
-  }
-];
 
 function App ({ account, basePath }: Props): React.ReactElement<Props> {
   const localRegistry = useRegistry();
@@ -50,12 +40,8 @@ function App ({ account, basePath }: Props): React.ReactElement<Props> {
     }
   ], []);
 
-  const createItem = useCallback((value: string) => {
-    if (value === 'collection') {
-      history.push('/wallet/manage-collection');
-    } else if (value === 'token') {
-      history.push('/wallet/manage-token');
-    }
+  const createCollection = useCallback(() => {
+    history.push('/wallet/manage-collection');
   }, [history]);
 
   const addCollection = useCallback((collection: NftCollectionInterface) => {
@@ -78,14 +64,13 @@ function App ({ account, basePath }: Props): React.ReactElement<Props> {
         <>
           <Header as='h1'>My Tokens</Header>
           <Header as='h4'>NFTs owned by me</Header>
-          <Dropdown
-            className='dropdown-button create-button'
-            isItem
-            isSimple
-            onChange={createItem}
-            options={createOptions}
-            text='Create'
-          />
+          <Button
+            className='create-button'
+            onClick={createCollection}
+            primary
+          >
+            Create collection
+          </Button>
           <header>
             <Tabs
               basePath={basePath}
@@ -107,7 +92,6 @@ function App ({ account, basePath }: Props): React.ReactElement<Props> {
             account={account}
             addCollection={addCollection}
             basePath={`${basePath}/manage-collection`}
-            localRegistry={localRegistry}
             setShouldUpdateTokens={setShouldUpdateTokens}
           />
         </Route>

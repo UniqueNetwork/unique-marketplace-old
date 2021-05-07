@@ -60,6 +60,12 @@ function NftCollectionCard ({ account, canTransferTokens, collection, localRegis
     history.push(`/wallet/manage-collection?collectionId=${collectionId}`);
   }, [history]);
 
+  const createToken = useCallback((collectionId: string, e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    e.stopPropagation();
+    e.preventDefault();
+    history.push(`/wallet/manage-token?collectionId=${collectionId}`);
+  }, [history]);
+
   const getTokensCount = useCallback(async () => {
     if (!collection) {
       return;
@@ -152,12 +158,18 @@ function NftCollectionCard ({ account, canTransferTokens, collection, localRegis
             <span>, Own: {ownTokensCount} {!ownTokensCount || ownTokensCount > 1 ? 'items' : 'item'}</span>
           </div>
           { canEditCollection && (
-            <a
-              className='link-button'
-              onClick={editCollection.bind(null, collection.id)}
-            >
-              Edit
-            </a>
+            <div className='link-button'>
+              <a
+                onClick={editCollection.bind(null, collection.id)}
+              >
+                Edit
+              </a>
+              <a
+                onClick={createToken.bind(null, collection.id)}
+              >
+                Create token
+              </a>
+            </div>
           )}
         </div>
       }
