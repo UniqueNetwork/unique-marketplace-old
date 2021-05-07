@@ -150,11 +150,8 @@ function ManageTokenAttributes ({ account }: Props): React.ReactElement<Props> {
         Object.keys(tokenConstAttributes).forEach((key: string) => {
           constAttributes[tokenConstAttributes[key].name] = tokenConstAttributes[key].values?.length ? (tokenConstAttributes[key].values as number[]) : (tokenConstAttributes[key].value as string);
         });
-        console.log('constAttributes', constAttributes);
-
         const cData = serializeNft(constOnChainSchema, constAttributes);
 
-        console.log('cData', cData);
         constData = '0x' + Buffer.from(cData).toString('hex');
       }
 
@@ -162,20 +159,9 @@ function ManageTokenAttributes ({ account }: Props): React.ReactElement<Props> {
         Object.keys(tokenVarAttributes).forEach((key: string) => {
           varAttributes[tokenVarAttributes[key].name] = tokenVarAttributes[key].values?.length ? (tokenVarAttributes[key].values as number[]) : (tokenVarAttributes[key].value as string);
         });
-
-        console.log('varAttributes', varAttributes);
-
         const varData = serializeNft(variableOnChainSchema, varAttributes);
 
-        console.log('varData', varData);
-
         variableData = '0x' + Buffer.from(varData).toString('hex');
-
-        console.log('variableData', variableData, 'variableOnChainSchema', variableOnChainSchema);
-
-        const deSerializedVar = deserializeNft(variableOnChainSchema, Buffer.from(variableData.slice(2), 'hex'), 'en');
-
-        console.log('deSerializedVar', deSerializedVar);
       }
 
       if (tokenId) {
@@ -187,12 +173,41 @@ function ManageTokenAttributes ({ account }: Props): React.ReactElement<Props> {
   }, [account, createNft, collectionId, constOnChainSchema, fetchCollectionAndTokenInfo, setVariableMetadata, tokenId, tokenConstAttributes, tokenVarAttributes, variableOnChainSchema]);
 
   const fillTokenForm = useCallback(() => {
-    if (variableOnChainSchema && tokenInfo && tokenInfo.VariableData) {
+    if (variableOnChainSchema && tokenInfo && tokenInfo.VariableData && variableAttributes?.length > 0) {
       const deSerializedVar = deserializeNft(variableOnChainSchema, Buffer.from(tokenInfo.VariableData.slice(2), 'hex'), 'en');
+      const newVarAttributes: { [key: string]: TokenAttribute } = {};
 
-      console.log('deSerializedVar', deSerializedVar);
+      Object.keys(deSerializedVar).forEach((key: string) => {
+        if (Array.isArray(deSerializedVar[key])) {
+          newVarAttributes[key] = {
+            name: key,
+            value: '',
+            values: (deSerializedVar[key] as string[])
+              .map((value: string) => {
+                const targetAttribute = variableAttributes
+                  .find((varAttr) => varAttr.name === key);
+
+                let targetIndex = 0;
+
+                if (targetAttribute) {
+                  targetIndex = targetAttribute.values.findIndex((targetValue) => targetValue === value);
+                }
+
+                return targetIndex;
+              })
+          };
+        } else {
+          newVarAttributes[key] = {
+            name: key,
+            value: deSerializedVar[key] as string,
+            values: []
+          };
+        }
+      });
+
+      setTokenVarAttributes(newVarAttributes);
     }
-  }, [tokenInfo, variableOnChainSchema]);
+  }, [tokenInfo, variableAttributes, variableOnChainSchema]);
 
   useEffect(() => {
     if (constAttributes && constAttributes.length) {
@@ -201,10 +216,10 @@ function ManageTokenAttributes ({ account }: Props): React.ReactElement<Props> {
   }, [constAttributes, presetAttributesFromArray]);
 
   useEffect(() => {
-    if (variableAttributes && variableAttributes.length) {
+    if (variableAttributes && variableAttributes.length && !variableOnChainSchema) {
       presetAttributesFromArray(variableAttributes, setTokenVarAttributes);
     }
-  }, [variableAttributes, presetAttributesFromArray]);
+  }, [variableAttributes, presetAttributesFromArray, variableOnChainSchema]);
 
   useEffect(() => {
     void fetchCollectionAndTokenInfo();

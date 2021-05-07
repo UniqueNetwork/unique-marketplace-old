@@ -31,7 +31,7 @@ export function useToken (): UseTokenInterface {
 
   const createNft = useCallback((
     { account, collectionId, constData, errorCallback, owner, successCallback, variableData }:
-    { account: string, collectionId: string, constData: number[], variableData: number[], successCallback?: () => void, errorCallback?: () => void, owner: string }) => {
+    { account: string, collectionId: string, constData: string, variableData: string, successCallback?: () => void, errorCallback?: () => void, owner: string }) => {
     const transaction = api.tx.nft.createItem(collectionId, owner, { nft: { const_data: constData, variable_data: variableData } });
 
     queueExtrinsic({
