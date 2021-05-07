@@ -555,6 +555,12 @@ button.ui.button,
     &:focus {
       background: var(--input-background-color);
     }
+    &:disabled {
+      border: 1px solid var(--border-color);
+      color: var(--tabs-color);
+      background: var(--input-background-color) !important;
+      opacity: 1;
+    }
   }
 }
 

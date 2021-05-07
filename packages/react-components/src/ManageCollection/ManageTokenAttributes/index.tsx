@@ -7,20 +7,23 @@ import type { AttributeItemType, ProtobufAttributeType } from '@polkadot/react-c
 import type { TokenDetailsInterface } from '@polkadot/react-hooks/useToken';
 
 import React, { memo, useCallback, useEffect, useState } from 'react';
+import { useHistory } from 'react-router';
 import { useLocation } from 'react-router-dom';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
+import Image from 'semantic-ui-react/dist/commonjs/elements/Image';
 
 import { Dropdown, Input } from '@polkadot/react-components';
+import arrowLeft from '@polkadot/react-components/NftDetails/arrowLeft.svg';
 import { deserializeNft, fillAttributes, serializeNft } from '@polkadot/react-components/util/protobufUtils';
 import { useCollection, useToken } from '@polkadot/react-hooks';
 import { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
 
 export type TokenAttribute = {
   name: string;
-  value?: string;
+  value?: string | number;
   values?: number[];
 }
 
@@ -29,11 +32,12 @@ interface Props {
   setShouldUpdateTokens?: (collectionId: string) => void;
 }
 
-function ManageTokenAttributes ({ account }: Props): React.ReactElement<Props> {
+function ManageTokenAttributes ({ account, setShouldUpdateTokens }: Props): React.ReactElement<Props> {
   const query = new URLSearchParams(useLocation().search);
   const tokenId = query.get('tokenId') || '';
   const collectionId = query.get('collectionId') || '';
-  const { getCollectionAdminList, getCollectionOnChainSchema, getDetailedCollectionInfo } = useCollection();
+  const history = useHistory();
+  const { getCollectionAdminList, getCollectionOnChainSchema, getCollectionTokensCount, getDetailedCollectionInfo } = useCollection();
   const { createNft, getDetailedTokenInfo, setVariableMetadata } = useToken();
   const [tokenConstAttributes, setTokenConstAttributes] = useState<{ [key: string]: TokenAttribute }>({});
   const [tokenVarAttributes, setTokenVarAttributes] = useState<{ [key: string]: TokenAttribute }>({});
@@ -139,6 +143,15 @@ function ManageTokenAttributes ({ account }: Props): React.ReactElement<Props> {
     }
   }, [collectionId, getCollectionAdminList]);
 
+  const resetTokenPage = useCallback(async () => {
+    if (collectionId) {
+      const tokensCount = await getCollectionTokensCount(collectionId);
+      const lastTokenNumber = parseFloat(tokensCount.toString());
+
+      history.push(`/wallet/manage-token?collectionId=${collectionId}&tokenId=${lastTokenNumber}`);
+    }
+  }, [collectionId, getCollectionTokensCount, history]);
+
   const onSave = useCallback(() => {
     if (account) {
       const constAttributes: { [key: string]: string | number | number[] } = {};
@@ -167,22 +180,40 @@ function ManageTokenAttributes ({ account }: Props): React.ReactElement<Props> {
       if (tokenId) {
         setVariableMetadata({ account, collectionId, successCallback: fetchCollectionAndTokenInfo, tokenId, variableData });
       } else {
-        createNft({ account, collectionId, constData, owner: account, successCallback: fetchCollectionAndTokenInfo, variableData });
+        createNft({ account, collectionId, constData, owner: account, successCallback: resetTokenPage, variableData });
       }
     }
-  }, [account, createNft, collectionId, constOnChainSchema, fetchCollectionAndTokenInfo, setVariableMetadata, tokenId, tokenConstAttributes, tokenVarAttributes, variableOnChainSchema]);
+  }, [account, createNft, collectionId, constOnChainSchema, fetchCollectionAndTokenInfo, resetTokenPage, setVariableMetadata, tokenId, tokenConstAttributes, tokenVarAttributes, variableOnChainSchema]);
 
-  const fillTokenForm = useCallback(() => {
-    if (variableOnChainSchema && tokenInfo && tokenInfo.VariableData && variableAttributes?.length > 0) {
-      const deSerializedVar = deserializeNft(variableOnChainSchema, Buffer.from(tokenInfo.VariableData.slice(2), 'hex'), 'en');
+  const fillTokenForm = useCallback((schema: ProtobufAttributeType, tokenData: string, callBack: (item: { [key: string]: TokenAttribute }) => void) => {
+    if (schema && tokenInfo && tokenData && variableAttributes?.length > 0) {
+      const deSerialized = deserializeNft(schema, Buffer.from(tokenData.slice(2), 'hex'), 'en');
       const newVarAttributes: { [key: string]: TokenAttribute } = {};
 
-      Object.keys(deSerializedVar).forEach((key: string) => {
-        if (Array.isArray(deSerializedVar[key])) {
+      Object.keys(deSerialized).forEach((key: string) => {
+        if (schema.nested.onChainMetaData.nested[key] && !Array.isArray(deSerialized[key])) {
+          const newValue = () => {
+            const targetAttribute = variableAttributes
+              .find((varAttr) => varAttr.name === key);
+            let targetIndex = 0;
+
+            if (targetAttribute) {
+              targetIndex = targetAttribute.values.findIndex((targetValue) => targetValue === deSerialized[key]);
+            }
+
+            return targetIndex;
+          };
+
+          newVarAttributes[key] = {
+            name: key,
+            value: newValue(),
+            values: []
+          };
+        } else if (Array.isArray(deSerialized[key])) {
           newVarAttributes[key] = {
             name: key,
             value: '',
-            values: (deSerializedVar[key] as string[])
+            values: (deSerialized[key] as string[])
               .map((value: string) => {
                 const targetAttribute = variableAttributes
                   .find((varAttr) => varAttr.name === key);
@@ -199,15 +230,21 @@ function ManageTokenAttributes ({ account }: Props): React.ReactElement<Props> {
         } else {
           newVarAttributes[key] = {
             name: key,
-            value: deSerializedVar[key] as string,
+            value: deSerialized[key] as string,
             values: []
           };
         }
       });
 
-      setTokenVarAttributes(newVarAttributes);
+      callBack(newVarAttributes);
     }
-  }, [tokenInfo, variableAttributes, variableOnChainSchema]);
+  }, [tokenInfo, variableAttributes]);
+
+  const goBack = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    setShouldUpdateTokens && setShouldUpdateTokens('all');
+    history.push('/wallet/');
+  }, [history, setShouldUpdateTokens]);
 
   useEffect(() => {
     if (constAttributes && constAttributes.length) {
@@ -216,10 +253,10 @@ function ManageTokenAttributes ({ account }: Props): React.ReactElement<Props> {
   }, [constAttributes, presetAttributesFromArray]);
 
   useEffect(() => {
-    if (variableAttributes && variableAttributes.length && !variableOnChainSchema) {
+    if (variableAttributes && variableAttributes.length && !tokenId) {
       presetAttributesFromArray(variableAttributes, setTokenVarAttributes);
     }
-  }, [variableAttributes, presetAttributesFromArray, variableOnChainSchema]);
+  }, [tokenId, variableAttributes, presetAttributesFromArray]);
 
   useEffect(() => {
     void fetchCollectionAndTokenInfo();
@@ -240,8 +277,16 @@ function ManageTokenAttributes ({ account }: Props): React.ReactElement<Props> {
   }, [account, collectionAdminList, collectionInfo]);
 
   useEffect(() => {
-    fillTokenForm();
-  }, [fillTokenForm]);
+    if (variableOnChainSchema && tokenInfo?.VariableData) {
+      fillTokenForm(variableOnChainSchema, tokenInfo.VariableData, setTokenVarAttributes);
+    }
+  }, [fillTokenForm, tokenInfo, variableOnChainSchema]);
+
+  useEffect(() => {
+    if (constOnChainSchema && tokenInfo?.ConstData) {
+      fillTokenForm(constOnChainSchema, tokenInfo.ConstData, setTokenConstAttributes);
+    }
+  }, [constOnChainSchema, fillTokenForm, tokenInfo]);
 
   /* console.log('info collectionInfo', collectionInfo);
   console.log('info tokenInfo', tokenInfo);
@@ -253,36 +298,47 @@ function ManageTokenAttributes ({ account }: Props): React.ReactElement<Props> {
   return (
     <div className='manage-token-attributes'>
       <Header as='h3'>Token attributes</Header>
+      <a
+        className='go-back'
+        href='/'
+        onClick={goBack}
+      >
+        <Image
+          className='go-back'
+          src={arrowLeft}
+        />
+        back
+      </a>
       <Form className='manage-token--form'>
         <Grid className='manage-token--form--grid'>
-          { !tokenId && (
-            <Grid.Row>
-              <Grid.Column width={8}>
-                <Header as='h5'>Const Data</Header>
-                { Object.keys(tokenConstAttributes).length > 0 && constAttributes?.map((collectionAttribute: AttributeItemType) => (
-                  <Form.Field key={collectionAttribute.name}>
-                    { collectionAttribute.fieldType === 'string' && (
-                      <Input
-                        className='isSmall'
-                        onChange={setAttributeValue.bind(null, 'const', collectionAttribute)}
-                        placeholder={`Enter ${collectionAttribute.name}, ${collectionAttribute.fieldType}`}
-                        value={tokenConstAttributes[collectionAttribute.name].value}
-                      />
-                    )}
-                    { collectionAttribute.fieldType === 'enum' && (
-                      <Dropdown
-                        isMultiple={collectionAttribute.rule === 'repeated'}
-                        onChange={setAttributeValue.bind(null, 'const', collectionAttribute)}
-                        options={collectionAttribute.values.map((val: string, index: number) => ({ text: val, value: index }))}
-                        placeholder='Select Attribute Type'
-                        value={collectionAttribute.rule === 'repeated' ? tokenConstAttributes[collectionAttribute.name].values : tokenConstAttributes[collectionAttribute.name].value}
-                      />
-                    )}
-                  </Form.Field>
-                ))}
-              </Grid.Column>
-            </Grid.Row>
-          )}
+          <Grid.Row>
+            <Grid.Column width={8}>
+              <Header as='h5'>Const Data</Header>
+              { Object.keys(tokenConstAttributes).length > 0 && constAttributes?.map((collectionAttribute: AttributeItemType) => (
+                <Form.Field key={collectionAttribute.name}>
+                  { collectionAttribute.fieldType === 'string' && (
+                    <Input
+                      className='isSmall'
+                      isDisabled={!!tokenId}
+                      onChange={setAttributeValue.bind(null, 'const', collectionAttribute)}
+                      placeholder={`Enter ${collectionAttribute.name}, ${collectionAttribute.fieldType}`}
+                      value={tokenConstAttributes[collectionAttribute.name].value as string}
+                    />
+                  )}
+                  { collectionAttribute.fieldType === 'enum' && (
+                    <Dropdown
+                      isDisabled={!!tokenId}
+                      isMultiple={collectionAttribute.rule === 'repeated'}
+                      onChange={setAttributeValue.bind(null, 'const', collectionAttribute)}
+                      options={collectionAttribute.values.map((val: string, index: number) => ({ text: val, value: index }))}
+                      placeholder='Select Attribute Type'
+                      value={collectionAttribute.rule === 'repeated' ? tokenConstAttributes[collectionAttribute.name].values : tokenConstAttributes[collectionAttribute.name].value}
+                    />
+                  )}
+                </Form.Field>
+              ))}
+            </Grid.Column>
+          </Grid.Row>
           <Grid.Row>
             <Grid.Column width={8}>
               <Header as='h5'>Variable Data</Header>
@@ -293,7 +349,7 @@ function ManageTokenAttributes ({ account }: Props): React.ReactElement<Props> {
                       className='isSmall'
                       onChange={setAttributeValue.bind(null, 'var', collectionAttribute)}
                       placeholder={`Enter ${collectionAttribute.name}, ${collectionAttribute.fieldType}`}
-                      value={tokenVarAttributes[collectionAttribute.name].value}
+                      value={tokenVarAttributes[collectionAttribute.name].value as string}
                     />
                   )}
                   { collectionAttribute.fieldType === 'enum' && (
