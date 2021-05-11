@@ -87,8 +87,6 @@ function ManageOnChainSchema (props: Props): React.ReactElement<Props> {
       return;
     }
 
-    console.log('currentAttribute', currentAttribute);
-
     // edit existed attribute
     if (currentAttribute?.id) {
       const targetIndex = attributes.findIndex((item: AttributeItemType) => item.id === currentAttribute.id);

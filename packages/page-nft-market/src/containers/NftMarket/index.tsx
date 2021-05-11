@@ -17,7 +17,6 @@ import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 import { Input } from '@polkadot/react-components';
 import { useCollections, useDecoder } from '@polkadot/react-hooks';
 import { AttributesDecoded } from '@polkadot/react-hooks/useSchema';
-import { TypeRegistry } from '@polkadot/types';
 
 // local imports and components
 import NftTokenCard from '../../components/NftTokenCard';
@@ -79,8 +78,15 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
         const filtered = Object.values(offers).filter((item: OfferType) => {
           if (offersWithAttributes[item.collectionId] && offersWithAttributes[item.collectionId][item.tokenId]) {
             const offerItemAttrs = offersWithAttributes[item.collectionId][item.tokenId];
+            const target = Object.values(offerItemAttrs).find((value: string | string[]) => {
+              if (Array.isArray(value)) {
+                return value.find((valItem: string) => valItem.toLowerCase().includes(searchString.toLowerCase()));
+              }
 
-            return (offerItemAttrs.NameStr && (offerItemAttrs.NameStr as string).toLowerCase().includes(searchString.toLowerCase())) || item.price.toString().includes(searchString.toLowerCase());
+              return value.toLowerCase().includes(searchString.toLowerCase());
+            });
+
+            return target || item.price.toString().includes(searchString.toLowerCase());
           }
 
           return false;

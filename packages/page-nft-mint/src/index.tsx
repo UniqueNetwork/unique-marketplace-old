@@ -7,7 +7,7 @@ import React, { useMemo } from 'react';
 import { Route, Switch } from 'react-router';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header/Header';
 
-import { ManageCollection, Tabs, ManageTokenAttributes } from '@polkadot/react-components';
+import { ManageCollection, ManageTokenAttributes,Tabs } from '@polkadot/react-components';
 import { AppProps as Props } from '@polkadot/react-components/types';
 
 function App ({ account, basePath }: Props): React.ReactElement<Props> {
@@ -43,6 +43,9 @@ function App ({ account, basePath }: Props): React.ReactElement<Props> {
         <Route path={`${basePath}`}>
           <ManageCollection
             account={account}
+            addCollection={() => console.log('add collection')}
+            basePath={`${basePath}/manage-collection`}
+            setShouldUpdateTokens={() => console.log('add collection')}
           />
         </Route>
       </Switch>

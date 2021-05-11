@@ -79,8 +79,6 @@ export function serializeNft (onChainSchema: ProtobufAttributeType, payload: { [
 export function convertEnumToString (value: string, key: string, NFTMeta: Type, locale: string) {
   let result = value;
 
-  console.log('Serialized value', value, 'key', key, 'NFTMeta', NFTMeta, 'NFTMeta?.fields[key]?.resolvedType?', NFTMeta?.fields[key]?.resolvedType);
-
   try {
     const options = NFTMeta?.fields[key]?.resolvedType?.options as {[key: string]: string};
     const valueJsonComment = options[value];

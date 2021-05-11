@@ -39,8 +39,6 @@ export const useMetadata = (): UseMetadataInterface => {
       try {
         const schema = JSON.parse(attr) as ProtobufAttributeType;
 
-        console.log('schema', schema);
-
         if (schema?.nested) {
           return deserializeNft(schema, Buffer.from(data.slice(2), 'hex'), 'en');
         }
@@ -63,8 +61,6 @@ export const useMetadata = (): UseMetadataInterface => {
   // uses for token image path
   const setUnique = useCallback(async (collectionInfo: NftCollectionInterface, tokenId: string): Promise<string> => {
     try {
-      console.log('collectionMetadata', hex2a(collectionInfo.OffchainSchema));
-
       const collectionMetadata = JSON.parse(hex2a(collectionInfo.OffchainSchema)) as MetadataType;
 
       if (collectionMetadata.metadata) {
@@ -120,9 +116,6 @@ export const useMetadata = (): UseMetadataInterface => {
 
   const getOnChainSchema = useCallback((collectionInf: NftCollectionInterface): { attributesConst: string, attributesVar: string } => {
     if (collectionInf) {
-      console.log('collection ConstOnChainSchema', hex2a(collectionInf.ConstOnChainSchema));
-      console.log('collection VariableOnChainSchema', hex2a(collectionInf.VariableOnChainSchema));
-
       return {
         attributesConst: hex2a(collectionInf.ConstOnChainSchema),
         attributesVar: hex2a(collectionInf.VariableOnChainSchema)

@@ -40,6 +40,10 @@ function NftTokenCard ({ account, canTransferTokens, collection, openTransferMod
           return `${attr}: ${(attributes[attr] as string).substring(0, 8)}...`;
         }
 
+        if (Array.isArray(attributes[attr])) {
+          return `${attr}: ${((attributes[attr] as string[]).join(', '))}`;
+        }
+
         return `${attr}: ${(attributes[attr] as string)}`;
       })].join(', ');
     }

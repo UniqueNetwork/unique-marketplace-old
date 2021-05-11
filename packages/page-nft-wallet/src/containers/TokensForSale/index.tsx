@@ -14,7 +14,6 @@ import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 import NftTokenCard from '@polkadot/app-nft-market/components/NftTokenCard';
 import { useCollections } from '@polkadot/react-hooks';
 import { OfferType } from '@polkadot/react-hooks/useCollections';
-import { TypeRegistry } from '@polkadot/types';
 
 interface BuyTokensProps {
   account?: string;

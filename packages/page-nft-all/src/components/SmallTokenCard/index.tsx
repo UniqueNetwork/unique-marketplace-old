@@ -21,7 +21,7 @@ interface Props {
 }
 
 const NftTokenCard = ({ account, collectionId, onSetTokenAttributes, openDetailedInformationModal, token }: Props): React.ReactElement<Props> => {
-  const { attributes, tokenUrl } = useSchema(account, collectionId, token.id);
+  const { attributes, tokenName, tokenUrl } = useSchema(account, collectionId, token.id);
 
   useEffect(() => {
     if (attributes && onSetTokenAttributes) {
@@ -45,10 +45,10 @@ const NftTokenCard = ({ account, collectionId, onSetTokenAttributes, openDetaile
       { token && (
         <Card.Content>
           <Card.Description>
-            { attributes && attributes.NameStr && (
+            { tokenName && (
               <div className='card-name'>
-                <div className='card-name__title'>Name</div>
-                <div className='card-name__field'>{attributes.NameStr}</div>
+                <div className='card-name__title'>{tokenName.name}</div>
+                <div className='card-name__field'>{tokenName.value}</div>
               </div>
             )}
           </Card.Description>

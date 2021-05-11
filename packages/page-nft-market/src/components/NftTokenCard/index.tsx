@@ -5,7 +5,7 @@ import './styles.scss';
 
 import type { OfferType } from '@polkadot/react-hooks/useCollections';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import Image from 'semantic-ui-react/dist/commonjs/elements/Image';
 import Card from 'semantic-ui-react/dist/commonjs/views/Card';
 
@@ -22,7 +22,7 @@ interface Props {
 }
 
 const NftTokenCard = ({ account, collectionId, onSetTokenAttributes, openDetailedInformationModal, token }: Props): React.ReactElement<Props> => {
-  const { attributes, tokenUrl } = useSchema(account, collectionId, token.tokenId);
+  const { attributes, tokenName, tokenUrl } = useSchema(account, collectionId, token.tokenId);
 
   useEffect(() => {
     if (attributes && onSetTokenAttributes) {
@@ -46,10 +46,10 @@ const NftTokenCard = ({ account, collectionId, onSetTokenAttributes, openDetaile
       { token && (
         <Card.Content>
           <Card.Description>
-            { attributes && attributes.NameStr && (
+            {tokenName && (
               <div className='card-name'>
-                <div className='card-name__title'>Name</div>
-                <div className='card-name__field'>{attributes.NameStr}</div>
+                <div className='card-name__title'>{tokenName.name}</div>
+                <div className='card-name__field'>{tokenName.value}</div>
               </div>
             )}
             <div className='card-price'>
