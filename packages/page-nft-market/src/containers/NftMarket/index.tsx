@@ -24,7 +24,6 @@ import NftTokenCard from '../../components/NftTokenCard';
 
 interface BuyTokensProps {
   account?: string;
-  localRegistry?: TypeRegistry;
   setShouldUpdateTokens: (value?: string) => void;
   shouldUpdateTokens?: string;
 }
@@ -35,7 +34,7 @@ interface OfferWithAttributes {
 
 const perPage = 20;
 
-const BuyTokens = ({ account, localRegistry, setShouldUpdateTokens, shouldUpdateTokens }: BuyTokensProps): ReactElement => {
+const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTokensProps): ReactElement => {
   const history = useHistory();
   const { getOffers, loadingOffers, offers, offersCount, presetMintTokenCollection } = useCollections();
   const [searchString, setSearchString] = useState<string>('');
@@ -196,7 +195,6 @@ const BuyTokens = ({ account, localRegistry, setShouldUpdateTokens, shouldUpdate
                               account={account}
                               collectionId={token.collectionId.toString()}
                               key={token.tokenId}
-                              localRegistry={localRegistry}
                               onSetTokenAttributes={onSetTokenAttributes}
                               openDetailedInformationModal={openDetailedInformationModal}
                               token={token}

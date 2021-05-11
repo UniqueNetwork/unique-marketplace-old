@@ -14,7 +14,6 @@ import { Expander } from '@polkadot/react-components';
 import { useCollections, useDecoder, useMetadata } from '@polkadot/react-hooks';
 import { useCollection } from '@polkadot/react-hooks/useCollection';
 import { UNIQUE_COLLECTION_ID } from '@polkadot/react-hooks/utils';
-import { TypeRegistry } from '@polkadot/types';
 
 import NftTokenCard from '../NftTokenCard';
 
@@ -22,13 +21,12 @@ interface Props {
   account?: string;
   canTransferTokens: boolean;
   collection: NftCollectionInterface;
-  localRegistry?: TypeRegistry;
   removeCollection: (collection: string) => void;
   openTransferModal: (collection: NftCollectionInterface, tokenId: string, balance: number) => void;
   shouldUpdateTokens: string | undefined;
 }
 
-function NftCollectionCard ({ account, canTransferTokens, collection, localRegistry, openTransferModal, removeCollection, shouldUpdateTokens }: Props): React.ReactElement<Props> {
+function NftCollectionCard ({ account, canTransferTokens, collection, openTransferModal, removeCollection, shouldUpdateTokens }: Props): React.ReactElement<Props> {
   const [opened, setOpened] = useState(true);
   const [collectionImageUrl, setCollectionImageUrl] = useState<string>();
   const [ownTokensCount, setOwnTokensCount] = useState<number>();
@@ -39,19 +37,20 @@ function NftCollectionCard ({ account, canTransferTokens, collection, localRegis
   const { collectionName16Decoder } = useDecoder();
   const cleanup = useRef<boolean>(false);
   const history = useHistory();
-  const { getTokenImageUrl } = useMetadata(localRegistry);
+  const { getTokenImageUrl } = useMetadata();
 
   const openCollection = useCallback((isOpen) => {
     setOpened(isOpen);
   }, []);
 
   const defineCollectionImage = useCallback(async () => {
-    console.log('defineCollectionImage');
-
     const collectionImage = await getTokenImageUrl(collection, '1');
 
+    if (cleanup.current) {
+      return;
+    }
+
     setCollectionImageUrl(collectionImage);
-    console.log('collectionImage', collectionImage);
   }, [collection, getTokenImageUrl]);
 
   const editCollection = useCallback((collectionId: string, e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
@@ -182,7 +181,6 @@ function NftCollectionCard ({ account, canTransferTokens, collection, localRegis
               canTransferTokens={canTransferTokens}
               collection={collection}
               key={token}
-              localRegistry={localRegistry}
               openTransferModal={openTransferModal}
               shouldUpdateTokens={shouldUpdateTokens}
               token={token}

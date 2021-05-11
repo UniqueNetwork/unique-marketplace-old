@@ -9,10 +9,8 @@ import Header from 'semantic-ui-react/dist/commonjs/elements/Header/Header';
 
 import { ManageCollection, Tabs, ManageTokenAttributes } from '@polkadot/react-components';
 import { AppProps as Props } from '@polkadot/react-components/types';
-import { useRegistry } from '@polkadot/react-hooks';
 
 function App ({ account, basePath }: Props): React.ReactElement<Props> {
-  const localRegistry = useRegistry();
 
   const items = useMemo(() => [
     {

@@ -43,8 +43,6 @@ function ManageOnChainSchema (props: Props): React.ReactElement<Props> {
   const [currentAttributeValues, setCurrentAttributeValues] = useState<string[]>([]);
   const [currentAttribute, setCurrentAttribute] = useState<AttributeItemType>();
 
-  // const tx = api.tx.nft.setConstOnChainSchema(collection_id, schema)
-
   const clearCurrentAttribute = useCallback(() => {
     setCurrentAttributeName('');
     setCurrentAttributeType('string');
@@ -167,12 +165,6 @@ function ManageOnChainSchema (props: Props): React.ReactElement<Props> {
       setAttributes([]);
     }
   }, [onChainSchema]);
-
-  /* useEffect(() => {
-    localStorage.setItem('collectionAttributes', JSON.stringify(attributes));
-  }, [attributes]); */
-
-  console.log('onChainSchema', onChainSchema, 'attributes', attributes, 'isAdmin', isAdmin);
 
   return (
     <div className='on-chain-schema'>

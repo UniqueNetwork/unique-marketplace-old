@@ -10,7 +10,6 @@ import Header from 'semantic-ui-react/dist/commonjs/elements/Header/Header';
 
 import { LabelHelp, Table, TransferModal } from '@polkadot/react-components';
 import { useCollections } from '@polkadot/react-hooks';
-import { TypeRegistry } from '@polkadot/types';
 
 import CollectionSearch from '../../components/CollectionSearch';
 import NftCollectionCard from '../../components/NftCollectionCard';
@@ -19,13 +18,12 @@ interface NftWalletProps {
   account?: string;
   addCollection: (collection: NftCollectionInterface) => void;
   collections: NftCollectionInterface[];
-  localRegistry?: TypeRegistry;
   setCollections: (collections: NftCollectionInterface[]) => void;
   setShouldUpdateTokens: (value: string) => void;
   shouldUpdateTokens?: string;
 }
 
-function NftWallet ({ account, addCollection, collections, localRegistry, setCollections, setShouldUpdateTokens, shouldUpdateTokens }: NftWalletProps): React.ReactElement {
+function NftWallet ({ account, addCollection, collections, setCollections, setShouldUpdateTokens, shouldUpdateTokens }: NftWalletProps): React.ReactElement {
   const [openTransfer, setOpenTransfer] = useState<{ collection: NftCollectionInterface, tokenId: string, balance: number } | null>(null);
   const [selectedCollection, setSelectedCollection] = useState<NftCollectionInterface>();
   const [canTransferTokens] = useState<boolean>(true);
@@ -100,7 +98,6 @@ function NftWallet ({ account, addCollection, collections, localRegistry, setCol
                 account={account}
                 canTransferTokens={canTransferTokens}
                 collection={collection}
-                localRegistry={localRegistry}
                 openTransferModal={openTransferModal}
                 removeCollection={removeCollection}
                 shouldUpdateTokens={shouldUpdateTokens}

@@ -28,7 +28,6 @@ const maxFileSize = 5000000;
 
 interface Props {
   account?: string;
-  localRegistry?: TypeRegistry;
   setShouldUpdateTokens?: (collectionId: string) => void;
 }
 

@@ -7,14 +7,13 @@ import type { TokenDetailsInterface } from '@polkadot/react-hooks/useToken';
 
 import { useCallback, useEffect, useRef } from 'react';
 
+import { deserializeNft, ProtobufAttributeType } from '@polkadot/react-components/util/protobufUtils';
 import { useDecoder } from '@polkadot/react-hooks/useDecoder';
 import { AttributesDecoded } from '@polkadot/react-hooks/useSchema';
 import { useToken } from '@polkadot/react-hooks/useToken';
-import { TypeRegistry } from '@polkadot/types';
 
 interface UseMetadataInterface {
   decodeStruct: ({ attr, data }: { attr?: any, data?: string }) => AttributesDecoded;
-  encodeStruct: ({ attr, data }: { attr?: any, data?: string }) => string;
   getAndParseOffchainSchemaMetadata: (collectionInfo: NftCollectionInterface) => Promise<{ metadata: string, metadataJson: MetadataJsonType }>
   getOnChainSchema: (collectionInfo: NftCollectionInterface) => { attributesConst: string, attributesVar: string };
   getTokenAttributes: (collectionInfo: NftCollectionInterface, tokenId: string) => Promise<AttributesDecoded>;
@@ -30,102 +29,28 @@ export type MetadataJsonType = {
   video?: string;
 }
 
-/* const testSchema = `{
-  "Gender": {
-    "_enum": {
-      "Male": null,
-      "Female": null
-    }
-  },
-  "Trait": {
-    "_enum": {
-      "Black Lipstick": null,
-      "Red Lipstick": null,
-      "Smile": null,
-      "Teeth Smile": null,
-      "Purple Lipstick": null,
-      "Nose Ring": null,
-      "Asian Eyes": null,
-      "Sun Glasses": null,
-      "Red Glasses": null,
-      "Round Eyes": null,
-      "Left Earring": null,
-      "Right Earring": null,
-      "Two Earrings": null,
-      "Brown Beard": null,
-      "Mustache-Beard": null,
-      "Mustache": null,
-      "Regular Beard": null,
-      "Up Hair": null,
-      "Down Hair": null,
-      "Mahawk": null,
-      "Red Mahawk": null,
-      "Orange Hair": null,
-      "Bubble Hair": null,
-      "Emo Hair": null,
-      "Thin Hair": null,
-      "Bald": null,
-      "Blonde Hair": null,
-      "Caret Hair": null,
-      "Pony Tails": null,
-      "Cigar": null,
-      "Pipe": null
-    }
-  },
-  "root": {
-    "Gender": "Gender",
-    "Traits": "Vec<Trait>",
-    "ImageHash": "Bytes"
-  }
-}`; */
-
-export const useMetadata = (localRegistry?: TypeRegistry): UseMetadataInterface => {
+export const useMetadata = (): UseMetadataInterface => {
   const { hex2a } = useDecoder();
   const cleanup = useRef<boolean>(false);
   const { getDetailedReFungibleTokenInfo, getDetailedTokenInfo } = useToken();
 
-  // TypeRegistry from ConstOnChainData, createType - from TypeRegistry
-
-  const encodeStruct = useCallback(({ attr, data }: { attr?: any, data?: string }): string => {
-    if (attr && data && localRegistry) {
-      try {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        localRegistry.register(JSON.parse(attr));
-
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore {"Gender":"Female","Traits":["Smile"], "ImageHash": "123123"}
-        return localRegistry.createType('root', JSON.parse(data)).toHex();
-      } catch (e) {
-        console.log('encodeStruct error', e);
-      }
-    }
-
-    return '';
-  }, [localRegistry]);
-
   const decodeStruct = useCallback(({ attr, data }: { attr?: any, data?: string }): AttributesDecoded => {
-    if (attr && data && localRegistry) {
+    if (attr && data) {
       try {
-        localRegistry.register(JSON.parse(attr));
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        const attributesDecoded: { [key: string]: string } = localRegistry.createType('root', data).toJSON() as { [key: string]: string };
+        const schema = JSON.parse(attr) as ProtobufAttributeType;
 
-        for (const attr in attributesDecoded) {
-          if (attr.toLocaleLowerCase().includes('str')) {
-            attributesDecoded[attr] = hex2a(attributesDecoded[attr]);
-          }
+        console.log('schema', schema);
+
+        if (schema?.nested) {
+          return deserializeNft(schema, Buffer.from(data.slice(2), 'hex'), 'en');
         }
-
-        return attributesDecoded;
       } catch (e) {
         console.log('decodeStruct error', e);
       }
     }
 
     return {};
-  }, [hex2a, localRegistry]);
+  }, []);
 
   const tokenImageUrl = useCallback((urlString: string, tokenId: string): string => {
     if (urlString.indexOf('{id}') !== -1) {
@@ -138,6 +63,8 @@ export const useMetadata = (localRegistry?: TypeRegistry): UseMetadataInterface 
   // uses for token image path
   const setUnique = useCallback(async (collectionInfo: NftCollectionInterface, tokenId: string): Promise<string> => {
     try {
+      console.log('collectionMetadata', hex2a(collectionInfo.OffchainSchema));
+
       const collectionMetadata = JSON.parse(hex2a(collectionInfo.OffchainSchema)) as MetadataType;
 
       if (collectionMetadata.metadata) {
@@ -176,8 +103,6 @@ export const useMetadata = (localRegistry?: TypeRegistry): UseMetadataInterface 
 
       const metadataResponse = await fetch(offChainSchema.metadata.replace('{id}', '1'));
       const metadataJson = await metadataResponse.json() as MetadataJsonType;
-
-      console.log('info metadataJson', metadataJson);
 
       return {
         metadata: offChainSchema.metadata,
@@ -246,7 +171,6 @@ export const useMetadata = (localRegistry?: TypeRegistry): UseMetadataInterface 
 
   return {
     decodeStruct,
-    encodeStruct,
     getAndParseOffchainSchemaMetadata,
     getOnChainSchema,
     getTokenAttributes,

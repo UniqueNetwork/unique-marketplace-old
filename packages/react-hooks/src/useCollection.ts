@@ -56,19 +56,6 @@ export function useCollection () {
   const { queueExtrinsic } = useContext(StatusContext);
   const { hex2a } = useDecoder();
 
-  // collectionName16Decoder(collection.Name);
-  // collectionName16Decoder(collection.Description)
-  // hex2a(collectionInfo.TokenPrefix)
-  // collectionInfo.Sponsor
-  // confirmSponsorship(collection_id)
-  // api.query.nft.contractOwner(AccountId)
-  // const changeAdminTx = api.tx.nft.addCollectionAdmin(collectionId, bob.address);
-  // const adminListAfterRemoveAdmin: any = (await api.query.nft.adminList(collectionId));
-  // const tx = api.tx.nft.removeCollectionAdmin(collectionId, Alice.address);
-
-  // parseInt((await api.query.nft.createdCollectionCount()).toString(), 10);
-  // api.tx.nft.createCollection(strToUTF16(name), strToUTF16(description), strToUTF16(tokenPrefix), modeprm);
-
   const getCollectionTokensCount = useCallback(async (collectionId: string) => {
     if (!api || !collectionId) {
       return [];

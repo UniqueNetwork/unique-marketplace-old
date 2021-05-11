@@ -9,7 +9,6 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useMetadata, useToken } from '@polkadot/react-hooks';
 import { useCollection } from '@polkadot/react-hooks/useCollection';
-import { TypeRegistry } from '@polkadot/types';
 
 export type AttributesDecoded = {
   [key: string]: string | string[],
@@ -27,7 +26,7 @@ interface UseSchemaInterface {
   tokenUrl: string;
 }
 
-export function useSchema (account: string, collectionId: string, tokenId: string | number, localRegistry?: TypeRegistry): UseSchemaInterface {
+export function useSchema (account: string, collectionId: string, tokenId: string | number): UseSchemaInterface {
   const [collectionInfo, setCollectionInfo] = useState<NftCollectionInterface>();
   const [reFungibleBalance, setReFungibleBalance] = useState<number>(0);
   const [tokenUrl, setTokenUrl] = useState<string>('');
@@ -38,7 +37,7 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
   const { getTokenInfo } = useToken();
   const { getDetailedCollectionInfo } = useCollection();
   const cleanup = useRef<boolean>(false);
-  const { decodeStruct, getOnChainSchema, getTokenImageUrl } = useMetadata(localRegistry);
+  const { decodeStruct, getOnChainSchema, getTokenImageUrl } = useMetadata();
 
   const getReFungibleDetails = useCallback(() => {
     try {

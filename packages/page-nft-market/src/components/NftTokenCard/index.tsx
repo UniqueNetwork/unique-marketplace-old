@@ -12,19 +12,17 @@ import Card from 'semantic-ui-react/dist/commonjs/views/Card';
 import { useSchema } from '@polkadot/react-hooks';
 import { formatKsmBalance } from '@polkadot/react-hooks/useKusamaApi';
 import { AttributesDecoded } from '@polkadot/react-hooks/useSchema';
-import { TypeRegistry } from '@polkadot/types';
 
 interface Props {
   account: string;
   collectionId: string;
-  localRegistry?: TypeRegistry;
   onSetTokenAttributes?: (collectionId: string, tokenId: string, attributes: AttributesDecoded) => void;
   openDetailedInformationModal: (collectionId: string, tokenId: string) => void;
   token: OfferType;
 }
 
-const NftTokenCard = ({ account, collectionId, localRegistry, onSetTokenAttributes, openDetailedInformationModal, token }: Props): React.ReactElement<Props> => {
-  const { attributes, tokenUrl } = useSchema(account, collectionId, token.tokenId, localRegistry);
+const NftTokenCard = ({ account, collectionId, onSetTokenAttributes, openDetailedInformationModal, token }: Props): React.ReactElement<Props> => {
+  const { attributes, tokenUrl } = useSchema(account, collectionId, token.tokenId);
 
   useEffect(() => {
     if (attributes && onSetTokenAttributes) {

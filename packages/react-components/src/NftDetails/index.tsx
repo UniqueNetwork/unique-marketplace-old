@@ -24,11 +24,10 @@ import SetPriceModal from './SetPriceModal';
 
 interface NftDetailsProps {
   account: string;
-  localRegistry?: TypeRegistry;
   setShouldUpdateTokens?: (collectionId: string) => void;
 }
 
-function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetailsProps): React.ReactElement<NftDetailsProps> {
+function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React.ReactElement<NftDetailsProps> {
   const query = new URLSearchParams(useLocation().search);
   const tokenId = query.get('tokenId') || '';
   const collectionId = query.get('collectionId') || '';
@@ -36,7 +35,7 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
   const [showTransferForm, setShowTransferForm] = useState<boolean>(false);
   const { balance } = useBalance(account);
   const { hex2a } = useDecoder();
-  const { attributes, collectionInfo, reFungibleBalance, tokenUrl } = useSchema(account, collectionId, tokenId, localRegistry);
+  const { attributes, collectionInfo, reFungibleBalance, tokenUrl } = useSchema(account, collectionId, tokenId);
   const [tokenPriceForSale, setTokenPriceForSale] = useState<string>('');
   const { buyFee, cancelStep, deposited, escrowAddress, formatKsmBalance, kusamaBalance, readyToAskPrice, sendCurrentUserAction, setPrice, setReadyToAskPrice, setWithdrawAmount, tokenAsk, tokenInfo, transferStep, withdrawAmount } = useMarketplaceStages(account, collectionInfo, tokenId);
 

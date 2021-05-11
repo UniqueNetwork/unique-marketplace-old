@@ -18,14 +18,13 @@ import { TypeRegistry } from '@polkadot/types';
 
 interface BuyTokensProps {
   account?: string;
-  localRegistry?: TypeRegistry;
   setShouldUpdateTokens: (value?: string) => void;
   shouldUpdateTokens?: string;
 }
 
 const perPage = 20;
 
-const TokensForSale = ({ account, localRegistry, setShouldUpdateTokens, shouldUpdateTokens }: BuyTokensProps): ReactElement => {
+const TokensForSale = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTokensProps): ReactElement => {
   const history = useHistory();
   const { getOffers, offers, offersCount } = useCollections();
   const [filteredOffers, setFilteredOffers] = useState<OfferType[]>([]);
@@ -86,7 +85,6 @@ const TokensForSale = ({ account, localRegistry, setShouldUpdateTokens, shouldUp
                         account={account}
                         collectionId={token.collectionId.toString()}
                         key={token.tokenId}
-                        localRegistry={localRegistry}
                         openDetailedInformationModal={openDetailedInformationModal}
                         token={token}
                       />

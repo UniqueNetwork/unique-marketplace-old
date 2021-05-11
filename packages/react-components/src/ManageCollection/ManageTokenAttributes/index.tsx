@@ -288,13 +288,6 @@ function ManageTokenAttributes ({ account, setShouldUpdateTokens }: Props): Reac
     }
   }, [constOnChainSchema, fillTokenForm, tokenInfo]);
 
-  /* console.log('info collectionInfo', collectionInfo);
-  console.log('info tokenInfo', tokenInfo);
-  console.log('info variableOnChainSchema', variableOnChainSchema);
-  console.log('info constOnChainSchema', constOnChainSchema);
-  console.log('tokenConstAttributes', tokenConstAttributes);
-  console.log('tokenVarAttributes', tokenVarAttributes); */
-
   return (
     <div className='manage-token-attributes'>
       <Header as='h3'>Token attributes</Header>

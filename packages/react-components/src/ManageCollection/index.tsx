@@ -13,7 +13,6 @@ import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import Image from 'semantic-ui-react/dist/commonjs/elements/Image';
-import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
 import { Dropdown, Input, TextArea } from '@polkadot/react-components';
 import trash from '@polkadot/react-components/ManageCollection/trash.svg';
@@ -81,14 +80,14 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
   const [isSponsorAddressError, setIsSponsorAddressError] = useState<boolean>(false);
   const [collectionAdminList, setCollectionAdminList] = useState<string[]>([]);
   // const [deletingCurrentAdmin, toggleDeletingCurrentAdmin] = useState<boolean>(false);
-  const [settingCurrentAdmin, toggleSettingCurrentAdmin] = useState<boolean>(false);
-  const [settingSponsor, toggleSettingSponsor] = useState<boolean>(false);
-  const [approvingSponsor, toggleApprovingSponsor] = useState<boolean>(false);
+  // const [settingCurrentAdmin, toggleSettingCurrentAdmin] = useState<boolean>(false);
+  // const [settingSponsor, toggleSettingSponsor] = useState<boolean>(false);
+  // const [approvingSponsor, toggleApprovingSponsor] = useState<boolean>(false);
   const [currentSchemaVersion, setCurrentSchemaVersion] = useState<SchemaVersionTypes>();
-  const [settingSchemaVersion, toggleSettingSchemaVersion] = useState<boolean>(false);
+  // const [settingSchemaVersion, toggleSettingSchemaVersion] = useState<boolean>(false);
   const [currentOffchainSchema, setCurrentOffchainSchema] = useState<string>('');
   const [offchainSchemaError, setOffchainSchemaError] = useState<boolean>(false);
-  const [settingOffChainSchema, toggleSettingOffChainSchema] = useState<boolean>(false);
+  // const [settingOffChainSchema, toggleSettingOffChainSchema] = useState<boolean>(false);
   const [collectionInfo, setCollectionInfo] = useState<NftCollectionInterface>();
   const [isAddressCurrentlyInAdminList, setIsAddressCurrentlyInAdminList] = useState<boolean>(false);
 
@@ -102,6 +101,20 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
   // const [isPageUrlError, togglePageUrlError] = useState<boolean>(false);
   // const [isVideoUrlError, toggleVideoUrlError] = useState<boolean>(false);
 
+  const decodeOffChainSchema = useCallback((info: NftCollectionInterface): string => {
+    try {
+      // {"metadata" : "https://whitelabel.market/metadata/{id}"}
+      const offChainSchemaDecoded = hex2a(info.OffchainSchema);
+      const schemaParsed = JSON.parse(offChainSchemaDecoded) as { metadata: string };
+
+      return schemaParsed.metadata;
+    } catch (e) {
+      console.log('decodeOffChainSchema error', e);
+    }
+
+    return '';
+  }, [hex2a]);
+
   const fetchCollectionInfo = useCallback(async () => {
     // collectionInfo.SchemaVersion.isImageUrl
     try {
@@ -114,7 +127,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
           setName(collectionName16Decoder(info.Name));
           setDescription(collectionName16Decoder(info.Description));
           setTokenPrefix(hex2a(info.TokenPrefix));
-          setCurrentOffchainSchema(hex2a(info.OffchainSchema));
+          setCurrentOffchainSchema(decodeOffChainSchema(info));
 
           // add collection to storage
           addCollection(info);
@@ -151,7 +164,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
     } catch (e) {
       console.log('fetchCollectionInfo error', e);
     }
-  }, [addCollection, collectionId, collectionName16Decoder, getAndParseOffchainSchemaMetadata, getDetailedCollectionInfo, hex2a]);
+  }, [addCollection, collectionId, collectionName16Decoder, decodeOffChainSchema, getAndParseOffchainSchemaMetadata, getDetailedCollectionInfo, hex2a]);
 
   const fetchCollectionAdminList = useCallback(async () => {
     if (collectionId) {
@@ -224,7 +237,9 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
 
   const onSetOffchainSchema = useCallback(() => {
     if (account && collectionId) {
-      setOffChainSchema({ account, collectionId, schema: currentOffchainSchema, successCallback: fetchCollectionInfo });
+      const schema = `{"metadata" : "${currentOffchainSchema}"}`;
+
+      setOffChainSchema({ account, collectionId, schema, successCallback: fetchCollectionInfo });
     }
   }, [account, collectionId, currentOffchainSchema, fetchCollectionInfo, setOffChainSchema]);
 
@@ -372,12 +387,6 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
                     content={
                       <>
                         Set schema version
-                        {settingSchemaVersion && (
-                          <Loader
-                            active
-                            inline='centered'
-                          />
-                        )}
                       </>
                     }
                     onClick={onSetSchemaVersion}
@@ -521,12 +530,6 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
                       content={
                         <>
                           Set Offchain Schema
-                          { settingOffChainSchema && (
-                            <Loader
-                              active
-                              inline='centered'
-                            />
-                          )}
                         </>
                       }
                       onClick={onSetOffchainSchema}
@@ -562,12 +565,6 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
                     content={
                       <>
                         Set sponsor
-                        { settingSponsor && (
-                          <Loader
-                            active
-                            inline='centered'
-                          />
-                        )}
                       </>
                     }
                     disabled={!sponsorAddress || !isAdmin}
@@ -599,12 +596,6 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
                       content={
                         <>
                           Confirm sponsor
-                          { approvingSponsor && (
-                            <Loader
-                              active
-                              inline='centered'
-                            />
-                          )}
                         </>
                       }
                       onClick={onApproveSponsor}
@@ -682,12 +673,6 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
                       content={
                         <>
                           Add admin
-                          { settingCurrentAdmin && (
-                            <Loader
-                              active
-                              inline='centered'
-                            />
-                          )}
                         </>
                       }
                       disabled={!adminAddress || !isAdmin}

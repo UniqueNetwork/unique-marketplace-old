@@ -14,14 +14,12 @@ import { ManageCollection, ManageTokenAttributes, NftDetails } from '@polkadot/r
 import Tabs from '@polkadot/react-components/Tabs';
 // local imports and components
 import { AppProps as Props } from '@polkadot/react-components/types';
-import { useRegistry } from '@polkadot/react-hooks';
 import { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
 
 import NftWallet from './containers/NftWallet';
 import TokensForSale from './containers/TokensForSale';
 
 function App ({ account, basePath }: Props): React.ReactElement<Props> {
-  const localRegistry = useRegistry();
   const location = useLocation();
   const history = useHistory();
   const [shouldUpdateTokens, setShouldUpdateTokens] = useState<string>();
@@ -83,7 +81,6 @@ function App ({ account, basePath }: Props): React.ReactElement<Props> {
         <Route path={`${basePath}/token-details`}>
           <NftDetails
             account={account || ''}
-            localRegistry={localRegistry}
             setShouldUpdateTokens={setShouldUpdateTokens}
           />
         </Route>
@@ -104,7 +101,6 @@ function App ({ account, basePath }: Props): React.ReactElement<Props> {
         <Route path={`${basePath}/tokens-for-sale`}>
           <TokensForSale
             account={account}
-            localRegistry={localRegistry}
             setShouldUpdateTokens={setShouldUpdateTokens}
             shouldUpdateTokens={shouldUpdateTokens}
           />
@@ -114,7 +110,6 @@ function App ({ account, basePath }: Props): React.ReactElement<Props> {
             account={account}
             addCollection={addCollection}
             collections={collections}
-            localRegistry={localRegistry}
             setCollections={setCollections}
             setShouldUpdateTokens={setShouldUpdateTokens}
             shouldUpdateTokens={shouldUpdateTokens}
