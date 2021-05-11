@@ -103,17 +103,21 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
 
   const decodeOffChainSchema = useCallback((info: NftCollectionInterface): string => {
     try {
-      // {"metadata" : "https://whitelabel.market/metadata/{id}"}
-      const offChainSchemaDecoded = hex2a(info.OffchainSchema);
-      const schemaParsed = JSON.parse(offChainSchemaDecoded) as { metadata: string };
+      if (collectionInfo?.SchemaVersion === 'ImageURL') {
+        return hex2a(info.OffchainSchema);
+      } else {
+        // {"metadata" : "https://whitelabel.market/metadata/{id}"}
+        const offChainSchemaDecoded = hex2a(info.OffchainSchema);
+        const schemaParsed = JSON.parse(offChainSchemaDecoded) as { metadata: string };
 
-      return schemaParsed.metadata;
+        return schemaParsed.metadata;
+      }
     } catch (e) {
       console.log('decodeOffChainSchema error', e);
     }
 
     return '';
-  }, [hex2a]);
+  }, [collectionInfo, hex2a]);
 
   const fetchCollectionInfo = useCallback(async () => {
     // collectionInfo.SchemaVersion.isImageUrl
@@ -214,6 +218,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
   const onSetSponsor = useCallback(() => {
     if (account && collectionId && sponsorAddress) {
       setCollectionSponsor({ account, collectionId, newSponsor: sponsorAddress, successCallback: fetchCollectionInfo });
+      setSponsorAddress('');
     }
   }, [account, collectionId, fetchCollectionInfo, setCollectionSponsor, sponsorAddress]);
 
@@ -236,18 +241,31 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
   }, [account, collectionId, currentSchemaVersion, fetchCollectionInfo, setSchemaVersion]);
 
   const onSetOffchainSchema = useCallback(() => {
-    if (account && collectionId) {
-      const schema = `{"metadata" : "${currentOffchainSchema}"}`;
+    if (account && collectionId && collectionInfo) {
+      let schema = '';
+
+      if (collectionInfo?.SchemaVersion === 'ImageURL') {
+        schema = currentOffchainSchema;
+      } else {
+        schema = `{"metadata" : "${currentOffchainSchema}"}`;
+      }
 
       setOffChainSchema({ account, collectionId, schema, successCallback: fetchCollectionInfo });
     }
-  }, [account, collectionId, currentOffchainSchema, fetchCollectionInfo, setOffChainSchema]);
+  }, [account, collectionId, collectionInfo, currentOffchainSchema, fetchCollectionInfo, setOffChainSchema]);
 
   const goToCollection = useCallback(async () => {
     const collectionCount = await getCreatedCollectionCount();
+    const collections: Array<NftCollectionInterface> = JSON.parse(localStorage.getItem('tokenCollections') || '[]') as NftCollectionInterface[];
+    const newCollections = [...collections];
+    const newCollectionInfo: NftCollectionInterface = (await getDetailedCollectionInfo(collectionCount.toString())) as NftCollectionInterface;
 
-    history.push(`/wallet/manage-collection?collectionId=${collectionCount}`);
-  }, [getCreatedCollectionCount, history]);
+    newCollections.push({ ...newCollectionInfo, id: collectionCount.toString() });
+
+    localStorage.setItem('tokenCollections', JSON.stringify(newCollections));
+
+    history.push('/wallet/');
+  }, [history, getDetailedCollectionInfo, getCreatedCollectionCount]);
 
   const onCreateCollection = useCallback(() => {
     if (account && name && tokenPrefix) {
@@ -287,28 +305,30 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
   }, [collectionInfo, getCollectionOnChainSchema]);
 
   useEffect(() => {
-    if (!currentSchemaVersion) {
+    if (collectionId && !currentSchemaVersion) {
       void fetchCollectionInfo();
     }
-  }, [currentSchemaVersion, fetchCollectionInfo]);
+  }, [collectionId, currentSchemaVersion, fetchCollectionInfo]);
 
   useEffect(() => {
-    void fetchCollectionAdminList();
-  }, [fetchCollectionAdminList]);
+    if (collectionId) {
+      void fetchCollectionAdminList();
+    }
+  }, [collectionId, fetchCollectionAdminList]);
 
   useEffect(() => {
-    if (collectionInfo && collectionAdminList) {
+    if (collectionId && collectionInfo && collectionAdminList) {
       setIsAdmin(!!collectionAdminList.find((address: string) => address.toString() === account) || collectionInfo.Owner === account);
     }
-  }, [account, collectionAdminList, collectionInfo]);
+  }, [account, collectionAdminList, collectionId, collectionInfo]);
 
   useEffect(() => {
-    if (collectionInfo) {
+    if (collectionId && collectionInfo) {
       presetOnChainData();
     }
-  }, [collectionInfo, presetOnChainData]);
+  }, [collectionId, collectionInfo, presetOnChainData]);
 
-  console.log('info', collectionInfo, 'isOwner', collectionInfo?.Owner === account);
+  console.log('info', collectionInfo, 'currentOffchainSchema', currentOffchainSchema);
 
   return (
     <div className='manage-collection'>
@@ -352,8 +372,9 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
                 <Input
                   className='isSmall'
                   isDisabled={!!collectionId}
+                  isError={tokenPrefix?.length > 16}
                   onChange={setTokenPrefix}
-                  placeholder='Enter token prefix'
+                  placeholder='Enter token prefix, max 16 symbols'
                   value={tokenPrefix}
                 />
               </Form.Field>
@@ -400,7 +421,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
       { !collectionId && (
         <Button
           content={'Create'}
-          disabled={!name || !tokenPrefix}
+          disabled={!name || !tokenPrefix || tokenPrefix.length > 16}
           onClick={onCreateCollection}
         />
       )}
@@ -609,7 +630,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
                         Remove sponsor
                       </>
                     }
-                    disabled={!isAdmin}
+                    disabled={!isAdmin || !sponsorAddress}
                     onClick={onRemoveSponsor}
                   />
                 </Grid.Column>

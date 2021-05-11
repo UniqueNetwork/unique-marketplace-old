@@ -19,7 +19,7 @@ interface Props {
   withLabel?: boolean;
 }
 
-function TextArea ({ children, className, help, isError, isDisabled, isReadOnly, label, onChange, placeholder, seed, withLabel }: Props): React.ReactElement<Props> {
+function TextArea ({ children, className, help, isDisabled, isError, isReadOnly, label, onChange, placeholder, seed, withLabel }: Props): React.ReactElement<Props> {
   const _onChange = useCallback(
     ({ target: { value } }: React.ChangeEvent<HTMLTextAreaElement>): void => {
       onChange && onChange(value);

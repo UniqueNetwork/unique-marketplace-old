@@ -167,6 +167,8 @@ export function useCollection () {
   const setOffChainSchema = useCallback(({ account, collectionId, errorCallback, schema, successCallback }: { account: string, schema: string, collectionId: string, successCallback?: () => void, errorCallback?: () => void }) => {
     const transaction = api.tx.nft.setOffchainSchema(collectionId, schema);
 
+    console.log('schema!!!', schema);
+
     queueExtrinsic({
       accountId: account && account.toString(),
       extrinsic: transaction,

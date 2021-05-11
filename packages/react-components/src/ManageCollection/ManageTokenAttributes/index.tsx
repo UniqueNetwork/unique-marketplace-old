@@ -37,7 +37,7 @@ function ManageTokenAttributes ({ account, setShouldUpdateTokens }: Props): Reac
   const tokenId = query.get('tokenId') || '';
   const collectionId = query.get('collectionId') || '';
   const history = useHistory();
-  const { getCollectionAdminList, getCollectionOnChainSchema, getCollectionTokensCount, getDetailedCollectionInfo } = useCollection();
+  const { getCollectionAdminList, getCollectionOnChainSchema, getDetailedCollectionInfo } = useCollection();
   const { createNft, getDetailedTokenInfo, setVariableMetadata } = useToken();
   const [tokenConstAttributes, setTokenConstAttributes] = useState<{ [key: string]: TokenAttribute }>({});
   const [tokenVarAttributes, setTokenVarAttributes] = useState<{ [key: string]: TokenAttribute }>({});
@@ -84,8 +84,6 @@ function ManageTokenAttributes ({ account, setShouldUpdateTokens }: Props): Reac
   }, [collectionId, getDetailedCollectionInfo, getCollectionOnChainSchema, getDetailedTokenInfo, tokenId]);
 
   const setAttributeValue = useCallback((type: 'const' | 'var', attribute: AttributeItemType, value: string | number[]) => {
-    console.log('value', value, 'type', type, 'attribute', attribute);
-
     if (type === 'const') {
       setTokenConstAttributes((prevAttributes: { [key: string]: TokenAttribute }) =>
         ({ ...prevAttributes,
@@ -143,14 +141,13 @@ function ManageTokenAttributes ({ account, setShouldUpdateTokens }: Props): Reac
     }
   }, [collectionId, getCollectionAdminList]);
 
-  const resetTokenPage = useCallback(async () => {
+  const resetTokenPage = useCallback(() => {
     if (collectionId) {
-      const tokensCount = await getCollectionTokensCount(collectionId);
-      const lastTokenNumber = parseFloat(tokensCount.toString());
-
-      history.push(`/wallet/manage-token?collectionId=${collectionId}&tokenId=${lastTokenNumber}`);
+      // const tokensCount = await getCollectionTokensCount(collectionId);
+      // const lastTokenNumber = parseFloat(tokensCount.toString());
+      history.replace('/wallet/');
     }
-  }, [collectionId, getCollectionTokensCount, history]);
+  }, [collectionId, history]);
 
   const onSave = useCallback(() => {
     if (account) {

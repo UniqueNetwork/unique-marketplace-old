@@ -545,6 +545,13 @@ button.ui.button,
 }
 
 .ui.input.ui--Input {
+  &.error {
+    input {
+      border: 1px solid var(--error-color);
+      background: var(--input-background-color);
+    }
+  }
+
   input {
     color: var(--input-text-color);
     background: var(--input-background-color);

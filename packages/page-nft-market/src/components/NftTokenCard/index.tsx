@@ -5,7 +5,7 @@ import './styles.scss';
 
 import type { OfferType } from '@polkadot/react-hooks/useCollections';
 
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect } from 'react';
 import Image from 'semantic-ui-react/dist/commonjs/elements/Image';
 import Card from 'semantic-ui-react/dist/commonjs/views/Card';
 
