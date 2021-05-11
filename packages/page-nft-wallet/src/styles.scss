@@ -1,21 +1,10 @@
 .my-tokens {
   position: relative;
 
-  .ui--Dropdown {
-    &.dropdown-button {
-      &.create-button {
-        position: absolute;
-        right: 0;
-        top: 0;
-        width: 150px;
-
-        .menu {
-          .item {
-            padding: 10px 10px !important;
-          }
-        }
-      }
-    }
+  .button.create-button {
+    position: absolute;
+    right: 0;
+    top: 0;
   }
 
   .token-image {

@@ -5,11 +5,10 @@ import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection
 import type { TokenDetailsInterface } from '@polkadot/react-hooks/useToken';
 
 import BN from 'bn.js';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { useMetadata, useToken } from '@polkadot/react-hooks';
 import { useCollection } from '@polkadot/react-hooks/useCollection';
-import { TypeRegistry } from '@polkadot/types';
 
 export type AttributesDecoded = {
   [key: string]: string | string[],
@@ -24,10 +23,11 @@ interface UseSchemaInterface {
   getTokenDetails: () => void;
   reFungibleBalance: number;
   tokenDetails?: TokenDetailsInterface;
+  tokenName?: { name: string, value: string };
   tokenUrl: string;
 }
 
-export function useSchema (account: string, collectionId: string, tokenId: string | number, localRegistry?: TypeRegistry): UseSchemaInterface {
+export function useSchema (account: string, collectionId: string, tokenId: string | number): UseSchemaInterface {
   const [collectionInfo, setCollectionInfo] = useState<NftCollectionInterface>();
   const [reFungibleBalance, setReFungibleBalance] = useState<number>(0);
   const [tokenUrl, setTokenUrl] = useState<string>('');
@@ -38,7 +38,19 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
   const { getTokenInfo } = useToken();
   const { getDetailedCollectionInfo } = useCollection();
   const cleanup = useRef<boolean>(false);
-  const { decodeStruct, getOnChainSchema, getTokenImageUrl } = useMetadata(localRegistry);
+  const { decodeStruct, getOnChainSchema, getTokenImageUrl } = useMetadata();
+
+  const tokenName = useMemo(() => {
+    if (attributes) {
+      const name = Object.keys(attributes).find((attributeKey: string) => attributeKey.toLowerCase().includes('name'));
+
+      if (name) {
+        return { name, value: attributes[name] };
+      }
+    }
+
+    return null;
+  }, [attributes]);
 
   const getReFungibleDetails = useCallback(() => {
     try {
@@ -144,6 +156,7 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
     getTokenDetails,
     reFungibleBalance,
     tokenDetails,
+    tokenName,
     tokenUrl
   };
 }

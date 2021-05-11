@@ -149,7 +149,7 @@ function CollectionSearch ({ account, addCollection, collections }: Props): Reac
                     </td>
                     <td className='collection-actions'>
                       <Button
-                        isDisabled={hasThisCollection(item)}
+                        disabled={hasThisCollection(item)}
                         onClick={addCollectionToAccount.bind(null, item)}
                       >
                         Add collection

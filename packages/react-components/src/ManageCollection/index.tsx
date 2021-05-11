@@ -7,34 +7,28 @@ import type { NftCollectionInterface, SchemaVersionTypes } from '@polkadot/react
 import type { MetadataJsonType } from '@polkadot/react-hooks/useMetadata';
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import Image from 'semantic-ui-react/dist/commonjs/elements/Image';
-import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
 import { Dropdown, Input, TextArea } from '@polkadot/react-components';
+import trash from '@polkadot/react-components/ManageCollection/trash.svg';
 import arrowLeft from '@polkadot/react-components/NftDetails/arrowLeft.svg';
+import { ProtobufAttributeType } from '@polkadot/react-components/util/protobufUtils';
 import { useDecoder, useMetadata } from '@polkadot/react-hooks';
 import { useCollection } from '@polkadot/react-hooks/useCollection';
-import { TypeRegistry } from '@polkadot/types';
 import { keyring } from '@polkadot/ui-keyring';
 
 import ManageCollectionAttributes from './ManageCollectionAttributes';
 
 interface Props {
   account?: string;
-  localRegistry?: TypeRegistry;
+  addCollection: (collection: NftCollectionInterface) => void;
+  basePath: string;
   setShouldUpdateTokens?: (collectionId: string) => void;
-}
-
-export type UniqueSchema = {
-  audio?: string;
-  image?: string;
-  page?: string;
-  video?: string;
 }
 
 type SchemaOption = {
@@ -54,35 +48,46 @@ const SchemaOptions: SchemaOption[] = [
 ];
 
 function ManageCollection (props: Props): React.ReactElement<Props> {
-  const { account, localRegistry, setShouldUpdateTokens } = props;
+  const { account, addCollection, basePath, setShouldUpdateTokens } = props;
+  const history = useHistory();
   const query = new URLSearchParams(useLocation().search);
   const collectionId = query.get('collectionId') || '';
   const { addCollectionAdmin,
     confirmSponsorship,
     createCollection,
     getCollectionAdminList,
+    getCollectionOnChainSchema,
+    getCreatedCollectionCount,
     getDetailedCollectionInfo,
     removeCollectionAdmin,
     removeCollectionSponsor,
-    setCollectionSponsor } = useCollection();
-  const { getEndParseOffchainSchemaMetadata } = useMetadata(localRegistry);
+    saveConstOnChainSchema,
+    saveVariableOnChainSchema,
+    setCollectionSponsor,
+    setOffChainSchema,
+    setSchemaVersion } = useCollection();
+  const { getAndParseOffchainSchemaMetadata } = useMetadata();
   const { collectionName16Decoder, hex2a } = useDecoder();
   const [name, setName] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [tokenPrefix, setTokenPrefix] = useState<string>('');
   const [adminAddress, setAdminAddress] = useState<string>('');
   const [sponsorAddress, setSponsorAddress] = useState<string>('');
+  const [constOnChainSchema, setConstOnChainSchema] = useState<ProtobufAttributeType>();
+  const [variableOnChainSchema, setVariableOnChainSchema] = useState<ProtobufAttributeType>();
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [isAdminAddressError, setIsAdminAddressError] = useState<boolean>(false);
   const [isSponsorAddressError, setIsSponsorAddressError] = useState<boolean>(false);
-  const [collectionAdminList, setCcollectionAdminList] = useState<string[]>([]);
-  const [deletingCurrentAdmin, toggleDeletingCurrentAdmin] = useState<boolean>(false);
-  const [settingCurrentAdmin, toggleSettingCurrentAdmin] = useState<boolean>(false);
-  const [settingSponsor, toggleSettingSponsor] = useState<boolean>(false);
-  const [approvingSponsor, toggleApprovingSponsor] = useState<boolean>(false);
+  const [collectionAdminList, setCollectionAdminList] = useState<string[]>([]);
+  // const [deletingCurrentAdmin, toggleDeletingCurrentAdmin] = useState<boolean>(false);
+  // const [settingCurrentAdmin, toggleSettingCurrentAdmin] = useState<boolean>(false);
+  // const [settingSponsor, toggleSettingSponsor] = useState<boolean>(false);
+  // const [approvingSponsor, toggleApprovingSponsor] = useState<boolean>(false);
   const [currentSchemaVersion, setCurrentSchemaVersion] = useState<SchemaVersionTypes>();
-  const [settingSchemaVersion, toggleSettingSchemaVersion] = useState<boolean>(false);
+  // const [settingSchemaVersion, toggleSettingSchemaVersion] = useState<boolean>(false);
   const [currentOffchainSchema, setCurrentOffchainSchema] = useState<string>('');
-  const [settingOffChainSchema, toggleSettingOffChainSchema] = useState<boolean>(false);
+  const [offchainSchemaError, setOffchainSchemaError] = useState<boolean>(false);
+  // const [settingOffChainSchema, toggleSettingOffChainSchema] = useState<boolean>(false);
   const [collectionInfo, setCollectionInfo] = useState<NftCollectionInterface>();
   const [isAddressCurrentlyInAdminList, setIsAddressCurrentlyInAdminList] = useState<boolean>(false);
 
@@ -91,63 +96,85 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
   const [pageUrl, setPageUrl] = useState<string>('');
   const [videoUrl, setVideoUrl] = useState<string>('');
 
-  const [isAudioUrlError, toggleAudioUrlError] = useState<boolean>(false);
-  const [isImageUrlError, toggleImageUrlError] = useState<boolean>(false);
-  const [isPageUrlError, togglePageUrlError] = useState<boolean>(false);
-  const [isVideoUrlError, toggleVideoUrlError] = useState<boolean>(false);
+  // const [isAudioUrlError, toggleAudioUrlError] = useState<boolean>(false);
+  // const [isImageUrlError, toggleImageUrlError] = useState<boolean>(false);
+  // const [isPageUrlError, togglePageUrlError] = useState<boolean>(false);
+  // const [isVideoUrlError, toggleVideoUrlError] = useState<boolean>(false);
+
+  const decodeOffChainSchema = useCallback((info: NftCollectionInterface): string => {
+    try {
+      if (collectionInfo?.SchemaVersion === 'ImageURL') {
+        return hex2a(info.OffchainSchema);
+      } else {
+        // {"metadata" : "https://whitelabel.market/metadata/{id}"}
+        const offChainSchemaDecoded = hex2a(info.OffchainSchema);
+        const schemaParsed = JSON.parse(offChainSchemaDecoded) as { metadata: string };
+
+        return schemaParsed.metadata;
+      }
+    } catch (e) {
+      console.log('decodeOffChainSchema error', e);
+    }
+
+    return '';
+  }, [collectionInfo, hex2a]);
 
   const fetchCollectionInfo = useCallback(async () => {
     // collectionInfo.SchemaVersion.isImageUrl
     try {
       if (collectionId) {
-        const info = (await getDetailedCollectionInfo(collectionId)) as NftCollectionInterface;
+        const info: NftCollectionInterface = (await getDetailedCollectionInfo(collectionId)) as NftCollectionInterface;
 
         if (info) {
+          setCollectionInfo(info);
           setCurrentSchemaVersion(info.SchemaVersion);
           setName(collectionName16Decoder(info.Name));
           setDescription(collectionName16Decoder(info.Description));
           setTokenPrefix(hex2a(info.TokenPrefix));
+          setCurrentOffchainSchema(decodeOffChainSchema(info));
+
+          // add collection to storage
+          addCollection(info);
 
           if (info.Sponsorship.confirmed) {
             setSponsorAddress(info.Sponsorship.confirmed);
           }
 
-          const schema: { metadata: string, metadataJson: MetadataJsonType } = await getEndParseOffchainSchemaMetadata(info);
+          if (info.SchemaVersion === 'Unique') {
+            const schema: { metadata: string, metadataJson: MetadataJsonType } = await getAndParseOffchainSchemaMetadata(info);
 
-          setCurrentOffchainSchema(schema.metadata);
+            if (schema.metadataJson.audio) {
+              setAudioUrl(schema.metadataJson.audio);
+            }
 
-          if (schema.metadataJson.audio) {
-            setImageUrl(schema.metadataJson.audio);
+            if (schema.metadataJson.image) {
+              setImageUrl(schema.metadataJson.image);
+            }
+
+            if (schema.metadataJson.page) {
+              setPageUrl(schema.metadataJson.page);
+            }
+
+            if (schema.metadataJson.video) {
+              setVideoUrl(schema.metadataJson.video);
+            }
+          } else if (info.SchemaVersion === 'ImageURL') {
+            if (info.OffchainSchema) {
+              setImageUrl(hex2a(info.OffchainSchema).replace('{id}', '1'));
+            }
           }
-
-          if (schema.metadataJson.image) {
-            setImageUrl(schema.metadataJson.image);
-          }
-
-          if (schema.metadataJson.page) {
-            setPageUrl(schema.metadataJson.page);
-          }
-
-          if (schema.metadataJson.video) {
-            setVideoUrl(schema.metadataJson.video);
-          }
-
-          // strToUTF16(tokenPrefix)
-          console.log('info', info, 'offChainSchema', schema);
         }
       }
     } catch (e) {
       console.log('fetchCollectionInfo error', e);
     }
-  }, [collectionId, collectionName16Decoder, getDetailedCollectionInfo, hex2a]);
+  }, [addCollection, collectionId, collectionName16Decoder, decodeOffChainSchema, getAndParseOffchainSchemaMetadata, getDetailedCollectionInfo, hex2a]);
 
   const fetchCollectionAdminList = useCallback(async () => {
     if (collectionId) {
       const adminList = await getCollectionAdminList(collectionId) as string[];
 
-      console.log('adminList', adminList);
-
-      setCcollectionAdminList(adminList);
+      setCollectionAdminList(adminList || []);
     }
   }, [collectionId, getCollectionAdminList]);
 
@@ -156,7 +183,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
       keyring.decodeAddress(value);
       setIsAdminAddressError(false);
       setAdminAddress(value);
-      setIsAddressCurrentlyInAdminList(!!collectionAdminList.find((address: string) => address.toString() === value))
+      setIsAddressCurrentlyInAdminList(!!collectionAdminList.find((address: string) => address.toString() === value));
     } catch (e) {
       setIsAdminAddressError(true);
     }
@@ -165,10 +192,10 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
   const onSetSponsorAddress = useCallback((value: string) => {
     try {
       keyring.decodeAddress(value);
-      setIsAdminAddressError(false);
-      setAdminAddress(value);
+      setIsSponsorAddressError(false);
+      setSponsorAddress(value);
     } catch (e) {
-      setIsAdminAddressError(true);
+      setIsSponsorAddressError(true);
     }
   }, []);
 
@@ -176,53 +203,132 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
     setDescription(value);
   }, []);
 
-  const onDeleteCurrentAdmin = useCallback(() => {
-    console.log('onDeleteCurrentAdmin');
-  }, []);
+  const onDeleteAdmin = useCallback((address: string) => {
+    if (account && collectionId && isAdmin) {
+      removeCollectionAdmin({ account, adminAddress: address, collectionId, successCallback: fetchCollectionAdminList });
+    }
+  }, [account, collectionId, fetchCollectionAdminList, isAdmin, removeCollectionAdmin]);
 
   const onSetCurrentAdmin = useCallback(() => {
-    console.log('onSetCurrentAdmin');
-  }, []);
+    if (account && collectionId && adminAddress) {
+      addCollectionAdmin({ account, collectionId, newAdminAddress: adminAddress, successCallback: fetchCollectionAdminList });
+    }
+  }, [account, addCollectionAdmin, adminAddress, collectionId, fetchCollectionAdminList]);
 
   const onSetSponsor = useCallback(() => {
-    console.log('onSetSponsor');
-  }, []);
+    if (account && collectionId && sponsorAddress) {
+      setCollectionSponsor({ account, collectionId, newSponsor: sponsorAddress, successCallback: fetchCollectionInfo });
+      setSponsorAddress('');
+    }
+  }, [account, collectionId, fetchCollectionInfo, setCollectionSponsor, sponsorAddress]);
 
   const onApproveSponsor = useCallback(() => {
-    console.log('onApproveSponsor');
-  }, []);
+    if (account && collectionId) {
+      confirmSponsorship({ account, collectionId, successCallback: fetchCollectionInfo });
+    }
+  }, [account, collectionId, confirmSponsorship, fetchCollectionInfo]);
+
+  const onRemoveSponsor = useCallback(() => {
+    if (account && collectionId) {
+      removeCollectionSponsor({ account, collectionId, successCallback: fetchCollectionInfo });
+    }
+  }, [account, collectionId, fetchCollectionInfo, removeCollectionSponsor]);
 
   const onSetSchemaVersion = useCallback(() => {
-    console.log('onSetSchemaVersion');
-  }, []);
+    if (account && collectionId && currentSchemaVersion) {
+      setSchemaVersion({ account, collectionId, schemaVersion: currentSchemaVersion, successCallback: fetchCollectionInfo });
+    }
+  }, [account, collectionId, currentSchemaVersion, fetchCollectionInfo, setSchemaVersion]);
 
   const onSetOffchainSchema = useCallback(() => {
-    console.log('onSetOffchainSchema');
-  }, []);
+    if (account && collectionId && collectionInfo) {
+      let schema = '';
+
+      if (collectionInfo?.SchemaVersion === 'ImageURL') {
+        schema = currentOffchainSchema;
+      } else {
+        schema = `{"metadata" : "${currentOffchainSchema}"}`;
+      }
+
+      setOffChainSchema({ account, collectionId, schema, successCallback: fetchCollectionInfo });
+    }
+  }, [account, collectionId, collectionInfo, currentOffchainSchema, fetchCollectionInfo, setOffChainSchema]);
+
+  const goToCollection = useCallback(async () => {
+    const collectionCount = await getCreatedCollectionCount();
+    const collections: Array<NftCollectionInterface> = JSON.parse(localStorage.getItem('tokenCollections') || '[]') as NftCollectionInterface[];
+    const newCollections = [...collections];
+    const newCollectionInfo: NftCollectionInterface = (await getDetailedCollectionInfo(collectionCount.toString())) as NftCollectionInterface;
+
+    newCollections.push({ ...newCollectionInfo, id: collectionCount.toString() });
+
+    localStorage.setItem('tokenCollections', JSON.stringify(newCollections));
+
+    history.push('/wallet/');
+  }, [history, getDetailedCollectionInfo, getCreatedCollectionCount]);
+
+  const onCreateCollection = useCallback(() => {
+    if (account && name && tokenPrefix) {
+      createCollection(account, {
+        description,
+        modeprm: { nft: null },
+        name,
+        tokenPrefix
+      }, {
+        onSuccess: goToCollection
+      });
+    }
+  }, [account, createCollection, description, goToCollection, name, tokenPrefix]);
 
   const goBack = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     setShouldUpdateTokens && setShouldUpdateTokens('all');
-    history.back();
-  }, [setShouldUpdateTokens]);
+    history.push('/wallet/');
+  }, [history, setShouldUpdateTokens]);
+
+  const presetOnChainData = useCallback(() => {
+    if (collectionInfo) {
+      const onChainSchema = getCollectionOnChainSchema(collectionInfo);
+
+      if (onChainSchema) {
+        const { constSchema, variableSchema } = onChainSchema;
+
+        if (constSchema) {
+          setConstOnChainSchema(constSchema);
+        }
+
+        if (variableSchema) {
+          setVariableOnChainSchema(variableSchema);
+        }
+      }
+    }
+  }, [collectionInfo, getCollectionOnChainSchema]);
 
   useEffect(() => {
-    if (!currentSchemaVersion) {
+    if (collectionId && !currentSchemaVersion) {
       void fetchCollectionInfo();
     }
-  }, [currentSchemaVersion, fetchCollectionInfo]);
+  }, [collectionId, currentSchemaVersion, fetchCollectionInfo]);
 
   useEffect(() => {
-    void fetchCollectionAdminList();
-  }, [fetchCollectionAdminList]);
+    if (collectionId) {
+      void fetchCollectionAdminList();
+    }
+  }, [collectionId, fetchCollectionAdminList]);
 
-  // collectionInfo.SchemaVersion.isImageUrl, imageUrl = hex2a(collectionInfo.OffchainSchema) + {id}
-  // collectionMetadata.metadata, collectionMetadata = hex2a(collectionInfo.OffchainSchema) - get metadata
-  // hex2a(collectionInfo.OffchainSchema)
-  // setSchemaVersion(collection_id, version)
-  // setOffchainSchema(collection_id, schema)
+  useEffect(() => {
+    if (collectionId && collectionInfo && collectionAdminList) {
+      setIsAdmin(!!collectionAdminList.find((address: string) => address.toString() === account) || collectionInfo.Owner === account);
+    }
+  }, [account, collectionAdminList, collectionId, collectionInfo]);
 
-  console.log('info currentOffchainSchema', currentOffchainSchema);
+  useEffect(() => {
+    if (collectionId && collectionInfo) {
+      presetOnChainData();
+    }
+  }, [collectionId, collectionInfo, presetOnChainData]);
+
+  console.log('info', collectionInfo, 'currentOffchainSchema', currentOffchainSchema);
 
   return (
     <div className='manage-collection'>
@@ -248,6 +354,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
               <Form.Field>
                 <Input
                   className='isSmall'
+                  isDisabled={!!collectionId}
                   onChange={setName}
                   placeholder='Enter collection name'
                   value={name}
@@ -255,6 +362,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
               </Form.Field>
               <Form.Field>
                 <TextArea
+                  isDisabled={!!collectionId}
                   onChange={onSetDescription}
                   placeholder={'Enter collection description'}
                   seed={description}
@@ -263,8 +371,10 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
               <Form.Field>
                 <Input
                   className='isSmall'
+                  isDisabled={!!collectionId}
+                  isError={tokenPrefix?.length > 16}
                   onChange={setTokenPrefix}
-                  placeholder='Enter token prefix'
+                  placeholder='Enter token prefix, max 16 symbols'
                   value={tokenPrefix}
                 />
               </Form.Field>
@@ -280,6 +390,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
               <Form.Field>
                 <Dropdown
                   defaultValue={currentSchemaVersion}
+                  isDisabled={!isAdmin && !!collectionId}
                   onChange={setCurrentSchemaVersion}
                   options={SchemaOptions}
                   placeholder='Select Attribute Type'
@@ -291,266 +402,321 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
               className='flex'
               width={8}
             >
-              <Form.Field>
-                <Button
-                  content={
-                    <>
-                      Set schema version
-                      { settingSchemaVersion && (
-                        <Loader
-                          active
-                          inline='centered'
-                        />
-                      )}
-                    </>
-                  }
-                  onClick={onSetSchemaVersion}
-                />
-              </Form.Field>
+              { isAdmin && (
+                <Form.Field>
+                  <Button
+                    content={
+                      <>
+                        Set schema version
+                      </>
+                    }
+                    onClick={onSetSchemaVersion}
+                  />
+                </Form.Field>
+              )}
             </Grid.Column>
           </Grid.Row>
         </Grid>
       </Form>
-
-      <Header as='h3'>Offchain Schema</Header>
-      <Form className='manage-collection--form'>
-        <Grid className='manage-collection--form--grid'>
-          <Grid.Row>
-            <Grid.Column width={16}>
-              <Form.Field>
-                <div className='schema-table offchain-schema'>
-                  <div className='table-header'>
-                    <div className='tr'>
-                      <div className='th'>
-                        Type
-                      </div>
-                      <div className='th'>
-                        Url
-                      </div>
-                    </div>
-                  </div>
-                  <div className='table-body'>
-                    <div className='tr edit'>
-                      <div className='td'>
-                        OffChain schema url
-                      </div>
-                      <div className='td'>
-                        <Input
-                          className='isSmall'
-                          isError={isAudioUrlError}
-                          label='Please enter the OffChain schema url'
-                          onChange={setCurrentOffchainSchema}
-                          placeholder='OffChain schema url'
-                          value={currentOffchainSchema}
-                        />
-                      </div>
-                    </div>
-                    <div className='tr edit'>
-                      <div className='td'>
-                        Audio, token #1
-                      </div>
-                      <div className='td'>
-                        <a
-                          href={audioUrl}
-                          rel='noopener noreferrer'
-                          target='_blank'
-                        >
-                          {audioUrl}
-                        </a>
-                      </div>
-                    </div>
-                    <div className='tr edit'>
-                      <div className='td'>
-                        Image, token #1
-                      </div>
-                      <div className='td'>
-                        <a
-                          href={imageUrl}
-                          rel='noopener noreferrer'
-                          target='_blank'
-                        >
-                          {imageUrl}
-                        </a>
-                      </div>
-                    </div>
-                    <div className='tr edit'>
-                      <div className='td'>
-                        Page, token #1
-                      </div>
-                      <div className='td'>
-                        <a
-                          href={pageUrl}
-                          rel='noopener noreferrer'
-                          target='_blank'
-                        >
-                          {pageUrl}
-                        </a>
-                      </div>
-                    </div>
-                    <div className='tr edit'>
-                      <div className='td'>
-                        Video, token #1
-                      </div>
-                      <div className='td'>
-                        <a
-                          href={videoUrl}
-                          rel='noopener noreferrer'
-                          target='_blank'
-                        >
-                          {videoUrl}
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </Form.Field>
-            </Grid.Column>
-            <Grid.Column
-              className='flex'
-              width={8}
-            >
-              <Form.Field>
-                <Button
-                  content={
-                    <>
-                      Set Offchain Schema
-                      { settingOffChainSchema && (
-                        <Loader
-                          active
-                          inline='centered'
-                        />
-                      )}
-                    </>
-                  }
-                  onClick={onSetOffchainSchema}
-                />
-              </Form.Field>
-            </Grid.Column>
-          </Grid.Row>
-        </Grid>
-      </Form>
-
-      <Header as='h3'>Collection sponsor</Header>
-      <Form className='manage-collection--form'>
-        <Grid className='manage-collection--form--grid'>
-          <Grid.Row>
-            <Grid.Column width={8}>
-              <Form.Field>
-                <Input
-                  className='isSmall'
-                  isError={isSponsorAddressError}
-                  label='Please enter the sponsor address'
-                  onChange={onSetSponsorAddress}
-                  placeholder='Collection sponsor address'
-                  value={sponsorAddress}
-                />
-              </Form.Field>
-            </Grid.Column>
-            <Grid.Column
-              className='flex'
-              width={8}
-            >
-              <div className='button-group'>
-                <Button
-                  content={
-                    <>
-                      Set sponsor
-                      { settingSponsor && (
-                        <Loader
-                          active
-                          inline='centered'
-                        />
-                      )}
-                    </>
-                  }
-                  onClick={onSetSponsor}
-                />
-                <Button
-                  content={
-                    <>
-                      Approve sponsor
-                      { approvingSponsor && (
-                        <Loader
-                          active
-                          inline='centered'
-                        />
-                      )}
-                    </>
-                  }
-                  disabled={sponsorAddress !== account}
-                  onClick={onApproveSponsor}
-                />
-              </div>
-            </Grid.Column>
-          </Grid.Row>
-        </Grid>
-      </Form>
-      <Header as='h3'>Collection admin list</Header>
-      { collectionAdminList?.length > 0 && (
-        <ul>
-          { collectionAdminList.map((address) => (
-            <li key={address.toString()}>{address.toString()}</li>
-          ))}
-        </ul>
+      { !collectionId && (
+        <Button
+          content={'Create'}
+          disabled={!name || !tokenPrefix || tokenPrefix.length > 16}
+          onClick={onCreateCollection}
+        />
       )}
-      <Form className='manage-collection--form'>
-        <Grid className='manage-collection--form--grid'>
-          <Grid.Row>
-            <Grid.Column width={8}>
-              <Form.Field>
-                <Input
-                  className='isSmall'
-                  isError={isAdminAddressError}
-                  label='Please enter the admin address'
-                  onChange={onSetAdminAddress}
-                  placeholder='Collection admin address'
-                  value={adminAddress}
-                />
-              </Form.Field>
-            </Grid.Column>
-            <Grid.Column
-              className='flex'
-              width={8}
-            >
-              <div className='button-group'>
-                <Button
-                  content={
-                    <>
-                      Add admin
-                      { settingCurrentAdmin && (
-                        <Loader
-                          active
-                          inline='centered'
-                        />
-                      )}
-                    </>
-                  }
-                  onClick={onSetCurrentAdmin}
-                />
-                <Button
-                  content={
-                    <>
-                      Remove admin
-                      { deletingCurrentAdmin && (
-                        <Loader
-                          active
-                          inline='centered'
-                        />
-                      )}
-                    </>
-                  }
-                  disabled={!adminAddress && isAddressCurrentlyInAdminList}
-                  onClick={onDeleteCurrentAdmin}
-                />
+
+      { (isAdmin || collectionId) && (
+        <>
+          <Header as='h3'>Offchain Schema</Header>
+          <Form className='manage-collection--form'>
+            <Grid className='manage-collection--form--grid'>
+              <Grid.Row>
+                <Grid.Column width={16}>
+                  <Form.Field>
+                    <div className='custom-table offchain-schema'>
+                      <div className='table-header'>
+                        <div className='tr'>
+                          <div className='th'>
+                            Type
+                          </div>
+                          <div className='th'>
+                            Url
+                          </div>
+                        </div>
+                      </div>
+                      <div className='table-body'>
+                        <div className='tr edit'>
+                          <div className='td'>
+                            OffChain schema url
+                          </div>
+                          <div className='td'>
+                            <Input
+                              className='isSmall'
+                              isDisabled={!isAdmin}
+                              isError={offchainSchemaError}
+                              label='Please enter the OffChain schema url'
+                              onChange={setCurrentOffchainSchema}
+                              placeholder='OffChain schema url'
+                              value={currentOffchainSchema}
+                            />
+                          </div>
+                        </div>
+                        { currentOffchainSchema && collectionInfo?.SchemaVersion === 'ImageURL' && (
+                          <div className='tr edit'>
+                            <div className='td'>
+                              Image, token #1
+                            </div>
+                            <div className='td'>
+                              <a
+                                href={imageUrl}
+                                rel='noopener noreferrer'
+                                target='_blank'
+                              >
+                                {imageUrl}
+                              </a>
+                            </div>
+                          </div>
+                        )}
+                        { currentOffchainSchema && collectionInfo?.SchemaVersion === 'Unique' && (
+                          <>
+                            <div className='tr edit'>
+                              <div className='td'>
+                                Audio, token #1
+                              </div>
+                              <div className='td'>
+                                <a
+                                  href={audioUrl}
+                                  rel='noopener noreferrer'
+                                  target='_blank'
+                                >
+                                  {audioUrl}
+                                </a>
+                              </div>
+                            </div>
+                            <div className='tr edit'>
+                              <div className='td'>
+                                Image, token #1
+                              </div>
+                              <div className='td'>
+                                <a
+                                  href={imageUrl}
+                                  rel='noopener noreferrer'
+                                  target='_blank'
+                                >
+                                  {imageUrl}
+                                </a>
+                              </div>
+                            </div>
+                            <div className='tr edit'>
+                              <div className='td'>
+                                Page, token #1
+                              </div>
+                              <div className='td'>
+                                <a
+                                  href={pageUrl}
+                                  rel='noopener noreferrer'
+                                  target='_blank'
+                                >
+                                  {pageUrl}
+                                </a>
+                              </div>
+                            </div>
+                            <div className='tr edit'>
+                              <div className='td'>
+                                Video, token #1
+                              </div>
+                              <div className='td'>
+                                <a
+                                  href={videoUrl}
+                                  rel='noopener noreferrer'
+                                  target='_blank'
+                                >
+                                  {videoUrl}
+                                </a>
+                              </div>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </Form.Field>
+                </Grid.Column>
+                <Grid.Column
+                  className='flex'
+                  width={8}
+                >
+                  <Form.Field>
+                    <Button
+                      content={
+                        <>
+                          Set Offchain Schema
+                        </>
+                      }
+                      onClick={onSetOffchainSchema}
+                    />
+                  </Form.Field>
+                </Grid.Column>
+              </Grid.Row>
+            </Grid>
+          </Form>
+
+          <Header as='h3'>Collection sponsor</Header>
+          <Form className='manage-collection--form'>
+            <Grid className='manage-collection--form--grid'>
+              <Grid.Row>
+                <Grid.Column width={8}>
+                  <Form.Field>
+                    <Input
+                      className='isSmall'
+                      isDisabled={!isAdmin}
+                      isError={isSponsorAddressError}
+                      label='Please enter the sponsor address'
+                      onChange={onSetSponsorAddress}
+                      placeholder='Collection sponsor address'
+                      value={sponsorAddress}
+                    />
+                  </Form.Field>
+                </Grid.Column>
+                <Grid.Column
+                  className='flex'
+                  width={8}
+                >
+                  <Button
+                    content={
+                      <>
+                        Set sponsor
+                      </>
+                    }
+                    disabled={!sponsorAddress || !isAdmin}
+                    onClick={onSetSponsor}
+                  />
+                </Grid.Column>
+              </Grid.Row>
+              <Grid.Row>
+                <Grid.Column width={8}>
+                  { collectionInfo?.Sponsorship.unconfirmed && (
+                    <div className='text-block error'>
+                      {collectionInfo?.Sponsorship.unconfirmed}
+                    </div>
+                  )}
+                  { collectionInfo?.Sponsorship.disabled && (
+                    <div className='text-block disabled'>
+                      {collectionInfo?.Sponsorship.unconfirmed}
+                    </div>
+                  )}
+                  { collectionInfo?.Sponsorship.confirmed && (
+                    <div className='text-block confirmed'>
+                      {collectionInfo?.Sponsorship.unconfirmed}
+                    </div>
+                  )}
+                </Grid.Column>
+                { sponsorAddress === account && (
+                  <Grid.Column width={4}>
+                    <Button
+                      content={
+                        <>
+                          Confirm sponsor
+                        </>
+                      }
+                      onClick={onApproveSponsor}
+                    />
+                  </Grid.Column>
+                )}
+                <Grid.Column width={4}>
+                  <Button
+                    content={
+                      <>
+                        Remove sponsor
+                      </>
+                    }
+                    disabled={!isAdmin || !sponsorAddress}
+                    onClick={onRemoveSponsor}
+                  />
+                </Grid.Column>
+              </Grid.Row>
+            </Grid>
+          </Form>
+          <Header as='h3'>Collection admin list</Header>
+          { collectionAdminList?.length > 0 && (
+            <div className='custom-table admin-table'>
+              <div className='table-header'>
+                <div className='tr'>
+                  <div className='th'>
+                    Address
+                  </div>
+                  <div className='th' />
+                </div>
               </div>
-            </Grid.Column>
-          </Grid.Row>
-        </Grid>
-      </Form>
-      <ManageCollectionAttributes
-        account={account}
-        localRegistry={localRegistry}
-      />
+              <div className='table-body'>
+                { collectionAdminList.map((address) => (
+                  <div
+                    className='tr edit'
+                    key={address}
+                  >
+                    <div className='td'>
+                      {address.toString()}
+                    </div>
+                    <div className='td'>
+                      <img
+                        alt='delete'
+                        onClick={onDeleteAdmin.bind(null, address)}
+                        src={trash as string}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          <Form className='manage-collection--form'>
+            <Grid className='manage-collection--form--grid'>
+              <Grid.Row>
+                <Grid.Column width={8}>
+                  <Form.Field>
+                    <Input
+                      className='isSmall'
+                      isDisabled={!isAdmin}
+                      isError={isAdminAddressError || isAddressCurrentlyInAdminList}
+                      label='Please enter the admin address'
+                      onChange={onSetAdminAddress}
+                      placeholder='Collection admin address'
+                      value={adminAddress}
+                    />
+                  </Form.Field>
+                </Grid.Column>
+                <Grid.Column
+                  className='flex'
+                  width={8}
+                >
+                  <div className='button-group'>
+                    <Button
+                      content={
+                        <>
+                          Add admin
+                        </>
+                      }
+                      disabled={!adminAddress || !isAdmin}
+                      onClick={onSetCurrentAdmin}
+                    />
+                  </div>
+                </Grid.Column>
+              </Grid.Row>
+            </Grid>
+          </Form>
+          <ManageCollectionAttributes
+            account={account}
+            basePath={basePath}
+            collectionId={collectionId}
+            constOnChainSchema={constOnChainSchema}
+            fetchCollectionInfo={fetchCollectionInfo}
+            isAdmin={isAdmin}
+            saveConstOnChainSchema={saveConstOnChainSchema}
+            saveVariableOnChainSchema={saveVariableOnChainSchema}
+            variableOnChainSchema={variableOnChainSchema}
+          />
+        </>
+      )}
     </div>
   );
 }

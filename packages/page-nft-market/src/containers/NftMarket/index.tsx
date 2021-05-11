@@ -17,14 +17,12 @@ import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 import { Input } from '@polkadot/react-components';
 import { useCollections, useDecoder } from '@polkadot/react-hooks';
 import { AttributesDecoded } from '@polkadot/react-hooks/useSchema';
-import { TypeRegistry } from '@polkadot/types';
 
 // local imports and components
 import NftTokenCard from '../../components/NftTokenCard';
 
 interface BuyTokensProps {
   account?: string;
-  localRegistry?: TypeRegistry;
   setShouldUpdateTokens: (value?: string) => void;
   shouldUpdateTokens?: string;
 }
@@ -35,7 +33,7 @@ interface OfferWithAttributes {
 
 const perPage = 20;
 
-const BuyTokens = ({ account, localRegistry, setShouldUpdateTokens, shouldUpdateTokens }: BuyTokensProps): ReactElement => {
+const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTokensProps): ReactElement => {
   const history = useHistory();
   const { getOffers, loadingOffers, offers, offersCount, presetMintTokenCollection } = useCollections();
   const [searchString, setSearchString] = useState<string>('');
@@ -80,8 +78,15 @@ const BuyTokens = ({ account, localRegistry, setShouldUpdateTokens, shouldUpdate
         const filtered = Object.values(offers).filter((item: OfferType) => {
           if (offersWithAttributes[item.collectionId] && offersWithAttributes[item.collectionId][item.tokenId]) {
             const offerItemAttrs = offersWithAttributes[item.collectionId][item.tokenId];
+            const target = Object.values(offerItemAttrs).find((value: string | string[]) => {
+              if (Array.isArray(value)) {
+                return value.find((valItem: string) => valItem.toLowerCase().includes(searchString.toLowerCase()));
+              }
 
-            return (offerItemAttrs.NameStr && (offerItemAttrs.NameStr as string).toLowerCase().includes(searchString.toLowerCase())) || item.price.toString().includes(searchString.toLowerCase());
+              return value.toLowerCase().includes(searchString.toLowerCase());
+            });
+
+            return target || item.price.toString().includes(searchString.toLowerCase());
           }
 
           return false;
@@ -196,7 +201,6 @@ const BuyTokens = ({ account, localRegistry, setShouldUpdateTokens, shouldUpdate
                               account={account}
                               collectionId={token.collectionId.toString()}
                               key={token.tokenId}
-                              localRegistry={localRegistry}
                               onSetTokenAttributes={onSetTokenAttributes}
                               openDetailedInformationModal={openDetailedInformationModal}
                               token={token}

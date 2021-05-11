@@ -28,7 +28,6 @@ const maxFileSize = 5000000;
 
 interface Props {
   account?: string;
-  localRegistry?: TypeRegistry;
   setShouldUpdateTokens?: (collectionId: string) => void;
 }
 
@@ -84,7 +83,7 @@ function ManageToken ({ account, setShouldUpdateTokens }: Props): React.ReactEle
     history.back();
   }, [setShouldUpdateTokens]);
 
-  const canManageTokenAttributes = false;
+  const canManageTokenAttributes = true;
 
   return (
     <div className='manage-token'>

@@ -16,7 +16,6 @@ import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 import { Input, TransferModal } from '@polkadot/react-components';
 import { useBalance, useDecoder, useMarketplaceStages, useSchema } from '@polkadot/react-hooks';
 import { KUSAMA_DECIMALS } from '@polkadot/react-hooks/utils';
-import { TypeRegistry } from '@polkadot/types';
 
 import BuySteps from './BuySteps';
 import SaleSteps from './SaleSteps';
@@ -24,11 +23,10 @@ import SetPriceModal from './SetPriceModal';
 
 interface NftDetailsProps {
   account: string;
-  localRegistry?: TypeRegistry;
   setShouldUpdateTokens?: (collectionId: string) => void;
 }
 
-function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetailsProps): React.ReactElement<NftDetailsProps> {
+function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React.ReactElement<NftDetailsProps> {
   const query = new URLSearchParams(useLocation().search);
   const tokenId = query.get('tokenId') || '';
   const collectionId = query.get('collectionId') || '';
@@ -36,7 +34,7 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
   const [showTransferForm, setShowTransferForm] = useState<boolean>(false);
   const { balance } = useBalance(account);
   const { hex2a } = useDecoder();
-  const { attributes, collectionInfo, reFungibleBalance, tokenUrl } = useSchema(account, collectionId, tokenId, localRegistry);
+  const { attributes, collectionInfo, reFungibleBalance, tokenName, tokenUrl } = useSchema(account, collectionId, tokenId);
   const [tokenPriceForSale, setTokenPriceForSale] = useState<string>('');
   const { buyFee, cancelStep, deposited, escrowAddress, formatKsmBalance, kusamaBalance, readyToAskPrice, sendCurrentUserAction, setPrice, setReadyToAskPrice, setWithdrawAmount, tokenAsk, tokenInfo, transferStep, withdrawAmount } = useMarketplaceStages(account, collectionInfo, tokenId);
 
@@ -74,19 +72,17 @@ function NftDetails ({ account, localRegistry, setShouldUpdateTokens }: NftDetai
     setReadyToWithdraw(false);
   }, [sendCurrentUserAction]);
 
-  console.log('deposited', parseFloat(formatKsmBalance(deposited)));
-
   const showMarketActions = true;
 
   return (
     <div className='toke-details'>
       <Header as='h1'>
-        { attributes && attributes.NameStr && (
+        { tokenName && (
           <span>
-            {attributes.NameStr} - {tokenId}
+            {tokenName.value} - {tokenId}
           </span>
         )}
-        { (!attributes || !attributes.NameStr) && (
+        { (!attributes || !tokenName) && (
           <span>
             {tokenId}
           </span>

@@ -19,7 +19,8 @@
   }
 }
 
-.schema-table {
+
+.custom-table {
   background-color: white;
   border-radius: 8px;
   padding: 8px 16px;
@@ -29,15 +30,34 @@
     .table-header {
       .tr {
         display: grid;
-        grid-template-columns: 200px 200px 1fr 24px;
-        grid-column-gap: 16px;
+        grid-template-columns: 200px 200px 200px 1fr 24px;
+        grid-column-gap: var(--gap);
       }
     }
     .table-body {
       .tr {
         display: grid;
-        grid-template-columns: 200px 200px 1fr 24px 24px;
-        grid-column-gap: 16px;
+        grid-template-columns: 200px 200px 200px 1fr 24px 24px;
+        grid-column-gap: var(--gap);
+      }
+    }
+  }
+
+  &.admin-table {
+    margin-bottom: var(--gap);
+
+    .table-header {
+      .tr {
+        display: grid;
+        grid-template-columns: 1fr 100px;
+        grid-column-gap: var(--gap);
+      }
+    }
+    .table-body {
+      .tr {
+        display: grid;
+        grid-template-columns: 1fr 100px;
+        grid-column-gap: var(--gap);
       }
     }
   }
@@ -47,21 +67,21 @@
       .tr {
         display: grid;
         grid-template-columns: 200px 1fr;
-        grid-column-gap: 16px;
+        grid-column-gap: var(--gap);
       }
     }
     .table-body {
       .tr {
         display: grid;
         grid-template-columns: 200px 1fr;
-        grid-column-gap: 16px;
+        grid-column-gap: var(--gap);
       }
     }
   }
 
   .tr {
     align-items: center;
-    height: 40px;
+    min-height: 40px;
 
     img {
       cursor: pointer;
@@ -104,6 +124,12 @@
         &.action {
           padding: 0;
         }
+
+        .enum-attributes {
+          min-height: 40px;
+          overflow-x: auto;
+          line-height: 40px;
+        }
       }
 
       &.edit {
@@ -118,6 +144,8 @@
 
               input {
                 height: 30px;
+                border-color: var(--border-color);
+                background: var(--input-background-color) !important;
               }
             }
 
@@ -129,9 +157,13 @@
               min-width: 0;
               min-height: 30px;
               line-height: 16px;
+              border-color: var(--border-color);
+              background: var(--input-background-color) !important;
 
               .menu {
                 .item {
+                  border-color: var(--border-color);
+                  background: var(--input-background-color) !important;
                   padding-left: 10px !important;
                 }
               }

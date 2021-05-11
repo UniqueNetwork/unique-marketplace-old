@@ -14,7 +14,6 @@ import { Expander } from '@polkadot/react-components';
 import { useCollections, useDecoder, useMetadata } from '@polkadot/react-hooks';
 import { useCollection } from '@polkadot/react-hooks/useCollection';
 import { UNIQUE_COLLECTION_ID } from '@polkadot/react-hooks/utils';
-import { TypeRegistry } from '@polkadot/types';
 
 import NftTokenCard from '../NftTokenCard';
 
@@ -22,13 +21,12 @@ interface Props {
   account?: string;
   canTransferTokens: boolean;
   collection: NftCollectionInterface;
-  localRegistry?: TypeRegistry;
   removeCollection: (collection: string) => void;
   openTransferModal: (collection: NftCollectionInterface, tokenId: string, balance: number) => void;
   shouldUpdateTokens: string | undefined;
 }
 
-function NftCollectionCard ({ account, canTransferTokens, collection, localRegistry, openTransferModal, removeCollection, shouldUpdateTokens }: Props): React.ReactElement<Props> {
+function NftCollectionCard ({ account, canTransferTokens, collection, openTransferModal, removeCollection, shouldUpdateTokens }: Props): React.ReactElement<Props> {
   const [opened, setOpened] = useState(true);
   const [collectionImageUrl, setCollectionImageUrl] = useState<string>();
   const [ownTokensCount, setOwnTokensCount] = useState<number>();
@@ -39,25 +37,32 @@ function NftCollectionCard ({ account, canTransferTokens, collection, localRegis
   const { collectionName16Decoder } = useDecoder();
   const cleanup = useRef<boolean>(false);
   const history = useHistory();
-  const { getTokenImageUrl } = useMetadata(localRegistry);
+  const { getTokenImageUrl } = useMetadata();
 
   const openCollection = useCallback((isOpen) => {
     setOpened(isOpen);
   }, []);
 
   const defineCollectionImage = useCallback(async () => {
-    console.log('defineCollectionImage');
-
     const collectionImage = await getTokenImageUrl(collection, '1');
 
+    if (cleanup.current) {
+      return;
+    }
+
     setCollectionImageUrl(collectionImage);
-    console.log('collectionImage', collectionImage);
   }, [collection, getTokenImageUrl]);
 
   const editCollection = useCallback((collectionId: string, e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     e.stopPropagation();
     e.preventDefault();
     history.push(`/wallet/manage-collection?collectionId=${collectionId}`);
+  }, [history]);
+
+  const createToken = useCallback((collectionId: string, e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    e.stopPropagation();
+    e.preventDefault();
+    history.push(`/wallet/manage-token?collectionId=${collectionId}`);
   }, [history]);
 
   const getTokensCount = useCallback(async () => {
@@ -119,7 +124,7 @@ function NftCollectionCard ({ account, canTransferTokens, collection, localRegis
     };
   }, []);
 
-  const canEditCollection = false;
+  const canEditCollection = true;
 
   return (
     <Expander
@@ -152,12 +157,18 @@ function NftCollectionCard ({ account, canTransferTokens, collection, localRegis
             <span>, Own: {ownTokensCount} {!ownTokensCount || ownTokensCount > 1 ? 'items' : 'item'}</span>
           </div>
           { canEditCollection && (
-            <a
-              className='link-button'
-              onClick={editCollection.bind(null, collection.id)}
-            >
-              Edit
-            </a>
+            <div className='link-button'>
+              <a
+                onClick={editCollection.bind(null, collection.id)}
+              >
+                Edit
+              </a>
+              <a
+                onClick={createToken.bind(null, collection.id)}
+              >
+                Create token
+              </a>
+            </div>
           )}
         </div>
       }
@@ -170,7 +181,6 @@ function NftCollectionCard ({ account, canTransferTokens, collection, localRegis
               canTransferTokens={canTransferTokens}
               collection={collection}
               key={token}
-              localRegistry={localRegistry}
               openTransferModal={openTransferModal}
               shouldUpdateTokens={shouldUpdateTokens}
               token={token}
