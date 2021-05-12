@@ -376,8 +376,8 @@ h4.ui.header {
   font-size: 20px;
   line-height: 40px;
 
-  &.success {
-
+  &.confirmed {
+    color: var(--success-color);
   }
 
   &.error {
