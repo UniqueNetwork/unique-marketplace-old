@@ -212,6 +212,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
   const onSetCurrentAdmin = useCallback(() => {
     if (account && collectionId && adminAddress) {
       addCollectionAdmin({ account, collectionId, newAdminAddress: adminAddress, successCallback: fetchCollectionAdminList });
+      setAdminAddress('');
     }
   }, [account, addCollectionAdmin, adminAddress, collectionId, fetchCollectionAdminList]);
 
@@ -597,17 +598,17 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
                 <Grid.Column width={8}>
                   { collectionInfo?.Sponsorship.unconfirmed && (
                     <div className='text-block error'>
-                      {collectionInfo?.Sponsorship.unconfirmed}
+                      {collectionInfo?.Sponsorship.unconfirmed} unconfirmed
                     </div>
                   )}
                   { collectionInfo?.Sponsorship.disabled && (
                     <div className='text-block disabled'>
-                      {collectionInfo?.Sponsorship.unconfirmed}
+                      {collectionInfo?.Sponsorship.unconfirmed} disabled
                     </div>
                   )}
                   { collectionInfo?.Sponsorship.confirmed && (
                     <div className='text-block confirmed'>
-                      {collectionInfo?.Sponsorship.unconfirmed}
+                      {collectionInfo?.Sponsorship.unconfirmed} confirmed
                     </div>
                   )}
                 </Grid.Column>
@@ -630,7 +631,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
                         Remove sponsor
                       </>
                     }
-                    disabled={!isAdmin || !sponsorAddress}
+                    disabled={!isAdmin}
                     onClick={onRemoveSponsor}
                   />
                 </Grid.Column>
