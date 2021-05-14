@@ -12,10 +12,8 @@ import { assert, isFunction } from '@polkadot/util';
 
 import Button from './Button';
 import { StatusContext } from './Status';
-import { useTranslation } from './translate';
 
 function TxButton ({ accountId, className = '', extrinsic: propsExtrinsic, icon, isBasic, isBusy, isDisabled, isIcon, isToplevel, isUnsigned, label, onClick, onFailed, onSendRef, onStart, onSuccess, onUpdate, params, tooltip, tx, withSpinner, withoutLink }: Props): React.ReactElement<Props> {
-  const { t } = useTranslation();
   const mountedRef = useIsMountedRef();
   const { queueExtrinsic } = useContext(StatusContext);
   const [isSending, setIsSending] = useState(false);
@@ -108,7 +106,7 @@ function TxButton ({ accountId, className = '', extrinsic: propsExtrinsic, icon,
       )}
       isIcon={isIcon}
       isToplevel={isToplevel}
-      label={label || (isIcon ? '' : t<string>('Submit'))}
+      label={label || (isIcon ? '' : 'Submit')}
       onClick={_onSend}
       tooltip={tooltip}
       withoutLink={withoutLink}

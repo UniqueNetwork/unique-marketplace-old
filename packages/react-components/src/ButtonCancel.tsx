@@ -4,7 +4,6 @@
 import React from 'react';
 
 import Button from './Button';
-import { useTranslation } from './translate';
 
 interface Props {
   className?: string;
@@ -15,14 +14,12 @@ interface Props {
 }
 
 function ButtonCancel ({ className = '', isDisabled, label, onClick, tabIndex }: Props): React.ReactElement<Props> {
-  const { t } = useTranslation();
-
   return (
     <Button
       className={className}
       icon='times'
       isDisabled={isDisabled}
-      label={label || t<string>('Cancel')}
+      label={label || 'Cancel'}
       onClick={onClick}
       tabIndex={tabIndex}
     />
