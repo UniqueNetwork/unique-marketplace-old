@@ -20,12 +20,13 @@ interface Props {
   onChange: (value: string) => void;
   onEnter?: () => void;
   onEscape?: () => void;
+  placeholder?: string;
   tabIndex?: number;
   value: string;
   withLabel?: boolean;
 }
 
-function Password ({ autoFocus, children, className = '', defaultValue, help, isDisabled, isError, isFull, label, labelExtra, name, onChange, onEnter, onEscape, tabIndex, value, withLabel }: Props): React.ReactElement<Props> {
+function Password ({ autoFocus, children, className = '', defaultValue, help, isDisabled, isError, isFull, label, labelExtra, name, onChange, onEnter, onEscape, placeholder, tabIndex, value, withLabel }: Props): React.ReactElement<Props> {
   return (
     <Input
       autoFocus={autoFocus}
@@ -41,6 +42,7 @@ function Password ({ autoFocus, children, className = '', defaultValue, help, is
       onChange={onChange}
       onEnter={onEnter}
       onEscape={onEscape}
+      placeholder={placeholder}
       tabIndex={tabIndex}
       type='password'
       value={value}
