@@ -39,7 +39,6 @@ function parseFile (file: Uint8Array, genesisHash?: string | null): KeyringPair 
 }
 
 function Import ({ className = '', onClose, onStatusChange }: Props): React.ReactElement<Props> {
-  const { t } = useTranslation();
   const { api, isDevelopment } = useApi();
   const [isBusy, setIsBusy] = useState(false);
   const [pair, setPair] = useState<KeyringPair | null>(null);
@@ -72,7 +71,7 @@ function Import ({ className = '', onClose, onStatusChange }: Props): React.Reac
 
           status.status = 'success';
           status.account = pair.address;
-          status.message = t<string>('account restored');
+          status.message = 'account restored';
 
           InputAddress.setLastValue('account', pair.address);
         } catch (error) {
@@ -91,14 +90,14 @@ function Import ({ className = '', onClose, onStatusChange }: Props): React.Reac
         }
       }, 0);
     },
-    [onClose, onStatusChange, pair, password, t]
+    [onClose, onStatusChange, pair, password]
   );
 
   return (
     <Modal
       className={className}
-      header={t<string>('Add via backup file')}
-      size='large'
+      header={'Add via backup file'}
+      size='small'
     >
       <Modal.Content>
         <Modal.Columns>
@@ -114,36 +113,36 @@ function Import ({ className = '', onClose, onStatusChange }: Props): React.Reac
           <Modal.Column>
             <InputFile
               accept={acceptedFormats}
-              className='full'
-              help={t<string>('Select the JSON key file that was downloaded when you created the account. This JSON file contains your private key encrypted with your password.')}
+              className='isSmall'
+              help={'Select the JSON key file that was downloaded when you created the account. This JSON file contains your private key encrypted with your password.'}
               isError={!pair}
-              label={t<string>('backup file')}
+              label={'backup file'}
               onChange={_onChangeFile}
               withLabel
             />
             {differentGenesis && (
-              <MarkWarning content={t<string>('The network from which this account was originally generated is different than the network you are currently connected to. Once imported ensure you toggle the "allow on any network" option for the account to keep it visible on the current network.')} />
+              <MarkWarning content={'The network from which this account was originally generated is different than the network you are currently connected to. Once imported ensure you toggle the "allow on any network" option for the account to keep it visible on the current network.'} />
             )}
           </Modal.Column>
           <Modal.Column>
-            <p>{t<string>('Supply a backed-up JSON file, encrypted with your account-specific password.')}</p>
+            <p>Supply a backed-up JSON file, encrypted with your account-specific password.</p>
           </Modal.Column>
         </Modal.Columns>
         <Modal.Columns>
           <Modal.Column>
             <Password
               autoFocus
-              className='full'
-              help={t<string>('Type the password chosen at the account creation. It was used to encrypt your account\'s private key in the backup file.')}
+              className='isSmall'
+              help={'Type the password chosen at the account creation. It was used to encrypt your account\'s private key in the backup file.'}
               isError={!isPassValid}
-              label={t<string>('password')}
+              label={'password'}
               onChange={_onChangePass}
               onEnter={_onSave}
               value={password}
             />
           </Modal.Column>
           <Modal.Column>
-            <p>{t<string>('The password previously used to encrypt this account.')}</p>
+            <p>The password previously used to encrypt this account.</p>
           </Modal.Column>
         </Modal.Columns>
         <ExternalWarning />
@@ -153,7 +152,7 @@ function Import ({ className = '', onClose, onStatusChange }: Props): React.Reac
           icon='sync'
           isBusy={isBusy}
           isDisabled={!pair || !isPassValid}
-          label={t<string>('Restore')}
+          label={'Restore'}
           onClick={_onSave}
         />
       </Modal.Actions>

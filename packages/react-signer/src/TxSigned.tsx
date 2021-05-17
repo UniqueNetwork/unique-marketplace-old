@@ -24,7 +24,6 @@ import Address from './Address';
 import Qr from './Qr';
 import { AccountSigner, LedgerSigner, QrSigner } from './signers';
 import Transaction from './Transaction';
-import { useTranslation } from './translate';
 import { cacheUnlock, extractExternal, handleTxResults } from './util';
 
 interface Props {
@@ -156,7 +155,6 @@ async function extractParams (api: ApiPromise, address: string, options: Partial
 }
 
 function TxSigned ({ className, currentItem, requestAddress }: Props): React.ReactElement<Props> | null {
-  const { t } = useTranslation();
   const { api } = useApi();
   const { getLedger } = useLedger();
   const { queueSetTxStatus } = useContext(StatusContext);
@@ -225,7 +223,7 @@ function TxSigned ({ className, currentItem, requestAddress }: Props): React.Rea
           } catch (error) {
             console.error(error);
 
-            passwordError = t<string>('Unable to connect the the Ledger. {{error}}', { replace: { error: (error as Error).message } });
+            passwordError = 'Unable to connect the the Ledger. {{error}}'.replace('{{error}}', (error as Error).message);
           }
         }
       }
@@ -234,7 +232,7 @@ function TxSigned ({ className, currentItem, requestAddress }: Props): React.Rea
 
       return !passwordError;
     },
-    [flags, getLedger, senderInfo, t]
+    [flags, getLedger, senderInfo]
   );
 
   const _onSendPayload = useCallback(
@@ -359,10 +357,10 @@ function TxSigned ({ className, currentItem, requestAddress }: Props): React.Rea
           isDisabled={!senderInfo.signAddress || isRenderError}
           label={
             flags.isQr
-              ? t<string>('Sign via Qr')
+              ? 'Sign via Qr'
               : isSubmit
-                ? t<string>('Sign and Submit')
-                : t<string>('Sign (no submission)')
+                ? 'Sign and Submit'
+                : 'Sign (no submission)'
           }
           onClick={_doStart}
           tabIndex={2}

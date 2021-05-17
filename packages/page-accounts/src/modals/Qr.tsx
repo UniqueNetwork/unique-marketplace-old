@@ -11,7 +11,6 @@ import { AddressRow, Button, Input, InputAddress, Modal, QrScanAddress } from '@
 import { useApi, useIpfs } from '@polkadot/react-hooks';
 import { keyring } from '@polkadot/ui-keyring';
 
-import { useTranslation } from '../translate';
 import PasswordInput from './PasswordInput';
 
 interface Scanned {
@@ -34,7 +33,6 @@ interface Address {
 }
 
 function QrModal ({ className = '', onClose, onStatusChange }: Props): React.ReactElement<Props> {
-  const { t } = useTranslation();
   const { api } = useApi();
   const { isIpfs } = useIpfs();
   const [{ isNameValid, name }, setName] = useState({ isNameValid: false, name: '' });
@@ -90,18 +88,18 @@ function QrModal ({ className = '', onClose, onStatusChange }: Props): React.Rea
       onStatusChange({
         account,
         action: 'create',
-        message: t<string>('created account'),
+        message: 'created account',
         status: 'success'
       });
       onClose();
     },
-    [api, isValid, name, onClose, onStatusChange, password, scanned, t]
+    [api, isValid, name, onClose, onStatusChange, password, scanned]
   );
 
   return (
     <Modal
       className={className}
-      header={t<string>('Add account via Qr')}
+      header={'Add account via Qr'}
       size='large'
     >
       <Modal.Content>
@@ -122,16 +120,16 @@ function QrModal ({ className = '', onClose, onStatusChange }: Props): React.Rea
                   <Input
                     autoFocus
                     className='full'
-                    help={t<string>('Name given to this account. You can change it at any point in the future.')}
+                    help={'Name given to this account. You can change it at any point in the future.'}
                     isError={!isNameValid}
-                    label={t<string>('name')}
+                    label={'name'}
                     onChange={_onNameChange}
                     onEnter={_onSave}
                     value={name}
                   />
                 </Modal.Column>
                 <Modal.Column>
-                  <p>{t<string>('The local name for this account. Changing this does not affect your on-line identity, so this is only used to indicate the name of the account locally.')}</p>
+                  <p>{'The local name for this account. Changing this does not affect your on-line identity, so this is only used to indicate the name of the account locally.'}</p>
                 </Modal.Column>
               </Modal.Columns>
               {!isAddress && (
@@ -150,7 +148,7 @@ function QrModal ({ className = '', onClose, onStatusChange }: Props): React.Rea
                 </div>
               </Modal.Column>
               <Modal.Column>
-                <p>{t<string>('Provide the account QR from the module/external application for scanning. Once detected as valid, you will be taken to the next step to add the account to your list.')}</p>
+                <p>Provide the account QR from the module/external application for scanning. Once detected as valid, you will be taken to the next step to add the account to your list.</p>
               </Modal.Column>
             </Modal.Columns>
           )
@@ -160,7 +158,7 @@ function QrModal ({ className = '', onClose, onStatusChange }: Props): React.Rea
         <Button
           icon='plus'
           isDisabled={!scanned || !isValid || (!isAddress && isIpfs)}
-          label={t<string>('Save')}
+          label={'Save'}
           onClick={_onSave}
         />
       </Modal.Actions>

@@ -102,73 +102,67 @@ function Transfer ({ className = '', onClose, recipientId: propRecipientId, send
     >
       <Modal.Content>
         <div className={className}>
-          <Modal.Column>
-            <InputAddress
-              defaultValue={propSenderId}
-              help={'The account you will send funds from.'}
-              isDisabled={!!propSenderId}
-              label={'send from account'}
-              labelExtra={
-                <Available
-                  label={'transferrable'}
-                  params={propSenderId || senderId}
-                />
-              }
-              onChange={setSenderId}
-              type='account'
-            />
-          </Modal.Column>
-          <Modal.Column>
-            <InputAddress
-              defaultValue={propRecipientId}
-              help={'Select a contact or paste the address you want to send funds to.'}
-              isDisabled={!!propRecipientId}
-              label={'send to address'}
-              labelExtra={
-                <Available
-                  label={'transferrable'}
-                  params={propRecipientId || recipientId}
-                />
-              }
-              onChange={setRecipientId}
-              type='allPlus'
-            />
-            {recipientPhish && (
-              <MarkError content={'The recipient is associated with a known phishing site on {{url}}'.replace('{{url}}', recipientPhish.toString())} />
-            )}
-          </Modal.Column>
-          <Modal.Column>
-            {canToggleAll && isAll
-              ? (
-                <InputBalance
-                  autoFocus
-                  className='isSmall'
-                  defaultValue={maxTransfer}
-                  help={'The full account balance to be transferred, minus the transaction fees'}
-                  isDisabled
-                  key={maxTransfer?.toString()}
-                  label={'transferrable minus fees'}
-                />
-              )
-              : (
-                <InputBalance
-                  autoFocus
-                  className='isSmall'
-                  help={'Type the amount you want to transfer. Note that you can select the unit on the right e.g sending 1 milli is equivalent to sending 0.001.'}
-                  isError={!hasAvailable}
-                  isZeroable
-                  label={'amount'}
-                  onChange={setAmount}
-                />
-              )
+          <InputAddress
+            defaultValue={propSenderId}
+            help={'The account you will send funds from.'}
+            isDisabled={!!propSenderId}
+            label={'send from account'}
+            labelExtra={
+              <Available
+                label={'transferrable'}
+                params={propSenderId || senderId}
+              />
             }
-            {!isProtected && !noReference && (
-              <MarkWarning content={'There is an existing reference count on the sender account. As such the account cannot be reaped from the state.'} />
-            )}
-            {noFees && (
-              <MarkWarning content={'The transaction, after application of the transfer fees, will drop the available balance below the existential deposit. As such the transfer will fail. The account needs more free funds to cover the transaction fees.'} />
-            )}
-          </Modal.Column>
+            onChange={setSenderId}
+            type='account'
+          />
+          <InputAddress
+            defaultValue={propRecipientId}
+            help={'Select a contact or paste the address you want to send funds to.'}
+            isDisabled={!!propRecipientId}
+            label={'send to address'}
+            labelExtra={
+              <Available
+                label={'transferrable'}
+                params={propRecipientId || recipientId}
+              />
+            }
+            onChange={setRecipientId}
+            type='allPlus'
+          />
+          {recipientPhish && (
+            <MarkError content={'The recipient is associated with a known phishing site on {{url}}'.replace('{{url}}', recipientPhish.toString())} />
+          )}
+          {canToggleAll && isAll
+            ? (
+              <InputBalance
+                autoFocus
+                className='isSmall'
+                defaultValue={maxTransfer}
+                help={'The full account balance to be transferred, minus the transaction fees'}
+                isDisabled
+                key={maxTransfer?.toString()}
+                label={'transferrable minus fees'}
+              />
+            )
+            : (
+              <InputBalance
+                autoFocus
+                className='isSmall'
+                help={'Type the amount you want to transfer. Note that you can select the unit on the right e.g sending 1 milli is equivalent to sending 0.001.'}
+                isError={!hasAvailable}
+                isZeroable
+                label={'amount'}
+                onChange={setAmount}
+              />
+            )
+          }
+          {!isProtected && !noReference && (
+            <MarkWarning content={'There is an existing reference count on the sender account. As such the account cannot be reaped from the state.'} />
+          )}
+          {noFees && (
+            <MarkWarning content={'The transaction, after application of the transfer fees, will drop the available balance below the existential deposit. As such the transfer will fail. The account needs more free funds to cover the transaction fees.'} />
+          )}
         </div>
       </Modal.Content>
       <Modal.Actions onCancel={onClose}>
@@ -199,6 +193,10 @@ export default React.memo(styled(Transfer)`
     .label {
       opacity: 0.7;
     }
+  }
+
+  .ui--Labelled {
+    margin-bottom: var(--gap);
   }
 
   label.with-help {

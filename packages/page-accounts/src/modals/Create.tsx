@@ -291,55 +291,49 @@ function Create ({ className = '', onClose, onStatusChange, seed: propsSeed, typ
           </Modal.Column>
         </Modal.Columns>
         {step === 1 && <>
-          <Modal.Columns>
-            <div>
-              <TextArea
-                help={isEthereum
-                  ? 'Your ethereum key pair is derived from your private key. Don\'t divulge this key.'
-                  : 'The private key for your account is derived from this seed. This seed must be kept secret as anyone in its possession has access to the funds of this account. If you validate, use the seed of the session account as the "--key" parameter of your node.'}
-                isAction
-                isError={!isSeedValid}
-                isReadOnly={seedType === 'dev'}
-                label={
-                  seedType === 'bip'
-                    ? 'mnemonic seed'
-                    : seedType === 'dev'
-                      ? 'development seed'
-                      : isEthereum
-                        ? 'ethereum private key'
-                        : 'seed (hex or string)'
-                }
-                onChange={_onChangeSeed}
-                seed={seed}
-                withLabel
-              >
-                <CopyButton
-                  className='copyMoved'
-                  type={seedType === 'bip' ? 'mnemonic' : seedType === 'raw' ? isEthereum ? 'private key' : 'seed' : 'raw seed'}
-                  value={seed}
-                />
-                <Dropdown
-                  defaultValue={seedType}
-                  isButton
-                  onChange={_selectSeedType}
-                  options={seedOpt.current}
-                />
-              </TextArea>
-              <p>{'The secret seed value for this account. Ensure that you keep this in a safe place, with access to the seed you can re-create the account.'}</p>
-            </div>
-          </Modal.Columns>
-          <Modal.Columns>
-            <Modal.Column>
-              <ExternalWarning />
-              <div className='saveToggle'>
-                <Checkbox
-                  label={<>{'I have saved my mnemonic seed safely'}</>}
-                  onChange={_toggleMnemonicSaved}
-                  value={isMnemonicSaved}
-                />
-              </div>
-            </Modal.Column>
-          </Modal.Columns>
+          <div>
+            <TextArea
+              help={isEthereum
+                ? 'Your ethereum key pair is derived from your private key. Don\'t divulge this key.'
+                : 'The private key for your account is derived from this seed. This seed must be kept secret as anyone in its possession has access to the funds of this account. If you validate, use the seed of the session account as the "--key" parameter of your node.'}
+              isAction
+              isError={!isSeedValid}
+              isReadOnly={seedType === 'dev'}
+              label={
+                seedType === 'bip'
+                  ? 'mnemonic seed'
+                  : seedType === 'dev'
+                    ? 'development seed'
+                    : isEthereum
+                      ? 'ethereum private key'
+                      : 'seed (hex or string)'
+              }
+              onChange={_onChangeSeed}
+              seed={seed}
+              withLabel
+            >
+              <CopyButton
+                className='copyMoved'
+                type={seedType === 'bip' ? 'mnemonic' : seedType === 'raw' ? isEthereum ? 'private key' : 'seed' : 'raw seed'}
+                value={seed}
+              />
+              <Dropdown
+                defaultValue={seedType}
+                isButton
+                onChange={_selectSeedType}
+                options={seedOpt.current}
+              />
+            </TextArea>
+            <p>{'The secret seed value for this account. Ensure that you keep this in a safe place, with access to the seed you can re-create the account.'}</p>
+          </div>
+          <ExternalWarning />
+          <div className='saveToggle'>
+            <Checkbox
+              label={<>{'I have saved my mnemonic seed safely'}</>}
+              onChange={_toggleMnemonicSaved}
+              value={isMnemonicSaved}
+            />
+          </div>
         </>}
         {step === 2 && <>
           <Input
