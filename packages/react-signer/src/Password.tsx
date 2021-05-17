@@ -9,7 +9,6 @@ import styled from 'styled-components';
 import { Modal, Password, Toggle } from '@polkadot/react-components';
 import { keyring } from '@polkadot/ui-keyring';
 
-import { useTranslation } from './translate';
 import { UNLOCK_MINS } from './util';
 
 interface Props {
@@ -31,7 +30,6 @@ function getPair (address: string): KeyringPair | null {
 }
 
 function Unlock ({ address, className, error, onChange, onEnter, tabIndex }: Props): React.ReactElement<Props> | null {
-  const { t } = useTranslation();
   const [password, setPassword] = useState('');
   const [isUnlockCached, setIsUnlockCached] = useState(false);
 
@@ -53,8 +51,9 @@ function Unlock ({ address, className, error, onChange, onEnter, tabIndex }: Pro
       <Modal.Column>
         <Password
           autoFocus
+          className='isSmall'
           isError={!!error}
-          label={t<string>('unlock account with password')}
+          label={'unlock account with password'}
           onChange={setPassword}
           onEnter={onEnter}
           tabIndex={tabIndex}
@@ -62,14 +61,14 @@ function Unlock ({ address, className, error, onChange, onEnter, tabIndex }: Pro
         >
           <Toggle
             isOverlay
-            label={t<string>('unlock for {{expiry}} min', { replace: { expiry: UNLOCK_MINS } })}
+            label={'unlock for {{expiry}} min'.replace('{{expiry}}', UNLOCK_MINS.toString())}
             onChange={setIsUnlockCached}
             value={isUnlockCached}
           />
         </Password>
       </Modal.Column>
       <Modal.Column>
-        <p>{t('Unlock the sending account to allow signing of this transaction.')}</p>
+        <p>Unlock the sending account to allow signing of this transaction.</p>
       </Modal.Column>
     </Modal.Columns>
   );
@@ -82,6 +81,6 @@ export default React.memo(styled(Unlock)`
   }
 
   .ui--Toggle {
-    bottom: 1.1rem;
+    bottom: 12px;
   }
 `);

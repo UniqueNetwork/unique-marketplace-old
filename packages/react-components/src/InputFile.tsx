@@ -8,7 +8,6 @@ import styled from 'styled-components';
 import { formatNumber, hexToU8a, isHex, u8aToString } from '@polkadot/util';
 
 import Labelled from './Labelled';
-import { useTranslation } from './translate';
 
 export interface InputFilePropsBase {
   className?: string;
@@ -60,7 +59,6 @@ function convertResult (result: ArrayBuffer): Uint8Array {
 }
 
 function InputFile ({ accept, className = '', clearContent, help, isDisabled, isError = false, isFull, label, onChange, placeholder, withEllipsis, withLabel }: InputFileProps): React.ReactElement<InputFileProps> {
-  const { t } = useTranslation();
   const dropRef = createRef<DropzoneRef>();
   const [file, setFile] = useState<FileState | undefined>();
 
@@ -105,13 +103,8 @@ function InputFile ({ accept, className = '', clearContent, help, isDisabled, is
           <em className='label' >
             {
               !file || clearContent
-                ? placeholder || t<string>('click to select or drag and drop the file here')
-                : placeholder || t<string>('{{name}} ({{size}} bytes)', {
-                  replace: {
-                    name: file.name,
-                    size: formatNumber(file.size)
-                  }
-                })
+                ? placeholder || 'click to select or drag and drop the file here'
+                : placeholder || '{{name}} ({{size}} bytes)'.replace('{{name}}', file.name).replace('{{size}}', formatNumber(file.size))
             }
           </em>
         </div>

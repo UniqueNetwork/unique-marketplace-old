@@ -544,6 +544,44 @@ button.ui.button,
   text-transform: var(--sub-header-text-transform) !important;
 }
 
+.modal {
+  .ui--Modal-Column {
+    margin-bottom: var(--gap);
+  }
+  .ui--InputAddress {
+    border: 1px solid var(--border-color);
+    background: var(--input-background-color);
+
+    .menu {
+      border-color: var(--border-color);
+      background: var(--input-background-color) !important;
+      z-index: 1002;
+    }
+  }
+}
+
+.ui--InputBalance {
+  .ui.action.input {
+    border: 1px solid var(--border-color);
+    background: var(--input-background-color);
+
+    .ui.buttons {
+      background: var(--input-background-color);
+
+      .dropdown {
+        .menu {
+          border-color: var(--border-color);
+          background: var(--input-background-color) !important;
+        }
+      }
+    }
+
+    input {
+      border: none;
+    }
+  }
+}
+
 .ui.input.ui--Input {
   &.error {
     input {

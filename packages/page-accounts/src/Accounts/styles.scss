@@ -1,0 +1,17 @@
+.page-accounts {
+  .ui {
+    &.buttons {
+
+      &.account-actions {
+        float: right;
+        display: flex;
+        grid-column-gap: var(--gap);
+        margin-bottom: var(--gap);
+      }
+    }
+  }
+
+  td.button {
+    float: right;
+  }
+}
