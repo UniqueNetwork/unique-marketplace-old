@@ -56,19 +56,23 @@ function App ({ account, basePath }: Props): React.ReactElement<Props> {
     });
   }, []);
 
+  const canCreateCollection = false;
+
   return (
     <div className='my-tokens'>
       { !location.pathname.includes('token-details') && !location.pathname.includes('manage-') && (
         <>
           <Header as='h1'>My Tokens</Header>
           <Header as='h4'>NFTs owned by me</Header>
-          <Button
-            className='create-button'
-            onClick={createCollection}
-            primary
-          >
-            Create collection
-          </Button>
+          { canCreateCollection && (
+            <Button
+              className='create-button'
+              onClick={createCollection}
+              primary
+            >
+              Create collection
+            </Button>
+          )}
           <header>
             <Tabs
               basePath={basePath}

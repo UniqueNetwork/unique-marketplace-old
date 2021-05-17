@@ -125,6 +125,7 @@ function NftCollectionCard ({ account, canTransferTokens, collection, openTransf
   }, []);
 
   const canEditCollection = true;
+  const canCreateToken = false;
 
   return (
     <Expander
@@ -156,20 +157,22 @@ function NftCollectionCard ({ account, canTransferTokens, collection, openTransf
             <span>Total: {allTokensCount} {!allTokensCount || allTokensCount > 1 ? 'items' : 'item'}</span>
             <span>, Own: {ownTokensCount} {!ownTokensCount || ownTokensCount > 1 ? 'items' : 'item'}</span>
           </div>
-          { canEditCollection && (
-            <div className='link-button'>
+          <div className='link-button'>
+            { canEditCollection && (
               <a
                 onClick={editCollection.bind(null, collection.id)}
               >
                 Edit
               </a>
+            )}
+            { canCreateToken && (
               <a
                 onClick={createToken.bind(null, collection.id)}
               >
                 Create token
               </a>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       }
     >

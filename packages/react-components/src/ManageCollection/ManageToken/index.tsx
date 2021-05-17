@@ -18,7 +18,6 @@ import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
 import { Input, ManageTokenAttributes } from '@polkadot/react-components';
 import { useMintApi } from '@polkadot/react-hooks';
-import { TypeRegistry } from '@polkadot/types';
 
 import Replace from './images/ArrowCounterClockwise.svg';
 import Picture from './images/picture.svg';
@@ -209,12 +208,6 @@ function ManageToken ({ account, setShouldUpdateTokens }: Props): React.ReactEle
           </Grid.Row>
           <Grid.Row>
             <Grid.Column width={8}>
-              {/* {(imageBase64 && imageName) && (
-                    <Button
-                      content='Create Token'
-                      onClick={onSaveToken}
-                    />
-                  )} */}
               {(
                 <Button
                   content='Create Token'
