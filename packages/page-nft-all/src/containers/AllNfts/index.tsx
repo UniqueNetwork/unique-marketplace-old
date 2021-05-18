@@ -196,7 +196,7 @@ const AllNfts = ({ account, setShouldUpdateTokens }: BuyTokensProps): ReactEleme
                       <SmallTokenCard
                         account={account}
                         collectionId={token.collectionId.toString()}
-                        key={token.id}
+                        key={`${token.collectionId}-${token.id}`}
                         onSetTokenAttributes={onSetTokenAttributes}
                         openDetailedInformationModal={openDetailedInformationModal}
                         token={token}
