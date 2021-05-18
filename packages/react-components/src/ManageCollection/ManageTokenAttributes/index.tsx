@@ -301,60 +301,64 @@ function ManageTokenAttributes ({ account, setShouldUpdateTokens }: Props): Reac
       </a>
       <Form className='manage-token--form'>
         <Grid className='manage-token--form--grid'>
-          <Grid.Row>
-            <Grid.Column width={8}>
-              <Header as='h5'>Const Data</Header>
-              { Object.keys(tokenConstAttributes).length > 0 && constAttributes?.map((collectionAttribute: AttributeItemType) => (
-                <Form.Field key={collectionAttribute.name}>
-                  { collectionAttribute.fieldType === 'string' && (
-                    <Input
-                      className='isSmall'
-                      isDisabled={!!tokenId}
-                      onChange={setAttributeValue.bind(null, 'const', collectionAttribute)}
-                      placeholder={`Enter ${collectionAttribute.name}, ${collectionAttribute.fieldType}`}
-                      value={tokenConstAttributes[collectionAttribute.name].value as string}
-                    />
-                  )}
-                  { collectionAttribute.fieldType === 'enum' && (
-                    <Dropdown
-                      isDisabled={!!tokenId}
-                      isMultiple={collectionAttribute.rule === 'repeated'}
-                      onChange={setAttributeValue.bind(null, 'const', collectionAttribute)}
-                      options={collectionAttribute.values.map((val: string, index: number) => ({ text: val, value: index }))}
-                      placeholder='Select Attribute Type'
-                      value={collectionAttribute.rule === 'repeated' ? tokenConstAttributes[collectionAttribute.name].values : tokenConstAttributes[collectionAttribute.name].value}
-                    />
-                  )}
-                </Form.Field>
-              ))}
-            </Grid.Column>
-          </Grid.Row>
-          <Grid.Row>
-            <Grid.Column width={8}>
-              <Header as='h5'>Variable Data</Header>
-              { Object.keys(tokenVarAttributes).length > 0 && variableAttributes?.map((collectionAttribute: AttributeItemType) => (
-                <Form.Field key={collectionAttribute.name}>
-                  { collectionAttribute.fieldType === 'string' && (
-                    <Input
-                      className='isSmall'
-                      onChange={setAttributeValue.bind(null, 'var', collectionAttribute)}
-                      placeholder={`Enter ${collectionAttribute.name}, ${collectionAttribute.fieldType}`}
-                      value={tokenVarAttributes[collectionAttribute.name].value as string}
-                    />
-                  )}
-                  { collectionAttribute.fieldType === 'enum' && (
-                    <Dropdown
-                      isMultiple={collectionAttribute.rule === 'repeated'}
-                      onChange={setAttributeValue.bind(null, 'var', collectionAttribute)}
-                      options={collectionAttribute.values.map((val: string, index: number) => ({ text: val, value: index }))}
-                      placeholder='Select Attribute Type'
-                      value={collectionAttribute.rule === 'repeated' ? tokenVarAttributes[collectionAttribute.name].values : tokenVarAttributes[collectionAttribute.name].value}
-                    />
-                  )}
-                </Form.Field>
-              ))}
-            </Grid.Column>
-          </Grid.Row>
+          { Object.keys(tokenConstAttributes).length > 0 && (
+            <Grid.Row>
+              <Grid.Column width={8}>
+                <Header as='h5'>Const Data</Header>
+                { Object.keys(tokenConstAttributes).length > 0 && constAttributes?.map((collectionAttribute: AttributeItemType) => (
+                  <Form.Field key={collectionAttribute.name}>
+                    { collectionAttribute.fieldType === 'string' && (
+                      <Input
+                        className='isSmall'
+                        isDisabled={!!tokenId}
+                        onChange={setAttributeValue.bind(null, 'const', collectionAttribute)}
+                        placeholder={`Enter ${collectionAttribute.name}, ${collectionAttribute.fieldType}`}
+                        value={tokenConstAttributes[collectionAttribute.name].value as string}
+                      />
+                    )}
+                    { collectionAttribute.fieldType === 'enum' && (
+                      <Dropdown
+                        isDisabled={!!tokenId}
+                        isMultiple={collectionAttribute.rule === 'repeated'}
+                        onChange={setAttributeValue.bind(null, 'const', collectionAttribute)}
+                        options={collectionAttribute.values.map((val: string, index: number) => ({ text: val, value: index }))}
+                        placeholder='Select Attribute Type'
+                        value={collectionAttribute.rule === 'repeated' ? tokenConstAttributes[collectionAttribute.name].values : tokenConstAttributes[collectionAttribute.name].value}
+                      />
+                    )}
+                  </Form.Field>
+                ))}
+              </Grid.Column>
+            </Grid.Row>
+          )}
+          { Object.keys(tokenVarAttributes).length > 0 && (
+            <Grid.Row>
+              <Grid.Column width={8}>
+                <Header as='h5'>Variable Data</Header>
+                { variableAttributes?.map((collectionAttribute: AttributeItemType) => (
+                  <Form.Field key={collectionAttribute.name}>
+                    { collectionAttribute.fieldType === 'string' && (
+                      <Input
+                        className='isSmall'
+                        onChange={setAttributeValue.bind(null, 'var', collectionAttribute)}
+                        placeholder={`Enter ${collectionAttribute.name}, ${collectionAttribute.fieldType}`}
+                        value={tokenVarAttributes[collectionAttribute.name].value as string}
+                      />
+                    )}
+                    { collectionAttribute.fieldType === 'enum' && (
+                      <Dropdown
+                        isMultiple={collectionAttribute.rule === 'repeated'}
+                        onChange={setAttributeValue.bind(null, 'var', collectionAttribute)}
+                        options={collectionAttribute.values.map((val: string, index: number) => ({ text: val, value: index }))}
+                        placeholder='Select Attribute Type'
+                        value={collectionAttribute.rule === 'repeated' ? tokenVarAttributes[collectionAttribute.name].values : tokenVarAttributes[collectionAttribute.name].value}
+                      />
+                    )}
+                  </Form.Field>
+                ))}
+              </Grid.Column>
+            </Grid.Row>
+          )}
           <Grid.Row>
             <Grid.Column>
               { tokenId && (
