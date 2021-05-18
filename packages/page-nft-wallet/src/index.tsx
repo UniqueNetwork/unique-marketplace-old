@@ -4,7 +4,7 @@
 import './styles.scss';
 
 // external imports
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Route, Switch, useHistory } from 'react-router';
 import { useLocation } from 'react-router-dom';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
@@ -18,6 +18,9 @@ import { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
 
 import NftWallet from './containers/NftWallet';
 import TokensForSale from './containers/TokensForSale';
+
+const canAddCollections = true;
+const canCreateCollection = true;
 
 function App ({ account, basePath }: Props): React.ReactElement<Props> {
   const location = useLocation();
@@ -56,7 +59,12 @@ function App ({ account, basePath }: Props): React.ReactElement<Props> {
     });
   }, []);
 
-  const canCreateCollection = false;
+  // reset collections if we can't add another except UNIQUE_COLLECTION_ID
+  useEffect(() => {
+    if (!canAddCollections) {
+      localStorage.setItem('tokenCollections', JSON.stringify([]));
+    }
+  }, []);
 
   return (
     <div className='my-tokens'>
@@ -113,6 +121,7 @@ function App ({ account, basePath }: Props): React.ReactElement<Props> {
           <NftWallet
             account={account}
             addCollection={addCollection}
+            canAddCollections={canAddCollections}
             collections={collections}
             setCollections={setCollections}
             setShouldUpdateTokens={setShouldUpdateTokens}

@@ -123,7 +123,7 @@ function NftCollectionCard ({ account, canTransferTokens, collection, openTransf
   }, []);
 
   const canEditCollection = true;
-  const canCreateToken = false;
+  const canCreateToken = true;
 
   return (
     <Expander

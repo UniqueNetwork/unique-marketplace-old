@@ -58,8 +58,6 @@ export function useNftContract (account: string): useNftContractInterface {
       if (contractInstance) {
         const result = await contractInstance.query.getBalance(account, { gasLimit: maxGas, value }, quoteId) as unknown as { output: BN };
 
-        console.log('getUserDeposit', result);
-
         if (result.output) {
           setDeposited(result.output);
 
@@ -79,8 +77,6 @@ export function useNftContract (account: string): useNftContractInterface {
     try {
       if (contractInstance) {
         const result = await contractInstance.query.getNftDeposit(account, { gasLimit: maxGas, value }, collectionId, tokenId);
-
-        console.log('getDepositor', result);
 
         // empty or 0 0 0 0
         if (result.output && result.output.toString() !== '5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM') {
@@ -111,8 +107,6 @@ export function useNftContract (account: string): useNftContractInterface {
   const getTokenAsk = useCallback(async (collectionId: string, tokenId: string) => {
     if (contractInstance) {
       const askIdResult = await contractInstance.query.getAskIdByToken(contractAddress, { gasLimit: maxGas, value }, collectionId, tokenId) as unknown as { output: BN };
-
-      console.log('askIdResult', askIdResult);
 
       if (askIdResult.output) {
         const askId = askIdResult.output.toNumber();

@@ -190,6 +190,7 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
                             active
                             className='load-more'
                             inline='centered'
+                            key={'nft-market'}
                           />}
                         pageStart={1}
                         threshold={200}
