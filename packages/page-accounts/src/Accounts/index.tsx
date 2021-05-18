@@ -1,16 +1,18 @@
 // Copyright 2017-2021 @polkadot/app-accounts authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import './styles.scss';
+
 import type { ActionStatus } from '@polkadot/react-components/Status/types';
 import type { AccountId, ProxyDefinition, ProxyType, Voting } from '@polkadot/types/interfaces';
 import type { Delegation, SortedAccount } from '../types';
 
 import BN from 'bn.js';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import styled from 'styled-components';
+import Button from 'semantic-ui-react/dist/commonjs/elements/Button';
 
-import { Button, Input, Table } from '@polkadot/react-components';
-import { useAccounts, useApi, useCall, useFavorites, useIpfs, useLedger, useLoadingDelay, useToggle } from '@polkadot/react-hooks';
+import { Input, Table } from '@polkadot/react-components';
+import { useAccounts, useApi, useCall, useFavorites, useIpfs, useLoadingDelay, useToggle } from '@polkadot/react-hooks';
 import { FormatBalance } from '@polkadot/react-query';
 import { BN_ZERO } from '@polkadot/util';
 
@@ -20,7 +22,6 @@ import Ledger from '../modals/Ledger';
 import Multisig from '../modals/MultisigCreate';
 import Proxy from '../modals/ProxiedAdd';
 import Qr from '../modals/Qr';
-import { useTranslation } from '../translate';
 import { sortAccounts } from '../util';
 import Account from './Account';
 import BannerClaims from './BannerClaims';
@@ -43,12 +44,10 @@ interface Props {
 
 const STORE_FAVS = 'accounts:favorites';
 
-function Overview ({ className = '', onStatusChange }: Props): React.ReactElement<Props> {
-  const { t } = useTranslation();
+function Overview ({ className = 'page-accounts', onStatusChange }: Props): React.ReactElement<Props> {
   const { api } = useApi();
-  const { allAccounts, hasAccounts } = useAccounts();
+  const { allAccounts } = useAccounts();
   const { isIpfs } = useIpfs();
-  const { isLedgerEnabled } = useLedger();
   const [isCreateOpen, toggleCreate] = useToggle();
   const [isImportOpen, toggleImport] = useToggle();
   const [isLedgerOpen, toggleLedger] = useToggle();
@@ -72,14 +71,10 @@ function Overview ({ className = '', onStatusChange }: Props): React.ReactElemen
   const isLoading = useLoadingDelay();
 
   const headerRef = useRef([
-    [t('accounts'), 'start', 3],
-    [t('parent'), 'address media--1400'],
-    [t('type')],
-    [t('tags'), 'start'],
-    [t('transactions'), 'media--1500'],
-    [t('balances'), 'expand'],
-    [],
-    [undefined, 'media--1400']
+    ['accounts', 'start', 3],
+    ['type'],
+    ['balances', 'expand'],
+    []
   ]);
 
   useEffect((): void => {
@@ -128,14 +123,10 @@ function Overview ({ className = '', onStatusChange }: Props): React.ReactElemen
   const footer = useMemo(() => (
     <tr>
       <td colSpan={3} />
-      <td className='media--1400' />
       <td colSpan={2} />
-      <td className='media--1500' />
       <td className='number'>
         {balanceTotal && <FormatBalance value={balanceTotal} />}
       </td>
-      <td />
-      <td className='media--1400' />
     </tr>
   ), [balanceTotal]);
 
@@ -143,13 +134,13 @@ function Overview ({ className = '', onStatusChange }: Props): React.ReactElemen
     <div className='filter--tags'>
       <Input
         autoFocus
-        isFull
-        label={t<string>('filter by name or tags')}
+        className='isSmall'
+        label={'filter by name or tags'}
         onChange={setFilter}
         value={filterOn}
       />
     </div>
-  ), [filterOn, t]);
+  ), [filterOn]);
 
   return (
     <div className={className}>
@@ -186,50 +177,26 @@ function Overview ({ className = '', onStatusChange }: Props): React.ReactElemen
           onStatusChange={onStatusChange}
         />
       )}
-      <Button.Group>
+      <Button.Group className='account-actions'>
         <Button
-          icon='plus'
-          isDisabled={isIpfs}
-          label={t<string>('Add account')}
+          content={'Add account'}
+          disabled={isIpfs}
           onClick={toggleCreate}
         />
         <Button
-          icon='sync'
-          isDisabled={isIpfs}
-          label={t<string>('Restore JSON')}
+          content={'Restore JSON'}
+          disabled={isIpfs}
           onClick={toggleImport}
         />
         <Button
-          icon='qrcode'
-          label={t<string>('Add via Qr')}
+          content={'Add via Qr'}
           onClick={toggleQr}
-        />
-        {isLedgerEnabled && (
-          <>
-            <Button
-              icon='project-diagram'
-              label={t<string>('Add via Ledger')}
-              onClick={toggleLedger}
-            />
-          </>
-        )}
-        <Button
-          icon='plus'
-          isDisabled={!(api.tx.multisig || api.tx.utility) || !hasAccounts}
-          label={t<string>('Multisig')}
-          onClick={toggleMultisig}
-        />
-        <Button
-          icon='plus'
-          isDisabled={!api.tx.proxy || !hasAccounts}
-          label={t<string>('Proxied')}
-          onClick={toggleProxy}
         />
       </Button.Group>
       <BannerExtension />
       <BannerClaims />
       <Table
-        empty={!isLoading && sortedAccountsWithDelegation && t<string>("You don't have any accounts. Some features are currently hidden and will only become available once you have accounts.")}
+        empty={!isLoading && sortedAccountsWithDelegation && 'You don\'t have any accounts. Some features are currently hidden and will only become available once you have accounts.'}
         filter={filter}
         footer={footer}
         header={headerRef.current}
@@ -251,14 +218,4 @@ function Overview ({ className = '', onStatusChange }: Props): React.ReactElemen
   );
 }
 
-export default React.memo(styled(Overview)`
-  .filter--tags {
-    .ui--Dropdown {
-      padding-left: 0;
-
-      label {
-        left: 1.55rem;
-      }
-    }
-  }
-`);
+export default React.memo(Overview);

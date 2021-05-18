@@ -28,7 +28,7 @@ function General ({ className = '' }: Props): React.ReactElement<Props> {
   const [state, setSettings] = useState((): SettingsStruct => {
     const values = settings.get();
 
-    return { ...values, uiTheme: values.uiTheme === 'dark' ? 'dark' : 'light' };
+    return { ...values, uiTheme: values.uiTheme || 'Unique' };
   });
 
   const iconOptions = useMemo(
@@ -45,10 +45,12 @@ function General ({ className = '' }: Props): React.ReactElement<Props> {
 
   const themeOptions = useMemo(
     () => [
-      { text: t('Light theme (default)'), value: 'light' },
-      { text: t('Dark theme (experimental, work-in-progress)'), value: 'dark' }
+      { text: 'Unique theme (default)', value: 'Unique' },
+      { text: 'NF3Digital', value: 'NF3Digital' },
+      { text: 'LUVNFT', value: 'LUVNFT' },
+      { text: 'Vernissage', value: 'Vernissage' }
     ],
-    [t]
+    []
   );
 
   const translateLanguages = useMemo(

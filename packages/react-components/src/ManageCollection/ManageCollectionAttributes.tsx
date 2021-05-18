@@ -3,183 +3,64 @@
 
 import './styles.scss';
 
-import React, { useCallback, useEffect, useState } from 'react';
-import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
-import Button from 'semantic-ui-react/dist/commonjs/elements/Button';
-import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
+import React, { useMemo } from 'react';
+import Tab from 'semantic-ui-react/dist/commonjs/modules/Tab/Tab';
 
-// import Dropdown from 'semantic-ui-react/dist/commonjs/modules/Dropdown';
-import { Dropdown, Input } from '@polkadot/react-components';
+import { ProtobufAttributeType } from '@polkadot/react-components/util/protobufUtils';
 
-// type AttributeTypes = 'Bytes' | '_enum';
-
-type TypeOption = {
-  text: string;
-  value: string;
-}
-
-const TypeOptions = [
-  {
-    text: 'string',
-    value: 'Bytes'
-  },
-  {
-    text: 'enumerable',
-    value: '_enum'
-  }
-];
-
-type AttributeType = {
-  name: string;
-  type: string;
-  values: string[];
-};
+import ManageOnChainSchema from './ManageOnChainSchema';
 
 interface Props {
   account?: string;
+  basePath: string;
+  collectionId?: string;
+  constOnChainSchema?: ProtobufAttributeType;
+  fetchCollectionInfo: () => void;
+  isAdmin?: boolean;
+  saveConstOnChainSchema: (args: { account: string, collectionId: string, schema: string, successCallback?: () => void, errorCallback?: () => void }) => void;
+  saveVariableOnChainSchema: (args: { account: string, collectionId: string, schema: string, successCallback?: () => void, errorCallback?: () => void }) => void;
+  variableOnChainSchema?: ProtobufAttributeType;
 }
 
-// [{ name: 'Name1', type: '_enum', values: ['enum1', 'enum2'] }, { name: 'Name2', type: 'string' }];
-
 function ManageCollectionAttributes (props: Props): React.ReactElement<Props> {
-  const { account } = props;
-  const [currentAttributeName, setCurrentAttributeName] = useState<string>('');
-  const [currentAttributeNameError, setCurrentAttributeNameError] = useState<string>();
-  const [currentAttributeType, setCurrentAttributeType] = useState<string>('Bytes');
-  const [currentAttributeEnumValue, setCurrentAttributeEnumValue] = useState<string>('');
-  const [currentAttributeEnumValueError, setCurrentAttributeEnumValueError] = useState<string>();
-  const [currentAttributeValues, setCurrentAttributeValues] = useState<string[]>([]);
-  const [attributes, setAttributes] = useState<AttributeType[]>([]);
+  const { account, collectionId, constOnChainSchema, fetchCollectionInfo, isAdmin, saveConstOnChainSchema, saveVariableOnChainSchema, variableOnChainSchema } = props;
 
-  const clearCurrentAttribute = useCallback(() => {
-    setCurrentAttributeName('');
-    setCurrentAttributeType('Bytes');
-    setCurrentAttributeEnumValue('');
-  }, []);
-
-  const addAttribute = useCallback(() => {
-    if (currentAttributeName && currentAttributeType && !attributes.find((item: AttributeType) => item.name === currentAttributeName)) {
-      setAttributes((prevAttributes: AttributeType[]) => [...prevAttributes, { name: currentAttributeName, type: currentAttributeType, values: currentAttributeValues }]);
-      clearCurrentAttribute();
-      setCurrentAttributeNameError(undefined);
-    } else {
-      setCurrentAttributeNameError('You already have attribute with same name!');
+  const panes = useMemo(() => [
+    {
+      menuItem: 'ConstOnChainSchema',
+      // eslint-disable-next-line react/display-name
+      render: () => (
+        <ManageOnChainSchema
+          account={account}
+          collectionId={collectionId}
+          fetchCollectionInfo={fetchCollectionInfo}
+          isAdmin={isAdmin}
+          onChainSchema={constOnChainSchema}
+          saveOnChainSchema={saveConstOnChainSchema}
+        />
+      )
+    },
+    {
+      menuItem: 'VariableOnChainSchema',
+      // eslint-disable-next-line react/display-name
+      render: () => (
+        <ManageOnChainSchema
+          account={account}
+          collectionId={collectionId}
+          fetchCollectionInfo={fetchCollectionInfo}
+          isAdmin={isAdmin}
+          onChainSchema={variableOnChainSchema}
+          saveOnChainSchema={saveVariableOnChainSchema}
+        />
+      )
     }
-  }, [attributes, clearCurrentAttribute, currentAttributeName, currentAttributeType, currentAttributeValues]);
-
-  const onSaveAll = useCallback(() => {
-    console.log('onSaveAll');
-  }, []);
-
-  const onAddField = useCallback(() => {
-    addAttribute();
-  }, [addAttribute]);
-
-  const addEnumValue = useCallback(() => {
-    if (!currentAttributeValues.find((enumValue: string) => enumValue === currentAttributeEnumValue)) {
-      setCurrentAttributeValues((prevState) => [...prevState, currentAttributeEnumValue]);
-      setCurrentAttributeEnumValueError(undefined);
-    } else {
-      setCurrentAttributeEnumValueError('You already have attribute with same name!');
-    }
-  }, [currentAttributeEnumValue, currentAttributeValues]);
-
-  const onAddEnumField = useCallback(() => {
-    addEnumValue();
-    setCurrentAttributeEnumValue('');
-  }, [addEnumValue]);
+  ], [account, collectionId, constOnChainSchema, fetchCollectionInfo, isAdmin, saveConstOnChainSchema, saveVariableOnChainSchema, variableOnChainSchema]);
 
   return (
-    <div className='manage-collection'>
-      <Header as='h3'>Manage collection ConstOnChainSchema</Header>
-      { attributes.length > 0 && (
-        <div className='attributes'>
-          <div
-            className='attribute'
-          >
-            <div>Name</div>
-            <div>Type</div>
-            <div>Enum</div>
-          </div>
-          { attributes.map((attribute) => (
-            <div
-              className='attribute'
-              key={attribute.name}
-            >
-              <div>{attribute.name}</div>
-              <div>{attribute.type}</div>
-              <div>{attribute?.values.join(', ')}</div>
-            </div>
-          ))}
-        </div>
-      )}
-      <Form className='manage-collection--form'>
-        <div className='attribute-form'>
-          <Form.Field>
-            <Dropdown
-              onChange={setCurrentAttributeType}
-              options={TypeOptions}
-              placeholder='Select Attribute Type'
-              value={currentAttributeType}
-            />
-          </Form.Field>
-          <Form.Field>
-            <Input
-              className='isSmall'
-              isError={!!currentAttributeNameError}
-              label='Please enter the Attribute name'
-              onChange={setCurrentAttributeName}
-              placeholder='Attribute name'
-              value={currentAttributeName}
-            />
-            { currentAttributeNameError && (
-              <div className='field-error'>
-                {currentAttributeNameError}
-              </div>
-            )}
-          </Form.Field>
-          <Button
-            content='+'
-            disabled={!currentAttributeType || !currentAttributeName || (currentAttributeType === '_enum' && currentAttributeValues.length < 2)}
-            onClick={onAddField}
-          />
-        </div>
-        currentAttributeName: {currentAttributeName}
-        currentAttributeType: {currentAttributeType}
-        {currentAttributeType === '_enum' && (
-          <div className='attribute-enum-form'>
-            <Form.Field>
-              <Input
-                className='isSmall'
-                isError={!!currentAttributeEnumValueError}
-                label='Please enter an enum attribute'
-                onChange={setCurrentAttributeEnumValue}
-                placeholder='Enum attribute'
-                value={currentAttributeEnumValue}
-              />
-              { currentAttributeEnumValueError && (
-                <div className='field-error'>
-                  {currentAttributeEnumValueError}
-                </div>
-              )}
-            </Form.Field>
-            <Form.Field>
-              <Button
-                content='+'
-                onClick={onAddEnumField}
-              />
-            </Form.Field>
-            Enum values: {currentAttributeValues.join(', ')}
-          </div>
-        )}
-        <Form.Field>
-          <Button
-            content='Save'
-            disabled={!attributes.length}
-            onClick={onSaveAll}
-          />
-        </Form.Field>
-      </Form>
+    <div className='manage-collection-attributes'>
+      <Tab
+        panes={panes}
+      />
     </div>
   );
 }

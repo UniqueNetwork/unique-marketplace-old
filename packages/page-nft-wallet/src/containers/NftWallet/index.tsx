@@ -3,38 +3,34 @@
 
 import './styles.scss';
 
-import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollections';
+import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header/Header';
 
 import { LabelHelp, Table, TransferModal } from '@polkadot/react-components';
 import { useCollections } from '@polkadot/react-hooks';
-import { TypeRegistry } from '@polkadot/types';
 
 import CollectionSearch from '../../components/CollectionSearch';
 import NftCollectionCard from '../../components/NftCollectionCard';
 
 interface NftWalletProps {
   account?: string;
-  localRegistry?: TypeRegistry;
+  addCollection: (collection: NftCollectionInterface) => void;
+  canAddCollections: boolean;
+  collections: NftCollectionInterface[];
+  setCollections: (collections: NftCollectionInterface[]) => void;
   setShouldUpdateTokens: (value: string) => void;
   shouldUpdateTokens?: string;
 }
 
-function NftWallet ({ account, localRegistry, setShouldUpdateTokens, shouldUpdateTokens }: NftWalletProps): React.ReactElement {
-  const collectionsStorage: NftCollectionInterface[] = JSON.parse(localStorage.getItem('tokenCollections') || '[]') as NftCollectionInterface[];
+function NftWallet ({ account, addCollection, canAddCollections, collections, setCollections, setShouldUpdateTokens, shouldUpdateTokens }: NftWalletProps): React.ReactElement {
   const [openTransfer, setOpenTransfer] = useState<{ collection: NftCollectionInterface, tokenId: string, balance: number } | null>(null);
-  const [collections, setCollections] = useState<NftCollectionInterface[]>(collectionsStorage);
   const [selectedCollection, setSelectedCollection] = useState<NftCollectionInterface>();
   const [canTransferTokens] = useState<boolean>(true);
   const currentAccount = useRef<string | null | undefined>();
   const { presetMintTokenCollection } = useCollections();
   const cleanup = useRef<boolean>(false);
-
-  const addCollection = useCallback((collection: NftCollectionInterface) => {
-    setCollections((prevCollections: NftCollectionInterface[]) => [...prevCollections, collection]);
-  }, []);
 
   const addMintCollectionToList = useCallback(async () => {
     const firstCollections: NftCollectionInterface[] = await presetMintTokenCollection();
@@ -43,8 +39,8 @@ function NftWallet ({ account, localRegistry, setShouldUpdateTokens, shouldUpdat
       return;
     }
 
-    setCollections(() => [...firstCollections]);
-  }, [presetMintTokenCollection]);
+    setCollections([...firstCollections]);
+  }, [setCollections, presetMintTokenCollection]);
 
   const removeCollection = useCallback((collectionToRemove) => {
     if (selectedCollection && selectedCollection.id === collectionToRemove) {
@@ -52,7 +48,7 @@ function NftWallet ({ account, localRegistry, setShouldUpdateTokens, shouldUpdat
     }
 
     setCollections(collections.filter((item: NftCollectionInterface) => item.id !== collectionToRemove));
-  }, [collections, selectedCollection]);
+  }, [collections, setCollections, selectedCollection]);
 
   const openTransferModal = useCallback((collection: NftCollectionInterface, tokenId: string, balance: number) => {
     setOpenTransfer({ balance, collection, tokenId });
@@ -68,10 +64,6 @@ function NftWallet ({ account, localRegistry, setShouldUpdateTokens, shouldUpdat
   }, [account, setShouldUpdateTokens]);
 
   useEffect(() => {
-    localStorage.setItem('tokenCollections', JSON.stringify(collections));
-  }, [collections]);
-
-  useEffect(() => {
     void addMintCollectionToList();
   }, [addMintCollectionToList]);
 
@@ -83,14 +75,17 @@ function NftWallet ({ account, localRegistry, setShouldUpdateTokens, shouldUpdat
 
   return (
     <div className='nft-wallet'>
-      <Header as='h1'>Usetech NFT wallet</Header>
-      <CollectionSearch
-        account={account}
-        addCollection={addCollection}
-        collections={collections}
-      />
-      <br />
-      <Header as='h2'>
+      { canAddCollections && (
+        <>
+          <CollectionSearch
+            account={account}
+            addCollection={addCollection}
+            collections={collections}
+          />
+          <br />
+        </>
+      )}
+      <Header as='h3'>
         My collections
         <LabelHelp
           className='small-help'
@@ -108,7 +103,6 @@ function NftWallet ({ account, localRegistry, setShouldUpdateTokens, shouldUpdat
                 account={account}
                 canTransferTokens={canTransferTokens}
                 collection={collection}
-                localRegistry={localRegistry}
                 openTransferModal={openTransferModal}
                 removeCollection={removeCollection}
                 shouldUpdateTokens={shouldUpdateTokens}

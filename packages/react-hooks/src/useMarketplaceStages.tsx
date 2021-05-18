@@ -2,16 +2,17 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import type { SubmittableExtrinsic } from '@polkadot/api/promise/types';
-import type { NftCollectionInterface, TokenDetailsInterface } from '@polkadot/react-hooks/useCollections';
+import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
+import type { TokenDetailsInterface } from '@polkadot/react-hooks/useToken';
 
 import { useMachine } from '@xstate/react';
 import BN from 'bn.js';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 import { StatusContext } from '@polkadot/react-components/Status';
-import { useApi, useBalance, useCollections, useKusamaApi, useNftContract } from '@polkadot/react-hooks';
+import { useApi, useKusamaApi, useNftContract, useToken } from '@polkadot/react-hooks';
 import { BalanceInterface } from '@polkadot/react-hooks/useBalance';
-import { escrowAddress, findCallMethodByName, KUSAMA_DECIMALS, maxGas, quoteId } from '@polkadot/react-hooks/utils';
+import { escrowAddress, KUSAMA_DECIMALS, maxGas, quoteId } from '@polkadot/react-hooks/utils';
 
 import marketplaceStateMachine from './stateMachine';
 
@@ -47,9 +48,8 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
   const [tokenInfo, setTokenInfo] = useState<TokenDetailsInterface>();
   const [saleFee, setSaleFee] = useState<BN>();
   const [buyFee, setBuyFee] = useState<BN>();
-  const { getDetailedReFungibleTokenInfo, getDetailedTokenInfo } = useCollections();
+  const { getTokenInfo } = useToken();
   const { contractInstance, deposited, depositor, getDepositor, getTokenAsk, getUserDeposit, isContractReady, tokenAsk } = useNftContract(account);
-  const { balance } = useBalance(account);
   const [error, setError] = useState<string | null>(null);
   const { queueExtrinsic } = useContext(StatusContext);
   const [readyToAskPrice, setReadyToAskPrice] = useState<boolean>(false);
@@ -60,30 +60,14 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
     send(userAction);
   }, [send]);
 
-  const getTokenInfo = useCallback(async () => {
-    let info;
-
-    if (!collectionInfo) {
-      return;
-    }
-
-    if (Object.prototype.hasOwnProperty.call(collectionInfo.Mode, 'reFungible')) {
-      info = await getDetailedReFungibleTokenInfo(collectionInfo.id, tokenId);
-    } else {
-      info = await getDetailedTokenInfo(collectionInfo.id, tokenId);
-    }
-
-    setTokenInfo(info);
-
-    return info;
-  }, [collectionInfo, getDetailedReFungibleTokenInfo, getDetailedTokenInfo, tokenId]);
-
   const loadingTokenInfo = useCallback(async () => {
     if (!collectionInfo) {
       return;
     }
 
-    const info = await getTokenInfo();
+    const info: TokenDetailsInterface = await getTokenInfo(collectionInfo, tokenId);
+
+    setTokenInfo(info);
     const ask = await getTokenAsk(collectionInfo.id, tokenId);
 
     await getUserDeposit();
@@ -135,21 +119,17 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
 
   const getBuyFee = useCallback(async () => {
     if (contractInstance && collectionInfo) {
-      const message = findCallMethodByName(contractInstance, 'buy');
+      const extrinsic = contractInstance.tx.buy({
+        gasLimit: maxGas,
+        value: 0
+      }, collectionInfo.id, tokenId);
 
-      if (message) {
-        const extrinsic = contractInstance.exec(message, {
-          gasLimit: maxGas,
-          value: 0
-        }, collectionInfo.id, tokenId);
+      const fee = await extrinsic.paymentInfo(account) as { partialFee: BN };
 
-        const fee = await extrinsic.paymentInfo(account) as { partialFee: BN };
+      if (fee) {
+        setBuyFee(fee.partialFee);
 
-        if (fee) {
-          setBuyFee(fee.partialFee);
-
-          return fee.partialFee;
-        }
+        return fee.partialFee;
       }
     }
 
@@ -159,7 +139,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
   /** user actions **/
   const sell = useCallback(() => {
     // check balance to have enough fee
-    if (saleFee && balance?.free.gte(saleFee) && collectionInfo) {
+    if (collectionInfo) {
       queueTransaction(
         api.tx.nft
           .transfer(escrowAddress, collectionInfo.id, tokenId, 0),
@@ -169,10 +149,8 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
         'deposit nft to contract update'
       );
       send('TRANSACTION_READY');
-    } else {
-      alert('Your unique balance is not enough to sell');
     }
-  }, [api.tx.nft, balance?.free, collectionInfo, saleFee, queueTransaction, send, tokenId]);
+  }, [api.tx.nft, collectionInfo, queueTransaction, send, tokenId]);
 
   const waitForNftDeposit = useCallback(async () => {
     if (collectionInfo) {
@@ -191,16 +169,18 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
   }, [account, collectionInfo, getDepositor, send, tokenAsk, tokenId]);
 
   const waitForTokenRevert = useCallback(async () => {
-    const info = await getTokenInfo();
+    if (collectionInfo) {
+      const info = await getTokenInfo(collectionInfo, tokenId);
 
-    if (info?.Owner?.toString() === account) {
-      send('TOKEN_REVERT_SUCCESS');
-    } else {
-      setTimeout(() => {
-        void waitForTokenRevert();
-      }, 5000);
+      if (info?.Owner?.toString() === account) {
+        send('TOKEN_REVERT_SUCCESS');
+      } else {
+        setTimeout(() => {
+          void waitForTokenRevert();
+        }, 5000);
+      }
     }
-  }, [account, getTokenInfo, send]);
+  }, [account, collectionInfo, getTokenInfo, send, tokenId]);
 
   const depositNeeded = useCallback((userDeposit: BN, tokenPrice: BN): BN => {
     const feeFull = getFee(tokenPrice);
@@ -257,12 +237,10 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
   }, [getUserDeposit, isDepositEnough, send, tokenAsk]);
 
   const sentTokenToAccount = useCallback(() => {
-    const message = findCallMethodByName(contractInstance, 'buy');
-
-    if (message && contractInstance && collectionInfo) {
+    if (contractInstance && collectionInfo) {
       send('SIGN_SUCCESS');
 
-      const extrinsic = contractInstance.exec(message, {
+      const extrinsic = contractInstance.tx.buy({
         gasLimit: maxGas,
         value: 0
       }, collectionInfo.id, tokenId);
@@ -280,10 +258,8 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
   }, [contractInstance, collectionInfo, send, tokenId, queueTransaction]);
 
   const revertMoney = useCallback(() => {
-    const message = findCallMethodByName(contractInstance, 'withdraw');
-
-    if (message && contractInstance) {
-      const extrinsic = contractInstance.exec(message, {
+    if (contractInstance) {
+      const extrinsic = contractInstance.tx.withdraw({
         gasLimit: maxGas,
         value: 0
       }, quoteId, (parseFloat(withdrawAmount) * Math.pow(10, KUSAMA_DECIMALS)));
@@ -303,12 +279,8 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
   }, [setReadyToAskPrice]);
 
   const registerSale = useCallback(() => {
-    const message = findCallMethodByName(contractInstance, 'ask');
-
-    if (message && contractInstance && collectionInfo) {
-      console.log('tokenPriceForSale', tokenPriceForSale);
-
-      const extrinsic = contractInstance.exec(message, { gasLimit: maxGas, value: 0 }, collectionInfo.id, tokenId, quoteId, tokenPriceForSale);
+    if (contractInstance && collectionInfo) {
+      const extrinsic = contractInstance.tx.ask({ gasLimit: maxGas, value: 0 }, collectionInfo.id, tokenId, quoteId, tokenPriceForSale);
 
       queueTransaction(
         extrinsic,
@@ -321,10 +293,8 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
   }, [collectionInfo, contractInstance, queueTransaction, tokenId, tokenPriceForSale]);
 
   const cancelSell = useCallback(() => {
-    const message = findCallMethodByName(contractInstance, 'cancel');
-
-    if (message && contractInstance && collectionInfo) {
-      const extrinsic = contractInstance.exec(message, { gasLimit: maxGas, value: 0 }, collectionInfo.id, tokenId);
+    if (contractInstance && collectionInfo) {
+      const extrinsic = contractInstance.tx.cancel({ gasLimit: maxGas, value: 0 }, collectionInfo.id, tokenId);
 
       queueTransaction(
         extrinsic,

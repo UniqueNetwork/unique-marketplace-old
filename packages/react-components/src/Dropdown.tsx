@@ -22,7 +22,9 @@ interface Props<Option> {
   isDisabled?: boolean;
   isError?: boolean;
   isFull?: boolean;
+  isItem?: boolean;
   isMultiple?: boolean;
+  isSimple?: boolean;
   label?: React.ReactNode;
   labelExtra?: React.ReactNode;
   onAdd?: (value: any) => void;
@@ -35,6 +37,7 @@ interface Props<Option> {
   renderLabel?: (item: any) => any;
   searchInput?: { autoFocus: boolean };
   tabIndex?: number;
+  text?: string;
   transform?: (value: any) => any;
   value?: any;
   withEllipsis?: boolean;
@@ -45,7 +48,7 @@ export type IDropdown<Option> = React.ComponentType<Props<Option>> & {
   Header: React.ComponentType<{ content: React.ReactNode }>;
 }
 
-function BaseDropdown<Option> ({ allowAdd = false, children, className = '', defaultValue, dropdownClassName, help, isButton, isDisabled, isError, isFull, isMultiple, label, labelExtra, onAdd, onBlur, onChange, onClose, onSearch, options, placeholder, renderLabel, searchInput, tabIndex, transform, value, withEllipsis, withLabel }: Props<Option>): React.ReactElement<Props<Option>> {
+function BaseDropdown<Option> ({ allowAdd = false, children, className = '', defaultValue, dropdownClassName, help, isButton, isDisabled, isError, isFull, isItem, isMultiple, isSimple, label, labelExtra, onAdd, onBlur, onChange, onClose, onSearch, options, placeholder, renderLabel, searchInput, tabIndex, text, transform, value, withEllipsis, withLabel }: Props<Option>): React.ReactElement<Props<Option>> {
   const lastUpdate = useRef<string>('');
   const [stored, setStored] = useState<string | undefined>();
 
@@ -93,6 +96,7 @@ function BaseDropdown<Option> ({ allowAdd = false, children, className = '', def
       disabled={isDisabled}
       error={isError}
       floating={isButton}
+      item={isItem}
       multiple={isMultiple}
       onAddItem={_onAdd}
       onBlur={onBlur}
@@ -104,7 +108,9 @@ function BaseDropdown<Option> ({ allowAdd = false, children, className = '', def
       search={onSearch || allowAdd}
       searchInput={searchInput}
       selection
+      simple={isSimple}
       tabIndex={tabIndex}
+      text={text}
       value={stored}
     />
   );

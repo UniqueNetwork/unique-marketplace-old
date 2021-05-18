@@ -3,63 +3,23 @@
 
 import type { AppProps as Props } from '@polkadot/react-components/types';
 
-import React, { useRef } from 'react';
-import { Route, Switch } from 'react-router';
+import React from 'react';
 
-import { HelpOverlay, Tabs } from '@polkadot/react-components';
-import { useAccounts, useIpfs } from '@polkadot/react-hooks';
+import { HelpOverlay } from '@polkadot/react-components';
 
 import basicMd from './md/basic.md';
 import Accounts from './Accounts';
-import { useTranslation } from './translate';
 import useCounter from './useCounter';
-import Vanity from './Vanity';
 
 export { useCounter };
 
-const HIDDEN_ACC = ['vanity'];
-
-function AccountsApp ({ basePath, onStatusChange }: Props): React.ReactElement<Props> {
-  const { t } = useTranslation();
-  const { hasAccounts } = useAccounts();
-  const { isIpfs } = useIpfs();
-
-  const tabsRef = useRef([
-    {
-      isRoot: true,
-      name: 'overview',
-      text: t<string>('My accounts')
-    },
-    {
-      name: 'vanity',
-      text: t<string>('Vanity generator')
-    }
-  ]);
-
+function AccountsApp ({ onStatusChange }: Props): React.ReactElement<Props> {
   return (
     <main className='accounts--App'>
       <HelpOverlay md={basicMd as string} />
-      <header>
-        <Tabs
-          basePath={basePath}
-          hidden={(hasAccounts && !isIpfs) ? undefined : HIDDEN_ACC}
-          items={tabsRef.current}
-        />
-      </header>
-      <Switch>
-        <Route path={`${basePath}/vanity`}>
-          <Vanity
-            basePath={basePath}
-            onStatusChange={onStatusChange}
-          />
-        </Route>
-        <Route>
-          <Accounts
-            basePath={basePath}
-            onStatusChange={onStatusChange}
-          />
-        </Route>
-      </Switch>
+      <Accounts
+        onStatusChange={onStatusChange}
+      />
     </main>
   );
 }

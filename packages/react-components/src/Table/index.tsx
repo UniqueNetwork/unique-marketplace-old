@@ -62,7 +62,8 @@ export default React.memo(styled(Table)`
   max-width: 100%;
   width: 100%;
   padding: var(--gap);
-  background-color: var(--white-color);
+  background-color: var(--card-background);
+  color: var(--card-text-color);
 
   table {
     border-spacing: 0;

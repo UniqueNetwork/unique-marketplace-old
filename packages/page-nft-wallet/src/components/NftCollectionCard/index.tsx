@@ -1,17 +1,21 @@
 // Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import './NftCollectionCard.scss';
+import './styles.scss';
 
-import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollections';
+import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
+import { useHistory } from 'react-router';
+import Item from 'semantic-ui-react/dist/commonjs/views/Item';
 
 import { Expander } from '@polkadot/react-components';
-import { useCollections, useDecoder } from '@polkadot/react-hooks';
+import pencil from '@polkadot/react-components/ManageCollection/pencil.svg';
+import plus from '@polkadot/react-components/ManageCollection/plus.svg';
+import trash from '@polkadot/react-components/ManageCollection/trash.svg';
+import { useCollections, useDecoder, useMetadata } from '@polkadot/react-hooks';
+import { useCollection } from '@polkadot/react-hooks/useCollection';
 import { UNIQUE_COLLECTION_ID } from '@polkadot/react-hooks/utils';
-import { TypeRegistry } from '@polkadot/types';
 
 import NftTokenCard from '../NftTokenCard';
 
@@ -19,22 +23,59 @@ interface Props {
   account?: string;
   canTransferTokens: boolean;
   collection: NftCollectionInterface;
-  localRegistry?: TypeRegistry;
   removeCollection: (collection: string) => void;
   openTransferModal: (collection: NftCollectionInterface, tokenId: string, balance: number) => void;
   shouldUpdateTokens: string | undefined;
 }
 
-function NftCollectionCard ({ account, canTransferTokens, collection, localRegistry, openTransferModal, removeCollection, shouldUpdateTokens }: Props): React.ReactElement<Props> {
+function NftCollectionCard ({ account, canTransferTokens, collection, openTransferModal, removeCollection, shouldUpdateTokens }: Props): React.ReactElement<Props> {
   const [opened, setOpened] = useState(true);
+  const [collectionImageUrl, setCollectionImageUrl] = useState<string>();
+  const [ownTokensCount, setOwnTokensCount] = useState<number>();
+  const [allTokensCount, setAllTokensCount] = useState<number>();
   const [tokensOfCollection, setTokensOfCollection] = useState<Array<string>>([]);
   const { getTokensOfCollection } = useCollections();
+  const { getCollectionTokensCount } = useCollection();
   const { collectionName16Decoder } = useDecoder();
   const cleanup = useRef<boolean>(false);
+  const history = useHistory();
+  const { getTokenImageUrl } = useMetadata();
 
   const openCollection = useCallback((isOpen) => {
     setOpened(isOpen);
   }, []);
+
+  const defineCollectionImage = useCallback(async () => {
+    const collectionImage = await getTokenImageUrl(collection, '1');
+
+    if (cleanup.current) {
+      return;
+    }
+
+    setCollectionImageUrl(collectionImage);
+  }, [collection, getTokenImageUrl]);
+
+  const editCollection = useCallback((collectionId: string) => {
+    history.push(`/wallet/manage-collection?collectionId=${collectionId}`);
+  }, [history]);
+
+  const createToken = useCallback((collectionId: string) => {
+    history.push(`/wallet/manage-token?collectionId=${collectionId}`);
+  }, [history]);
+
+  const getTokensCount = useCallback(async () => {
+    if (!collection) {
+      return;
+    }
+
+    const tokensCount: number = await getCollectionTokensCount(collection.id) as number;
+
+    if (cleanup.current) {
+      return;
+    }
+
+    setAllTokensCount(parseFloat(tokensCount.toString()));
+  }, [collection, getCollectionTokensCount]);
 
   const updateTokens = useCallback(async () => {
     if (!account) {
@@ -47,6 +88,7 @@ function NftCollectionCard ({ account, canTransferTokens, collection, localRegis
       return;
     }
 
+    setOwnTokensCount(tokensOfCollection.length);
     setTokensOfCollection(tokensOfCollection);
   }, [account, collection, getTokensOfCollection]);
 
@@ -63,10 +105,25 @@ function NftCollectionCard ({ account, canTransferTokens, collection, localRegis
   }, [account, opened, updateTokens]);
 
   useEffect(() => {
+    if (!collectionImageUrl && collection) {
+      void defineCollectionImage();
+    }
+  }, [collection, collectionImageUrl, defineCollectionImage]);
+
+  useEffect(() => {
+    if (collection && allTokensCount === undefined) {
+      void getTokensCount();
+    }
+  }, [allTokensCount, collection, getTokensCount]);
+
+  useEffect(() => {
     return () => {
       cleanup.current = true;
     };
   }, []);
+
+  const canEditCollection = true;
+  const canCreateToken = true;
 
   return (
     <Expander
@@ -74,15 +131,58 @@ function NftCollectionCard ({ account, canTransferTokens, collection, localRegis
       isOpen={opened}
       onClick={openCollection}
       summary={
-        <>
-          <strong>{collectionName16Decoder(collection.Name)}</strong>
-          { collection.Description && (
-            <span> - {collectionName16Decoder(collection.Description)}</span>
-          )}
-          { Object.prototype.hasOwnProperty.call(collection.Mode, 'reFungible') &&
-            <strong>, re-fungible</strong>
-          }
-        </>
+        <div className='expander-content'>
+          <div
+            className='collection-info-row'>
+            <div className='token-image'>
+              { collectionImageUrl && (
+                <Item.Image
+                  size='mini'
+                  src={collectionImageUrl}
+                />
+              )}
+            </div>
+            <div>{collectionName16Decoder(collection.Name)}
+              { Object.prototype.hasOwnProperty.call(collection.Mode, 'reFungible') &&
+              <strong>, re-fungible. </strong>
+              }
+            </div>
+            { collection.Description && (
+              <div title={collectionName16Decoder(collection.Description)}> - {collectionName16Decoder(collection.Description)}</div>
+            )}
+          </div>
+          <div className='tokens-count'>
+            <span>Total: {allTokensCount} {!allTokensCount || allTokensCount > 1 ? 'items' : 'item'}</span>
+            <span>, Own: {ownTokensCount} {!ownTokensCount || ownTokensCount > 1 ? 'items' : 'item'}</span>
+          </div>
+          <div className='link-button'>
+            { canEditCollection && (
+              <img
+                alt='edit'
+                onClick={editCollection.bind(null, collection.id)}
+                src={pencil as string}
+                title='edit'
+              />
+            )}
+            { canCreateToken && (
+              <img
+                alt={'add'}
+                onClick={createToken.bind(null, collection.id)}
+                src={plus as string}
+                title='add'
+              />
+            )}
+            { collection.id !== UNIQUE_COLLECTION_ID && (
+              <img
+                alt='delete'
+                className='red'
+                onClick={removeCollection.bind(null, collection.id)}
+                src={trash as string}
+                title='delete'
+              />
+            )}
+          </div>
+        </div>
       }
     >
       <table className='table'>
@@ -93,7 +193,6 @@ function NftCollectionCard ({ account, canTransferTokens, collection, localRegis
               canTransferTokens={canTransferTokens}
               collection={collection}
               key={token}
-              localRegistry={localRegistry}
               openTransferModal={openTransferModal}
               shouldUpdateTokens={shouldUpdateTokens}
               token={token}
@@ -101,14 +200,6 @@ function NftCollectionCard ({ account, canTransferTokens, collection, localRegis
           ))}
         </tbody>
       </table>
-      { collection.id !== UNIQUE_COLLECTION_ID && (
-        <Button
-          basic
-          color='red'
-          onClick={removeCollection.bind(null, collection.id)}>
-          Remove collection
-        </Button>
-      )}
     </Expander>
   );
 }

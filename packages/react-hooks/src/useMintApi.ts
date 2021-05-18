@@ -1,7 +1,7 @@
 // Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollections';
+import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
 
 import { useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
@@ -27,7 +27,7 @@ export interface UseMintApiInterface {
  * Get validators from server if health "connected":true
  * @return {Array<ValidatorInfo>} filtered validators from server
  */
-function useMintApi (): UseMintApiInterface {
+export function useMintApi (): UseMintApiInterface {
   const [imgLoading, setImgLoading] = useState<boolean>(false);
   const [serverIsReady, setServerIsReady] = useState<boolean>(false);
   const [uploadingError, setUploadingError] = useState<string>();
@@ -94,5 +94,3 @@ function useMintApi (): UseMintApiInterface {
 
   return { imgLoading, serverIsReady, uploadImage, uploadingError };
 }
-
-export default useMintApi;

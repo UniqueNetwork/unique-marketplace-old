@@ -1,11 +1,82 @@
+body {
+  color: var(--text-color);
+}
+
+.ui.popup {
+  background: var(--bg-page) !important;
+
+  &:before, &:after {
+    background: var(--bg-page) !important;
+  }
+}
+
 hr {
   height: 0;
   border: 0;
   border-top: 1px solid var(--border-color);
 }
 
-.ui.header:first-child {
-  margin: 0;
+.ui.header {
+  color: var(--title-color);
+}
+
+.ui.modal {
+  border: 1px solid var(--modal-border-color);
+  color: var(--modal-text-color);
+
+  .header {
+    color: var(--modal-text-color) !important;
+  }
+
+  .ui.dropdown.selection.disabled {
+    background: var(--account-selector-background);
+
+    .ui--KeyPair {
+      .name {
+        .ui--AccountName {
+          color: var(--account-selector-name-color);
+        }
+      }
+      .address {
+        color: var(--account-selector-address-color);
+      }
+    }
+  }
+
+  h2 {
+    color: var(--modal-text-color);
+  }
+
+  .actions {
+
+    .ui--Button {
+      background: var(--link-color);
+      color: var(--text-color);
+      margin: 0 1rem;
+
+      &:active {
+        background: var(--link-color);
+        color: var(--text-color);
+      }
+
+      &:hover {
+        background: var(--link-color);
+        color: var(--text-color);
+      }
+
+      &.isDisabled {
+        opacity: 0.5;
+      }
+
+      &:last-child {
+        margin: 0;
+      }
+
+      .ui--Icon {
+        background: var(--link-color) !important;
+      }
+    }
+  }
 }
 
 h1.ui.header {
@@ -50,8 +121,59 @@ h4.ui.header {
     display: none;
   }
 
-  .ui.dropdown .text {
-    width: 100%;
+  &.ui--Dropdown {
+
+    &.dropdown-button {
+      width: 130px;
+      height: 40px;
+      margin: 0;
+
+      .ui.dropdown {
+        border-radius: 8px;
+        min-width: 0;
+        background: var(--link-color);
+        padding: 8px 24px !important;
+        margin: 0;
+        min-height: 0;
+        height: 40px;
+
+        &.selection {
+          .menu {
+            .item {
+              border-color: var(--border-color);
+            }
+          }
+        }
+
+        .text {
+          color: var(--text-color) !important;
+          font-family: var(--font-roboto) var(--font-mono);
+          font-size: 16px;
+        }
+
+        .menu {
+          border-color: var(--border-color);
+
+          .text {
+            color: var(--text-color) !important;
+          }
+
+        }
+      }
+    }
+  }
+
+  .ui.dropdown {
+
+    &.active {
+      &:hover {
+        border: 1px solid var(--account-selector-background);
+      }
+    }
+
+    .text {
+      width: 100%;
+    }
   }
 
   .ui.disabled.search {
@@ -87,20 +209,20 @@ h4.ui.header {
     height: 100%;
   }
 
-  .dyvfBJ > .icon {
-    top: 50% !important;
-    left: -28px !important;
-    transform: translate(0, -50%);
-    width: 24px;
-    height: 24px;
-    border: 0px;
-    border-radius: 0;
-  }
-
   .ui--KeyPair {
     flex-direction: column;
     color: var(--link-color);
     font: 500 14px/14px var(--font-roboto);
+
+    .icon {
+      top: 50% !important;
+      left: -28px !important;
+      transform: translate(0, -50%);
+      width: 24px;
+      height: 24px;
+      border: 0px;
+      border-radius: 0;
+    }
 
     & > .address {
       margin-left: 0;
@@ -126,6 +248,7 @@ h4.ui.header {
 .ui.form {
   .ui.input {
     margin: 0;
+
     input {
       border: 1px solid var(--border-color);
       border-radius: calc(var(--bradius) * 2);
@@ -133,6 +256,79 @@ h4.ui.header {
       font: 400 16px/24px var(--font-roboto);
       padding: calc(var(--gap) / 2) var(--gap);
     }
+  }
+
+  textarea {
+    border: 1px solid var(--border-color);
+    border-radius: calc(var(--bradius) * 2);
+    font: 400 16px/24px var(--font-roboto);
+    padding: calc(var(--gap) / 2) var(--gap);
+  }
+
+  .ui--Dropdown {
+    .ui.dropdown {
+      border: 1px solid var(--border-color);
+      border-radius: calc(var(--bradius) * 2);
+      background: var(--input-background-color) !important;
+      font: 400 16px/24px var(--font-roboto) !important;
+      margin: 0;
+      height: 40px !important;
+      line-height: 25px !important;
+      min-height: 0;
+      padding: calc(var(--gap) / 2) var(--gap) !important;
+
+      .default.text {
+        margin: 0;
+      }
+
+      .menu {
+        border-color: var(--border-color);
+        background: var(--input-background-color) !important;
+
+        .item {
+          font: 400 16px/24px var(--font-roboto) !important;
+          padding: calc(var(--gap) / 2) var(--gap) !important;
+        }
+      }
+
+      a.ui.label {
+        font-size: 14px;
+        padding: 3px 8px;
+        background-color: var(--link-color);
+        border-radius: 8px;
+        color: white;
+        grid-column-gap: 8px;
+        line-height: 16px;
+        white-space: nowrap;
+
+        .delete.icon {
+          background: url('../public/icons/closeIcon.svg') !important;
+          width: 13px;
+          height: 13px;
+
+          &::before {
+            content: none;
+          }
+        }
+      }
+    }
+  }
+}
+
+.ui.loader {
+  color: var(--text-color);
+
+  &:after {
+    left: 40%;
+  }
+
+  &:before {
+    left: 40%;
+  }
+
+  .load-more {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
   }
 }
 
@@ -142,6 +338,55 @@ h4.ui.header {
 
 .ui.form .field {
   margin: 0;
+}
+
+.ui--Dropdown {
+  &.dropdown-button {
+    .ui.item.dropdown {
+
+      .text {
+        font-weight: 500;
+      }
+
+      .menu {
+        .text {
+          font-weight: 400;
+        }
+      }
+
+      .dropdown.icon {
+        background: url('../public/icons/arrowDown.svg') !important;
+        background-position: 100px 100px;
+        background-repeat: no-repeat;
+        height: 13px !important;
+        width: 13px !important;
+        padding: 0;
+        margin: 13px 20px 13px 0 !important;
+
+        &::before {
+          content: none;
+        }
+      }
+    }
+  }
+}
+
+.text-block {
+  width: 100%;
+  font-size: 20px;
+  line-height: 40px;
+
+  &.confirmed {
+    color: var(--success-color);
+  }
+
+  &.error {
+    color: var(--error-color);
+  }
+
+  &.disabled {
+    color: var(--tabs-color);
+  }
 }
 
 .error-block {
@@ -206,7 +451,6 @@ button.ui.button,
   display: flex;
   align-items: center;
   letter-spacing: 0.11em;
-  color: var(--link-color) !important;
   font: 500 16px/24px var(--font-roboto) !important;
 
   img {
@@ -254,7 +498,6 @@ button.ui.button,
   }
 
   &:after {
-    left: 0;
     border-width: 0.1em;
     border-color: var(--link-color) transparent transparent;
   }
@@ -273,52 +516,144 @@ button.ui.button,
   align-items: center;
 }
 
-.market-pallet {
-  width: 100%;
+.go-back {
+  display: flex;
+  flex-direction: row;
+  grid-column-gap: 10px;
+  align-items: center;
+  color: var(--card-link-color) !important;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+}
 
-  &__item {
-    width: 100%;
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-
-    .token-card {
-      word-break: break-all;
+.app-header {
+  .ui.tabular.menu {
+    .item {
+      color: var(--sub-header-color);
+      text-transform: var(--menu-text-transform);
+      font-size: var(--menu-font-size);
     }
   }
 }
 
-.collections-list {
-  list-style: none;
-  margin: 0;
-  padding: var(--gap) 0;
+.sub-header {
+  color: var(--sub-header-color) !important;
+  font-size: var(--sub-header-font-size) !important;
+  text-transform: var(--sub-header-text-transform) !important;
+}
 
-  &__item {
-    display: flex;
+.modal {
+  .ui--Modal-Column {
     margin-bottom: var(--gap);
+  }
+  .ui--InputAddress {
+    border: 1px solid var(--border-color);
+    background: var(--input-background-color);
 
-    &:last-child {
-      margin-bottom: 0;
+    .menu {
+      border-color: var(--border-color);
+      background: var(--input-background-color) !important;
+      z-index: 1002;
+    }
+  }
+}
+
+.ui--InputBalance {
+  .ui.action.input {
+    border: 1px solid var(--border-color);
+    background: var(--input-background-color);
+
+    .ui.buttons {
+      background: var(--input-background-color);
+
+      .dropdown {
+        .menu {
+          border-color: var(--border-color);
+          background: var(--input-background-color) !important;
+        }
+      }
+    }
+
+    input {
+      border: none;
+    }
+  }
+}
+
+.ui.input.ui--Input {
+  &.error {
+    input {
+      border: 1px solid var(--error-color);
+      background: var(--input-background-color);
     }
   }
 
-  &__img {
-    width: 24px;
-    height: 24px;
-    margin-right: calc(var(--gap) / 2);
-    border-radius: 50%;
-    flex: 0 0 auto;
-    overflow: hidden;
+  input {
+    color: var(--input-text-color);
+    background: var(--input-background-color);
 
-    img {
-      max-width: 100%;
-      max-height: 100%;
+    &:active {
+      background: var(--input-background-color);
+    }
+    &:focus {
+      background: var(--input-background-color);
+    }
+    &:disabled {
+      border: 1px solid var(--border-color);
+      color: var(--tabs-color);
+      background: var(--input-background-color) !important;
+      opacity: 1;
+    }
+  }
+}
+
+.TextAreaWithDropdown {
+  textarea {
+    color: var(--input-text-color) !important;
+    background: var(--input-background-color) !important;
+
+    &:active {
+      background: var(--input-background-color) !important;
+    }
+    &:focus {
+      background: var(--input-background-color) !important;
+    }
+  }
+}
+
+.template--AccountSelector {
+  background: var(--account-selector-background);
+  border-radius: 6px;
+
+  .ui.dropdown {
+    .menu {
+      background: var(--account-selector-background);
+
+      &::-webkit-scrollbar-track {
+        background: var(--dropdown-scrollbar-track-color);
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: var(--dropdown-scrollbar-color);
+      }
+
+      &::-webkit-scrollbar-thumb:hover {
+        background: var(--dropdown-scrollbar-color);
+      }
+
+      .header {
+        color: var(--account-selector-name-color);
+      }
     }
   }
 
-  &__name {
-    font: 400 14px/24px var(--font-roboto);
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
+  .ui--AccountName {
+    color: var(--account-selector-name-color);
+  }
+
+  .address {
+    color: var(--account-selector-address-color);
   }
 }

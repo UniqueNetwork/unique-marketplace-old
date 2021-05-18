@@ -75,7 +75,7 @@ export default React.memo(styled(Tabs)`
 
   .ui--Tab {
     font: 400 18px/27px var(--font-roboto);
-    color: var(--tabs-color);
+    color: var(--tabs-color) !important;
     letter-spacing: 0.1em;
     padding: calc(var(--gap) / 2) var(--gap);
     border-color: transparent;
@@ -83,8 +83,13 @@ export default React.memo(styled(Tabs)`
     background-color: transparent;
 
     &.active {
-      color: var(--link-color);
-      border-bottom:1px solid var(--link-color);
+      color: var(--link-color) !important;
+      border-bottom:1px solid var(--link-color) !important;
+    }
+
+    &.tabLinkActive {
+      color: var(--link-color) !important;
+      border-bottom:1px solid var(--link-color) !important;
     }
 }
 `);

@@ -3,7 +3,7 @@
 
 import './styles.scss';
 
-import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollections';
+import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
 
 import React, { useCallback, useMemo } from 'react';
 import { useHistory } from 'react-router';
@@ -11,24 +11,26 @@ import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 import Item from 'semantic-ui-react/dist/commonjs/views/Item';
 
 import { useSchema } from '@polkadot/react-hooks';
-import { TypeRegistry } from '@polkadot/types';
 
 interface Props {
   account: string;
   canTransferTokens: boolean;
   collection: NftCollectionInterface;
-  localRegistry?: TypeRegistry;
   openTransferModal: (collection: NftCollectionInterface, tokenId: string, balance: number) => void;
   shouldUpdateTokens: string | undefined;
   token: string;
 }
 
-function NftTokenCard ({ account, canTransferTokens, collection, localRegistry, openTransferModal, token }: Props): React.ReactElement<Props> {
-  const { attributes, reFungibleBalance, tokenUrl } = useSchema(account, collection.id, token, localRegistry);
+function NftTokenCard ({ account, canTransferTokens, collection, openTransferModal, token }: Props): React.ReactElement<Props> {
+  const { attributes, reFungibleBalance, tokenUrl } = useSchema(account, collection.id, token);
   const history = useHistory();
 
   const openDetailedInformationModal = useCallback((collectionId: string | number, tokenId: string) => {
     history.push(`/wallet/token-details?collectionId=${collectionId}&tokenId=${tokenId}`);
+  }, [history]);
+
+  const editToken = useCallback((collectionId: string, tokenId: string) => {
+    history.push(`/wallet/manage-token?collectionId=${collectionId}&tokenId=${tokenId}`);
   }, [history]);
 
   const attrebutesToShow = useMemo(() => {
@@ -38,12 +40,18 @@ function NftTokenCard ({ account, canTransferTokens, collection, localRegistry, 
           return `${attr}: ${(attributes[attr] as string).substring(0, 8)}...`;
         }
 
+        if (Array.isArray(attributes[attr])) {
+          return `${attr}: ${((attributes[attr] as string[]).join(', '))}`;
+        }
+
         return `${attr}: ${(attributes[attr] as string)}`;
       })].join(', ');
     }
 
     return '';
   }, [attributes]);
+
+  const canEditToken = true;
 
   if (!reFungibleBalance && collection?.Mode?.reFungible) {
     return <></>;
@@ -56,10 +64,12 @@ function NftTokenCard ({ account, canTransferTokens, collection, localRegistry, 
     >
       <td className='token-image'>
         <a onClick={openDetailedInformationModal.bind(null, collection.id, token)}>
-          <Item.Image
-            size='mini'
-            src={tokenUrl}
-          />
+          { tokenUrl && (
+            <Item.Image
+              size='mini'
+              src={tokenUrl}
+            />
+          )}
         </a>
       </td>
       <td className='token-name'>
@@ -79,6 +89,15 @@ function NftTokenCard ({ account, canTransferTokens, collection, localRegistry, 
         >
           Transfer token
         </Button>
+        { canEditToken && (
+          <Button
+            disabled={!canTransferTokens}
+            onClick={editToken.bind(null, collection.id, token)}
+            primary
+          >
+            Edit
+          </Button>
+        )}
       </td>
     </tr>
   );

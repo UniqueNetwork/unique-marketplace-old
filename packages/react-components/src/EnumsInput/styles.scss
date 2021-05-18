@@ -1,0 +1,65 @@
+.enum-input {
+  border: 1px solid var(--border-color);
+  background: var(--input-background-color) !important;
+  border-radius: 8px;
+  width: 100%;
+  padding: 4px 8px;
+  font-family: var(--font-roboto) var(--font-mono);
+  overflow: hidden;
+  overflow-x: auto;
+  // -ms-overflow-style: none;  /* IE and Edge */
+  // scrollbar-width: none;  /* Firefox */
+
+  /* &::-webkit-scrollbar {
+    width: 3px !important;
+  } */
+
+  .enum-input--content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    grid-column-gap: 4px;
+
+    &--elements {
+      display: flex;
+      flex-wrap: wrap;
+      width: 100%;
+      grid-column-gap: 5px;
+      grid-row-gap: 5px;
+    }
+  }
+
+  .enum-input--item {
+    font-size: 14px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 3px 8px;
+    background-color: var(--link-color);
+    border-radius: 8px;
+    color: white;
+    grid-column-gap: 8px;
+    line-height: 16px;
+    white-space: nowrap;
+
+    img {
+      width: 12px;
+      height: 12px;
+      cursor: pointer;
+      display: block !important;
+    }
+  }
+
+  .enum-input--input {
+    border: none !important;
+    width: 100%;
+    background: var(--input-background-color) !important;
+    min-width: 100px;
+    margin-top: 5px;
+
+    &:active, &:hover, &:focus {
+      outline: none;
+    }
+  }
+}
