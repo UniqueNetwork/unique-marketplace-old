@@ -29,11 +29,7 @@
       position: absolute;
       right: 0;
       display: flex;
-      grid-column-gap: 2rem;
-
-      a {
-        color: var(--link-color);
-      }
+      grid-column-gap: var(--gap);
     }
   }
 
