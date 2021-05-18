@@ -73,6 +73,7 @@ const TokensForSale = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: B
                     active
                     className='load-more'
                     inline='centered'
+                    key={'tokens-for-sale'}
                   />}
                   pageStart={1}
                   threshold={200}
@@ -83,7 +84,7 @@ const TokensForSale = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: B
                       <NftTokenCard
                         account={account}
                         collectionId={token.collectionId.toString()}
-                        key={token.tokenId}
+                        key={`${token.collectionId}-${token.tokenId}`}
                         openDetailedInformationModal={openDetailedInformationModal}
                         token={token}
                       />

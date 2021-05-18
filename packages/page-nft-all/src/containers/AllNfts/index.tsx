@@ -185,6 +185,7 @@ const AllNfts = ({ account, setShouldUpdateTokens }: BuyTokensProps): ReactEleme
                       active
                       className='load-more'
                       inline='centered'
+                      key={'all-tokens'}
                     />}
                   pageStart={1}
                   threshold={200}

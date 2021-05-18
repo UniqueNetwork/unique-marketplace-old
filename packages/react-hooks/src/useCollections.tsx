@@ -223,7 +223,7 @@ export function useCollections () {
         collections.push({ ...mintCollectionInfo, id: UNIQUE_COLLECTION_ID });
       }
 
-      localStorage.setItem('tokenCollections', JSON.stringify(collections));
+      // localStorage.setItem('tokenCollections', JSON.stringify(collections));
 
       return collections;
     } catch (e) {

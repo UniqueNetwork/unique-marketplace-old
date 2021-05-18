@@ -70,7 +70,6 @@ export { default as ListComponent } from './ListComponent';
 export { default as LockedVote } from './LockedVote';
 export { default as ManageCollection } from './ManageCollection';
 export { default as ManageTokenAttributes } from './ManageCollection/ManageTokenAttributes';
-export { default as ManageToken } from './ManageCollection/ManageToken';
 export { default as MarkError } from './MarkError';
 export { default as MarkWarning } from './MarkWarning';
 export { default as Menu } from './Menu';

@@ -122,7 +122,7 @@ function NftCollectionCard ({ account, canTransferTokens, collection, openTransf
     };
   }, []);
 
-  const canEditCollection = true;
+  const canEditCollection = false;
   const canCreateToken = false;
 
   return (
