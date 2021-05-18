@@ -7,7 +7,6 @@ import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router';
-import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 import Item from 'semantic-ui-react/dist/commonjs/views/Item';
 
 import { Expander } from '@polkadot/react-components';
@@ -172,6 +171,14 @@ function NftCollectionCard ({ account, canTransferTokens, collection, openTransf
                 Create token
               </a>
             )}
+            { collection.id !== UNIQUE_COLLECTION_ID && (
+              <a
+                className='red'
+                onClick={removeCollection.bind(null, collection.id)}
+              >
+                Remove
+              </a>
+            )}
           </div>
         </div>
       }
@@ -191,14 +198,6 @@ function NftCollectionCard ({ account, canTransferTokens, collection, openTransf
           ))}
         </tbody>
       </table>
-      { collection.id !== UNIQUE_COLLECTION_ID && (
-        <Button
-          basic
-          color='red'
-          onClick={removeCollection.bind(null, collection.id)}>
-          Remove collection
-        </Button>
-      )}
     </Expander>
   );
 }
