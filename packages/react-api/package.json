@@ -1,12 +1,13 @@
 {
   "name": "@polkadot/react-api",
-  "version": "0.83.2-28",
+  "private": true,
+  "version": "0.91.3-0",
   "license": "Apache-2.0",
   "dependencies": {
-    "@babel/runtime": "^7.13.10",
-    "@polkadot/api": "^4.0.4-11",
-    "@polkadot/extension-dapp": "^0.37.3-5",
-    "@polkadot/x-rxjs": "^6.0.5",
-    "fflate": "^0.6.7"
+    "@babel/runtime": "^7.14.0",
+    "@polkadot/api": "^4.10.1",
+    "@polkadot/extension-dapp": "^0.37.3-19",
+    "@polkadot/x-rxjs": "^6.4.1",
+    "fflate": "^0.6.10"
   }
 }
