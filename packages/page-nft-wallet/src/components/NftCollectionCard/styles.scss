@@ -15,7 +15,7 @@
       align-items: center;
 
       &>div {
-        max-width: 290px;
+        max-width: 375px;
         overflow: hidden;
         text-overflow: ellipsis;
       }
@@ -30,14 +30,6 @@
       right: 0;
       display: flex;
       grid-column-gap: var(--gap);
-
-      a {
-        color: var(--link-color);
-
-        &.red {
-          color: var(--error-color);
-        }
-      }
     }
   }
 

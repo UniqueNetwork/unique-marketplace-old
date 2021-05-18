@@ -10,6 +10,9 @@ import { useHistory } from 'react-router';
 import Item from 'semantic-ui-react/dist/commonjs/views/Item';
 
 import { Expander } from '@polkadot/react-components';
+import pencil from '@polkadot/react-components/ManageCollection/pencil.svg';
+import plus from '@polkadot/react-components/ManageCollection/plus.svg';
+import trash from '@polkadot/react-components/ManageCollection/trash.svg';
 import { useCollections, useDecoder, useMetadata } from '@polkadot/react-hooks';
 import { useCollection } from '@polkadot/react-hooks/useCollection';
 import { UNIQUE_COLLECTION_ID } from '@polkadot/react-hooks/utils';
@@ -52,15 +55,11 @@ function NftCollectionCard ({ account, canTransferTokens, collection, openTransf
     setCollectionImageUrl(collectionImage);
   }, [collection, getTokenImageUrl]);
 
-  const editCollection = useCallback((collectionId: string, e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
-    e.stopPropagation();
-    e.preventDefault();
+  const editCollection = useCallback((collectionId: string) => {
     history.push(`/wallet/manage-collection?collectionId=${collectionId}`);
   }, [history]);
 
-  const createToken = useCallback((collectionId: string, e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
-    e.stopPropagation();
-    e.preventDefault();
+  const createToken = useCallback((collectionId: string) => {
     history.push(`/wallet/manage-token?collectionId=${collectionId}`);
   }, [history]);
 
@@ -158,26 +157,29 @@ function NftCollectionCard ({ account, canTransferTokens, collection, openTransf
           </div>
           <div className='link-button'>
             { canEditCollection && (
-              <a
+              <img
+                alt='edit'
                 onClick={editCollection.bind(null, collection.id)}
-              >
-                Edit
-              </a>
+                src={pencil as string}
+                title='edit'
+              />
             )}
             { canCreateToken && (
-              <a
+              <img
+                alt={'add'}
                 onClick={createToken.bind(null, collection.id)}
-              >
-                Create token
-              </a>
+                src={plus as string}
+                title='add'
+              />
             )}
             { collection.id !== UNIQUE_COLLECTION_ID && (
-              <a
+              <img
+                alt='delete'
                 className='red'
                 onClick={removeCollection.bind(null, collection.id)}
-              >
-                Remove
-              </a>
+                src={trash as string}
+                title='delete'
+              />
             )}
           </div>
         </div>
