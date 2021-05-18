@@ -13,7 +13,7 @@
     "@fortawesome/free-solid-svg-icons": "^5.15.2",
     "@fortawesome/react-fontawesome": "^0.1.14",
     "@polkadot/keyring": "^6.0.5",
-    "@polkadot/react-api": "^0.83.2-28",
+    "@polkadot/react-api": "^0.91.3-0",
     "@polkadot/react-identicon": "^0.71.4-1",
     "@polkadot/react-qr": "^0.71.4-1",
     "@polkadot/react-query": "^0.83.2-28",

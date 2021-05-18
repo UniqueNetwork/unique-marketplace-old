@@ -56,7 +56,9 @@ export function useNftContract (account: string): useNftContractInterface {
   const getUserDeposit = useCallback(async (): Promise<BN | null> => {
     try {
       if (contractInstance) {
-        const result = await contractInstance.read('getBalance', { gasLimit: maxGas, value }, quoteId).send(account) as unknown as { output: BN };
+        const result = await contractInstance.query.getBalance(account, { gasLimit: maxGas, value }, quoteId) as unknown as { output: BN };
+
+        console.log('getUserDeposit', result);
 
         if (result.output) {
           setDeposited(result.output);
@@ -76,7 +78,9 @@ export function useNftContract (account: string): useNftContractInterface {
   const getDepositor = useCallback(async (collectionId: string, tokenId: string): Promise<string | null> => {
     try {
       if (contractInstance) {
-        const result = await contractInstance.read('getNftDeposit', { gasLimit: maxGas, value }, collectionId, tokenId).send(account);
+        const result = await contractInstance.query.getNftDeposit(account, { gasLimit: maxGas, value }, collectionId, tokenId);
+
+        console.log('getDepositor', result);
 
         // empty or 0 0 0 0
         if (result.output && result.output.toString() !== '5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM') {
@@ -106,13 +110,17 @@ export function useNftContract (account: string): useNftContractInterface {
 
   const getTokenAsk = useCallback(async (collectionId: string, tokenId: string) => {
     if (contractInstance) {
-      const askIdResult = await contractInstance.read('getAskIdByToken', value, maxGas, collectionId, tokenId).send(contractAddress) as unknown as { output: BN };
+      const askIdResult = await contractInstance.query.getAskIdByToken(contractAddress, { gasLimit: maxGas, value }, collectionId, tokenId) as unknown as { output: BN };
+
+      console.log('askIdResult', askIdResult);
 
       if (askIdResult.output) {
         const askId = askIdResult.output.toNumber();
 
         if (askId !== 0) {
-          const askResult = await contractInstance.read('getAskById', value, maxGas, askId).send(contractAddress) as unknown as AskOutputInterface;
+          const askResult = await contractInstance.query.getAskById(contractAddress, { gasLimit: maxGas, value }, askId) as unknown as AskOutputInterface;
+
+          console.log('askResult', askResult);
 
           if (askResult.output) {
             const askOwnerAddress = keyring.encodeAddress(askResult.output[4].toString());
