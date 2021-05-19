@@ -66,9 +66,11 @@ function App ({ account, basePath }: Props): React.ReactElement<Props> {
     }
   }, []);
 
+  const showTrades = false;
+
   return (
     <div className='my-tokens'>
-      { !location.pathname.includes('token-details') && !location.pathname.includes('manage-') && (
+      { showTrades && !location.pathname.includes('token-details') && !location.pathname.includes('manage-') && (
         <>
           <Header as='h1'>My Tokens</Header>
           <Header as='h4'>NFTs owned by me</Header>
