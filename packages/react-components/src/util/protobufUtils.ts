@@ -79,14 +79,10 @@ export function serializeNft (onChainSchema: ProtobufAttributeType, payload: { [
 export function convertEnumToString (value: string, key: string, NFTMeta: Type, locale: string) {
   let result = value;
 
-  console.log('convertEnumToString value', value, 'key', key, 'NFTMeta', NFTMeta, 'locale', locale);
-
   try {
     const options = NFTMeta?.fields[key]?.resolvedType?.options as {[key: string]: string};
     const valueJsonComment = options[value];
     const translationObject = JSON.parse(valueJsonComment) as {[key: string]: string};
-
-    console.log('translationObject', translationObject);
 
     if (translationObject && (translationObject[locale])) {
       result = translationObject[locale];
@@ -117,11 +113,7 @@ export function deserializeNft (onChainSchema: ProtobufAttributeType, buffer: Ui
     });
     const newObjectItem = { ...objectItem };
 
-    console.log('NFTMeta', NFTMeta, 'newObjectItem', newObjectItem);
-
     for (const key in objectItem) {
-      console.log('NFTMeta res type', NFTMeta?.fields[key]?.resolvedType?.constructor.name, 'objectItem', objectItem[key]);
-
       if (NFTMeta?.fields[key]?.resolvedType?.options && Object.keys(NFTMeta?.fields[key]?.resolvedType?.options as {[key: string]: string}).length > 0) {
         if (Array.isArray(objectItem[key])) {
           const item = objectItem[key] as string[];
@@ -219,8 +211,6 @@ export const fillProtobufJson = (attrs: AttributeItemType[]): ProtobufAttributeT
         };
       });
     }
-
-    console.log('protobufJson', protobufJson);
   } catch (e) {
     console.log('fillProtobufJson error', e);
   }

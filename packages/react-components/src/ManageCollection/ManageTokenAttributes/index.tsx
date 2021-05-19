@@ -183,16 +183,12 @@ function ManageTokenAttributes ({ account, setShouldUpdateTokens }: Props): Reac
   }, [account, createNft, collectionId, constOnChainSchema, fetchCollectionAndTokenInfo, resetTokenPage, setVariableMetadata, tokenId, tokenConstAttributes, tokenVarAttributes, variableOnChainSchema]);
 
   const fillTokenForm = useCallback((schema: ProtobufAttributeType, tokenAttributes: AttributeItemType[], tokenData: string, callBack: (item: { [key: string]: TokenAttribute }) => void) => {
-    console.log('schema', schema, 'tokenInfo', tokenInfo, 'tokenData', tokenData, 'tokenAttributes', tokenAttributes);
-
     if (schema && tokenInfo && tokenData && tokenAttributes?.length > 0) {
       const deSerialized = deserializeNft(schema, Buffer.from(tokenData.slice(2), 'hex'), 'en');
       const newVarAttributes: { [key: string]: TokenAttribute } = {};
 
-      console.log('deSerialized', deSerialized);
-
       Object.keys(deSerialized).forEach((key: string) => {
-        if (schema.nested.onChainMetaData.nested[key] && !Array.isArray(deSerialized[key])) {
+        if (!Array.isArray(deSerialized[key])) {
           const newValue = () => {
             const targetAttribute = tokenAttributes
               .find((varAttr) => varAttr.name === key);
