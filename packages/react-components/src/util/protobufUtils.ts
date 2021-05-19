@@ -86,6 +86,8 @@ export function convertEnumToString (value: string, key: string, NFTMeta: Type, 
     const valueJsonComment = options[value];
     const translationObject = JSON.parse(valueJsonComment) as {[key: string]: string};
 
+    console.log('translationObject', translationObject);
+
     if (translationObject && (translationObject[locale])) {
       result = translationObject[locale];
     }
