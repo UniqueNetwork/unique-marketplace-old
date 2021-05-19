@@ -14,7 +14,7 @@ function NotFound ({ basePath, missingApis = [] }: Props): React.ReactElement {
   console.log(`Redirecting from route "${basePath}" to "/market"${missingApis.length ? `, missing the following APIs: ${JSON.stringify(missingApis)}` : ''}`);
 
   return (
-    <Redirect to='/market' />
+    <Redirect to='/wallet' />
   );
 }
 
