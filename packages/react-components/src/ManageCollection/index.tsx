@@ -329,8 +329,6 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
     }
   }, [collectionId, collectionInfo, presetOnChainData]);
 
-  console.log('info', collectionInfo, 'currentOffchainSchema', currentOffchainSchema);
-
   return (
     <div className='manage-collection'>
       <Header as='h1'>
