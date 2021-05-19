@@ -117,7 +117,11 @@ export function deserializeNft (onChainSchema: ProtobufAttributeType, buffer: Ui
     });
     const newObjectItem = { ...objectItem };
 
+    console.log('NFTMeta', NFTMeta);
+
     for (const key in objectItem) {
+      console.log('NFTMeta res type', NFTMeta?.fields[key]?.resolvedType?.constructor.name);
+
       if (NFTMeta?.fields[key]?.resolvedType?.constructor.name === 'Enum') {
         if (Array.isArray(objectItem[key])) {
           const item = objectItem[key] as string[];
