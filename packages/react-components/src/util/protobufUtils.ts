@@ -79,6 +79,8 @@ export function serializeNft (onChainSchema: ProtobufAttributeType, payload: { [
 export function convertEnumToString (value: string, key: string, NFTMeta: Type, locale: string) {
   let result = value;
 
+  console.log('convertEnumToString value', value, 'key', key, 'NFTMeta', NFTMeta, 'locale', locale);
+
   try {
     const options = NFTMeta?.fields[key]?.resolvedType?.options as {[key: string]: string};
     const valueJsonComment = options[value];
@@ -134,27 +136,6 @@ export function deserializeNft (onChainSchema: ProtobufAttributeType, buffer: Ui
 
   return {};
 }
-
-/* export function initProtobuf () {
-  // Exemplary payload
-  const payload = {
-    gender: 1, // Gender.Female,
-    imageHash: 'hash',
-    name: 'TokenName',
-    traits: [4, 5, 6, 7] // [PunkTrait.PURPLE_LIPSTICK, PunkTrait.NOSE_RING, PunkTrait.ASIAN_EYES, PunkTrait.SUNGLASSES]
-  };
-
-  const buffer = serializeNft(payload);
-
-  console.log('Serialized buffer: ', buffer);
-
-  let deserializedObject = deserializeNft(buffer, 'ru');
-
-  console.log('deserializedObject RUSSIAN: ', deserializedObject);
-
-  deserializedObject = deserializeNft(buffer, 'en');
-  console.log('deserializedObject ENGLISH: ', deserializedObject);
-} */
 
 export const fillAttributes = (protobufJson: ProtobufAttributeType): AttributeItemType[] => {
   const attrs: AttributeItemType[] = [];
