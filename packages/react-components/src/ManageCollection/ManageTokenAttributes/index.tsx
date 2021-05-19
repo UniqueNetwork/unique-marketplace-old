@@ -182,15 +182,15 @@ function ManageTokenAttributes ({ account, setShouldUpdateTokens }: Props): Reac
     }
   }, [account, createNft, collectionId, constOnChainSchema, fetchCollectionAndTokenInfo, resetTokenPage, setVariableMetadata, tokenId, tokenConstAttributes, tokenVarAttributes, variableOnChainSchema]);
 
-  const fillTokenForm = useCallback((schema: ProtobufAttributeType, tokenData: string, callBack: (item: { [key: string]: TokenAttribute }) => void) => {
-    if (schema && tokenInfo && tokenData && variableAttributes?.length > 0) {
+  const fillTokenForm = useCallback((schema: ProtobufAttributeType, tokenAttributes: AttributeItemType[], tokenData: string, callBack: (item: { [key: string]: TokenAttribute }) => void) => {
+    if (schema && tokenInfo && tokenData && tokenAttributes?.length > 0) {
       const deSerialized = deserializeNft(schema, Buffer.from(tokenData.slice(2), 'hex'), 'en');
       const newVarAttributes: { [key: string]: TokenAttribute } = {};
 
       Object.keys(deSerialized).forEach((key: string) => {
-        if (schema.nested.onChainMetaData.nested[key] && !Array.isArray(deSerialized[key])) {
+        if (!Array.isArray(deSerialized[key])) {
           const newValue = () => {
-            const targetAttribute = variableAttributes
+            const targetAttribute = tokenAttributes
               .find((varAttr) => varAttr.name === key);
             let targetIndex = 0;
 
@@ -212,7 +212,7 @@ function ManageTokenAttributes ({ account, setShouldUpdateTokens }: Props): Reac
             value: '',
             values: (deSerialized[key] as string[])
               .map((value: string) => {
-                const targetAttribute = variableAttributes
+                const targetAttribute = tokenAttributes
                   .find((varAttr) => varAttr.name === key);
 
                 let targetIndex = 0;
@@ -235,7 +235,7 @@ function ManageTokenAttributes ({ account, setShouldUpdateTokens }: Props): Reac
 
       callBack(newVarAttributes);
     }
-  }, [tokenInfo, variableAttributes]);
+  }, [tokenInfo]);
 
   const goBack = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
@@ -275,15 +275,15 @@ function ManageTokenAttributes ({ account, setShouldUpdateTokens }: Props): Reac
 
   useEffect(() => {
     if (variableOnChainSchema && tokenInfo?.VariableData) {
-      fillTokenForm(variableOnChainSchema, tokenInfo.VariableData, setTokenVarAttributes);
+      fillTokenForm(variableOnChainSchema, variableAttributes, tokenInfo.VariableData, setTokenVarAttributes);
     }
-  }, [fillTokenForm, tokenInfo, variableOnChainSchema]);
+  }, [fillTokenForm, tokenInfo, variableAttributes, variableOnChainSchema]);
 
   useEffect(() => {
     if (constOnChainSchema && tokenInfo?.ConstData) {
-      fillTokenForm(constOnChainSchema, tokenInfo.ConstData, setTokenConstAttributes);
+      fillTokenForm(constOnChainSchema, constAttributes, tokenInfo.ConstData, setTokenConstAttributes);
     }
-  }, [constOnChainSchema, fillTokenForm, tokenInfo]);
+  }, [constAttributes, constOnChainSchema, fillTokenForm, tokenInfo]);
 
   return (
     <div className='manage-token-attributes'>
@@ -301,60 +301,64 @@ function ManageTokenAttributes ({ account, setShouldUpdateTokens }: Props): Reac
       </a>
       <Form className='manage-token--form'>
         <Grid className='manage-token--form--grid'>
-          <Grid.Row>
-            <Grid.Column width={8}>
-              <Header as='h5'>Const Data</Header>
-              { Object.keys(tokenConstAttributes).length > 0 && constAttributes?.map((collectionAttribute: AttributeItemType) => (
-                <Form.Field key={collectionAttribute.name}>
-                  { collectionAttribute.fieldType === 'string' && (
-                    <Input
-                      className='isSmall'
-                      isDisabled={!!tokenId}
-                      onChange={setAttributeValue.bind(null, 'const', collectionAttribute)}
-                      placeholder={`Enter ${collectionAttribute.name}, ${collectionAttribute.fieldType}`}
-                      value={tokenConstAttributes[collectionAttribute.name].value as string}
-                    />
-                  )}
-                  { collectionAttribute.fieldType === 'enum' && (
-                    <Dropdown
-                      isDisabled={!!tokenId}
-                      isMultiple={collectionAttribute.rule === 'repeated'}
-                      onChange={setAttributeValue.bind(null, 'const', collectionAttribute)}
-                      options={collectionAttribute.values.map((val: string, index: number) => ({ text: val, value: index }))}
-                      placeholder='Select Attribute Type'
-                      value={collectionAttribute.rule === 'repeated' ? tokenConstAttributes[collectionAttribute.name].values : tokenConstAttributes[collectionAttribute.name].value}
-                    />
-                  )}
-                </Form.Field>
-              ))}
-            </Grid.Column>
-          </Grid.Row>
-          <Grid.Row>
-            <Grid.Column width={8}>
-              <Header as='h5'>Variable Data</Header>
-              { Object.keys(tokenVarAttributes).length > 0 && variableAttributes?.map((collectionAttribute: AttributeItemType) => (
-                <Form.Field key={collectionAttribute.name}>
-                  { collectionAttribute.fieldType === 'string' && (
-                    <Input
-                      className='isSmall'
-                      onChange={setAttributeValue.bind(null, 'var', collectionAttribute)}
-                      placeholder={`Enter ${collectionAttribute.name}, ${collectionAttribute.fieldType}`}
-                      value={tokenVarAttributes[collectionAttribute.name].value as string}
-                    />
-                  )}
-                  { collectionAttribute.fieldType === 'enum' && (
-                    <Dropdown
-                      isMultiple={collectionAttribute.rule === 'repeated'}
-                      onChange={setAttributeValue.bind(null, 'var', collectionAttribute)}
-                      options={collectionAttribute.values.map((val: string, index: number) => ({ text: val, value: index }))}
-                      placeholder='Select Attribute Type'
-                      value={collectionAttribute.rule === 'repeated' ? tokenVarAttributes[collectionAttribute.name].values : tokenVarAttributes[collectionAttribute.name].value}
-                    />
-                  )}
-                </Form.Field>
-              ))}
-            </Grid.Column>
-          </Grid.Row>
+          { Object.keys(tokenConstAttributes).length > 0 && (
+            <Grid.Row>
+              <Grid.Column width={8}>
+                <Header as='h5'>Const Data</Header>
+                { Object.keys(tokenConstAttributes).length > 0 && constAttributes?.map((collectionAttribute: AttributeItemType) => (
+                  <Form.Field key={collectionAttribute.name}>
+                    { collectionAttribute.fieldType === 'string' && (
+                      <Input
+                        className='isSmall'
+                        isDisabled={!!tokenId}
+                        onChange={setAttributeValue.bind(null, 'const', collectionAttribute)}
+                        placeholder={`Enter ${collectionAttribute.name}, ${collectionAttribute.fieldType}`}
+                        value={tokenConstAttributes[collectionAttribute.name].value as string}
+                      />
+                    )}
+                    { collectionAttribute.fieldType === 'enum' && (
+                      <Dropdown
+                        isDisabled={!!tokenId}
+                        isMultiple={collectionAttribute.rule === 'repeated'}
+                        onChange={setAttributeValue.bind(null, 'const', collectionAttribute)}
+                        options={collectionAttribute.values.map((val: string, index: number) => ({ text: val, value: index }))}
+                        placeholder='Select Attribute Type'
+                        value={collectionAttribute.rule === 'repeated' ? tokenConstAttributes[collectionAttribute.name].values : tokenConstAttributes[collectionAttribute.name].value}
+                      />
+                    )}
+                  </Form.Field>
+                ))}
+              </Grid.Column>
+            </Grid.Row>
+          )}
+          { Object.keys(tokenVarAttributes).length > 0 && (
+            <Grid.Row>
+              <Grid.Column width={8}>
+                <Header as='h5'>Variable Data</Header>
+                { variableAttributes?.map((collectionAttribute: AttributeItemType) => (
+                  <Form.Field key={collectionAttribute.name}>
+                    { collectionAttribute.fieldType === 'string' && (
+                      <Input
+                        className='isSmall'
+                        onChange={setAttributeValue.bind(null, 'var', collectionAttribute)}
+                        placeholder={`Enter ${collectionAttribute.name}, ${collectionAttribute.fieldType}`}
+                        value={tokenVarAttributes[collectionAttribute.name].value as string}
+                      />
+                    )}
+                    { collectionAttribute.fieldType === 'enum' && (
+                      <Dropdown
+                        isMultiple={collectionAttribute.rule === 'repeated'}
+                        onChange={setAttributeValue.bind(null, 'var', collectionAttribute)}
+                        options={collectionAttribute.values.map((val: string, index: number) => ({ text: val, value: index }))}
+                        placeholder='Select Attribute Type'
+                        value={collectionAttribute.rule === 'repeated' ? tokenVarAttributes[collectionAttribute.name].values : tokenVarAttributes[collectionAttribute.name].value}
+                      />
+                    )}
+                  </Form.Field>
+                ))}
+              </Grid.Column>
+            </Grid.Row>
+          )}
           <Grid.Row>
             <Grid.Column>
               { tokenId && (

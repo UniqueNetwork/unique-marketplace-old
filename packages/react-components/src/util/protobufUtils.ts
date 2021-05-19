@@ -114,7 +114,7 @@ export function deserializeNft (onChainSchema: ProtobufAttributeType, buffer: Ui
     const newObjectItem = { ...objectItem };
 
     for (const key in objectItem) {
-      if (NFTMeta?.fields[key]?.resolvedType?.constructor.name === 'Enum') {
+      if (NFTMeta?.fields[key]?.resolvedType?.options && Object.keys(NFTMeta?.fields[key]?.resolvedType?.options as {[key: string]: string}).length > 0) {
         if (Array.isArray(objectItem[key])) {
           const item = objectItem[key] as string[];
 
@@ -134,27 +134,6 @@ export function deserializeNft (onChainSchema: ProtobufAttributeType, buffer: Ui
 
   return {};
 }
-
-/* export function initProtobuf () {
-  // Exemplary payload
-  const payload = {
-    gender: 1, // Gender.Female,
-    imageHash: 'hash',
-    name: 'TokenName',
-    traits: [4, 5, 6, 7] // [PunkTrait.PURPLE_LIPSTICK, PunkTrait.NOSE_RING, PunkTrait.ASIAN_EYES, PunkTrait.SUNGLASSES]
-  };
-
-  const buffer = serializeNft(payload);
-
-  console.log('Serialized buffer: ', buffer);
-
-  let deserializedObject = deserializeNft(buffer, 'ru');
-
-  console.log('deserializedObject RUSSIAN: ', deserializedObject);
-
-  deserializedObject = deserializeNft(buffer, 'en');
-  console.log('deserializedObject ENGLISH: ', deserializedObject);
-} */
 
 export const fillAttributes = (protobufJson: ProtobufAttributeType): AttributeItemType[] => {
   const attrs: AttributeItemType[] = [];
@@ -232,8 +211,6 @@ export const fillProtobufJson = (attrs: AttributeItemType[]): ProtobufAttributeT
         };
       });
     }
-
-    console.log('protobufJson', protobufJson);
   } catch (e) {
     console.log('fillProtobufJson error', e);
   }
