@@ -23,7 +23,7 @@ interface UseSchemaInterface {
   getTokenDetails: () => void;
   reFungibleBalance: number;
   tokenDetails?: TokenDetailsInterface;
-  tokenName?: { name: string, value: string };
+  tokenName: { name: string, value: string } | null;
   tokenUrl: string;
 }
 
@@ -45,7 +45,7 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
       const name = Object.keys(attributes).find((attributeKey: string) => attributeKey.toLowerCase().includes('name'));
 
       if (name) {
-        return { name, value: attributes[name] };
+        return { name, value: attributes[name] as string };
       }
     }
 

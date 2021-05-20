@@ -69,7 +69,7 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
   }, []);
 
   const fetchData = useCallback((newPage: number) => {
-    getOffers(newPage, perPage);
+    getOffers(newPage, perPage, '23');
   }, [getOffers]);
 
   useEffect(() => {
@@ -101,7 +101,7 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
 
   useEffect(() => {
     if (shouldUpdateTokens) {
-      void getOffers(1, perPage);
+      void getOffers(1, perPage, '23');
       setShouldUpdateTokens(undefined);
     }
   }, [getOffers, shouldUpdateTokens, setShouldUpdateTokens]);

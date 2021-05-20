@@ -17,7 +17,11 @@ function TradeHistory ({ account }: { account?: string }): React.ReactElement {
   const [tradesList, setTradesList] = useState<TradeType[]>();
 
   const fetchTrades = useCallback(() => {
-    getTrades(account);
+    if (account) {
+      getTrades(account, '23');
+    } else {
+      getTrades('', '23');
+    }
   }, [account, getTrades]);
 
   const headerRef = useRef([
