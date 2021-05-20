@@ -5,11 +5,10 @@ import './apps.scss';
 
 import type { BareProps as Props, ThemeDef } from '@polkadot/react-components/types';
 
-import React, { Suspense, useContext, useEffect, useMemo, useState } from 'react';
+import React, { Suspense, useContext, useMemo, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import Menu from 'semantic-ui-react/dist/commonjs/collections/Menu';
 import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
-import store from 'store';
 import { ThemeContext } from 'styled-components';
 
 import AccountSidebar from '@polkadot/app-accounts/Sidebar';
@@ -24,11 +23,9 @@ import { AccountSelector, ErrorBoundary, StatusContext } from '@polkadot/react-c
 import GlobalStyle from '@polkadot/react-components/styles';
 import { useApi } from '@polkadot/react-hooks';
 import Signer from '@polkadot/react-signer';
-import uiSettings from '@polkadot/ui-settings';
 
 import ConnectingOverlay from './overlays/Connecting';
 import BalancesHeader from './BalancesHeader';
-import defaultNftTypes from './defaultNftTypes';
 import WarmUp from './WarmUp';
 
 export const PORTAL_ID = 'portals';
@@ -68,21 +65,6 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
   );
 
   const missingApis = findMissingApis(api, needsApi);
-
-  // set default nft types and substrate prefix
-  useEffect(() => {
-    try {
-      const types: Record<string, any> = JSON.parse(defaultNftTypes) as Record<string, any>;
-
-      api.registerTypes(types);
-      store.set('types', types);
-      const settings = { ...uiSettings.get(), prefix: 42 };
-
-      uiSettings.set(settings);
-    } catch (error) {
-      console.error(error);
-    }
-  }, [api]);
 
   return (
     <>
