@@ -14,7 +14,7 @@ import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
-import { Input } from '@polkadot/react-components';
+import { Checkbox, Input } from '@polkadot/react-components';
 import { useCollections, useDecoder } from '@polkadot/react-hooks';
 import { AttributesDecoded } from '@polkadot/react-hooks/useSchema';
 
@@ -37,6 +37,7 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
   const history = useHistory();
   const { getOffers, loadingOffers, offers, offersCount, presetMintTokenCollection } = useCollections();
   const [searchString, setSearchString] = useState<string>('');
+  const [allAttributes, setAllAttributes] = useState<{ [key: string]: { [key: string]: boolean }}>({});
   const [offersWithAttributes, setOffersWithAttributes] = useState<OfferWithAttributes>({});
   // const [collectionSearchString, setCollectionSearchString] = useState<string>('');
   const [collections, setCollections] = useState<NftCollectionInterface[]>([]);
@@ -66,15 +67,84 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
 
       return newOffers;
     });
+
+    // set all attributes
+    setAllAttributes((prevAttributes: { [key: string]: { [key2: string]: boolean }}) => {
+      const newAttributes = { ...prevAttributes };
+
+      Object.keys(attributes).forEach((attributeKey: string) => {
+        const attributeValue: string | string[] = attributes[attributeKey];
+
+        if (attributeKey.toLowerCase() !== 'traits' && attributeKey.toLowerCase() !== 'gender') {
+          return;
+        }
+
+        if (!newAttributes[attributeKey]) {
+          newAttributes[attributeKey] = {};
+        }
+
+        if (Array.isArray(attributeValue)) {
+          attributeValue.forEach((item: string) => {
+            if (newAttributes[attributeKey][item] === undefined) {
+              newAttributes[attributeKey][item] = false;
+            }
+          });
+        } else {
+          if (newAttributes[attributeKey][attributeValue] === undefined) {
+            newAttributes[attributeKey][attributeValue] = false;
+          }
+        }
+      });
+
+      return newAttributes;
+    });
   }, []);
 
   const fetchData = useCallback((newPage: number) => {
     getOffers(newPage, perPage);
   }, [getOffers]);
 
+  const toggleAttributeFilter = useCallback((attKey: string, attItemKey: string) => {
+    setAllAttributes((prevAttributes) => {
+      return {
+        ...prevAttributes,
+        [attKey]: {
+          ...prevAttributes[attKey],
+          [attItemKey]: !prevAttributes[attKey][attItemKey]
+        }
+      };
+    });
+  }, []);
+
+  // search filter
   useEffect(() => {
     if (offers) {
-      if (searchString && searchString.length) {
+      const filtered = Object.values(offers).filter((item: OfferType) => {
+        console.log('item.collectionId', item.collectionId, 'tokenId', item.tokenId, 'offersWithAttributes', offersWithAttributes[item.collectionId]);
+
+        if (offersWithAttributes[item.collectionId] && offersWithAttributes[item.collectionId][item.tokenId]) {
+          const offerItemAttrs = offersWithAttributes[item.collectionId][item.tokenId];
+          const target = Object.keys(offerItemAttrs).find((valueKey: string) => {
+            console.log('offerItemAttrs[valueKey]', offerItemAttrs[valueKey], 'allAttributes[valueKey]', allAttributes[valueKey], 'Array.isArray(offerItemAttrs[valueKey])', Array.isArray(offerItemAttrs[valueKey]));
+
+            if (Array.isArray(offerItemAttrs[valueKey])) {
+              return ((searchString && (offerItemAttrs[valueKey] as string[]).find((valItem: string) => valItem.toLowerCase().includes(searchString.toLowerCase()))) || !searchString) &&
+                (offerItemAttrs[valueKey] as string[]).find((valItem: string) => allAttributes[valueKey] && allAttributes[valueKey][valItem]);
+            }
+
+            return (offerItemAttrs[valueKey] as string).toLowerCase().includes(searchString.toLowerCase());
+          });
+
+          return target || item.price.toString().includes(searchString.toLowerCase());
+        }
+
+        return true; // false;
+      });
+
+      console.log('filtered', filtered);
+
+      setFilteredOffers(filtered);
+      /* if (searchString && searchString.length) {
         const filtered = Object.values(offers).filter((item: OfferType) => {
           if (offersWithAttributes[item.collectionId] && offersWithAttributes[item.collectionId][item.tokenId]) {
             const offerItemAttrs = offersWithAttributes[item.collectionId][item.tokenId];
@@ -95,9 +165,9 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
         setFilteredOffers(filtered);
       } else {
         setFilteredOffers(Object.values(offers));
-      }
+      } */
     }
-  }, [offers, offersWithAttributes, searchString]);
+  }, [allAttributes, offers, offersWithAttributes, searchString]);
 
   useEffect(() => {
     if (shouldUpdateTokens) {
@@ -113,6 +183,8 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
   useEffect(() => {
     setShouldUpdateTokens('all');
   }, [setShouldUpdateTokens]);
+
+  console.log('allAttributes', allAttributes);
 
   return (
     <div className='nft-market'>
@@ -151,6 +223,26 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
               ))}
             </ul>
             <hr/>
+            <div className='tokens-filters'>
+              { Object.keys(allAttributes).sort((a: string, b: string) => a.localeCompare(b)).map((attributeKey: string) => (
+                (
+                  <div
+                    className='tokens-filter'
+                    key={attributeKey}
+                  >
+                    <header>{attributeKey}</header>
+                    { Object.keys(allAttributes[attributeKey]).sort((a: string, b: string) => a.localeCompare(b)).map((attributeItemKey: string) => (
+                      <Checkbox
+                        key={`${attributeKey}${attributeItemKey}`}
+                        label={attributeItemKey}
+                        onChange={toggleAttributeFilter.bind(null, attributeKey, attributeItemKey)}
+                        value={allAttributes[attributeKey][attributeItemKey]}
+                      />
+                    ))}
+                  </div>
+                )
+              ))}
+            </div>
           </Grid.Column>
           <Grid.Column width={12}>
             <Grid>

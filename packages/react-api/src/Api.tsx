@@ -26,6 +26,7 @@ import { defaults as addressDefaults } from '@polkadot/util-crypto/address/defau
 import ApiContext from './ApiContext';
 import registry from './typeRegistry';
 import { decodeUrlTypes } from './urlTypes';
+import defaultNftTypes from "@polkadot/apps/defaultNftTypes";
 
 interface Props {
   children: React.ReactNode;
@@ -68,7 +69,18 @@ function isKeyringLoaded () {
 }
 
 function getDevTypes (): Record<string, Record<string, string>> {
-  const types = decodeUrlTypes() || store.get('types', {}) as Record<string, Record<string, string>>;
+  let predefinedTypes: Record<string, any> = {};
+
+  try {
+    predefinedTypes = JSON.parse(defaultNftTypes) as Record<string, any>;
+  } catch (e) {
+    console.error('error detecting types', e);
+  }
+
+  const types = predefinedTypes || decodeUrlTypes() || store.get('types', {}) as Record<string, Record<string, string>>;
+
+  console.log('types', types);
+
   const names = Object.keys(types);
 
   names.length && console.log('Injected types:', names.join(', '));
