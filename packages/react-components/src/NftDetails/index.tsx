@@ -132,7 +132,15 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
             { attributes && Object.values(attributes).length > 0 && (
               <div className='accessories'>
                 Attributes:
-                {Object.keys(attributes).map((attrKey) => (<p key={attrKey}>{attrKey}: {attributes[attrKey]}</p>))}
+                {Object.keys(attributes).map((attrKey) => {
+                  if (!Array.isArray(attributes[attrKey])) {
+                    return <p key={attrKey}>{attrKey}: {attributes[attrKey]}</p>;
+                  }
+
+                  return (
+                    <p key={attrKey}>{attrKey}: {(attributes[attrKey] as string[]).join(', ')}</p>
+                  );
+                })}
               </div>
             )}
             { (tokenAsk && tokenAsk.price) && (
