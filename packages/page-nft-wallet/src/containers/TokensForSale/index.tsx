@@ -40,12 +40,12 @@ const TokensForSale = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: B
   }, [account, offers]);
 
   const fetchData = useCallback((newPage: number) => {
-    getOffers(newPage, perPage);
+    getOffers(newPage, perPage, '23');
   }, [getOffers]);
 
   useEffect(() => {
     if (shouldUpdateTokens) {
-      void getOffers(1, perPage);
+      void getOffers(1, perPage, '23');
       setShouldUpdateTokens(undefined);
     }
   }, [getOffers, shouldUpdateTokens, setShouldUpdateTokens]);

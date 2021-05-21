@@ -85,10 +85,16 @@ export function useCollections () {
   /**
    * Return the list of token sale offers
    */
-  const getOffers = useCallback((page: number, pageSize: number) => {
+  const getOffers = useCallback((page: number, pageSize: number, collectionId?: string) => {
     try {
+      let url = `/offers?page=${page}&pageSize=${pageSize}`;
+
+      if (collectionId) {
+        url = `${url}&collectionId=${collectionId}`;
+      }
+
       setLoadingOffers(true);
-      fetchData<OffersResponseType>(`/offers?page=${page}&pageSize=${pageSize}`).subscribe((result: OffersResponseType | ErrorType) => {
+      fetchData<OffersResponseType>(url).subscribe((result: OffersResponseType | ErrorType) => {
         if (cleanup.current) {
           return;
         }
@@ -128,9 +134,19 @@ export function useCollections () {
   /**
    * Return the list of token trades
    */
-  const getTrades = useCallback((account?: string) => {
-    if (!account) {
-      fetchData<TradesResponseType>('/trades/').subscribe((result: TradesResponseType | ErrorType) => {
+  const getTrades = useCallback((account: string, collectionId?: string) => {
+    let url = '/trades';
+
+    if (account && account.length) {
+      url = `${url}/${account}`;
+    }
+
+    if (collectionId) {
+      url = `${url}?collectionId=${collectionId}`;
+    }
+
+    if (!account || !account.length) {
+      fetchData<TradesResponseType>(url).subscribe((result: TradesResponseType | ErrorType) => {
         if (cleanup.current) {
           return;
         }
@@ -142,7 +158,7 @@ export function useCollections () {
         }
       });
     } else {
-      fetchData<TradesResponseType>(`/trades/${account}`).subscribe((result: TradesResponseType | ErrorType) => {
+      fetchData<TradesResponseType>(url).subscribe((result: TradesResponseType | ErrorType) => {
         if (cleanup.current) {
           return;
         }
