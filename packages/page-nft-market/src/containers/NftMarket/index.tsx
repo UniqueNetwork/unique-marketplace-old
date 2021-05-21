@@ -201,7 +201,7 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
                             <NftTokenCard
                               account={account}
                               collectionId={token.collectionId.toString()}
-                              key={token.tokenId}
+                              key={`${token.collectionId}-${token.tokenId}`}
                               onSetTokenAttributes={onSetTokenAttributes}
                               openDetailedInformationModal={openDetailedInformationModal}
                               token={token}
