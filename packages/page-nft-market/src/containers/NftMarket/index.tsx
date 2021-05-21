@@ -35,7 +35,7 @@ const perPage = 20;
 
 const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTokensProps): ReactElement => {
   const history = useHistory();
-  const { getOffers, loadingOffers, offers, offersCount, presetMintTokenCollection } = useCollections();
+  const { getOffers, offers, offersCount, presetMintTokenCollection } = useCollections();
   const [searchString, setSearchString] = useState<string>('');
   const [offersWithAttributes, setOffersWithAttributes] = useState<OfferWithAttributes>({});
   // const [collectionSearchString, setCollectionSearchString] = useState<string>('');
@@ -168,14 +168,6 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
                   />
                 </Grid.Column>
               </Grid.Row>
-              { (!account || loadingOffers) && (
-                <Loader
-                  active
-                  inline='centered'
-                >
-                  Loading...
-                </Loader>
-              )}
               {(account && filteredOffers.length > 0) && (
                 <Grid.Row>
                   <Grid.Column width={16}>
