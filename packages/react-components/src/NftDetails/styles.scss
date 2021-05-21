@@ -6,6 +6,10 @@
     line-height: 48px;
   }
 
+  .ui.centered.inline.loader.active.load-info {
+    margin: var(--gap) auto;
+  }
+
   p {
     font-family: var(--font-roboto);
     font-style: normal;

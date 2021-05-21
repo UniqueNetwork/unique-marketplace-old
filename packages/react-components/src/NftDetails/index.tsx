@@ -72,7 +72,7 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
     setReadyToWithdraw(false);
   }, [sendCurrentUserAction]);
 
-  const showMarketActions = true;
+  const showMarketActions = false;
 
   return (
     <div className='toke-details'>
@@ -110,9 +110,10 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
         back
       </a>
       <Grid className='token-info'>
-        { (!collectionInfo || !kusamaBalance || !balance) && (
+        { (!collectionInfo || (account && (!kusamaBalance || !balance))) && (
           <Loader
             active
+            className='load-info'
             inline='centered'
           />
         )}
