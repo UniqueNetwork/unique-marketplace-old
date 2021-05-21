@@ -15,7 +15,8 @@ import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
 import { Checkbox, Input } from '@polkadot/react-components';
-import { useCollections, useDecoder } from '@polkadot/react-hooks';
+import { AttributeItemType, fillAttributes } from '@polkadot/react-components/util/protobufUtils';
+import { useCollection, useCollections, useDecoder } from '@polkadot/react-hooks';
 import { AttributesDecoded } from '@polkadot/react-hooks/useSchema';
 
 // local imports and components
@@ -36,8 +37,10 @@ const perPage = 20;
 const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTokensProps): ReactElement => {
   const history = useHistory();
   const { getOffers, offers, offersCount, presetMintTokenCollection } = useCollections();
+  const { getCollectionOnChainSchema } = useCollection();
   const [searchString, setSearchString] = useState<string>('');
   const [allAttributes, setAllAttributes] = useState<{ [key: string]: { [key: string]: boolean }}>({});
+  const [selectedAttributes, setSelectedAttributes] = useState<{ [key: string]: { [key: string]: boolean }}>({});
   const [offersWithAttributes, setOffersWithAttributes] = useState<OfferWithAttributes>({});
   // const [collectionSearchString, setCollectionSearchString] = useState<string>('');
   const [collections, setCollections] = useState<NftCollectionInterface[]>([]);
@@ -67,37 +70,6 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
 
       return newOffers;
     });
-
-    // set all attributes
-    setAllAttributes((prevAttributes: { [key: string]: { [key2: string]: boolean }}) => {
-      const newAttributes = { ...prevAttributes };
-
-      Object.keys(attributes).forEach((attributeKey: string) => {
-        const attributeValue: string | string[] = attributes[attributeKey];
-
-        if (attributeKey.toLowerCase() !== 'traits' && attributeKey.toLowerCase() !== 'gender') {
-          return;
-        }
-
-        if (!newAttributes[attributeKey]) {
-          newAttributes[attributeKey] = {};
-        }
-
-        if (Array.isArray(attributeValue)) {
-          attributeValue.forEach((item: string) => {
-            if (newAttributes[attributeKey][item] === undefined) {
-              newAttributes[attributeKey][item] = false;
-            }
-          });
-        } else {
-          if (newAttributes[attributeKey][attributeValue] === undefined) {
-            newAttributes[attributeKey][attributeValue] = false;
-          }
-        }
-      });
-
-      return newAttributes;
-    });
   }, []);
 
   const fetchData = useCallback((newPage: number) => {
@@ -106,6 +78,18 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
 
   const toggleAttributeFilter = useCallback((attKey: string, attItemKey: string) => {
     setAllAttributes((prevAttributes) => {
+      setSelectedAttributes((prev) => {
+        if (!prevAttributes[attKey][attItemKey]) {
+          return { ...prev, [attKey]: { ...prev[attKey], [attItemKey]: true } };
+        }
+
+        const newAttr = { ...prev };
+
+        delete newAttr[attKey][attItemKey];
+
+        return newAttr;
+      });
+
       return {
         ...prevAttributes,
         [attKey]: {
@@ -116,10 +100,67 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
     });
   }, []);
 
+  const presetCollectionAttributes = useCallback((collection: NftCollectionInterface) => {
+    const onChainSchema = getCollectionOnChainSchema(collection);
+    let constAttributes: AttributeItemType[] = [];
+    let varAttributes: AttributeItemType[] = [];
+    let attributes: AttributeItemType[] = [];
+
+    if (onChainSchema) {
+      const { constSchema, variableSchema } = onChainSchema;
+
+      if (constSchema) {
+        constAttributes = fillAttributes(constSchema);
+      }
+
+      if (variableSchema) {
+        varAttributes = fillAttributes(variableSchema);
+      }
+
+      attributes = [...constAttributes, ...varAttributes].sort((a: AttributeItemType, b: AttributeItemType) => a.name.localeCompare(b.name));
+
+      const attributesFilter: { [key: string]: { [key: string]: boolean }} = {};
+
+      if (attributes.length) {
+        attributes.forEach((attr) => {
+          if (attr.fieldType === 'enum') {
+            attributesFilter[attr.name] = {};
+
+            attr.values.forEach((valueItem: string) => {
+              attributesFilter[attr.name][valueItem] = false;
+            });
+          }
+        });
+
+        setAllAttributes(attributesFilter);
+      }
+    }
+  }, [getCollectionOnChainSchema]);
+
+  const filterTokensByAttributesOrSearchString = useCallback((offerItemAttrs) => {
+    console.log('filterTokensByAttributesOrSearchString', offerItemAttrs);
+
+    return true;
+  }, []);
+
   // search filter
   useEffect(() => {
     if (offers) {
       const filtered = Object.values(offers).filter((item: OfferType) => {
+        if (offersWithAttributes[item.collectionId] && offersWithAttributes[item.collectionId][item.tokenId]) {
+          const offerItemAttrs = offersWithAttributes[item.collectionId][item.tokenId];
+
+          return filterTokensByAttributesOrSearchString(offerItemAttrs);
+
+          console.log('offerItemAttrs', offerItemAttrs);
+        }
+
+        return true;
+      });
+
+      setFilteredOffers(filtered);
+
+      /* const filtered = Object.values(offers).filter((item: OfferType) => {
         console.log('item.collectionId', item.collectionId, 'tokenId', item.tokenId, 'offersWithAttributes', offersWithAttributes[item.collectionId]);
 
         if (offersWithAttributes[item.collectionId] && offersWithAttributes[item.collectionId][item.tokenId]) {
@@ -143,7 +184,7 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
 
       console.log('filtered', filtered);
 
-      setFilteredOffers(filtered);
+      setFilteredOffers(filtered); */
       /* if (searchString && searchString.length) {
         const filtered = Object.values(offers).filter((item: OfferType) => {
           if (offersWithAttributes[item.collectionId] && offersWithAttributes[item.collectionId][item.tokenId]) {
@@ -181,10 +222,16 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
   }, [addMintCollectionToList]);
 
   useEffect(() => {
+    if (collections && collections[0]) {
+      presetCollectionAttributes(collections[0]);
+    }
+  }, [collections, presetCollectionAttributes]);
+
+  useEffect(() => {
     setShouldUpdateTokens('all');
   }, [setShouldUpdateTokens]);
 
-  console.log('allAttributes', allAttributes);
+  console.log('selectedAttributes', selectedAttributes);
 
   return (
     <div className='nft-market'>
@@ -224,14 +271,14 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
             </ul>
             <hr/>
             <div className='tokens-filters'>
-              { Object.keys(allAttributes).sort((a: string, b: string) => a.localeCompare(b)).map((attributeKey: string) => (
+              { Object.keys(allAttributes).map((attributeKey: string) => (
                 (
                   <div
                     className='tokens-filter'
                     key={attributeKey}
                   >
                     <header>{attributeKey}</header>
-                    { Object.keys(allAttributes[attributeKey]).sort((a: string, b: string) => a.localeCompare(b)).map((attributeItemKey: string) => (
+                    { Object.keys(allAttributes[attributeKey]).map((attributeItemKey: string) => (
                       <Checkbox
                         key={`${attributeKey}${attributeItemKey}`}
                         label={attributeItemKey}
