@@ -14,8 +14,9 @@ import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
-import { Input } from '@polkadot/react-components';
-import { useCollections, useDecoder } from '@polkadot/react-hooks';
+import { Checkbox, Input } from '@polkadot/react-components';
+import { AttributeItemType, fillAttributes } from '@polkadot/react-components/util/protobufUtils';
+import { useCollection, useCollections, useDecoder } from '@polkadot/react-hooks';
 import { AttributesDecoded } from '@polkadot/react-hooks/useSchema';
 
 // local imports and components
@@ -36,7 +37,10 @@ const perPage = 20;
 const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTokensProps): ReactElement => {
   const history = useHistory();
   const { getOffers, offers, offersCount, presetMintTokenCollection } = useCollections();
+  const { getCollectionOnChainSchema } = useCollection();
   const [searchString, setSearchString] = useState<string>('');
+  const [allAttributes, setAllAttributes] = useState<{ [key: string]: { [key: string]: boolean }}>({});
+  const [selectedAttributes, setSelectedAttributes] = useState<{ [key: string]: { [key: string]: boolean }}>({});
   const [offersWithAttributes, setOffersWithAttributes] = useState<OfferWithAttributes>({});
   // const [collectionSearchString, setCollectionSearchString] = useState<string>('');
   const [collections, setCollections] = useState<NftCollectionInterface[]>([]);
@@ -72,32 +76,111 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
     getOffers(newPage, perPage, '23');
   }, [getOffers]);
 
+  const toggleAttributeFilter = useCallback((attKey: string, attItemKey: string) => {
+    setAllAttributes((prevAttributes) => {
+      setSelectedAttributes((prev) => {
+        if (!prevAttributes[attKey][attItemKey]) {
+          return { ...prev, [attKey]: { ...prev[attKey], [attItemKey]: true } };
+        }
+
+        const newAttr = { ...prev };
+
+        delete newAttr[attKey][attItemKey];
+
+        if (!Object.keys(newAttr[attKey]).length) {
+          delete newAttr[attKey];
+        }
+
+        return newAttr;
+      });
+
+      return {
+        ...prevAttributes,
+        [attKey]: {
+          ...prevAttributes[attKey],
+          [attItemKey]: !prevAttributes[attKey][attItemKey]
+        }
+      };
+    });
+  }, []);
+
+  const presetCollectionAttributes = useCallback((collection: NftCollectionInterface) => {
+    const onChainSchema = getCollectionOnChainSchema(collection);
+    let constAttributes: AttributeItemType[] = [];
+    let varAttributes: AttributeItemType[] = [];
+    let attributes: AttributeItemType[] = [];
+
+    if (onChainSchema) {
+      const { constSchema, variableSchema } = onChainSchema;
+
+      if (constSchema) {
+        constAttributes = fillAttributes(constSchema);
+      }
+
+      if (variableSchema) {
+        varAttributes = fillAttributes(variableSchema);
+      }
+
+      attributes = [...constAttributes, ...varAttributes].sort((a: AttributeItemType, b: AttributeItemType) => a.name.localeCompare(b.name));
+
+      const attributesFilter: { [key: string]: { [key: string]: boolean }} = {};
+
+      if (attributes.length) {
+        attributes.forEach((attr) => {
+          if (attr.fieldType === 'enum') {
+            attributesFilter[attr.name] = {};
+
+            attr.values.forEach((valueItem: string) => {
+              attributesFilter[attr.name][valueItem] = false;
+            });
+          }
+        });
+
+        setAllAttributes(attributesFilter);
+      }
+    }
+  }, [getCollectionOnChainSchema]);
+
+  const filterTokensByAttributesOrSearchString = useCallback((offerItemAttrs: AttributesDecoded) => {
+    return Object.keys(offerItemAttrs).find((attributeKey: string) => {
+      if (!Object.keys(selectedAttributes).length) {
+        return true;
+      }
+
+      if (Array.isArray(offerItemAttrs[attributeKey])) {
+        return (offerItemAttrs[attributeKey] as string[])
+          .find((targetAttr: string) => selectedAttributes[attributeKey] && selectedAttributes[attributeKey][targetAttr]);
+      } else {
+        return selectedAttributes[attributeKey] && selectedAttributes[attributeKey][offerItemAttrs[attributeKey] as string];
+      }
+    }) && Object.keys(offerItemAttrs).find((attributeKey: string) => {
+      if (Array.isArray(offerItemAttrs[attributeKey])) {
+        return (offerItemAttrs[attributeKey] as string[])
+          .find((targetAttr: string) => !searchString || (searchString && targetAttr.toLowerCase().includes(searchString.toLowerCase())));
+      } else {
+        return !searchString || (searchString && (offerItemAttrs[attributeKey] as string).toLowerCase().includes(searchString.toLowerCase()));
+      }
+    });
+  }, [searchString, selectedAttributes]);
+
+  // search filter
   useEffect(() => {
     if (offers) {
-      if (searchString && searchString.length) {
+      if (!Object.keys(selectedAttributes).length && !searchString?.length) {
+        setFilteredOffers(Object.values(offers));
+      } else {
         const filtered = Object.values(offers).filter((item: OfferType) => {
           if (offersWithAttributes[item.collectionId] && offersWithAttributes[item.collectionId][item.tokenId]) {
-            const offerItemAttrs = offersWithAttributes[item.collectionId][item.tokenId];
-            const target = Object.values(offerItemAttrs).find((value: string | string[]) => {
-              if (Array.isArray(value)) {
-                return value.find((valItem: string) => valItem.toLowerCase().includes(searchString.toLowerCase()));
-              }
-
-              return value.toLowerCase().includes(searchString.toLowerCase());
-            });
-
-            return target || item.price.toString().includes(searchString.toLowerCase());
+            return filterTokensByAttributesOrSearchString(offersWithAttributes[item.collectionId][item.tokenId]);
           }
 
           return false;
         });
 
         setFilteredOffers(filtered);
-      } else {
-        setFilteredOffers(Object.values(offers));
       }
     }
-  }, [offers, offersWithAttributes, searchString]);
+  }, [allAttributes, filterTokensByAttributesOrSearchString, offers, offersWithAttributes, searchString, selectedAttributes]);
 
   useEffect(() => {
     if (shouldUpdateTokens) {
@@ -111,8 +194,16 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
   }, [addMintCollectionToList]);
 
   useEffect(() => {
+    if (collections && collections[0]) {
+      presetCollectionAttributes(collections[0]);
+    }
+  }, [collections, presetCollectionAttributes]);
+
+  useEffect(() => {
     setShouldUpdateTokens('all');
   }, [setShouldUpdateTokens]);
+
+  // console.log('filteredOffers', filteredOffers, 'selectedAttributes', selectedAttributes);
 
   return (
     <div className='nft-market'>
@@ -151,6 +242,27 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
               ))}
             </ul>
             <hr/>
+            <div className='tokens-filters'>
+              <header>Filters:</header>
+              { Object.keys(allAttributes).map((attributeKey: string) => (
+                (
+                  <div
+                    className='tokens-filter'
+                    key={attributeKey}
+                  >
+                    <header>{attributeKey}</header>
+                    { Object.keys(allAttributes[attributeKey]).map((attributeItemKey: string) => (
+                      <Checkbox
+                        key={`${attributeKey}${attributeItemKey}`}
+                        label={attributeItemKey}
+                        onChange={toggleAttributeFilter.bind(null, attributeKey, attributeItemKey)}
+                        value={allAttributes[attributeKey][attributeItemKey]}
+                      />
+                    ))}
+                  </div>
+                )
+              ))}
+            </div>
           </Grid.Column>
           <Grid.Column width={12}>
             <Grid>
@@ -193,7 +305,7 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
                             <NftTokenCard
                               account={account}
                               collectionId={token.collectionId.toString()}
-                              key={token.tokenId}
+                              key={`${token.collectionId}-${token.tokenId}`}
                               onSetTokenAttributes={onSetTokenAttributes}
                               openDetailedInformationModal={openDetailedInformationModal}
                               token={token}

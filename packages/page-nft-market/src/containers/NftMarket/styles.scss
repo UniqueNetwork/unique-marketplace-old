@@ -2,6 +2,22 @@
   .ui.centered.inline.loader.active.load-more {
     margin: var(--gap) auto;
   }
+
+  .tokens-filters {
+    header {
+      text-transform: capitalize;
+      width: 100%;
+      margin: 0 0 var(--gap) 0;
+    }
+
+    .tokens-filter {
+      margin: 0 0 var(--gap) 0;
+
+      .ui--Checkbox {
+        width: 100%;
+      }
+    }
+  }
 }
 
 .market-pallet {

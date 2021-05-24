@@ -78,7 +78,6 @@ function getDevTypes (): Record<string, Record<string, string>> {
   }
 
   const types = predefinedTypes || decodeUrlTypes() || store.get('types', {}) as Record<string, Record<string, string>>;
-
   const names = Object.keys(types);
 
   names.length && console.log('Injected types:', names.join(', '));
