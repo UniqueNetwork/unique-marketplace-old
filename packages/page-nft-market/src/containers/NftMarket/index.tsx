@@ -243,6 +243,7 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
             </ul>
             <hr/>
             <div className='tokens-filters'>
+              <header>Filters:</header>
               { Object.keys(allAttributes).map((attributeKey: string) => (
                 (
                   <div
