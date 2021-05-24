@@ -87,6 +87,10 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
 
         delete newAttr[attKey][attItemKey];
 
+        if (!Object.keys(newAttr[attKey]).length) {
+          delete newAttr[attKey];
+        }
+
         return newAttr;
       });
 
@@ -137,78 +141,46 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
     }
   }, [getCollectionOnChainSchema]);
 
-  const filterTokensByAttributesOrSearchString = useCallback((offerItemAttrs) => {
-    console.log('filterTokensByAttributesOrSearchString', offerItemAttrs);
+  const filterTokensByAttributesOrSearchString = useCallback((offerItemAttrs: AttributesDecoded) => {
+    return Object.keys(offerItemAttrs).find((attributeKey: string) => {
+      if (!Object.keys(selectedAttributes).length) {
+        return true;
+      }
 
-    return true;
-  }, []);
+      if (Array.isArray(offerItemAttrs[attributeKey])) {
+        return (offerItemAttrs[attributeKey] as string[])
+          .find((targetAttr: string) => selectedAttributes[attributeKey] && selectedAttributes[attributeKey][targetAttr]);
+      } else {
+        return selectedAttributes[attributeKey] && selectedAttributes[attributeKey][offerItemAttrs[attributeKey] as string];
+      }
+    }) && Object.keys(offerItemAttrs).find((attributeKey: string) => {
+      if (Array.isArray(offerItemAttrs[attributeKey])) {
+        return (offerItemAttrs[attributeKey] as string[])
+          .find((targetAttr: string) => !searchString || (searchString && targetAttr.toLowerCase().includes(searchString.toLowerCase())));
+      } else {
+        return !searchString || (searchString && (offerItemAttrs[attributeKey] as string).toLowerCase().includes(searchString.toLowerCase()));
+      }
+    });
+  }, [searchString, selectedAttributes]);
 
   // search filter
   useEffect(() => {
     if (offers) {
-      const filtered = Object.values(offers).filter((item: OfferType) => {
-        if (offersWithAttributes[item.collectionId] && offersWithAttributes[item.collectionId][item.tokenId]) {
-          const offerItemAttrs = offersWithAttributes[item.collectionId][item.tokenId];
-
-          return filterTokensByAttributesOrSearchString(offerItemAttrs);
-
-          console.log('offerItemAttrs', offerItemAttrs);
-        }
-
-        return true;
-      });
-
-      setFilteredOffers(filtered);
-
-      /* const filtered = Object.values(offers).filter((item: OfferType) => {
-        console.log('item.collectionId', item.collectionId, 'tokenId', item.tokenId, 'offersWithAttributes', offersWithAttributes[item.collectionId]);
-
-        if (offersWithAttributes[item.collectionId] && offersWithAttributes[item.collectionId][item.tokenId]) {
-          const offerItemAttrs = offersWithAttributes[item.collectionId][item.tokenId];
-          const target = Object.keys(offerItemAttrs).find((valueKey: string) => {
-            console.log('offerItemAttrs[valueKey]', offerItemAttrs[valueKey], 'allAttributes[valueKey]', allAttributes[valueKey], 'Array.isArray(offerItemAttrs[valueKey])', Array.isArray(offerItemAttrs[valueKey]));
-
-            if (Array.isArray(offerItemAttrs[valueKey])) {
-              return ((searchString && (offerItemAttrs[valueKey] as string[]).find((valItem: string) => valItem.toLowerCase().includes(searchString.toLowerCase()))) || !searchString) &&
-                (offerItemAttrs[valueKey] as string[]).find((valItem: string) => allAttributes[valueKey] && allAttributes[valueKey][valItem]);
-            }
-
-            return (offerItemAttrs[valueKey] as string).toLowerCase().includes(searchString.toLowerCase());
-          });
-
-          return target || item.price.toString().includes(searchString.toLowerCase());
-        }
-
-        return true; // false;
-      });
-
-      console.log('filtered', filtered);
-
-      setFilteredOffers(filtered); */
-      /* if (searchString && searchString.length) {
+      if (!Object.keys(selectedAttributes).length && !searchString?.length) {
+        setFilteredOffers(Object.values(offers));
+      } else {
         const filtered = Object.values(offers).filter((item: OfferType) => {
           if (offersWithAttributes[item.collectionId] && offersWithAttributes[item.collectionId][item.tokenId]) {
-            const offerItemAttrs = offersWithAttributes[item.collectionId][item.tokenId];
-            const target = Object.values(offerItemAttrs).find((value: string | string[]) => {
-              if (Array.isArray(value)) {
-                return value.find((valItem: string) => valItem.toLowerCase().includes(searchString.toLowerCase()));
-              }
-
-              return value.toLowerCase().includes(searchString.toLowerCase());
-            });
-
-            return target || item.price.toString().includes(searchString.toLowerCase());
+            return filterTokensByAttributesOrSearchString(offersWithAttributes[item.collectionId][item.tokenId]);
           }
 
           return false;
         });
 
         setFilteredOffers(filtered);
-      } else {
-        setFilteredOffers(Object.values(offers));
-      } */
+      }
     }
-  }, [allAttributes, offers, offersWithAttributes, searchString]);
+  }, [allAttributes, filterTokensByAttributesOrSearchString, offers, offersWithAttributes, searchString, selectedAttributes]);
 
   useEffect(() => {
     if (shouldUpdateTokens) {
@@ -231,7 +203,7 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
     setShouldUpdateTokens('all');
   }, [setShouldUpdateTokens]);
 
-  console.log('selectedAttributes', selectedAttributes);
+  // console.log('filteredOffers', filteredOffers, 'selectedAttributes', selectedAttributes);
 
   return (
     <div className='nft-market'>
@@ -332,7 +304,7 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
                             <NftTokenCard
                               account={account}
                               collectionId={token.collectionId.toString()}
-                              key={token.tokenId}
+                              key={`${token.collectionId}-${token.tokenId}`}
                               onSetTokenAttributes={onSetTokenAttributes}
                               openDetailedInformationModal={openDetailedInformationModal}
                               token={token}

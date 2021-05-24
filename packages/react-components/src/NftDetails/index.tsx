@@ -72,7 +72,7 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
     setReadyToWithdraw(false);
   }, [sendCurrentUserAction]);
 
-  const showMarketActions = true;
+  const showMarketActions = false;
 
   return (
     <div className='toke-details'>
