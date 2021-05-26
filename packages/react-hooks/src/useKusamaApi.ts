@@ -6,13 +6,15 @@ import { useCallback, useContext, useEffect, useState } from 'react';
 
 import { ApiPromise } from '@polkadot/api/promise';
 import { typesBundle, typesChain } from '@polkadot/apps-config';
+import envConfig from '@polkadot/apps-config/envConfig';
 import { StatusContext } from '@polkadot/react-components';
 import { BalanceInterface } from '@polkadot/react-hooks/useBalance';
-import { KUSAMA_DECIMALS } from '@polkadot/react-hooks/utils';
 import ApiSigner from '@polkadot/react-signer/signers/ApiSigner';
 import { WsProvider } from '@polkadot/rpc-provider';
 import { TypeRegistry } from '@polkadot/types/create';
 import { encodeAddress } from '@polkadot/util-crypto';
+
+const { kusamaDecimals } = envConfig;
 
 interface UseKusamaApiInterface {
   formatKsmBalance: (balance: BN | undefined) => string;
@@ -23,7 +25,7 @@ interface UseKusamaApiInterface {
 }
 
 export function formatKsmBalance (value: BN | undefined = new BN(0)): string {
-  return formatStrBalance(KUSAMA_DECIMALS, value);
+  return formatStrBalance(kusamaDecimals, value);
 }
 
 export function formatStrBalance (decimals: number, value: BN | undefined = new BN(0)): string {

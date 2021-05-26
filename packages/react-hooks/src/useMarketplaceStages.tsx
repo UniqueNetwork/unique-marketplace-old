@@ -9,12 +9,14 @@ import { useMachine } from '@xstate/react';
 import BN from 'bn.js';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
+import envConfig from '@polkadot/apps-config/envConfig';
 import { StatusContext } from '@polkadot/react-components/Status';
 import { useApi, useKusamaApi, useNftContract, useToken } from '@polkadot/react-hooks';
 import { BalanceInterface } from '@polkadot/react-hooks/useBalance';
-import { escrowAddress, KUSAMA_DECIMALS, maxGas, quoteId } from '@polkadot/react-hooks/utils';
 
 import marketplaceStateMachine from './stateMachine';
+
+const { escrowAddress, kusamaDecimals, maxGas, quoteId } = envConfig;
 
 type UserActionType = 'BUY' | 'CANCEL' | 'SELL' | 'REVERT_UNUSED_MONEY' | 'UPDATE_TOKEN_STATE' | 'OFFER_TRANSACTION_FAIL' | 'SUBMIT_OFFER' | 'OFFER_TRANSACTION_SUCCESS';
 
@@ -262,7 +264,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
       const extrinsic = contractInstance.tx.withdraw({
         gasLimit: maxGas,
         value: 0
-      }, quoteId, (parseFloat(withdrawAmount) * Math.pow(10, KUSAMA_DECIMALS)));
+      }, quoteId, (parseFloat(withdrawAmount) * Math.pow(10, kusamaDecimals)));
 
       queueTransaction(
         extrinsic,

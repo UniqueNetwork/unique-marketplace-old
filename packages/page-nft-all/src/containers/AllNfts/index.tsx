@@ -13,11 +13,13 @@ import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header/Header';
 import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
+import envConfig from '@polkadot/apps-config/envConfig';
 import { useCollections, useToken } from '@polkadot/react-hooks';
 import { AttributesDecoded } from '@polkadot/react-hooks/useSchema';
-import { UNIQUE_COLLECTION_ID } from '@polkadot/react-hooks/utils';
 
 import SmallTokenCard from '../../components/SmallTokenCard';
+
+const { uniqueCollectionId } = envConfig;
 
 interface BuyTokensProps {
   account?: string;
@@ -87,7 +89,7 @@ const AllNfts = ({ account, setShouldUpdateTokens }: BuyTokensProps): ReactEleme
   }, [allTokens, collectionWithTokensCount, getTokenInfo]);
 
   const presetTokensTable = useCallback(async () => {
-    const collectionInfoWithTokensCount: CollectionWithTokensCount = await getCollectionWithTokenCount(UNIQUE_COLLECTION_ID);
+    const collectionInfoWithTokensCount: CollectionWithTokensCount = await getCollectionWithTokenCount(uniqueCollectionId);
 
     if (cleanup.current) {
       return;

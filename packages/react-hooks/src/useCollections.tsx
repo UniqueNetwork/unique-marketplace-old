@@ -8,9 +8,11 @@ import type { TokenDetailsInterface } from '@polkadot/react-hooks/useToken';
 import BN from 'bn.js';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import envConfig from '@polkadot/apps-config/envConfig';
 import { useApi, useCollection, useFetch } from '@polkadot/react-hooks';
-import { UNIQUE_COLLECTION_ID } from '@polkadot/react-hooks/utils';
 import { base64Decode, encodeAddress } from '@polkadot/util-crypto';
+
+const { uniqueCollectionId } = envConfig;
 
 export type MetadataType = {
   metadata?: string;
@@ -85,10 +87,16 @@ export function useCollections () {
   /**
    * Return the list of token sale offers
    */
-  const getOffers = useCallback((page: number, pageSize: number) => {
+  const getOffers = useCallback((page: number, pageSize: number, collectionId?: string) => {
     try {
+      let url = `/offers?page=${page}&pageSize=${pageSize}`;
+
+      if (collectionId) {
+        url = `${url}&collectionId=${collectionId}`;
+      }
+
       setLoadingOffers(true);
-      fetchData<OffersResponseType>(`/offers?page=${page}&pageSize=${pageSize}`).subscribe((result: OffersResponseType | ErrorType) => {
+      fetchData<OffersResponseType>(url).subscribe((result: OffersResponseType | ErrorType) => {
         if (cleanup.current) {
           return;
         }
@@ -128,9 +136,19 @@ export function useCollections () {
   /**
    * Return the list of token trades
    */
-  const getTrades = useCallback((account?: string) => {
-    if (!account) {
-      fetchData<TradesResponseType>('/trades/').subscribe((result: TradesResponseType | ErrorType) => {
+  const getTrades = useCallback((account: string, collectionId?: string) => {
+    let url = '/trades';
+
+    if (account && account.length) {
+      url = `${url}/${account}`;
+    }
+
+    if (collectionId) {
+      url = `${url}?collectionId=${collectionId}`;
+    }
+
+    if (!account || !account.length) {
+      fetchData<TradesResponseType>(url).subscribe((result: TradesResponseType | ErrorType) => {
         if (cleanup.current) {
           return;
         }
@@ -142,7 +160,7 @@ export function useCollections () {
         }
       });
     } else {
-      fetchData<TradesResponseType>(`/trades/${account}`).subscribe((result: TradesResponseType | ErrorType) => {
+      fetchData<TradesResponseType>(url).subscribe((result: TradesResponseType | ErrorType) => {
         if (cleanup.current) {
           return;
         }
@@ -213,14 +231,14 @@ export function useCollections () {
   const presetMintTokenCollection = useCallback(async (): Promise<NftCollectionInterface[]> => {
     try {
       const collections: Array<NftCollectionInterface> = JSON.parse(localStorage.getItem('tokenCollections') || '[]') as NftCollectionInterface[];
-      const mintCollectionInfo = await getDetailedCollectionInfo(UNIQUE_COLLECTION_ID) as unknown as NftCollectionInterface;
+      const mintCollectionInfo = await getDetailedCollectionInfo(uniqueCollectionId) as unknown as NftCollectionInterface;
 
       if (cleanup.current) {
         return [];
       }
 
-      if (mintCollectionInfo && mintCollectionInfo.Owner && mintCollectionInfo.Owner.toString() !== '5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM' && !collections.find((collection) => collection.id === UNIQUE_COLLECTION_ID)) {
-        collections.push({ ...mintCollectionInfo, id: UNIQUE_COLLECTION_ID });
+      if (mintCollectionInfo && mintCollectionInfo.Owner && mintCollectionInfo.Owner.toString() !== '5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM' && !collections.find((collection) => collection.id === uniqueCollectionId)) {
+        collections.push({ ...mintCollectionInfo, id: uniqueCollectionId });
       }
 
       localStorage.setItem('tokenCollections', JSON.stringify(collections));

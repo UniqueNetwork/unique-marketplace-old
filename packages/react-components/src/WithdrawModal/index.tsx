@@ -10,9 +10,12 @@ import Button from 'semantic-ui-react/dist/commonjs/elements/Button';
 import Modal from 'semantic-ui-react/dist/commonjs/modules/Modal/Modal';
 
 import { ContractPromise } from '@polkadot/api-contract';
+import envConfig from '@polkadot/apps-config/envConfig';
 import { Input, StatusContext } from '@polkadot/react-components';
 import { formatKsmBalance } from '@polkadot/react-hooks/useKusamaApi';
-import { findCallMethodByName, KUSAMA_DECIMALS, maxGas, quoteId } from '@polkadot/react-hooks/utils';
+import { findCallMethodByName } from '@polkadot/react-hooks/utils';
+
+const { kusamaDecimals, maxGas, quoteId } = envConfig;
 
 interface Props {
   account?: string;
@@ -30,10 +33,10 @@ function WithdrawModal ({ account, closeModal, contractInstance, deposited, upda
     const message = findCallMethodByName(contractInstance, 'withdraw');
 
     if (message && contractInstance) {
-      const extrinsic = contractInstance.exec(message, {
+      const extrinsic = contractInstance.tx.withdraw({
         gasLimit: maxGas,
         value: 0
-      }, quoteId, (parseFloat(withdrawAmount) * Math.pow(10, KUSAMA_DECIMALS)));
+      }, quoteId, (parseFloat(withdrawAmount) * Math.pow(10, kusamaDecimals)));
 
       queueExtrinsic({
         accountId: account && account.toString(),

@@ -17,6 +17,7 @@ import NotFound from '@polkadot/apps/NotFound';
 import Status from '@polkadot/apps/Status';
 import { useTranslation } from '@polkadot/apps/translate';
 import { getSystemChainColor } from '@polkadot/apps-config';
+import envConfig from '@polkadot/apps-config/envConfig';
 import createRoutes from '@polkadot/apps-routing';
 import { Route } from '@polkadot/apps-routing/types';
 import { AccountSelector, ErrorBoundary, StatusContext } from '@polkadot/react-components';
@@ -29,6 +30,8 @@ import BalancesHeader from './BalancesHeader';
 import WarmUp from './WarmUp';
 
 export const PORTAL_ID = 'portals';
+
+const { walletMode } = envConfig;
 
 const NOT_FOUND: Route = {
   Component: NotFound,
@@ -115,36 +118,40 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                                       to='/'
                                     />
                                   )}
-                                  <Menu.Item
-                                    active={location.pathname === '/market'}
-                                    as={NavLink}
-                                    name='market'
-                                    to='/market'
-                                  />
-                                  <Menu.Item
-                                    active={location.pathname === '/all-tokens'}
-                                    as={NavLink}
-                                    name='gallery'
-                                    to='/all-tokens'
-                                  />
-                                  <Menu.Item
-                                    active={location.pathname === '/my-tokens'}
-                                    as={NavLink}
-                                    name='myTokens'
-                                    to='/wallet'
-                                  />
-                                  <Menu.Item
-                                    active={location.pathname === '/trades'}
-                                    as={NavLink}
-                                    name='trades'
-                                    to='/trades'
-                                  />
-                                  <Menu.Item
-                                    active={location.pathname === '/accounts'}
-                                    as={NavLink}
-                                    name='accounts'
-                                    to='/accounts'
-                                  />
+                                  { !walletMode && (
+                                    <>
+                                      <Menu.Item
+                                        active={location.pathname === '/market'}
+                                        as={NavLink}
+                                        name='market'
+                                        to='/market'
+                                      />
+                                      <Menu.Item
+                                        active={location.pathname === '/all-tokens'}
+                                        as={NavLink}
+                                        name='gallery'
+                                        to='/all-tokens'
+                                      />
+                                      <Menu.Item
+                                        active={location.pathname === '/my-tokens'}
+                                        as={NavLink}
+                                        name='myTokens'
+                                        to='/wallet'
+                                      />
+                                      <Menu.Item
+                                        active={location.pathname === '/trades'}
+                                        as={NavLink}
+                                        name='trades'
+                                        to='/trades'
+                                      />
+                                      <Menu.Item
+                                        active={location.pathname === '/accounts'}
+                                        as={NavLink}
+                                        name='accounts'
+                                        to='/accounts'
+                                      />
+                                    </>
+                                  )}
                                 </Menu>
                                 <div className='app-user'>
                                   { isApiReady && (

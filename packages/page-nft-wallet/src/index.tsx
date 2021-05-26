@@ -10,6 +10,7 @@ import { useLocation } from 'react-router-dom';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header/Header';
 
+import envConfig from '@polkadot/apps-config/envConfig';
 import { ManageCollection, ManageTokenAttributes, NftDetails } from '@polkadot/react-components';
 import Tabs from '@polkadot/react-components/Tabs';
 // local imports and components
@@ -19,8 +20,7 @@ import { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
 import NftWallet from './containers/NftWallet';
 import TokensForSale from './containers/TokensForSale';
 
-const canAddCollections = true;
-const canCreateCollection = true;
+const { canAddCollections, canCreateCollection, showTrades } = envConfig;
 
 function App ({ account, basePath }: Props): React.ReactElement<Props> {
   const location = useLocation();
@@ -59,7 +59,7 @@ function App ({ account, basePath }: Props): React.ReactElement<Props> {
     });
   }, []);
 
-  // reset collections if we can't add another except UNIQUE_COLLECTION_ID
+  // reset collections if we can't add another except uniqueCollectionId
   useEffect(() => {
     if (!canAddCollections) {
       localStorage.setItem('tokenCollections', JSON.stringify([]));
@@ -68,7 +68,7 @@ function App ({ account, basePath }: Props): React.ReactElement<Props> {
 
   return (
     <div className='my-tokens'>
-      { !location.pathname.includes('token-details') && !location.pathname.includes('manage-') && (
+      { showTrades && !location.pathname.includes('token-details') && !location.pathname.includes('manage-') && (
         <>
           <Header as='h1'>My Tokens</Header>
           <Header as='h4'>NFTs owned by me</Header>
@@ -121,7 +121,6 @@ function App ({ account, basePath }: Props): React.ReactElement<Props> {
           <NftWallet
             account={account}
             addCollection={addCollection}
-            canAddCollections={canAddCollections}
             collections={collections}
             setCollections={setCollections}
             setShouldUpdateTokens={setShouldUpdateTokens}

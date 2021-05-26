@@ -29,7 +29,6 @@
       "@polkadot/app-nft-mint": [ "packages/page-nft-mint/src" ],
       "@polkadot/app-nft-mint/*": [ "packages/page-nft-mint/src/*" ],
       "@polkadot/app-nft-market": [ "packages/page-nft-market/src" ],
-      "@polkadot/app-nft-market/*": [ "packages/page-nft-market/src/*" ],
       "@polkadot/app-nft-trades": [ "packages/page-nft-trades/src" ],
       "@polkadot/app-nft-market/*": [ "packages/page-nft-market/src/*" ],
       "@polkadot/react-api": [ "packages/react-api/src" ],

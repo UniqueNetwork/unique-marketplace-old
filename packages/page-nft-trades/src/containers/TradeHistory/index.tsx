@@ -6,18 +6,22 @@ import type { TradeType } from '@polkadot/react-hooks/useCollections';
 import moment from 'moment';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
+import envConfig from '@polkadot/apps-config/envConfig';
 import { ListComponent } from '@polkadot/react-components';
 import { useCollections } from '@polkadot/react-hooks';
-import { KUSAMA_DECIMALS } from '@polkadot/react-hooks/utils';
 import { keyring } from '@polkadot/ui-keyring';
 import { base64Decode } from '@polkadot/util-crypto';
+
+const { kusamaDecimals } = envConfig;
 
 function TradeHistory ({ account }: { account?: string }): React.ReactElement {
   const { getTrades, myTrades, trades } = useCollections();
   const [tradesList, setTradesList] = useState<TradeType[]>();
 
   const fetchTrades = useCallback(() => {
-    getTrades(account);
+    if (account) {
+      getTrades(account);
+    }
   }, [account, getTrades]);
 
   const headerRef = useRef([
@@ -52,7 +56,7 @@ function TradeHistory ({ account }: { account?: string }): React.ReactElement {
               {trade.tokenId}
             </td>
             <td className='overflow'>
-              {parseFloat(trade.price) / Math.pow(10, KUSAMA_DECIMALS)} KSM
+              {parseFloat(trade.price) / Math.pow(10, kusamaDecimals)} KSM
             </td>
             <td className='overflow'>
               {moment(trade.tradeDate).format('YYYY-MM-DD')}

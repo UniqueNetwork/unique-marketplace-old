@@ -9,15 +9,17 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router';
 import Item from 'semantic-ui-react/dist/commonjs/views/Item';
 
+import envConfig from '@polkadot/apps-config/envConfig';
 import { Expander } from '@polkadot/react-components';
 import pencil from '@polkadot/react-components/ManageCollection/pencil.svg';
 import plus from '@polkadot/react-components/ManageCollection/plus.svg';
 import trash from '@polkadot/react-components/ManageCollection/trash.svg';
 import { useCollections, useDecoder, useMetadata } from '@polkadot/react-hooks';
 import { useCollection } from '@polkadot/react-hooks/useCollection';
-import { UNIQUE_COLLECTION_ID } from '@polkadot/react-hooks/utils';
 
 import NftTokenCard from '../NftTokenCard';
+
+const { canCreateToken, canEditCollection, uniqueCollectionId } = envConfig;
 
 interface Props {
   account?: string;
@@ -122,9 +124,6 @@ function NftCollectionCard ({ account, canTransferTokens, collection, openTransf
     };
   }, []);
 
-  const canEditCollection = true;
-  const canCreateToken = true;
-
   return (
     <Expander
       className='nft-collection-item'
@@ -172,7 +171,7 @@ function NftCollectionCard ({ account, canTransferTokens, collection, openTransf
                 title='add'
               />
             )}
-            { collection.id !== UNIQUE_COLLECTION_ID && (
+            { collection.id !== uniqueCollectionId && (
               <img
                 alt='delete'
                 className='red'

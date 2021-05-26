@@ -8,15 +8,17 @@ import BN from 'bn.js';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { Abi, ContractPromise } from '@polkadot/api-contract';
+import envConfig from '@polkadot/apps-config/envConfig';
 import { DEFAULT_DECIMALS } from '@polkadot/react-api';
 import { useApi, useCall } from '@polkadot/react-hooks';
-import { contractAddress, maxGas, value } from '@polkadot/react-hooks/utils';
 import keyring from '@polkadot/ui-keyring';
 import { settings } from '@polkadot/ui-settings';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import metadata from './metadata19.03.json';
+
+const { contractAddress, maxGas, value } = envConfig;
 
 export interface AskOutputInterface {
   output: [string, string, string, BN, string]

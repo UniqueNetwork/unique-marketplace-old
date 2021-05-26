@@ -13,13 +13,15 @@ import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import Image from 'semantic-ui-react/dist/commonjs/elements/Image';
 import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
+import envConfig from '@polkadot/apps-config/envConfig';
 import { Input, TransferModal } from '@polkadot/react-components';
 import { useBalance, useDecoder, useMarketplaceStages, useSchema } from '@polkadot/react-hooks';
-import { KUSAMA_DECIMALS } from '@polkadot/react-hooks/utils';
 
 import BuySteps from './BuySteps';
 import SaleSteps from './SaleSteps';
 import SetPriceModal from './SetPriceModal';
+
+const { kusamaDecimals } = envConfig;
 
 interface NftDetailsProps {
   account: string;
@@ -58,7 +60,7 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
       return;
     }
 
-    setPrice((parseFloat(tokenPriceForSale) * Math.pow(10, KUSAMA_DECIMALS)).toString());
+    setPrice((parseFloat(tokenPriceForSale) * Math.pow(10, kusamaDecimals)).toString());
   }, [setPrice, tokenPriceForSale]);
 
   const onTransferSuccess = useCallback(() => {
