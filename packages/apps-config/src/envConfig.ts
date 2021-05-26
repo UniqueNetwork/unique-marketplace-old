@@ -8,6 +8,7 @@ export type EnvConfigType = {
   canEditCollection: boolean;
   contractAddress: string; // 5FgbNg55FCFT3j1KokxsHaEgp4wfnDMGazCLw3mqC359bY72
   escrowAddress: string; // 5FdzbgdBGRM5FDALrnSPRybWhqKv4eiy6QUpWUdBt3v3omAU
+  faviconPath: string;
   kusamaDecimals: number; // 12
   maxGas: number; // 1000000000000
   quoteId: number; // 2
@@ -32,6 +33,7 @@ const envConfig: EnvConfigType = {
   canEditCollection: window.processEnv.canEditCollection || false,
   contractAddress: window.processEnv.contractAddress || '5FgbNg55FCFT3j1KokxsHaEgp4wfnDMGazCLw3mqC359bY72',
   escrowAddress: window.processEnv.escrowAddress || '5FdzbgdBGRM5FDALrnSPRybWhqKv4eiy6QUpWUdBt3v3omAU',
+  faviconPath: window.processEnv.faviconPath || 'favicon.ico',
   kusamaDecimals: window.processEnv.kusamaDecimals || 12,
   maxGas: window.processEnv.maxGas || 1000000000000,
   quoteId: window.processEnv.quoteId || 2,

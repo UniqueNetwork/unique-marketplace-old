@@ -189,16 +189,19 @@ function ManageTokenAttributes ({ account, setShouldUpdateTokens }: Props): Reac
 
       Object.keys(deSerialized).forEach((key: string) => {
         if (!Array.isArray(deSerialized[key])) {
-          const newValue = () => {
+          const newValue = (): string | number => {
             const targetAttribute = tokenAttributes
               .find((varAttr) => varAttr.name === key);
-            let targetIndex = 0;
 
             if (targetAttribute) {
-              targetIndex = targetAttribute.values.findIndex((targetValue) => targetValue === deSerialized[key]);
+              if (targetAttribute.fieldType === 'enum') {
+                return targetAttribute.values.findIndex((targetValue) => targetValue === deSerialized[key]);
+              } else {
+                return deSerialized[key] as string;
+              }
             }
 
-            return targetIndex;
+            return '';
           };
 
           newVarAttributes[key] = {
@@ -275,12 +278,16 @@ function ManageTokenAttributes ({ account, setShouldUpdateTokens }: Props): Reac
 
   useEffect(() => {
     if (variableOnChainSchema && tokenInfo?.VariableData) {
+      console.log('variableOnChainSchema', variableOnChainSchema);
+
       fillTokenForm(variableOnChainSchema, variableAttributes, tokenInfo.VariableData, setTokenVarAttributes);
     }
   }, [fillTokenForm, tokenInfo, variableAttributes, variableOnChainSchema]);
 
   useEffect(() => {
     if (constOnChainSchema && tokenInfo?.ConstData) {
+      console.log('constOnChainSchema', constOnChainSchema);
+
       fillTokenForm(constOnChainSchema, constAttributes, tokenInfo.ConstData, setTokenConstAttributes);
     }
   }, [constAttributes, constOnChainSchema, fillTokenForm, tokenInfo]);
