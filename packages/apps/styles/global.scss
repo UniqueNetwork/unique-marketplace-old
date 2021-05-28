@@ -1,5 +1,8 @@
 body {
   color: var(--text-color);
+
+  overflow-x: hidden;
+  margin-right: calc(-1 * (100vw - 100%));
 }
 
 .ui.popup {

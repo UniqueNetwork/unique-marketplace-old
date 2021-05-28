@@ -19,6 +19,7 @@ interface NftWalletProps {
   account?: string;
   addCollection: (collection: NftCollectionInterface) => void;
   collections: NftCollectionInterface[];
+  removeCollectionFromList: (collectionToRemove: string) => void;
   setCollections: (collections: NftCollectionInterface[]) => void;
   setShouldUpdateTokens: (value: string) => void;
   shouldUpdateTokens?: string;
@@ -26,7 +27,7 @@ interface NftWalletProps {
 
 const { canAddCollections } = envConfig;
 
-function NftWallet ({ account, addCollection, collections, setCollections, setShouldUpdateTokens, shouldUpdateTokens }: NftWalletProps): React.ReactElement {
+function NftWallet ({ account, addCollection, collections, removeCollectionFromList, setCollections, setShouldUpdateTokens, shouldUpdateTokens }: NftWalletProps): React.ReactElement {
   const [openTransfer, setOpenTransfer] = useState<{ collection: NftCollectionInterface, tokenId: string, balance: number } | null>(null);
   const [selectedCollection, setSelectedCollection] = useState<NftCollectionInterface>();
   const [canTransferTokens] = useState<boolean>(true);
@@ -44,13 +45,13 @@ function NftWallet ({ account, addCollection, collections, setCollections, setSh
     setCollections([...firstCollections]);
   }, [setCollections, presetMintTokenCollection]);
 
-  const removeCollection = useCallback((collectionToRemove) => {
+  const removeCollection = useCallback((collectionToRemove: string) => {
     if (selectedCollection && selectedCollection.id === collectionToRemove) {
       setSelectedCollection(undefined);
     }
 
-    setCollections(collections.filter((item: NftCollectionInterface) => item.id !== collectionToRemove));
-  }, [collections, setCollections, selectedCollection]);
+    removeCollectionFromList(collectionToRemove);
+  }, [collections, removeCollectionFromList, setCollections, selectedCollection]);
 
   const openTransferModal = useCallback((collection: NftCollectionInterface, tokenId: string, balance: number) => {
     setOpenTransfer({ balance, collection, tokenId });
