@@ -12,7 +12,7 @@ window.processEnv = {
   kusamaDecimals: 12,
   maxGas: 1000000000000,
   quoteId: 2,
-  showMarketActions: false,
+  showMarketActions: true,
   showTrades: true,
   singleCollectionMode: false,
   uniqueCollectionId: '2',

@@ -21,7 +21,7 @@ import BuySteps from './BuySteps';
 import SaleSteps from './SaleSteps';
 import SetPriceModal from './SetPriceModal';
 
-const { kusamaDecimals } = envConfig;
+const { kusamaDecimals, showMarketActions } = envConfig;
 
 interface NftDetailsProps {
   account: string;
@@ -73,8 +73,6 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
     sendCurrentUserAction('REVERT_UNUSED_MONEY');
     setReadyToWithdraw(false);
   }, [sendCurrentUserAction]);
-
-  const showMarketActions = false;
 
   return (
     <div className='toke-details'>
