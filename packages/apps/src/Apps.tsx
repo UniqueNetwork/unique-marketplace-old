@@ -27,6 +27,7 @@ import Signer from '@polkadot/react-signer';
 
 import ConnectingOverlay from './overlays/Connecting';
 import BalancesHeader from './BalancesHeader';
+import ScrollToTop from './ScrollToTop';
 import WarmUp from './WarmUp';
 
 export const PORTAL_ID = 'portals';
@@ -72,6 +73,7 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
   return (
     <>
       <GlobalStyle uiHighlight={uiHighlight} />
+      <ScrollToTop />
       <div className={`app-wrapper theme--${theme.theme} ${className}`}>
         <AccountSidebar>
           <Signer>
