@@ -91,25 +91,31 @@ function NftWallet ({ account, addCollection, collections, removeCollectionFromL
       <Header as='h3'>
         My collections
       </Header>
-      <Table
-        empty={'No collections added'}
-        header={[]}
-      >
-        { collections.map((collection) => (
-          <tr key={collection.id}>
-            <td className='overflow'>
-              <NftCollectionCard
-                account={account}
-                canTransferTokens={canTransferTokens}
-                collection={collection}
-                openTransferModal={openTransferModal}
-                removeCollection={removeCollection}
-                shouldUpdateTokens={shouldUpdateTokens}
-              />
-            </td>
-          </tr>
-        ))}
-      </Table>
+      { !collections?.length && (
+        <div className='empty-label'>
+          You haven`t added anything yet. Use the collection search.
+        </div>
+      )}
+      { collections?.length > 0 && (
+        <Table
+          header={[]}
+        >
+          { collections.map((collection) => (
+            <tr key={collection.id}>
+              <td className='overflow'>
+                <NftCollectionCard
+                  account={account}
+                  canTransferTokens={canTransferTokens}
+                  collection={collection}
+                  openTransferModal={openTransferModal}
+                  removeCollection={removeCollection}
+                  shouldUpdateTokens={shouldUpdateTokens}
+                />
+              </td>
+            </tr>
+          ))}
+        </Table>
+      )}
       { openTransfer && openTransfer.tokenId && openTransfer.collection && (
         <TransferModal
           account={account}

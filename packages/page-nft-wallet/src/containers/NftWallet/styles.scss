@@ -1,0 +1,18 @@
+.nft-wallet {
+  background: var(--card-background);
+  box-shadow: 0 4px 12px var(--card-shadow);
+  border-radius: 4px;
+  padding: 32px;
+  min-height: 637px;
+
+  h3 {
+    font-family: var(--font-inter);
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .empty-label {
+    color: var(--tabs-color);
+    font-size: 16px;
+  }
+}

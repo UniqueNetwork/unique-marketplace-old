@@ -2,6 +2,27 @@
   padding: 2rem 0 0 0;
 
   .collection-search-form {
+    .search-field {
+      .ui--Labelled {
+        .input {
+          img {
+            position: absolute;
+            &.search-icon {
+              left: 16px;
+              top: 8px
+            }
+            &.clear-icon {
+              cursor: pointer;
+              right: 16px;
+              top: 8px
+            }
+          }
 
+          input {
+            padding-right: 4rem !important;
+          }
+        }
+      }
+    }
   }
 }

@@ -12,7 +12,7 @@ type Input$Type = 'number' | 'password' | 'text';
 
 interface Props {
   autoFocus?: boolean;
-  children?: React.ReactNode;
+  children?: React.ReactNode | any;
   className?: string;
   defaultValue?: string | null;
   help?: React.ReactNode;
@@ -146,7 +146,7 @@ function Input ({ autoFocus = false, children, className, defaultValue, help, ic
       withLabel={withLabel}
     >
       <SUIInput
-        action={isAction}
+        action={isAction || false}
         autoFocus={autoFocus}
         className={[
           isEditable

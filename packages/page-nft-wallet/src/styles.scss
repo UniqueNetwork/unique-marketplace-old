@@ -1,6 +1,11 @@
 .my-tokens {
   position: relative;
 
+  h4.ui.header {
+    min-height: 0;
+    margin-bottom: calc(2 * var(--gap));
+  }
+
   .button.create-button {
     position: absolute;
     right: 0;

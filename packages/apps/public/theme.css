@@ -47,6 +47,7 @@
   --max-header-width: 100%;
   --card-border-color: #ECECEC;
   --card-background: #FFFFFF;
+  --card-shadow: rgba(0, 0, 0, 0.08);
   --card-text-color: #000;
   --card-link-color: #40BCFF;
   --account-selector-background: #F9FAFF;

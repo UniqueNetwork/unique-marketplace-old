@@ -8,11 +8,13 @@ import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
-import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 
-import { Input, Table } from '@polkadot/react-components';
+import { Input } from '@polkadot/react-components';
 import { useCollections, useDecoder } from '@polkadot/react-hooks';
+
+import clearIcon from './clearIcon.svg';
+import searchIcon from './searchIcon.svg';
 
 interface Props {
   account: string | null | undefined;
@@ -67,6 +69,22 @@ function CollectionSearch ({ account, addCollection, collections }: Props): Reac
     }
   }, [presetTokensCollections]);
 
+  const clearSearch = useCallback(() => {
+    setSearchString('');
+    setCollectionsMatched([]);
+  }, []);
+
+  const onAddCollection = useCallback((item, e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    addCollectionToAccount(item);
+  }, [addCollectionToAccount]);
+
+  useEffect(() => {
+    if (searchString.length >= 3) {
+      searchCollection();
+    }
+  }, [searchCollection, searchString]);
+
   // clear search results if account changed
   useEffect(() => {
     if (currentAccount.current && currentAccount.current !== account) {
@@ -96,35 +114,69 @@ function CollectionSearch ({ account, addCollection, collections }: Props): Reac
             </Grid.Column>
           </Grid.Row>
           <Grid.Row>
-            <Grid.Column width={14}>
+            <Grid.Column width={16}>
               { account && (
-                <Form.Field>
+                <Form.Field
+                  className={ collectionsMatched?.length > 0 ? 'search-field with-results' : 'search-field'}
+                >
                   <Input
                     className='isSmall'
+                    icon={
+                      <img
+                        alt='search'
+                        className='search-icon'
+                        src={searchIcon as string}
+                      />
+                    }
                     isDisabled={!collectionsAvailable.length}
-                    label={<span>Find and add your token collection. For example, you can add tokens from <a href='https://ipfs-gateway.usetech.com/ipns/QmaMtDqE9nhMX9RQLTpaCboqg7bqkb6Gi67iCKMe8NDpCE/'
-                      rel='noopener noreferrer'
-                      target='_blank'>SubstraPunks</a></span>}
                     onChange={setSearchString}
-                    placeholder='Search...'
+                    placeholder='Enter collection number or name'
                     value={searchString}
                     withLabel
-                  />
+                  >
+                    { searchString?.length > 0 && (
+                      <img
+                        alt='clear'
+                        className='clear-icon'
+                        onClick={clearSearch}
+                        src={clearIcon as string}
+                      />
+                    )}
+                  </Input>
                 </Form.Field>
               )}
-            </Grid.Column>
-            <Grid.Column width={2}>
-              <Form.Field>
-                <Button
-                  content={'Search'}
-                  onClick={searchCollection}
-                />
-              </Form.Field>
             </Grid.Column>
           </Grid.Row>
           <Grid.Row>
             <Grid.Column width={16}>
-              <Header as='h3'>
+              { collectionsMatched?.length > 0 && (
+                <div className='collection-search-results'>
+                  {collectionsMatched.map((item) => (
+                    <div
+                      className='collection-search-result'
+                      key={item.id}
+                    >
+                      <span className='collection-name'>
+                        {collectionName16Decoder(item.Name)}
+                      </span>
+                      { hasThisCollection(item) && (
+                        <span className='collection-added'>
+                          Collection already added
+                        </span>
+                      )}
+                      { !hasThisCollection(item) && (
+                        <a
+                          className='collection-add'
+                          onClick={onAddCollection.bind(null, item)}
+                        >
+                          Add collection
+                        </a>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+              {/* <Header as='h3'>
                   Search results
               </Header>
               <Table
@@ -149,7 +201,7 @@ function CollectionSearch ({ account, addCollection, collections }: Props): Reac
                     </td>
                   </tr>
                 ))}
-              </Table>
+              </Table> */}
             </Grid.Column>
           </Grid.Row>
         </Grid>
