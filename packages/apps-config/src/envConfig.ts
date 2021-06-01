@@ -6,6 +6,7 @@ export type EnvConfigType = {
   canCreateCollection: boolean;
   canCreateToken: boolean;
   canEditCollection: boolean;
+  canEditToken: boolean;
   contractAddress: string; // 5FgbNg55FCFT3j1KokxsHaEgp4wfnDMGazCLw3mqC359bY72
   escrowAddress: string; // 5FdzbgdBGRM5FDALrnSPRybWhqKv4eiy6QUpWUdBt3v3omAU
   faviconPath: string;
@@ -13,7 +14,6 @@ export type EnvConfigType = {
   maxGas: number; // 1000000000000
   quoteId: number; // 2
   showMarketActions: boolean; // buy, sell, cancel and withdraw buttons on the token details page
-  showTrades: boolean;
   singleCollectionMode: boolean; // if custom marketplace use only one collection - uniqueCollectionId
   uniqueCollectionId: string; // '23'
   value: number; // 0
@@ -31,6 +31,7 @@ const envConfig: EnvConfigType = {
   canCreateCollection: window.processEnv.canCreateCollection || false,
   canCreateToken: window.processEnv.canCreateToken || false,
   canEditCollection: window.processEnv.canEditCollection || false,
+  canEditToken: window.processEnv.canEditToken || false,
   contractAddress: window.processEnv.contractAddress || '5FgbNg55FCFT3j1KokxsHaEgp4wfnDMGazCLw3mqC359bY72',
   escrowAddress: window.processEnv.escrowAddress || '5FdzbgdBGRM5FDALrnSPRybWhqKv4eiy6QUpWUdBt3v3omAU',
   faviconPath: window.processEnv.faviconPath || 'favicon.ico',
@@ -38,7 +39,6 @@ const envConfig: EnvConfigType = {
   maxGas: window.processEnv.maxGas || 1000000000000,
   quoteId: window.processEnv.quoteId || 2,
   showMarketActions: window.processEnv.showMarketActions || false,
-  showTrades: window.processEnv.showTrades || true,
   singleCollectionMode: false,
   uniqueCollectionId: window.processEnv.uniqueCollectionId || '2',
   value: window.processEnv.value || 0,

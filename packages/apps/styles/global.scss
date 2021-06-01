@@ -1,5 +1,8 @@
 body {
   color: var(--text-color);
+
+  overflow-x: hidden;
+  margin-right: calc(-1 * (100vw - 100%));
 }
 
 .ui.popup {
@@ -45,6 +48,17 @@ hr {
 
   h2 {
     color: var(--modal-text-color);
+  }
+
+  &.small.visible {
+    .content {
+      font-size: 18px;
+    }
+    .actions {
+      display: flex;
+      float: right;
+      padding: 1rem !important;
+    }
   }
 
   .actions {

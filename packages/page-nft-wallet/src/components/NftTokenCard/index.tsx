@@ -10,7 +10,10 @@ import { useHistory } from 'react-router';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 import Item from 'semantic-ui-react/dist/commonjs/views/Item';
 
+import envConfig from '@polkadot/apps-config/envConfig';
 import { useSchema } from '@polkadot/react-hooks';
+
+const { canEditToken } = envConfig;
 
 interface Props {
   account: string;
@@ -50,8 +53,6 @@ function NftTokenCard ({ account, canTransferTokens, collection, openTransferMod
 
     return '';
   }, [attributes]);
-
-  const canEditToken = true;
 
   if (!reFungibleBalance && collection?.Mode?.reFungible) {
     return <></>;

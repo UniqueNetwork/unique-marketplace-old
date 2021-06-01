@@ -42,11 +42,11 @@
   --menu-font-size: 16px;
   --text-color: #000;
   --title-color: #040B1D;
-  --input-background-color: #FAFAFA;
+  --input-background-color: #FFFFFF;
   --input-text-color: #000;
   --max-header-width: 100%;
   --card-border-color: #ECECEC;
-  --card-background: #FAFAFA;
+  --card-background: #FFFFFF;
   --card-text-color: #000;
   --card-link-color: #40BCFF;
   --account-selector-background: #F9FAFF;
@@ -92,10 +92,10 @@
   --menu-font-size: 16px;
   --text-color: #000;
   --title-color: #040B1D;
-  --input-background-color: #FAFAFA;
+  --input-background-color: #FFFFFF;
   --max-header-width: 100%;
   --card-border-color: #ECECEC;
-  --card-background: #FAFAFA;
+  --card-background: #FFFFFF;
   --card-text-color: #000;
   --card-link-color: #40BCFF;
   --account-selector-background: #F9FAFF;
@@ -142,7 +142,7 @@
   --menu-font-size: 16px;
   --text-color: white;
   --title-color: white;
-  --input-background-color: #FAFAFA;
+  --input-background-color: #FFFFFF;
   --input-text-color: #000;
   --max-header-width: 1200px;
   --card-border-color: #000000;

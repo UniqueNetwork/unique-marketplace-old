@@ -7,6 +7,7 @@ import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router';
+import Confirm from 'semantic-ui-react/dist/commonjs/addons/Confirm';
 import Item from 'semantic-ui-react/dist/commonjs/views/Item';
 
 import envConfig from '@polkadot/apps-config/envConfig';
@@ -14,6 +15,7 @@ import { Expander } from '@polkadot/react-components';
 import pencil from '@polkadot/react-components/ManageCollection/pencil.svg';
 import plus from '@polkadot/react-components/ManageCollection/plus.svg';
 import trash from '@polkadot/react-components/ManageCollection/trash.svg';
+import Tooltip from '@polkadot/react-components/Tooltip';
 import { useCollections, useDecoder, useMetadata } from '@polkadot/react-hooks';
 import { useCollection } from '@polkadot/react-hooks/useCollection';
 
@@ -35,6 +37,7 @@ function NftCollectionCard ({ account, canTransferTokens, collection, openTransf
   const [collectionImageUrl, setCollectionImageUrl] = useState<string>();
   const [ownTokensCount, setOwnTokensCount] = useState<number>();
   const [allTokensCount, setAllTokensCount] = useState<number>();
+  const [confirmDeleteCollection, setConfirmDeleteCollection] = useState<boolean>(false);
   const [tokensOfCollection, setTokensOfCollection] = useState<Array<string>>([]);
   const { getTokensOfCollection } = useCollections();
   const { getCollectionTokensCount } = useCollection();
@@ -93,6 +96,12 @@ function NftCollectionCard ({ account, canTransferTokens, collection, openTransf
     setOwnTokensCount(tokensOfCollection.length);
     setTokensOfCollection(tokensOfCollection);
   }, [account, collection, getTokensOfCollection]);
+
+  const toggleConfirmation = useCallback((status, e: React.MouseEvent<any>) => {
+    e.stopPropagation();
+
+    setConfirmDeleteCollection(status);
+  }, []);
 
   useEffect(() => {
     if (shouldUpdateTokens && shouldUpdateTokens === collection.id) {
@@ -156,29 +165,59 @@ function NftCollectionCard ({ account, canTransferTokens, collection, openTransf
           </div>
           <div className='link-button'>
             { canEditCollection && (
-              <img
-                alt='edit'
-                onClick={editCollection.bind(null, collection.id)}
-                src={pencil as string}
-                title='edit'
-              />
+              <>
+                <img
+                  alt='edit'
+                  data-for='Edit collection'
+                  data-tip='Edit collection'
+                  onClick={editCollection.bind(null, collection.id)}
+                  src={pencil as string}
+                  title='edit'
+                />
+                <Tooltip
+                  text={'Edit collection'}
+                  trigger={'Edit collection'}
+                />
+              </>
             )}
             { canCreateToken && (
-              <img
-                alt={'add'}
-                onClick={createToken.bind(null, collection.id)}
-                src={plus as string}
-                title='add'
-              />
+              <>
+                <img
+                  alt={'add'}
+                  data-for='Create collection'
+                  data-tip='Create collection'
+                  onClick={createToken.bind(null, collection.id)}
+                  src={plus as string}
+                  title='add'
+                />
+                <Tooltip
+                  text={'Create collection'}
+                  trigger={'Create collection'}
+                />
+              </>
             )}
             { collection.id !== uniqueCollectionId && (
-              <img
-                alt='delete'
-                className='red'
-                onClick={removeCollection.bind(null, collection.id)}
-                src={trash as string}
-                title='delete'
-              />
+              <>
+                <img
+                  alt='delete'
+                  className='red'
+                  data-for='Delete collection from wallet'
+                  data-tip='Delete collection from wallet'
+                  onClick={toggleConfirmation.bind(null, true)}
+                  src={trash as string}
+                  title='delete'
+                />
+                <Tooltip
+                  text={'Delete collection from wallet'}
+                  trigger={'Delete collection from wallet'}
+                />
+                <Confirm
+                  content='Are you sure to delete collection from wallet?'
+                  onCancel={toggleConfirmation.bind(null, false)}
+                  onConfirm={removeCollection.bind(null, collection.id)}
+                  open={confirmDeleteCollection}
+                />
+              </>
             )}
           </div>
         </div>

@@ -36,6 +36,10 @@
   .ui--Expander-summary {
     position: relative;
 
+    svg {
+      width: 20px;
+    }
+
     .ui--Expander-summary-header {
 
       .expander-content {

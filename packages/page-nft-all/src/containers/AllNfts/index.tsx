@@ -52,6 +52,10 @@ const AllNfts = ({ account, setShouldUpdateTokens }: BuyTokensProps): ReactEleme
   }, [history]);
 
   const onSetTokenAttributes = useCallback((collectionId: string, tokenId: string, attributes: AttributesDecoded) => {
+    if (cleanup.current) {
+      return;
+    }
+
     setTokensWithAttributes((prevTokens: TokensWithAttributesInterface) => {
       const newTokens = { ...prevTokens };
 

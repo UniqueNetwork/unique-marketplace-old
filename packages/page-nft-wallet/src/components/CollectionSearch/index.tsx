@@ -11,7 +11,7 @@ import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 
-import { Input, LabelHelp, Table } from '@polkadot/react-components';
+import { Input, Table } from '@polkadot/react-components';
 import { useCollections, useDecoder } from '@polkadot/react-hooks';
 
 interface Props {
@@ -92,10 +92,6 @@ function CollectionSearch ({ account, addCollection, collections }: Props): Reac
             <Grid.Column width={16}>
               <Header as='h3'>
                 Find token collection
-                <LabelHelp
-                  className='small-help'
-                  help={'Enter the collection number or name'}
-                />
               </Header>
             </Grid.Column>
           </Grid.Row>
@@ -130,10 +126,6 @@ function CollectionSearch ({ account, addCollection, collections }: Props): Reac
             <Grid.Column width={16}>
               <Header as='h3'>
                   Search results
-                <LabelHelp
-                  className='small-help'
-                  help={'Add the collection you want'}
-                />
               </Header>
               <Table
                 empty={'No results'}
