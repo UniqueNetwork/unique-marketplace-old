@@ -50,6 +50,17 @@ hr {
     color: var(--modal-text-color);
   }
 
+  &.small.visible {
+    .content {
+      font-size: 18px;
+    }
+    .actions {
+      display: flex;
+      float: right;
+      padding: 1rem !important;
+    }
+  }
+
   .actions {
 
     .ui--Button {
