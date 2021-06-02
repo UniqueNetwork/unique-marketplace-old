@@ -170,7 +170,6 @@ export default React.memo(styled(Expander)`
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      font: 700 18px/36px var(--font-inter);
       user-select: none;
 
       span {

@@ -71,12 +71,7 @@ export default React.memo(styled(Table)`
     overflow: hidden;
     position: relative;
     width: 100%;
-    font: 400 16px/24px var(--font-roboto);
     z-index: 1;
-
-    th {
-      font: 500 16px/24px var(--font-roboto);
-    }
 
     &.isFixed {
       table-layout: fixed;

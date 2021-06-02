@@ -14,6 +14,8 @@
       grid-column-gap: 0.5rem;
       align-items: center;
       font-family: var(--font-inter);
+      font-weight: 700;
+      font-size: 18px;
 
       &>div {
         max-width: 375px;
@@ -49,6 +51,7 @@
         .tokens-count {
           font-family: var(--font-roboto) var(--font-mono);
           font-size: 14px;
+          font-weight: 500;
         }
       }
     }
