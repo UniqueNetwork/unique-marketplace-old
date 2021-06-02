@@ -7,10 +7,12 @@ import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection
 
 import React, { useCallback, useMemo } from 'react';
 import { useHistory } from 'react-router';
-import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 import Item from 'semantic-ui-react/dist/commonjs/views/Item';
 
 import envConfig from '@polkadot/apps-config/envConfig';
+import pencil from '@polkadot/react-components/ManageCollection/pencil.svg';
+import transfer from '@polkadot/react-components/ManageCollection/transfer.svg';
+import Tooltip from '@polkadot/react-components/Tooltip';
 import { useSchema } from '@polkadot/react-hooks';
 
 const { canEditToken } = envConfig;
@@ -83,21 +85,37 @@ function NftTokenCard ({ account, canTransferTokens, collection, openTransferMod
         { attributes && Object.values(attributes).length > 0 && attrebutesToShow}
       </td>
       <td className='token-actions'>
-        <Button
-          disabled={!canTransferTokens}
-          onClick={openTransferModal.bind(null, collection, token, reFungibleBalance)}
-          primary
-        >
-          Transfer token
-        </Button>
         { canEditToken && (
-          <Button
-            disabled={!canTransferTokens}
-            onClick={editToken.bind(null, collection.id, token)}
-            primary
-          >
-            Edit
-          </Button>
+          <>
+            <img
+              alt={'add'}
+              data-for='Edit nft'
+              data-tip='Edit nft'
+              onClick={editToken.bind(null, collection.id, token)}
+              src={pencil as string}
+              title='add'
+            />
+            <Tooltip
+              text={'Edit nft'}
+              trigger={'Edit nft'}
+            />
+          </>
+        )}
+        { canTransferTokens && (
+          <>
+            <img
+              alt={'add'}
+              data-for='Transfer nft'
+              data-tip='Transfer nft'
+              onClick={openTransferModal.bind(null, collection, token, reFungibleBalance)}
+              src={transfer as string}
+              title='add'
+            />
+            <Tooltip
+              text={'Transfer nft'}
+              trigger={'Transfer nft'}
+            />
+          </>
         )}
       </td>
     </tr>

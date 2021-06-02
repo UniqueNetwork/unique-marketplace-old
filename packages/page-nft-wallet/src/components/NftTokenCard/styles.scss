@@ -12,5 +12,14 @@
     display: flex;
     justify-content: flex-end;
     padding: 18px 0;
+
+    img {
+      cursor: pointer;
+      margin-right: 20px;
+
+      &:last-child {
+        margin-right: 0;
+      }
+    }
   }
 }

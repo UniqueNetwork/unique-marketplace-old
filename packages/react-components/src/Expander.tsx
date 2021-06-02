@@ -10,7 +10,6 @@ import styled from 'styled-components';
 import { LabelHelp } from '@polkadot/react-components';
 import { useToggle } from '@polkadot/react-hooks';
 
-import Icon from './Icon';
 import { useTranslation } from './translate';
 
 interface Meta {
@@ -103,14 +102,19 @@ function Expander ({ children, className = '', help, helpIcon, isOpen, isPadded,
             <div className='ui--Expander-summary-header-sub'>{headerSub}</div>
           )}
         </div>
-        <Icon
-          color={hasContent ? undefined : 'transparent'}
-          icon={
-            isExpanded
-              ? 'angle-down'
-              : 'angle-right'
-          }
-        />
+        <svg
+          className={ isExpanded ? '' : 'rotate'}
+          fill={hasContent ? 'none' : 'transparent'}
+          height='10'
+          viewBox='0 0 18 10'
+          width='18'
+          xmlns='http://www.w3.org/2000/svg'>
+          <path d='M16.5 1L9 8.5L1.5 1'
+            stroke='#040B1D'
+            strokeLinecap='round'
+            strokeLinejoin='round'
+            strokeWidth='1.5'/>
+        </svg>
       </div>
       {hasContent && (isExpanded || withHidden) && (
         <div className='ui--Expander-content'>{children || demandChildren}</div>
@@ -171,6 +175,16 @@ export default React.memo(styled(Expander)`
 
       span {
         white-space: normal;
+      }
+    }
+
+    svg {
+      &.rotate {
+        -moz-transform: rotate(-90deg); /* Для Firefox */
+        -ms-transform: rotate(-90deg); /* Для IE */
+        -webkit-transform: rotate(-90deg); /* Для Safari, Chrome, iOS */
+        -o-transform: rotate(-90deg); /* Для Opera */
+        transform: rotate(-90deg);
       }
     }
 
