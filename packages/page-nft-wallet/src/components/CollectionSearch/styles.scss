@@ -3,6 +3,18 @@
 
   .collection-search-form {
     .search-field {
+
+      &.with-results {
+        .ui--Labelled {
+          .ui.input {
+            input {
+              border-bottom-left-radius: 0 !important;
+              border-bottom-right-radius: 0 !important;
+            }
+          }
+        }
+      }
+
       .ui--Labelled {
         .input {
           img {
@@ -22,6 +34,48 @@
             padding-right: 4rem !important;
           }
         }
+      }
+    }
+  }
+
+  .collection-search-results {
+    border: 1px solid var(--border-color);
+    border-top: none;
+    width: 100%;
+    border-radius: 0 0 8px 8px;
+    padding: var(--gap);
+
+    .collection-search-result {
+      border-bottom: 1px solid var(--border-color);
+      padding-top: var(--gap);
+      padding-bottom: var(--gap);
+      font-size: 16px;
+      font-weight: 500;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+
+      span {
+        display: block;
+      }
+
+      &:first-child {
+        padding-top: 0;
+      }
+
+      &:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+      }
+
+      .collection-add {
+        text-align: right;
+        cursor: pointer;
+        color: var(--link-color);
+      }
+
+      .collection-added {
+        text-align: right;
+        color: var(--tabs-color);
       }
     }
   }

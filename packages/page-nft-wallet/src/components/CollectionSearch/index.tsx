@@ -145,10 +145,6 @@ function CollectionSearch ({ account, addCollection, collections }: Props): Reac
                   </Input>
                 </Form.Field>
               )}
-            </Grid.Column>
-          </Grid.Row>
-          <Grid.Row>
-            <Grid.Column width={16}>
               { collectionsMatched?.length > 0 && (
                 <div className='collection-search-results'>
                   {collectionsMatched.map((item) => (
@@ -176,32 +172,6 @@ function CollectionSearch ({ account, addCollection, collections }: Props): Reac
                   ))}
                 </div>
               )}
-              {/* <Header as='h3'>
-                  Search results
-              </Header>
-              <Table
-                empty={'No results'}
-                header={[]}
-              >
-                {collectionsMatched.map((item) => (
-                  <tr
-                    className='collection-row'
-                    key={item.id}
-                  >
-                    <td className='collection-name'>
-                    Collection name: <strong>{collectionName16Decoder(item.Name)}</strong>
-                    </td>
-                    <td className='collection-actions'>
-                      <Button
-                        disabled={hasThisCollection(item)}
-                        onClick={addCollectionToAccount.bind(null, item)}
-                      >
-                        Add collection
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
-              </Table> */}
             </Grid.Column>
           </Grid.Row>
         </Grid>

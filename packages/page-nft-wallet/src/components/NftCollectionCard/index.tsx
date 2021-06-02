@@ -212,7 +212,7 @@ function NftCollectionCard ({ account, canTransferTokens, collection, openTransf
                   trigger={'Delete collection from wallet'}
                 />
                 <Confirm
-                  content='Are you sure to delete collection from wallet?'
+                  content='Are you sure to delete collection from the wallet?'
                   onCancel={toggleConfirmation.bind(null, false)}
                   onConfirm={removeCollection.bind(null, collection.id)}
                   open={confirmDeleteCollection}
