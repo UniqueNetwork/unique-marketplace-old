@@ -31,6 +31,7 @@ interface Props {
   isWarning?: boolean;
   label?: React.ReactNode;
   labelExtra?: React.ReactNode;
+  loading?: boolean;
   max?: number;
   maxLength?: number;
   min?: number;
@@ -92,7 +93,7 @@ const isSelectAll = (key: string, isPreKeyDown: boolean): boolean =>
 
 let counter = 0;
 
-function Input ({ autoFocus = false, children, className, defaultValue, help, icon, inputClassName, isAction = false, isDisabled = false, isDisabledError = false, isEditable = false, isError = false, isFull = false, isHidden = false, isInPlaceEditor = false, isReadOnly = false, isWarning = false, label, labelExtra, max, maxLength, min, name, onBlur, onChange, onEnter, onEscape, onKeyDown, onKeyUp, onPaste, placeholder, tabIndex, type = 'text', value, withEllipsis, withLabel }: Props): React.ReactElement<Props> {
+function Input ({ autoFocus = false, children, className, defaultValue, help, icon, inputClassName, isAction = false, isDisabled = false, isDisabledError = false, isEditable = false, isError = false, isFull = false, isHidden = false, isInPlaceEditor = false, isReadOnly = false, isWarning = false, label, labelExtra, loading, max, maxLength, min, name, onBlur, onChange, onEnter, onEscape, onKeyDown, onKeyUp, onPaste, placeholder, tabIndex, type = 'text', value, withEllipsis, withLabel }: Props): React.ReactElement<Props> {
   const [stateName] = useState(() => `in_${counter++}_at_${Date.now()}`);
 
   const _onBlur = useCallback(
@@ -174,6 +175,7 @@ function Input ({ autoFocus = false, children, className, defaultValue, help, ic
             : 'left'
         }
         id={name}
+        loading={loading}
         max={max}
         maxLength={maxLength}
         min={min}

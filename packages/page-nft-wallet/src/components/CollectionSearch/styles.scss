@@ -17,6 +17,12 @@
 
       .ui--Labelled {
         .input {
+          .loader {
+            position: absolute;
+            left: 95%;
+            top: 8px
+          }
+
           img {
             position: absolute;
             &.search-icon {

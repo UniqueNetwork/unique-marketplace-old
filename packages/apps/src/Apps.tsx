@@ -11,7 +11,6 @@ import Menu from 'semantic-ui-react/dist/commonjs/collections/Menu';
 import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 import { ThemeContext } from 'styled-components';
 
-import AccountSidebar from '@polkadot/app-accounts/Sidebar';
 import { findMissingApis } from '@polkadot/apps/endpoint';
 import NotFound from '@polkadot/apps/NotFound';
 import Status from '@polkadot/apps/Status';
@@ -75,119 +74,117 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
       <GlobalStyle uiHighlight={uiHighlight} />
       <ScrollToTop />
       <div className={`app-wrapper theme--${theme.theme} ${className}`}>
-        <AccountSidebar>
-          <Signer>
-            {needsApi && (!isApiReady || !isApiConnected)
-              ? (
-                <div className='connecting'>
-                  <Loader
-                    active
-                    inline='centered'
-                  >
-                    Initializing connection
-                  </Loader>
-                </div>
-              )
-              : (
-                <>
-                  <Suspense fallback='...'>
-                    <ErrorBoundary trigger={name}>
-                      {missingApis.length
-                        ? (
-                          <NotFound
-                            basePath={`/${name}`}
-                            location={location}
-                            missingApis={missingApis}
-                            onStatusChange={queueAction}
-                          />
-                        )
-                        : (
-                          <>
-                            <header className='app-header'>
-                              <div className='app-container app-container--header'>
-                                <Menu tabular>
-                                  { theme.logo && (
+        <Signer>
+          {needsApi && (!isApiReady || !isApiConnected)
+            ? (
+              <div className='connecting'>
+                <Loader
+                  active
+                  inline='centered'
+                >
+                  Initializing connection
+                </Loader>
+              </div>
+            )
+            : (
+              <>
+                <Suspense fallback='...'>
+                  <ErrorBoundary trigger={name}>
+                    {missingApis.length
+                      ? (
+                        <NotFound
+                          basePath={`/${name}`}
+                          location={location}
+                          missingApis={missingApis}
+                          onStatusChange={queueAction}
+                        />
+                      )
+                      : (
+                        <>
+                          <header className='app-header'>
+                            <div className='app-container app-container--header'>
+                              <Menu tabular>
+                                { theme.logo && (
+                                  <Menu.Item
+                                    active={location.pathname === '/'}
+                                    as={NavLink}
+                                    className='app-logo'
+                                    icon={
+                                      <img
+                                        alt={`logo ${theme.theme}`}
+                                        src={theme.logo}
+                                      />
+                                    }
+                                    to='/'
+                                  />
+                                )}
+                                { !walletMode && (
+                                  <>
                                     <Menu.Item
-                                      active={location.pathname === '/'}
+                                      active={location.pathname === '/market'}
                                       as={NavLink}
-                                      className='app-logo'
-                                      icon={
-                                        <img
-                                          alt={`logo ${theme.theme}`}
-                                          src={theme.logo}
-                                        />
-                                      }
-                                      to='/'
+                                      name='market'
+                                      to='/market'
                                     />
-                                  )}
-                                  { !walletMode && (
-                                    <>
-                                      <Menu.Item
-                                        active={location.pathname === '/market'}
-                                        as={NavLink}
-                                        name='market'
-                                        to='/market'
-                                      />
-                                      <Menu.Item
-                                        active={location.pathname === '/all-tokens'}
-                                        as={NavLink}
-                                        name='gallery'
-                                        to='/all-tokens'
-                                      />
-                                      <Menu.Item
-                                        active={location.pathname === '/my-tokens'}
-                                        as={NavLink}
-                                        name='myTokens'
-                                        to='/wallet'
-                                      />
-                                      <Menu.Item
-                                        active={location.pathname === '/trades'}
-                                        as={NavLink}
-                                        name='trades'
-                                        to='/trades'
-                                      />
-                                      <Menu.Item
-                                        active={location.pathname === '/accounts'}
-                                        as={NavLink}
-                                        name='accounts'
-                                        to='/accounts'
-                                      />
-                                    </>
-                                  )}
-                                </Menu>
-                                <div className='app-user'>
-                                  { isApiReady && (
-                                    <BalancesHeader account={account} />
-                                  )}
-                                  <div className='account-selector-block'>
-                                    <AccountSelector onChange={setAccount} />
-                                  </div>
+                                    <Menu.Item
+                                      active={location.pathname === '/all-tokens'}
+                                      as={NavLink}
+                                      name='gallery'
+                                      to='/all-tokens'
+                                    />
+                                    <Menu.Item
+                                      active={location.pathname === '/my-tokens'}
+                                      as={NavLink}
+                                      name='myTokens'
+                                      to='/wallet'
+                                    />
+                                    <Menu.Item
+                                      active={location.pathname === '/trades'}
+                                      as={NavLink}
+                                      name='trades'
+                                      to='/trades'
+                                    />
+                                    <Menu.Item
+                                      active={location.pathname === '/accounts'}
+                                      as={NavLink}
+                                      name='accounts'
+                                      to='/accounts'
+                                    />
+                                  </>
+                                )}
+                              </Menu>
+                              <div className='app-user'>
+                                { isApiReady && (
+                                  <BalancesHeader account={account} />
+                                )}
+                                <div className='account-selector-block'>
+                                  <AccountSelector onChange={setAccount} />
                                 </div>
                               </div>
-                            </header>
-                            <main className='app-main'>
-                              <div className='app-container'>
-                                <Component
-                                  account={account}
-                                  basePath={`/${name}`}
-                                  location={location}
-                                  onStatusChange={queueAction}
-                                />
-                                <ConnectingOverlay />
-                                <div id={PORTAL_ID} />
-                              </div>
-                            </main>
-                          </>
-                        )
-                      }
-                    </ErrorBoundary>
-                  </Suspense>
-                  <Status />
-                </>
-              )
-            }
-          </Signer>
-        </AccountSidebar>
+                            </div>
+                          </header>
+                          <main className='app-main'>
+                            <div className='app-container'>
+                              <Component
+                                account={account}
+                                basePath={`/${name}`}
+                                location={location}
+                                onStatusChange={queueAction}
+                              />
+                              <ConnectingOverlay />
+                              <div id={PORTAL_ID} />
+                            </div>
+                          </main>
+                        </>
+                      )
+                    }
+                  </ErrorBoundary>
+                </Suspense>
+                <Status />
+              </>
+            )
+          }
+        </Signer>
       </div>
       <WarmUp />
     </>

@@ -5,10 +5,9 @@ import type { IconName } from '@fortawesome/fontawesome-svg-core';
 import type { DeriveAccountInfo, DeriveAccountRegistration } from '@polkadot/api-derive/types';
 import type { AccountId, AccountIndex, Address } from '@polkadot/types/interfaces';
 
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-import { AccountSidebarToggle } from '@polkadot/app-accounts/Sidebar';
 import registry from '@polkadot/react-api/typeRegistry';
 import { useApi, useCall } from '@polkadot/react-hooks';
 import { isFunction, stringToU8a } from '@polkadot/util';
@@ -134,7 +133,6 @@ function AccountName ({ children, className = '', defaultName, label, onClick, o
   const { api } = useApi();
   const info = useCall<DeriveAccountInfo>(api.derive.accounts.info, [value]);
   const [name, setName] = useState<React.ReactNode>(() => extractName((value || '').toString(), undefined, defaultName));
-  const toggleSidebar = useContext(AccountSidebarToggle);
 
   // set the actual nickname, local name, accountIndex, accountId
   useEffect((): void => {
@@ -158,24 +156,9 @@ function AccountName ({ children, className = '', defaultName, label, onClick, o
     }
   }, [api, defaultName, info, toggle, value]);
 
-  const _onNameEdit = useCallback(
-    () => setName(defaultOrAddr(defaultName, (value || '').toString())),
-    [defaultName, value]
-  );
-
-  const _onToggleSidebar = useCallback(
-    () => toggleSidebar && value && toggleSidebar([value.toString(), _onNameEdit]),
-    [_onNameEdit, toggleSidebar, value]
-  );
-
   return (
     <div
       className={`ui--AccountName${withSidebar ? ' withSidebar' : ''} ${className}`}
-      onClick={
-        withSidebar
-          ? _onToggleSidebar
-          : onClick
-      }
     >
       {label || ''}{override || name}{children}
     </div>

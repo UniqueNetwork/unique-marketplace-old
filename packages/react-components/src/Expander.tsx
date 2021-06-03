@@ -178,6 +178,9 @@ export default React.memo(styled(Expander)`
     }
 
     svg {
+      width: 10px;
+      margin-right: 20px;
+
       &.rotate {
         -moz-transform: rotate(-90deg); /* Для Firefox */
         -ms-transform: rotate(-90deg); /* Для IE */
@@ -185,11 +188,6 @@ export default React.memo(styled(Expander)`
         -o-transform: rotate(-90deg); /* Для Opera */
         transform: rotate(-90deg);
       }
-    }
-
-    .ui--Icon {
-      margin-right: 20px;
-      font-size: 20px;
     }
 
     .ui--LabelHelp {

@@ -150,11 +150,6 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
                   {formatKsmBalance(tokenAsk.price.add(tokenAsk.price.muln(2).divRound(new BN(100))))} KSM
                 </Header>
                 <p>Fee: {formatKsmBalance(tokenAsk.price.muln(2).divRound(new BN(100)))} KSM, Price: {formatKsmBalance(tokenAsk.price)} KSM</p>
-                {/* { uOwnIt && !uSellIt && lowBalanceToSell && (
-                  <div className='warning-block'>Your balance is too low to pay fees. <a href='https://t.me/unique2faucetbot'
-                    rel='noreferrer nooperer'
-                    target='_blank'>Get testUnq here</a></div>
-                )} */}
                 { (!uOwnIt && !transferStep && tokenAsk) && lowBalanceToBuy && (
                   <div className='warning-block'>Your balance is too low to pay fees. <a href='https://t.me/unique2faucetbot'
                     rel='noreferrer nooperer'

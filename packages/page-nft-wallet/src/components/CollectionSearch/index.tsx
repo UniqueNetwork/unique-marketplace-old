@@ -9,6 +9,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
+import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
 import { Input } from '@polkadot/react-components';
 import { useCollections, useDecoder } from '@polkadot/react-hooks';
@@ -134,6 +135,12 @@ function CollectionSearch ({ account, addCollection, collections }: Props): Reac
                     value={searchString}
                     withLabel
                   >
+                    { !collectionsAvailable.length && (
+                      <Loader
+                        active
+                        inline='centered'
+                      />
+                    )}
                     { searchString?.length > 0 && (
                       <img
                         alt='clear'
