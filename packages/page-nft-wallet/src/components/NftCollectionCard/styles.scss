@@ -1,30 +1,53 @@
 .nft-collection-item {
 
   .table {
-    padding: var(--gap) 0 var(--gap) var(--gap);
+    padding: var(--gap) 0;
+  }
+
+  .ui--Expander-content {
+    .token-table {
+      padding-left: 50px;
+    }
   }
 
   .expander-content {
     display: flex;
-    grid-column-gap: 50px;
-    align-items: center;
+
+    .token-image {
+      margin-right: var(--gap);
+    }
 
     .collection-info-row {
-      display: flex;
       grid-column-gap: 0.5rem;
       align-items: center;
       font-family: var(--font-inter);
       font-weight: 700;
       font-size: 18px;
+      margin-right: 32px;
 
-      &>div {
-        max-width: 375px;
+      .collection-info-attributes {
+        width: 548px;
         overflow: hidden;
-        text-overflow: ellipsis;
+        white-space: normal;
+        margin-top: var(--gap);
+
+        .collection-name {
+          font-size: 18px;
+          font-family: var(--font-inter);
+          line-height: 26px;
+        }
+
+        .collection-description {
+          font-size: 14px;
+          font-family: var(--font-roboto);
+          font-weight: 400;
+          margin-top: 4px;
+        }
       }
 
-      .token-image {
-        margin-right: 8px;
+      .create-button {
+        position: relative;
+        margin: var(--gap) 0;
       }
     }
 
@@ -33,6 +56,7 @@
       right: 0;
       display: flex;
       grid-column-gap: var(--gap);
+      height: 100%;
     }
   }
 
@@ -41,16 +65,25 @@
 
     svg {
       width: 15px !important;
+      position: absolute;
+      top: 25px
     }
 
     .ui--Expander-summary-header {
+      width: 100%;
+      display: block;
+      white-space: normal;
+      margin-left: 50px;
 
       .expander-content {
+        width: 100%;
 
         .tokens-count {
           font-family: var(--font-roboto) var(--font-mono);
           font-size: 14px;
           font-weight: 500;
+          display: flex;
+          align-items: center;
         }
       }
     }

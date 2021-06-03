@@ -61,11 +61,11 @@ function NftTokenCard ({ account, canTransferTokens, collection, openTransferMod
   }
 
   return (
-    <tr
+    <div
       className='token-row'
       key={token}
     >
-      <td className='token-image'>
+      <div className='token-image'>
         <a onClick={openDetailedInformationModal.bind(null, collection.id, token)}>
           { tokenUrl && (
             <Item.Image
@@ -74,17 +74,26 @@ function NftTokenCard ({ account, canTransferTokens, collection, openTransferMod
             />
           )}
         </a>
-      </td>
-      <td className='token-name'>
-        #{token.toString()}
-      </td>
-      <td className='token-balance'>
-        { collection && Object.prototype.hasOwnProperty.call(collection.Mode, 'reFungible') && <span>Balance: {reFungibleBalance}</span> }
-      </td>
-      <td className='token-attributes'>
-        { attributes && Object.values(attributes).length > 0 && attrebutesToShow}
-      </td>
-      <td className='token-actions'>
+      </div>
+      <div
+        className='token-info-attributes'
+        onClick={openDetailedInformationModal.bind(null, collection.id, token)}
+      >
+        <div className='token-name'>
+          #{token.toString()}
+        </div>
+        <div className='token-balance'>
+          { collection && Object.prototype.hasOwnProperty.call(collection.Mode, 'reFungible') && <span>Balance: {reFungibleBalance}</span> }
+        </div>
+        <div className='token-attributes'>
+          { attributes && Object.values(attributes).length > 0 && (
+            <span>
+              <strong>Attributes: </strong>{attrebutesToShow}
+            </span>
+          )}
+        </div>
+      </div>
+      <div className='token-actions'>
         { canEditToken && (
           <>
             <img
@@ -117,8 +126,8 @@ function NftTokenCard ({ account, canTransferTokens, collection, openTransferMod
             />
           </>
         )}
-      </td>
-    </tr>
+      </div>
+    </div>
   );
 }
 

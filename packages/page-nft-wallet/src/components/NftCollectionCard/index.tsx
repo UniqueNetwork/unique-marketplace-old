@@ -16,6 +16,8 @@ import pencil from '@polkadot/react-components/ManageCollection/pencil.svg';
 import plus from '@polkadot/react-components/ManageCollection/plus.svg';
 import trash from '@polkadot/react-components/ManageCollection/trash.svg';
 import Tooltip from '@polkadot/react-components/Tooltip';
+import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
+
 import { useCollections, useDecoder, useMetadata } from '@polkadot/react-hooks';
 import { useCollection } from '@polkadot/react-hooks/useCollection';
 
@@ -140,23 +142,33 @@ function NftCollectionCard ({ account, canTransferTokens, collection, openTransf
       onClick={openCollection}
       summary={
         <div className='expander-content'>
-          <div
-            className='collection-info-row'>
-            <div className='token-image'>
-              { collectionImageUrl && (
-                <Item.Image
-                  size='mini'
-                  src={collectionImageUrl}
-                />
+          <div className='token-image'>
+            { collectionImageUrl && (
+              <Item.Image
+                size='mini'
+                src={collectionImageUrl}
+              />
+            )}
+          </div>
+          <div className='collection-info-row'>
+            <div className='collection-info-attributes'>
+              <div className='collection-name'>{collectionName16Decoder(collection.Name)}
+                { Object.prototype.hasOwnProperty.call(collection.Mode, 'reFungible') &&
+                <strong>, re-fungible. </strong>
+                }
+              </div>
+              { collection.Description && (
+                <div className='collection-description'>{collectionName16Decoder(collection.Description)}</div>
               )}
             </div>
-            <div>{collectionName16Decoder(collection.Name)}
-              { Object.prototype.hasOwnProperty.call(collection.Mode, 'reFungible') &&
-              <strong>, re-fungible. </strong>
-              }
-            </div>
-            { collection.Description && (
-              <div title={collectionName16Decoder(collection.Description)}> - {collectionName16Decoder(collection.Description)}</div>
+            { canCreateToken && (
+              <Button
+                className='create-button'
+                onClick={createToken.bind(null, collection.id)}
+                primary
+              >
+                Create token
+              </Button>
             )}
           </div>
           <div className='tokens-count'>
@@ -177,22 +189,6 @@ function NftCollectionCard ({ account, canTransferTokens, collection, openTransf
                 <Tooltip
                   text={'Edit collection'}
                   trigger={'Edit collection'}
-                />
-              </>
-            )}
-            { canCreateToken && (
-              <>
-                <img
-                  alt={'add'}
-                  data-for='Create collection'
-                  data-tip='Create collection'
-                  onClick={createToken.bind(null, collection.id)}
-                  src={plus as string}
-                  title='add'
-                />
-                <Tooltip
-                  text={'Create collection'}
-                  trigger={'Create collection'}
                 />
               </>
             )}
@@ -223,21 +219,35 @@ function NftCollectionCard ({ account, canTransferTokens, collection, openTransf
         </div>
       }
     >
-      <table className='table'>
-        <tbody>
-          { account && tokensOfCollection.map((token) => (
-            <NftTokenCard
-              account={account}
-              canTransferTokens={canTransferTokens}
-              collection={collection}
-              key={token}
-              openTransferModal={openTransferModal}
-              shouldUpdateTokens={shouldUpdateTokens}
-              token={token}
-            />
-          ))}
-        </tbody>
-      </table>
+      <div className='token-table'>
+        { account && tokensOfCollection.map((token) => (
+          <NftTokenCard
+            account={account}
+            canTransferTokens={canTransferTokens}
+            collection={collection}
+            key={token}
+            openTransferModal={openTransferModal}
+            shouldUpdateTokens={shouldUpdateTokens}
+            token={token}
+          />
+        ))}
+      </div>
+      {/* { canCreateToken && (
+        <>
+          <img
+            alt={'add'}
+            data-for='Create collection'
+            data-tip='Create collection'
+            onClick={createToken.bind(null, collection.id)}
+            src={plus as string}
+            title='add'
+          />
+          <Tooltip
+            text={'Create collection'}
+            trigger={'Create collection'}
+          />
+        </>
+      )} */}
     </Expander>
   );
 }

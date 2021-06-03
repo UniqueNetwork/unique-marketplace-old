@@ -1,11 +1,29 @@
 .token-row {
+  display: grid;
+  grid-template-columns: 60px 1fr 60px;
+  grid-column-gap: var(--gap);
+  width: 100%;
+  padding: var(--gap) 0;
+
+  .token-info-attributes {
+    cursor: pointer;
+  }
 
   .token-name {
     font: 700 18px/27px var(--font-inter);
   }
 
+  .token-name {
+    font-family: var(--font-inter);
+    font-size: 18px;
+    line-height: 26px;
+  }
+
   .token-attributes {
+    font-family: var(--font-roboto);
     max-width: 550px;
+    font-weight: 400;
+    font-size: 14px;
   }
 
   .token-actions {
