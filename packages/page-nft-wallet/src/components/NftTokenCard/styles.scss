@@ -4,6 +4,7 @@
   grid-column-gap: var(--gap);
   width: 100%;
   padding: var(--gap) 0;
+  border-bottom: 1px solid var(--divider-color);
 
   .token-info-attributes {
     cursor: pointer;
