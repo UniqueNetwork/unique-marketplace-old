@@ -29,8 +29,8 @@ function Delegate ({ onClose, previousAmount, previousConviction, previousDelega
   const [amountError, setAmountError] = useState<AmountValidateState | null>(null);
   const [maxBalance] = useState<BN | undefined>();
   const [amount, setAmount] = useState<BN | undefined>(previousAmount);
-  const [delegatingAccount, setDelegatingAccount] = useState<string | null>(previousDelegatingAccount || null);
-  const [delegatedAccount, setDelegatedAccount] = useState<string | null>(previousDelegatedAccount || null);
+  const [delegatingAccount, setDelegatingAccount] = useState<string | undefined>(previousDelegatingAccount);
+  const [delegatedAccount, setDelegatedAccount] = useState<string | undefined>(previousDelegatedAccount);
   const defaultConviction = previousConviction === undefined
     ? 0
     : previousConviction.toNumber();

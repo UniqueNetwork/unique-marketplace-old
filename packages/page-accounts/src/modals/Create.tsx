@@ -38,7 +38,7 @@ type SeedType = 'bip' | 'raw' | 'dev';
 interface AddressState {
   address: string | null;
   derivePath: string;
-  deriveValidation? : DeriveValidationOutput
+  deriveValidation?: DeriveValidationOutput
   isSeedValid: boolean;
   pairType: PairType;
   seed: string;
@@ -296,7 +296,6 @@ function Create ({ className = '', onClose, onStatusChange, seed: propsSeed, typ
               help={isEthereum
                 ? 'Your ethereum key pair is derived from your private key. Don\'t divulge this key.'
                 : 'The private key for your account is derived from this seed. This seed must be kept secret as anyone in its possession has access to the funds of this account. If you validate, use the seed of the session account as the "--key" parameter of your node.'}
-              isAction
               isError={!isSeedValid}
               isReadOnly={seedType === 'dev'}
               label={

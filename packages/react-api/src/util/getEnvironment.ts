@@ -9,6 +9,8 @@ function isElectron () {
     return true;
   }
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   if (window?.process?.type === 'renderer') {
     return true;
   }

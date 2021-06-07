@@ -7,15 +7,16 @@
 
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
+
 import { InputAddress } from '@polkadot/react-components';
 
 interface Props {
   className?: string;
-  onChange: (accountId: string | null) => void;
+  onChange: (accountId: string | undefined) => void;
 }
 
 function AccountSelector ({ className, onChange }: Props): React.ReactElement<Props> {
-  const [accountId, setAccountId] = useState<string | null>(null);
+  const [accountId, setAccountId] = useState<string | undefined>();
 
   useEffect(
     (): void => onChange(accountId),
@@ -23,7 +24,7 @@ function AccountSelector ({ className, onChange }: Props): React.ReactElement<Pr
   );
 
   return (
-    <section className={`template--AccountSelector ui--row ${className}`}>
+    <section className={`template--AccountSelector ui--row ${className || ''}`}>
       <InputAddress
         label='my default account'
         onChange={setAccountId}

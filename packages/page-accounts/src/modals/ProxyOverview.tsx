@@ -31,7 +31,7 @@ interface ValueProps {
 }
 
 interface NewProxyProps extends ValueProps {
-  onChangeAccount: (index: number, value: string | null) => void;
+  onChangeAccount: (index: number, value: string | undefined) => void;
   onChangeType: (index: number, value: number | undefined) => void;
   onRemove: (index: number) => void;
   proxiedAccount: string;
@@ -109,7 +109,7 @@ function NewProxy ({ index, onChangeAccount, onChangeType, onRemove, proxiedAcco
   const { t } = useTranslation();
 
   const _onChangeAccount = useCallback(
-    (value: string | null) => onChangeAccount(index, value),
+    (value: string | undefined) => onChangeAccount(index, value),
     [index, onChangeAccount]
   );
 
@@ -210,7 +210,7 @@ function ProxyOverview ({ className, onClose, previousProxy: [existing] = EMPTY_
   );
 
   const _changeProxyAccount = useCallback(
-    (index: number, address: string | null) => setAdded((prevState) => {
+    (index: number, address: string | undefined) => setAdded((prevState) => {
       const newState = [...prevState];
 
       newState[index][0] = api.createType('AccountId', address);

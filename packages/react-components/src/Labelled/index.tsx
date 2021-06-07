@@ -4,7 +4,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import LabelHelp from './LabelHelp';
+import LabelHelp from '../LabelHelp';
 
 interface Props {
   className?: string;

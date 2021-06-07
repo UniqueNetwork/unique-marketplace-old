@@ -96,7 +96,7 @@ function filterProxies (allAccounts: string[], tx: Call | SubmittableExtrinsic<'
     .map(([address]) => address);
 }
 
-async function queryForMultisig (api: ApiPromise, requestAddress: string, proxyAddress: string | null, tx: SubmittableExtrinsic<'promise'>): Promise<MultiState | null> {
+async function queryForMultisig (api: ApiPromise, requestAddress: string, proxyAddress: string | undefined, tx: SubmittableExtrinsic<'promise'>): Promise<MultiState | null> {
   const multiModule = api.tx.multisig ? 'multisig' : 'utility';
 
   if (isFunction(api.query[multiModule]?.multisigs)) {
@@ -146,8 +146,8 @@ function Address ({ currentItem, onChange, onEnter, passwordError, requestAddres
   const { api } = useApi();
   const { allAccounts } = useAccounts();
   const mountedRef = useIsMountedRef();
-  const [multiAddress, setMultiAddress] = useState<string | null>(null);
-  const [proxyAddress, setProxyAddress] = useState<string | null>(null);
+  const [multiAddress, setMultiAddress] = useState<string | undefined>();
+  const [proxyAddress, setProxyAddress] = useState<string | undefined>();
   const [isMultiCall, setIsMultiCall] = useState(false);
   const [isProxyActive, setIsProxyActive] = useState(true);
   const [multiInfo, setMultInfo] = useState<MultiState | null>(null);
@@ -171,7 +171,7 @@ function Address ({ currentItem, onChange, onEnter, passwordError, requestAddres
   );
 
   useEffect((): void => {
-    !proxyInfo && setProxyAddress(null);
+    !proxyInfo && setProxyAddress(undefined);
   }, [proxyInfo]);
 
   // proxy for requestor
