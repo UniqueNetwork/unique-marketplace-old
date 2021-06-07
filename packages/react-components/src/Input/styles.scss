@@ -1,0 +1,29 @@
+.ui--Labelled-content {
+
+  .ui.input.ui--Input {
+
+    input {
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--input-text-color);
+      background: var(--input-background-color);
+      padding: 8px 16px;
+      width: 100%;
+
+      &:active {
+        background: var(--input-background-color);
+      }
+
+      &:focus {
+        background: var(--input-background-color);
+      }
+
+      &:disabled {
+        border: 1px solid var(--border-color);
+        color: var(--tabs-color);
+        background: var(--input-background-disabled-color);
+        opacity: 1;
+      }
+    }
+  }
+}

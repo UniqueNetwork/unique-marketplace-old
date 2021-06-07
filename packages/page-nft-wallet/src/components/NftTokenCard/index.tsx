@@ -105,7 +105,11 @@ function NftTokenCard ({ account, canTransferTokens, collection, openTransferMod
               title='add'
             />
             <Tooltip
+              arrowColor={'transparent'}
+              backgroundColor={'var(--border-color)'}
+              place='bottom'
               text={'Edit nft'}
+              textColor={'var(--sub-header-text-transform)'}
               trigger={'Edit nft'}
             />
           </>
@@ -121,7 +125,11 @@ function NftTokenCard ({ account, canTransferTokens, collection, openTransferMod
               title='add'
             />
             <Tooltip
+              arrowColor={'transparent'}
+              backgroundColor={'var(--border-color)'}
+              place='bottom'
               text={'Transfer nft'}
+              textColor={'var(--sub-header-text-transform)'}
               trigger={'Transfer nft'}
             />
           </>

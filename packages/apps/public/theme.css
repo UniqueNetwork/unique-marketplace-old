@@ -43,7 +43,8 @@
   --text-color: #000;
   --title-color: #040B1D;
   --input-background-color: #FFFFFF;
-  --input-text-color: #000;
+  --input-background-disabled-color: #FAFAFA;
+  --input-text-color: #040B1D;
   --max-header-width: 100%;
   --card-border-color: #ECECEC;
   --card-background: #FFFFFF;

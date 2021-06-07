@@ -77,7 +77,7 @@ function NftWallet ({ account, addCollection, collections, removeCollectionFromL
   }, []);
 
   return (
-    <div className='nft-wallet'>
+    <div className='nft-wallet unique-card'>
       { canAddCollections && (
         <>
           <CollectionSearch

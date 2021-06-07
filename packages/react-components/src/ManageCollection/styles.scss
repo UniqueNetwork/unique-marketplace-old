@@ -1,5 +1,17 @@
 .manage-collection {
 
+  .go-back {
+    margin-bottom: var(--gap);
+  }
+
+  .unique-card {
+    margin: var(--gap) 0;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
   .column {
 
     &.flex {
