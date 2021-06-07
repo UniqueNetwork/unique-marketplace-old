@@ -259,26 +259,28 @@ h4.ui.header {
   }
 }
 
+.ui.loader {
+  color: var(--text-color);
+
+  &:after {
+    left: 40%;
+  }
+
+  &:before {
+    left: 40%;
+  }
+
+  .load-more {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+}
+
+.ui.grid>.row {
+  padding: 0 0 24px;
+}
+
 .ui.form {
-  .ui.input {
-    margin: 0;
-
-    input {
-      border: 1px solid var(--border-color);
-      border-radius: calc(var(--bradius) * 2);
-      height: 40px;
-      font: 400 16px/24px var(--font-roboto);
-      padding: calc(var(--gap) / 2) var(--gap);
-    }
-  }
-
-  textarea {
-    border: 1px solid var(--border-color);
-    border-radius: calc(var(--bradius) * 2);
-    font: 400 16px/24px var(--font-roboto);
-    padding: calc(var(--gap) / 2) var(--gap);
-  }
-
   .ui--Dropdown {
     .ui.dropdown {
       border: 1px solid var(--border-color);
@@ -327,31 +329,6 @@ h4.ui.header {
       }
     }
   }
-}
-
-.ui.loader {
-  color: var(--text-color);
-
-  &:after {
-    left: 40%;
-  }
-
-  &:before {
-    left: 40%;
-  }
-
-  .load-more {
-    margin-top: 1rem;
-    margin-bottom: 1rem;
-  }
-}
-
-.ui.grid>.row {
-  padding: 0 0 24px;
-}
-
-.ui.form .field {
-  margin: 0;
 }
 
 .ui--Dropdown {
@@ -596,7 +573,8 @@ button.ui.button,
   }
 }
 
-.ui.input.ui--Input {
+/* .ui.input.ui--Input {
+
   &.error {
     input {
       border: 1px solid var(--error-color);
@@ -606,6 +584,7 @@ button.ui.button,
 
   input {
     color: var(--input-text-color);
+    border: 1px solid var(--border-color);
     background: var(--input-background-color);
 
     &:active {
@@ -614,28 +593,15 @@ button.ui.button,
     &:focus {
       background: var(--input-background-color);
     }
+
     &:disabled {
       border: 1px solid var(--border-color);
       color: var(--tabs-color);
-      background: var(--input-background-color) !important;
+      background: var(--input-background-disabled-color) !important;
       opacity: 1;
     }
   }
-}
-
-.TextAreaWithDropdown {
-  textarea {
-    color: var(--input-text-color) !important;
-    background: var(--input-background-color) !important;
-
-    &:active {
-      background: var(--input-background-color) !important;
-    }
-    &:focus {
-      background: var(--input-background-color) !important;
-    }
-  }
-}
+} */
 
 .template--AccountSelector {
   background: var(--account-selector-background);
@@ -669,5 +635,22 @@ button.ui.button,
 
   .address {
     color: var(--account-selector-address-color);
+  }
+}
+
+.unique-card {
+  background: var(--card-background);
+  box-shadow: 0 4px 12px var(--card-shadow);
+  border-radius: 4px;
+  padding: 32px;
+}
+
+.unique-form {
+  .form-field {
+    margin: 12px 0;
+
+    &:first-child {
+      margin-top: 24px;
+    }
   }
 }

@@ -17,7 +17,7 @@ interface Props {
 function RecoverAccount ({ address, className = '', onClose }: Props): React.ReactElement {
   const { t } = useTranslation();
   const { api } = useApi();
-  const [recover, setRecover] = useState<string | null>(null);
+  const [recover, setRecover] = useState<string | undefined>();
 
   return (
     <Modal

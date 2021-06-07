@@ -8,16 +8,14 @@ import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router';
 import Confirm from 'semantic-ui-react/dist/commonjs/addons/Confirm';
+import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 import Item from 'semantic-ui-react/dist/commonjs/views/Item';
 
 import envConfig from '@polkadot/apps-config/envConfig';
 import { Expander } from '@polkadot/react-components';
 import pencil from '@polkadot/react-components/ManageCollection/pencil.svg';
-import plus from '@polkadot/react-components/ManageCollection/plus.svg';
 import trash from '@polkadot/react-components/ManageCollection/trash.svg';
 import Tooltip from '@polkadot/react-components/Tooltip';
-import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
-
 import { useCollections, useDecoder, useMetadata } from '@polkadot/react-hooks';
 import { useCollection } from '@polkadot/react-hooks/useCollection';
 
@@ -177,23 +175,26 @@ function NftCollectionCard ({ account, canTransferTokens, collection, openTransf
           </div>
           <div className='link-button'>
             { canEditCollection && (
-              <>
+              <div className='link-button-with-tooltip'>
                 <img
                   alt='edit'
                   data-for='Edit collection'
                   data-tip='Edit collection'
                   onClick={editCollection.bind(null, collection.id)}
                   src={pencil as string}
-                  title='edit'
                 />
                 <Tooltip
+                  arrowColor={'transparent'}
+                  backgroundColor={'var(--border-color)'}
+                  place='bottom'
                   text={'Edit collection'}
+                  textColor={'var(--sub-header-text-transform)'}
                   trigger={'Edit collection'}
                 />
-              </>
+              </div>
             )}
             { collection.id !== uniqueCollectionId && (
-              <>
+              <div className='link-button-with-tooltip'>
                 <img
                   alt='delete'
                   className='red'
@@ -201,10 +202,13 @@ function NftCollectionCard ({ account, canTransferTokens, collection, openTransf
                   data-tip='Delete collection from wallet'
                   onClick={toggleConfirmation.bind(null, true)}
                   src={trash as string}
-                  title='delete'
                 />
                 <Tooltip
+                  arrowColor={'transparent'}
+                  backgroundColor={'var(--border-color)'}
+                  place='bottom'
                   text={'Delete collection from wallet'}
+                  textColor={'var(--sub-header-text-transform)'}
                   trigger={'Delete collection from wallet'}
                 />
                 <Confirm
@@ -213,7 +217,7 @@ function NftCollectionCard ({ account, canTransferTokens, collection, openTransf
                   onConfirm={removeCollection.bind(null, collection.id)}
                   open={confirmDeleteCollection}
                 />
-              </>
+              </div>
             )}
           </div>
         </div>
@@ -232,22 +236,6 @@ function NftCollectionCard ({ account, canTransferTokens, collection, openTransf
           />
         ))}
       </div>
-      {/* { canCreateToken && (
-        <>
-          <img
-            alt={'add'}
-            data-for='Create collection'
-            data-tip='Create collection'
-            onClick={createToken.bind(null, collection.id)}
-            src={plus as string}
-            title='add'
-          />
-          <Tooltip
-            text={'Create collection'}
-            trigger={'Create collection'}
-          />
-        </>
-      )} */}
     </Expander>
   );
 }

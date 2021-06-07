@@ -15,7 +15,7 @@ import { useTranslation } from '../translate';
 
 interface Props {
   amount?: BN | null;
-  delegatingAccount: string | null;
+  delegatingAccount: string | undefined;
   onError: (state: AmountValidateState | null) => void;
 }
 

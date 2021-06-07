@@ -12,7 +12,6 @@ import { useApi } from '@polkadot/react-hooks';
 import { keyring } from '@polkadot/ui-keyring';
 import { u8aToString } from '@polkadot/util';
 
-import { useTranslation } from '../translate';
 import ExternalWarning from './ExternalWarning';
 
 interface Props extends ModalProps {

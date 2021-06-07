@@ -3,11 +3,11 @@
 
 import { useCallback, useState } from 'react';
 
-export function useAccountId (initialValue: string | null = null, onChangeAccountId?: (_: string | null) => void): [string | null, (_: string | null) => void] {
-  const [accountId, setAccountId] = useState<string | null>(initialValue);
+export function useAccountId (initialValue?: string, onChangeAccountId?: (_: string | undefined) => void): [string | undefined, (_: string | undefined) => void] {
+  const [accountId, setAccountId] = useState<string | undefined>(initialValue);
 
   const _setAccountId = useCallback(
-    (accountId: string | null = null): void => {
+    (accountId: string | undefined): void => {
       setAccountId(accountId);
 
       onChangeAccountId && onChangeAccountId(accountId);

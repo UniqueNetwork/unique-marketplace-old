@@ -9,7 +9,7 @@ import { useTranslation } from './translate';
 interface Props {
   className?: string;
   filter?: string[];
-  onChange: (value: string | null) => void;
+  onChange: (value: string | undefined) => void;
 }
 
 function VoteAccount ({ className = '', filter, onChange }: Props): React.ReactElement<Props> {

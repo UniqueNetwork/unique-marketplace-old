@@ -53,10 +53,20 @@
 
     .link-button {
       position: absolute;
-      right: 0;
       display: flex;
-      grid-column-gap: var(--gap);
+      right: 0;
       height: 100%;
+      grid-column-gap: var(--gap);
+
+      .link-button-with-tooltip {
+        display: flex;
+        height: 100%;
+        align-items: center;
+
+        img {
+          height: 24px;
+        }
+      }
     }
   }
 

@@ -1,6 +1,7 @@
 {
   "nav.accounts": "Accounts",
   "nav.addresses": "Address book",
+  "nav.allTokens": "All tokens",
   "nav.auctions": "Auctions",
   "nav.bounties": "Bounties",
   "nav.calendar": "Event calendar",
@@ -13,6 +14,9 @@
   "nav.extrinsics": "Extrinsics",
   "nav.generic-asset": "Generic asset",
   "nav.js": "JavaScript",
+  "nav.minNft": "Mint",
+  "nav.nftMarket": "Market",
+  "nav.nftWallet": "Wallet",
   "nav.parachains": "Parachains",
   "nav.poll": "Token poll",
   "nav.rpc": "RPC calls",
@@ -23,6 +27,7 @@
   "nav.storage": "Chain state",
   "nav.sudo": "Sudo",
   "nav.tech-comm": "Tech. comm.",
+  "nav.tradesNft": "Trades",
   "nav.transfer": "Transfer",
   "nav.treasury": "Treasury"
 }

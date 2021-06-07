@@ -13,6 +13,8 @@ function rootElement () {
 }
 
 interface Props {
+  arrowColor?: string;
+  backgroundColor?: string;
   className?: string;
   dataFor?: string;
   effect?: 'solid' | 'float';
@@ -24,10 +26,11 @@ interface Props {
   };
   place?: 'bottom' | 'top' | 'right' | 'left';
   text: React.ReactNode;
+  textColor?: string;
   trigger: string;
 }
 
-function Tooltip ({ className = '', effect = 'solid', offset, place = 'top', text, trigger }: Props): React.ReactElement<Props> | null {
+function Tooltip ({ arrowColor, backgroundColor, className = '', effect = 'solid', offset, place = 'top', text, textColor, trigger }: Props): React.ReactElement<Props> | null {
   const [tooltipContainer] = useState(
     typeof document === 'undefined'
       ? {} as HTMLElement // This hack is required for server side rendering
@@ -46,11 +49,14 @@ function Tooltip ({ className = '', effect = 'solid', offset, place = 'top', tex
 
   return ReactDOM.createPortal(
     <ReactTooltip
+      arrowColor={arrowColor}
+      backgroundColor={backgroundColor}
       className={`ui--Tooltip ${className}`}
       effect={effect}
       id={trigger}
       offset={offset}
       place={place}
+      textColor={textColor}
     >
       {className?.includes('address') ? <div>{text}</div> : text}
     </ReactTooltip>,

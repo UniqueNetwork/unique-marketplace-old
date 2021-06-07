@@ -8,7 +8,6 @@ import type { MetadataJsonType } from '@polkadot/react-hooks/useMetadata';
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
@@ -86,7 +85,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
   const [currentSchemaVersion, setCurrentSchemaVersion] = useState<SchemaVersionTypes>();
   // const [settingSchemaVersion, toggleSettingSchemaVersion] = useState<boolean>(false);
   const [currentOffchainSchema, setCurrentOffchainSchema] = useState<string>('');
-  const [offchainSchemaError, setOffchainSchemaError] = useState<boolean>(false);
+  // const [offchainSchemaError, setOffchainSchemaError] = useState<boolean>(false);
   // const [settingOffChainSchema, toggleSettingOffChainSchema] = useState<boolean>(false);
   const [collectionInfo, setCollectionInfo] = useState<NftCollectionInterface>();
   const [isAddressCurrentlyInAdminList, setIsAddressCurrentlyInAdminList] = useState<boolean>(false);
@@ -340,120 +339,120 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
         onClick={goBack}
       >
         <Image
-          className='go-back'
           src={arrowLeft}
         />
         back
       </a>
-      <Header as='h3'>Collection advanced settings</Header>
-      <Form className='manage-collection--form'>
-        <Grid className='manage-collection--form--grid'>
-          <Grid.Row>
-            <Grid.Column width={8}>
-              <Form.Field>
-                <Input
-                  className='isSmall'
-                  isDisabled={!!collectionId}
-                  onChange={setName}
-                  placeholder='Enter collection name'
-                  value={name}
-                />
-              </Form.Field>
-              <Form.Field>
-                <TextArea
-                  isDisabled={!!collectionId}
-                  onChange={onSetDescription}
-                  placeholder={'Enter collection description'}
-                  seed={description}
-                />
-              </Form.Field>
-              <Form.Field>
-                <Input
-                  className='isSmall'
-                  isDisabled={!!collectionId}
-                  isError={tokenPrefix?.length > 16}
-                  onChange={setTokenPrefix}
-                  placeholder='Enter token prefix, max 16 symbols'
-                  value={tokenPrefix}
-                />
-              </Form.Field>
-            </Grid.Column>
-          </Grid.Row>
-        </Grid>
-      </Form>
-      <Header as='h3'>Schema version</Header>
-      <Form className='manage-collection--form'>
-        <Grid className='manage-collection--form--grid'>
-          <Grid.Row>
-            <Grid.Column width={8}>
-              <Form.Field>
-                <Dropdown
-                  defaultValue={currentSchemaVersion}
-                  isDisabled={!isAdmin && !!collectionId}
-                  onChange={setCurrentSchemaVersion}
-                  options={SchemaOptions}
-                  placeholder='Select Attribute Type'
-                  value={currentSchemaVersion}
-                />
-              </Form.Field>
-            </Grid.Column>
-            <Grid.Column
-              className='flex'
-              width={8}
-            >
-              { isAdmin && (
-                <Form.Field>
-                  <Button
-                    content={
-                      <>
-                        Set schema version
-                      </>
-                    }
-                    onClick={onSetSchemaVersion}
+      <div className='unique-card'>
+        <Header as='h3'>Base settings</Header>
+        <form className='unique-form'>
+          <Grid className='manage-collection--form--grid'>
+            <Grid.Row>
+              <Grid.Column width={8}>
+                <div className='form-field'>
+                  <Input
+                    className='isSmall'
+                    isDisabled={!!collectionId}
+                    onChange={setName}
+                    placeholder='Enter collection name'
+                    value={name}
                   />
-                </Form.Field>
-              )}
-            </Grid.Column>
-          </Grid.Row>
-        </Grid>
-      </Form>
-      { !collectionId && (
-        <Button
-          content={'Create'}
-          disabled={!name || !tokenPrefix || tokenPrefix.length > 16}
-          onClick={onCreateCollection}
-        />
-      )}
+                </div>
+                <div className='form-field'>
+                  <TextArea
+                    isDisabled={!!collectionId}
+                    onChange={onSetDescription}
+                    placeholder={'Enter collection description'}
+                    seed={description}
+                  />
+                </div>
+                <div className='form-field'>
+                  <Input
+                    className='isSmall'
+                    isDisabled={!!collectionId}
+                    isError={tokenPrefix?.length > 16}
+                    onChange={setTokenPrefix}
+                    placeholder='Enter token prefix, max 16 symbols'
+                    value={tokenPrefix}
+                  />
+                </div>
+              </Grid.Column>
+            </Grid.Row>
+          </Grid>
+        </form>
+        <Header as='h3'>Schema version</Header>
+        <form className='manage-collection--form'>
+          <Grid className='manage-collection--form--grid'>
+            <Grid.Row>
+              <Grid.Column width={8}>
+                <div className='form-field'>
+                  <Dropdown
+                    defaultValue={currentSchemaVersion}
+                    isDisabled={!isAdmin && !!collectionId}
+                    onChange={setCurrentSchemaVersion}
+                    options={SchemaOptions}
+                    placeholder='Select Attribute Type'
+                    value={currentSchemaVersion}
+                  />
+                </div>
+              </Grid.Column>
+              <Grid.Column
+                className='flex'
+                width={8}
+              >
+                { isAdmin && (
+                  <div className='form-field'>
+                    <Button
+                      content={
+                        <>
+                          Set schema version
+                        </>
+                      }
+                      onClick={onSetSchemaVersion}
+                    />
+                  </div>
+                )}
+              </Grid.Column>
+            </Grid.Row>
+          </Grid>
+        </form>
+        { !collectionId && (
+          <Button
+            content={'Create'}
+            disabled={!name || !tokenPrefix || tokenPrefix.length > 16}
+            onClick={onCreateCollection}
+          />
+        )}
+      </div>
 
       { (isAdmin || collectionId) && (
         <>
-          <Header as='h3'>Offchain Schema</Header>
-          <Form className='manage-collection--form'>
-            <Grid className='manage-collection--form--grid'>
-              <Grid.Row>
-                <Grid.Column width={16}>
-                  <Form.Field>
+          <div className='unique-card'>
+            <Header as='h3'>Offchain Schema</Header>
+            <div className='manage-collection--form'>
+              <Grid className='manage-collection--form--grid'>
+                <Grid.Row>
+                  <Grid.Column width={16}>
                     <div className='custom-table offchain-schema'>
                       <div className='table-header'>
                         <div className='tr'>
                           <div className='th'>
-                            Type
+                              Type
                           </div>
                           <div className='th'>
-                            Url
+                              Url
                           </div>
                         </div>
                       </div>
                       <div className='table-body'>
                         <div className='tr edit'>
                           <div className='td'>
-                            OffChain schema url
+                              OffChain schema url
                           </div>
                           <div className='td'>
                             <Input
                               className='isSmall'
                               isDisabled={!isAdmin}
-                              isError={offchainSchemaError}
                               label='Please enter the OffChain schema url'
                               onChange={setCurrentOffchainSchema}
                               placeholder='OffChain schema url'
@@ -464,7 +463,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
                         { currentOffchainSchema && collectionInfo?.SchemaVersion === 'ImageURL' && (
                           <div className='tr edit'>
                             <div className='td'>
-                              Image, token #1
+                                Image, token #1
                             </div>
                             <div className='td'>
                               <a
@@ -481,7 +480,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
                           <>
                             <div className='tr edit'>
                               <div className='td'>
-                                Audio, token #1
+                                  Audio, token #1
                               </div>
                               <div className='td'>
                                 <a
@@ -495,7 +494,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
                             </div>
                             <div className='tr edit'>
                               <div className='td'>
-                                Image, token #1
+                                  Image, token #1
                               </div>
                               <div className='td'>
                                 <a
@@ -509,7 +508,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
                             </div>
                             <div className='tr edit'>
                               <div className='td'>
-                                Page, token #1
+                                  Page, token #1
                               </div>
                               <div className='td'>
                                 <a
@@ -523,7 +522,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
                             </div>
                             <div className='tr edit'>
                               <div className='td'>
-                                Video, token #1
+                                  Video, token #1
                               </div>
                               <div className='td'>
                                 <a
@@ -539,13 +538,11 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
                         )}
                       </div>
                     </div>
-                  </Form.Field>
-                </Grid.Column>
-                <Grid.Column
-                  className='flex'
-                  width={8}
-                >
-                  <Form.Field>
+                  </Grid.Column>
+                  <Grid.Column
+                    className='flex'
+                    width={8}
+                  >
                     <Button
                       content={
                         <>
@@ -554,18 +551,17 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
                       }
                       onClick={onSetOffchainSchema}
                     />
-                  </Form.Field>
-                </Grid.Column>
-              </Grid.Row>
-            </Grid>
-          </Form>
-
-          <Header as='h3'>Collection sponsor</Header>
-          <Form className='manage-collection--form'>
-            <Grid className='manage-collection--form--grid'>
-              <Grid.Row>
-                <Grid.Column width={8}>
-                  <Form.Field>
+                  </Grid.Column>
+                </Grid.Row>
+              </Grid>
+            </div>
+          </div>
+          <div className='unique-card'>
+            <Header as='h3'>Sponsor</Header>
+            <form className='unique-form'>
+              <Grid className='manage-collection--form--grid'>
+                <Grid.Row>
+                  <Grid.Column width={8}>
                     <Input
                       className='isSmall'
                       isDisabled={!isAdmin}
@@ -575,104 +571,104 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
                       placeholder='Collection sponsor address'
                       value={sponsorAddress}
                     />
-                  </Form.Field>
-                </Grid.Column>
-                <Grid.Column
-                  className='flex'
-                  width={8}
-                >
-                  <Button
-                    content={
-                      <>
-                        Set sponsor
-                      </>
-                    }
-                    disabled={!sponsorAddress || !isAdmin}
-                    onClick={onSetSponsor}
-                  />
-                </Grid.Column>
-              </Grid.Row>
-              <Grid.Row>
-                <Grid.Column width={8}>
-                  { collectionInfo?.Sponsorship.unconfirmed && (
-                    <div className='text-block error'>
-                      {collectionInfo?.Sponsorship.unconfirmed} unconfirmed
-                    </div>
+                  </Grid.Column>
+                  <Grid.Column
+                    className='flex'
+                    width={8}
+                  >
+                    <Button
+                      content={
+                        <>
+                          Set sponsor
+                        </>
+                      }
+                      disabled={!sponsorAddress || !isAdmin}
+                      onClick={onSetSponsor}
+                    />
+                  </Grid.Column>
+                </Grid.Row>
+                <Grid.Row>
+                  <Grid.Column width={8}>
+                    { collectionInfo?.Sponsorship.unconfirmed && (
+                      <div className='text-block error'>
+                        {collectionInfo?.Sponsorship.unconfirmed} unconfirmed
+                      </div>
+                    )}
+                    { collectionInfo?.Sponsorship.disabled && (
+                      <div className='text-block disabled'>
+                        {collectionInfo?.Sponsorship.unconfirmed} disabled
+                      </div>
+                    )}
+                    { collectionInfo?.Sponsorship.confirmed && (
+                      <div className='text-block confirmed'>
+                        {collectionInfo?.Sponsorship.unconfirmed} confirmed
+                      </div>
+                    )}
+                  </Grid.Column>
+                  { sponsorAddress === account && (
+                    <Grid.Column width={4}>
+                      <Button
+                        content={
+                          <>
+                            Confirm sponsor
+                          </>
+                        }
+                        onClick={onApproveSponsor}
+                      />
+                    </Grid.Column>
                   )}
-                  { collectionInfo?.Sponsorship.disabled && (
-                    <div className='text-block disabled'>
-                      {collectionInfo?.Sponsorship.unconfirmed} disabled
-                    </div>
-                  )}
-                  { collectionInfo?.Sponsorship.confirmed && (
-                    <div className='text-block confirmed'>
-                      {collectionInfo?.Sponsorship.unconfirmed} confirmed
-                    </div>
-                  )}
-                </Grid.Column>
-                { sponsorAddress === account && (
                   <Grid.Column width={4}>
                     <Button
                       content={
                         <>
-                          Confirm sponsor
+                          Remove sponsor
                         </>
                       }
-                      onClick={onApproveSponsor}
+                      disabled={!isAdmin}
+                      onClick={onRemoveSponsor}
                     />
                   </Grid.Column>
-                )}
-                <Grid.Column width={4}>
-                  <Button
-                    content={
-                      <>
-                        Remove sponsor
-                      </>
-                    }
-                    disabled={!isAdmin}
-                    onClick={onRemoveSponsor}
-                  />
-                </Grid.Column>
-              </Grid.Row>
-            </Grid>
-          </Form>
-          <Header as='h3'>Collection admin list</Header>
-          { collectionAdminList?.length > 0 && (
-            <div className='custom-table admin-table'>
-              <div className='table-header'>
-                <div className='tr'>
-                  <div className='th'>
-                    Address
+                </Grid.Row>
+              </Grid>
+            </form>
+          </div>
+          <div className='unique-card'>
+            <Header as='h3'>Collection admin list</Header>
+            { collectionAdminList?.length > 0 && (
+              <div className='custom-table admin-table'>
+                <div className='table-header'>
+                  <div className='tr'>
+                    <div className='th'>
+                      Address
+                    </div>
+                    <div className='th' />
                   </div>
-                  <div className='th' />
+                </div>
+                <div className='table-body'>
+                  { collectionAdminList.map((address) => (
+                    <div
+                      className='tr edit'
+                      key={address}
+                    >
+                      <div className='td'>
+                        {address.toString()}
+                      </div>
+                      <div className='td'>
+                        <img
+                          alt='delete'
+                          onClick={onDeleteAdmin.bind(null, address)}
+                          src={trash as string}
+                        />
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
-              <div className='table-body'>
-                { collectionAdminList.map((address) => (
-                  <div
-                    className='tr edit'
-                    key={address}
-                  >
-                    <div className='td'>
-                      {address.toString()}
-                    </div>
-                    <div className='td'>
-                      <img
-                        alt='delete'
-                        onClick={onDeleteAdmin.bind(null, address)}
-                        src={trash as string}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-          <Form className='manage-collection--form'>
-            <Grid className='manage-collection--form--grid'>
-              <Grid.Row>
-                <Grid.Column width={8}>
-                  <Form.Field>
+            )}
+            <form className='unique-form'>
+              <Grid className='manage-collection--form--grid'>
+                <Grid.Row>
+                  <Grid.Column width={8}>
                     <Input
                       className='isSmall'
                       isDisabled={!isAdmin}
@@ -682,38 +678,40 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
                       placeholder='Collection admin address'
                       value={adminAddress}
                     />
-                  </Form.Field>
-                </Grid.Column>
-                <Grid.Column
-                  className='flex'
-                  width={8}
-                >
-                  <div className='button-group'>
-                    <Button
-                      content={
-                        <>
-                          Add admin
-                        </>
-                      }
-                      disabled={!adminAddress || !isAdmin}
-                      onClick={onSetCurrentAdmin}
-                    />
-                  </div>
-                </Grid.Column>
-              </Grid.Row>
-            </Grid>
-          </Form>
-          <ManageCollectionAttributes
-            account={account}
-            basePath={basePath}
-            collectionId={collectionId}
-            constOnChainSchema={constOnChainSchema}
-            fetchCollectionInfo={fetchCollectionInfo}
-            isAdmin={isAdmin}
-            saveConstOnChainSchema={saveConstOnChainSchema}
-            saveVariableOnChainSchema={saveVariableOnChainSchema}
-            variableOnChainSchema={variableOnChainSchema}
-          />
+                  </Grid.Column>
+                  <Grid.Column
+                    className='flex'
+                    width={8}
+                  >
+                    <div className='button-group'>
+                      <Button
+                        content={
+                          <>
+                            Add admin
+                          </>
+                        }
+                        disabled={!adminAddress || !isAdmin}
+                        onClick={onSetCurrentAdmin}
+                      />
+                    </div>
+                  </Grid.Column>
+                </Grid.Row>
+              </Grid>
+            </form>
+          </div>
+          <div className='unique-card'>
+            <ManageCollectionAttributes
+              account={account}
+              basePath={basePath}
+              collectionId={collectionId}
+              constOnChainSchema={constOnChainSchema}
+              fetchCollectionInfo={fetchCollectionInfo}
+              isAdmin={isAdmin}
+              saveConstOnChainSchema={saveConstOnChainSchema}
+              saveVariableOnChainSchema={saveVariableOnChainSchema}
+              variableOnChainSchema={variableOnChainSchema}
+            />
+          </div>
         </>
       )}
     </div>
