@@ -14,7 +14,6 @@ window.processEnv = {
   maxGas: 1000000000000,
   quoteId: 2,
   showMarketActions: false,
-  singleCollectionMode: false,
   uniqueCollectionId: '2',
   value: 0,
   walletMode: true

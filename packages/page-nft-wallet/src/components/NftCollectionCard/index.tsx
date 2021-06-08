@@ -21,7 +21,7 @@ import { useCollection } from '@polkadot/react-hooks/useCollection';
 
 import NftTokenCard from '../NftTokenCard';
 
-const { canCreateToken, canEditCollection, uniqueCollectionId } = envConfig;
+const { canCreateToken, canEditCollection, uniqueCollectionIds } = envConfig;
 
 interface Props {
   account?: string;
@@ -193,7 +193,7 @@ function NftCollectionCard ({ account, canTransferTokens, collection, openTransf
                 />
               </div>
             )}
-            { collection.id !== uniqueCollectionId && (
+            { !uniqueCollectionIds.includes(collection.id) && (
               <div className='link-button-with-tooltip'>
                 <img
                   alt='delete'

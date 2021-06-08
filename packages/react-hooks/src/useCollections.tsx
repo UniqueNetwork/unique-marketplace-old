@@ -12,7 +12,7 @@ import envConfig from '@polkadot/apps-config/envConfig';
 import { useApi, useCollection, useFetch } from '@polkadot/react-hooks';
 import { base64Decode, encodeAddress } from '@polkadot/util-crypto';
 
-const { uniqueCollectionId } = envConfig;
+const { canAddCollections, uniqueCollectionIds } = envConfig;
 
 export type MetadataType = {
   metadata?: string;
@@ -228,17 +228,20 @@ export function useCollections () {
     return collectionWithTokensCount;
   }, [api.query.nft, getCollectionWithTokenCount]); */
 
-  const presetMintTokenCollection = useCallback(async (): Promise<NftCollectionInterface[]> => {
+  const presetCollections = useCallback(async (): Promise<NftCollectionInterface[]> => {
     try {
-      const collections: Array<NftCollectionInterface> = JSON.parse(localStorage.getItem('tokenCollections') || '[]') as NftCollectionInterface[];
-      const mintCollectionInfo = await getDetailedCollectionInfo(uniqueCollectionId) as unknown as NftCollectionInterface;
+      const collections: Array<NftCollectionInterface> = canAddCollections ? JSON.parse(localStorage.getItem('tokenCollections') || '[]') as NftCollectionInterface[] : [];
 
-      if (cleanup.current) {
-        return [];
-      }
+      for (let i = 0; i < uniqueCollectionIds.length; i++) {
+        const mintCollectionInfo = await getDetailedCollectionInfo(uniqueCollectionIds[i]) as unknown as NftCollectionInterface;
 
-      if (mintCollectionInfo && mintCollectionInfo.Owner && mintCollectionInfo.Owner.toString() !== '5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM' && !collections.find((collection) => collection.id === uniqueCollectionId)) {
-        collections.push({ ...mintCollectionInfo, id: uniqueCollectionId });
+        if (cleanup.current) {
+          return [];
+        }
+
+        if (mintCollectionInfo && mintCollectionInfo.Owner && mintCollectionInfo.Owner.toString() !== '5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM' && !collections.find((collection) => collection.id === uniqueCollectionIds[i])) {
+          collections.push({ ...mintCollectionInfo, id: uniqueCollectionIds[i] });
+        }
       }
 
       localStorage.setItem('tokenCollections', JSON.stringify(collections));
@@ -268,7 +271,7 @@ export function useCollections () {
     myTrades,
     offers,
     offersCount,
-    presetMintTokenCollection,
+    presetCollections,
     presetTokensCollections,
     trades
   };

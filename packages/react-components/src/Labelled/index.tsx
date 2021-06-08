@@ -111,35 +111,6 @@ export default React.memo(styled(Labelled)`
         flex: 1 1;
         min-width: 0;
 
-        .ui.selection.dropdown {
-          &:not(.floating) {
-            padding-left: 1.45rem;
-            padding-top: 1.75rem;
-          }
-
-          &.floating {
-            > .dropdown.icon {
-              top: 1.25rem;
-            }
-
-            .text {
-              line-height: 1;
-              padding: 0.47rem 0
-            }
-          }
-
-          &.search:not(.multiple) > input.search {
-            padding-left: 1.45rem;
-            padding-top: 1.75rem;
-          }
-
-          > .delete.icon,
-          > .dropdown.icon,
-          > .search.icon {
-            top: 1.75rem;
-          }
-        }
-
         .ui--InputFile,
         .ui.input > input,
         .ui--output {

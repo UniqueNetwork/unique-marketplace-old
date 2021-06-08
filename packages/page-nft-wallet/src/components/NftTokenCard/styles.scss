@@ -6,6 +6,10 @@
   padding: var(--gap) 0;
   border-bottom: 1px solid var(--divider-color);
 
+  .token-image {
+    cursor: pointer;
+  }
+
   .token-info-attributes {
     cursor: pointer;
   }

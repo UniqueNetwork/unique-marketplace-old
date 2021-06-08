@@ -14,8 +14,7 @@ export type EnvConfigType = {
   maxGas: number; // 1000000000000
   quoteId: number; // 2
   showMarketActions: boolean; // buy, sell, cancel and withdraw buttons on the token details page
-  singleCollectionMode: boolean; // if custom marketplace use only one collection - uniqueCollectionId
-  uniqueCollectionId: string; // '23'
+  uniqueCollectionIds: string[]; // ['23']
   value: number; // 0
   walletMode: boolean; // if only wallet needed
 }
@@ -39,8 +38,7 @@ const envConfig: EnvConfigType = {
   maxGas: window.processEnv.maxGas || 1000000000000,
   quoteId: window.processEnv.quoteId || 2,
   showMarketActions: window.processEnv.showMarketActions || false,
-  singleCollectionMode: false,
-  uniqueCollectionId: window.processEnv.uniqueCollectionId || '2',
+  uniqueCollectionIds: window.processEnv.uniqueCollectionIds || ['2'],
   value: window.processEnv.value || 0,
   walletMode: window.processEnv.walletMode || false
 };

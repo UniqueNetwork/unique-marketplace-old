@@ -1,49 +1,6 @@
 .collection-search {
   padding: 2rem 0 0 0;
 
-  .collection-search-form {
-    .search-field {
-
-      &.with-results {
-        .ui--Labelled {
-          .ui.input {
-            input {
-              border-bottom-left-radius: 0 !important;
-              border-bottom-right-radius: 0 !important;
-            }
-          }
-        }
-      }
-
-      .ui--Labelled {
-        .input {
-          .loader {
-            position: absolute;
-            left: 95%;
-            top: 8px
-          }
-
-          img {
-            position: absolute;
-            &.search-icon {
-              left: 16px;
-              top: 8px
-            }
-            &.clear-icon {
-              cursor: pointer;
-              right: 16px;
-              top: 8px
-            }
-          }
-
-          input {
-            padding-right: 4rem !important;
-          }
-        }
-      }
-    }
-  }
-
   .collection-search-results {
     border: 1px solid var(--border-color);
     border-top: none;

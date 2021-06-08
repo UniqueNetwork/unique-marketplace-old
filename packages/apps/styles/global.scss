@@ -210,7 +210,7 @@ h4.ui.header {
   .ui.selection.dropdown {
     border: 1px solid transparent;
     border-radius: calc(var(--bradius) * 2);
-    padding: calc(var(--gap) / 3) calc(var(--gap) * 2) !important;
+    padding: calc(var(--gap) / 3) calc(var(--gap) * 2);
     height: 48px;
 
     & .menu>.item {
@@ -280,18 +280,28 @@ h4.ui.header {
   padding: 0 0 24px;
 }
 
-.ui.form {
+form {
   .ui--Dropdown {
-    .ui.dropdown {
+    .ui.selection.dropdown {
       border: 1px solid var(--border-color);
       border-radius: calc(var(--bradius) * 2);
-      background: var(--input-background-color) !important;
-      font: 400 16px/24px var(--font-roboto) !important;
+      background: var(--input-background-color);
+      font: 400 16px/24px var(--font-roboto);
       margin: 0;
-      height: 40px !important;
-      line-height: 25px !important;
+      height: 40px;
+      line-height: 25px;
       min-height: 0;
-      padding: calc(var(--gap) / 2) var(--gap) !important;
+      padding: calc(var(--gap) / 2) var(--gap);
+
+      &:focus, &:active {
+        .menu {
+          border-color: var(--border-color);
+        }
+      }
+
+      &.multiple {
+        height: auto;
+      }
 
       .default.text {
         margin: 0;
@@ -299,11 +309,11 @@ h4.ui.header {
 
       .menu {
         border-color: var(--border-color);
-        background: var(--input-background-color) !important;
+        background: var(--input-background-color);
 
         .item {
-          font: 400 16px/24px var(--font-roboto) !important;
-          padding: calc(var(--gap) / 2) var(--gap) !important;
+          font: 400 16px/24px var(--font-roboto);
+          padding: calc(var(--gap) / 2) var(--gap);
         }
       }
 
@@ -573,36 +583,6 @@ button.ui.button,
   }
 }
 
-/* .ui.input.ui--Input {
-
-  &.error {
-    input {
-      border: 1px solid var(--error-color);
-      background: var(--input-background-color);
-    }
-  }
-
-  input {
-    color: var(--input-text-color);
-    border: 1px solid var(--border-color);
-    background: var(--input-background-color);
-
-    &:active {
-      background: var(--input-background-color);
-    }
-    &:focus {
-      background: var(--input-background-color);
-    }
-
-    &:disabled {
-      border: 1px solid var(--border-color);
-      color: var(--tabs-color);
-      background: var(--input-background-disabled-color) !important;
-      opacity: 1;
-    }
-  }
-} */
-
 .template--AccountSelector {
   background: var(--account-selector-background);
   border-radius: 6px;
@@ -651,6 +631,50 @@ button.ui.button,
 
     &:first-child {
       margin-top: 24px;
+    }
+  }
+}
+
+.collection-search-form {
+  .search-field {
+
+    &.with-results {
+      .ui--Labelled {
+        .ui.input {
+          input {
+            border-bottom-left-radius: 0 !important;
+            border-bottom-right-radius: 0 !important;
+          }
+        }
+      }
+    }
+
+    .ui--Labelled {
+      .input {
+        .loader {
+          position: absolute;
+          left: 95%;
+          top: 7px
+        }
+
+        img {
+          position: absolute;
+          &.search-icon {
+            left: 16px;
+            top: 7px
+          }
+
+          &.clear-icon {
+            cursor: pointer;
+            right: 16px;
+            top: 7px
+          }
+        }
+
+        input {
+          padding-right: 4rem !important;
+        }
+      }
     }
   }
 }

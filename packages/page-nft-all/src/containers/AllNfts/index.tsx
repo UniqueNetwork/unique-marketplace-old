@@ -19,7 +19,7 @@ import { AttributesDecoded } from '@polkadot/react-hooks/useSchema';
 
 import SmallTokenCard from '../../components/SmallTokenCard';
 
-const { uniqueCollectionId } = envConfig;
+const { uniqueCollectionIds } = envConfig;
 
 interface BuyTokensProps {
   account?: string;
@@ -38,13 +38,14 @@ const AllNfts = ({ account, setShouldUpdateTokens }: BuyTokensProps): ReactEleme
   const { getCollectionWithTokenCount } = useCollections();
   const { getTokenInfo } = useToken();
   const [searchString] = useState<string>('');
-  const [collectionWithTokensCount, setCollectionWithTokensCount] = useState<CollectionWithTokensCount>();
+  const [collectionWithTokensCount, setCollectionWithTokensCount] = useState<CollectionWithTokensCount[]>([]);
   const [tokensLoading, setTokensLoading] = useState<boolean>(false);
   const [allTokens, setAllTokens] = useState<{ [key: string]: TokenInterface}>({});
   const [tokensWithAttributes, setTokensWithAttributes] = useState<TokensWithAttributesInterface>({});
   // const [collectionSearchString, setCollectionSearchString] = useState<string>('');
   const [filteredTokens, setFilteredTokens] = useState<TokenInterface[]>([]);
-  const hasMore = collectionWithTokensCount && Object.values(allTokens).length < collectionWithTokensCount?.tokenCount;
+  const allTokensCount = collectionWithTokensCount.reduce((accumulator: number, currentValue: CollectionWithTokensCount) => accumulator + currentValue.tokenCount, 0) || 0;
+  const hasMore = collectionWithTokensCount && Object.values(allTokens).length < allTokensCount;
   const cleanup = useRef<boolean>(false);
 
   const openDetailedInformationModal = useCallback((collectionId: string, tokenId: string) => {
@@ -70,36 +71,48 @@ const AllNfts = ({ account, setShouldUpdateTokens }: BuyTokensProps): ReactEleme
   }, []);
 
   const fillTokensTable = useCallback(async (indexFrom: number, indexTo: number) => {
-    if (collectionWithTokensCount && collectionWithTokensCount.tokenCount > 0) {
-      setTokensLoading(true);
+    const allTokensTable = { ...allTokens };
 
-      const allTokensTable = { ...allTokens };
+    for (let i = 0; i < collectionWithTokensCount.length; i++) {
+      if (collectionWithTokensCount && collectionWithTokensCount[i].tokenCount > 0) {
+        setTokensLoading(true);
 
-      for (let i = indexFrom; i <= indexTo; i++) {
-        const tokenInfo: TokenDetailsInterface = await getTokenInfo(collectionWithTokensCount.info, i.toString());
+        for (let i = indexFrom; i <= indexTo; i++) {
+          const tokenInfo: TokenDetailsInterface = await getTokenInfo(collectionWithTokensCount[i].info, i.toString());
 
-        if (cleanup.current) {
-          return;
-        }
+          if (cleanup.current) {
+            return;
+          }
 
-        if (tokenInfo && Object.values(tokenInfo).length) {
-          allTokensTable[`${collectionWithTokensCount.info.id}-${i}`] = { ...tokenInfo, collectionId: collectionWithTokensCount.info.id, id: i.toString() };
+          if (tokenInfo && Object.values(tokenInfo).length) {
+            allTokensTable[`${collectionWithTokensCount[i].info.id}-${i}`] = {
+              ...tokenInfo,
+              collectionId: collectionWithTokensCount[i].info.id,
+              id: i.toString()
+            };
+          }
         }
       }
-
-      setTokensLoading(false);
-      setAllTokens(allTokensTable);
     }
+
+    setTokensLoading(false);
+    setAllTokens(allTokensTable);
   }, [allTokens, collectionWithTokensCount, getTokenInfo]);
 
   const presetTokensTable = useCallback(async () => {
-    const collectionInfoWithTokensCount: CollectionWithTokensCount = await getCollectionWithTokenCount(uniqueCollectionId);
+    const allCollectionsWithTokensCount: CollectionWithTokensCount[] = [];
+
+    for (let i = 0; i < uniqueCollectionIds.length; i++) {
+      const collectionInfoWithTokensCount: CollectionWithTokensCount = await getCollectionWithTokenCount(uniqueCollectionIds[i]);
+
+      allCollectionsWithTokensCount.push(collectionInfoWithTokensCount);
+    }
 
     if (cleanup.current) {
       return;
     }
 
-    setCollectionWithTokensCount(collectionInfoWithTokensCount);
+    setCollectionWithTokensCount(allCollectionsWithTokensCount);
   }, [getCollectionWithTokenCount]);
 
   const fetchData = useCallback((newPage: number) => {
@@ -147,6 +160,8 @@ const AllNfts = ({ account, setShouldUpdateTokens }: BuyTokensProps): ReactEleme
     };
   }, []);
 
+  console.log('allTokensCount', allTokensCount);
+
   return (
     <div className='all-tokens'>
       <Grid>
@@ -174,7 +189,7 @@ const AllNfts = ({ account, setShouldUpdateTokens }: BuyTokensProps): ReactEleme
             inline='centered'
           />
         )}
-        { collectionWithTokensCount && collectionWithTokensCount.tokenCount === 0 && (
+        { allTokensCount === 0 && (
           <Header as='h4'>No tokens found</Header>
         )}
         {(account && filteredTokens.length > 0) && (
