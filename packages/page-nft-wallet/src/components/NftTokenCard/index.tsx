@@ -65,15 +65,16 @@ function NftTokenCard ({ account, canTransferTokens, collection, openTransferMod
       className='token-row'
       key={token}
     >
-      <div className='token-image'>
-        <a onClick={openDetailedInformationModal.bind(null, collection.id, token)}>
-          { tokenUrl && (
-            <Item.Image
-              size='mini'
-              src={tokenUrl}
-            />
-          )}
-        </a>
+      <div
+        className='token-image'
+        onClick={openDetailedInformationModal.bind(null, collection.id, token)}
+      >
+        { tokenUrl && (
+          <Item.Image
+            size='mini'
+            src={tokenUrl}
+          />
+        )}
       </div>
       <div
         className='token-info-attributes'

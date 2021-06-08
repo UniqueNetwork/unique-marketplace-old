@@ -10,10 +10,13 @@ import type { OfferType } from '@polkadot/react-hooks/useCollections';
 import React, { memo, ReactElement, useCallback, useEffect, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
 import { useHistory } from 'react-router';
+import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
+import clearIcon from '@polkadot/app-nft-wallet/components/CollectionSearch/clearIcon.svg';
+import searchIcon from '@polkadot/app-nft-wallet/components/CollectionSearch/searchIcon.svg';
 import { Input } from '@polkadot/react-components';
 import { useCollections, useDecoder } from '@polkadot/react-hooks';
 import { AttributesDecoded } from '@polkadot/react-hooks/useSchema';
@@ -35,7 +38,7 @@ const perPage = 20;
 
 const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTokensProps): ReactElement => {
   const history = useHistory();
-  const { getOffers, offers, offersCount, presetMintTokenCollection } = useCollections();
+  const { getOffers, offers, offersCount, presetCollections } = useCollections();
   const [searchString, setSearchString] = useState<string>('');
   const [offersWithAttributes, setOffersWithAttributes] = useState<OfferWithAttributes>({});
   // const [collectionSearchString, setCollectionSearchString] = useState<string>('');
@@ -49,10 +52,10 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
   }, [history]);
 
   const addMintCollectionToList = useCallback(async () => {
-    const firstCollections: NftCollectionInterface[] = await presetMintTokenCollection();
+    const firstCollections: NftCollectionInterface[] = await presetCollections();
 
     setCollections(() => [...firstCollections]);
-  }, [presetMintTokenCollection]);
+  }, [presetCollections]);
 
   const onSetTokenAttributes = useCallback((collectionId: string, tokenId: string, attributes: AttributesDecoded) => {
     setOffersWithAttributes((prevOffers: OfferWithAttributes) => {
@@ -98,6 +101,10 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
       }
     }
   }, [offers, offersWithAttributes, searchString]);
+
+  const clearSearch = useCallback(() => {
+    setSearchString('');
+  }, []);
 
   useEffect(() => {
     if (shouldUpdateTokens) {
@@ -156,7 +163,8 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
             <Grid>
               <Grid.Row>
                 <Grid.Column width={16}>
-                  <Input
+                  <Form className='collection-search-form'>
+                    {/* <Input
                     className='isSmall search'
                     help={<span>Find and select token.</span>}
                     isDisabled={!offers || !Object.values(offers).length}
@@ -165,7 +173,40 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
                     placeholder='Search...'
                     value={searchString}
                     withLabel
-                  />
+                  /> */}
+                    <Form.Field className='search-field'>
+                      <Input
+                        className='isSmall'
+                        icon={
+                          <img
+                            alt='search'
+                            className='search-icon'
+                            src={searchIcon as string}
+                          />
+                        }
+                        isDisabled={!Object.values(offers).length}
+                        onChange={setSearchString}
+                        placeholder='Find token by name or collection'
+                        value={searchString}
+                        withLabel
+                      >
+                        { !Object.values(offers).length && (
+                          <Loader
+                            active
+                            inline='centered'
+                          />
+                        )}
+                        { searchString?.length > 0 && (
+                          <img
+                            alt='clear'
+                            className='clear-icon'
+                            onClick={clearSearch}
+                            src={clearIcon as string}
+                          />
+                        )}
+                      </Input>
+                    </Form.Field>
+                  </Form>
                 </Grid.Column>
               </Grid.Row>
               {(account && filteredOffers.length > 0) && (

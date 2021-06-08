@@ -9,7 +9,7 @@ import { useHistory } from 'react-router-dom';
 import envConfig from '@polkadot/apps-config/envConfig';
 import { useCollections } from '@polkadot/react-hooks/useCollections';
 
-const { uniqueCollectionId } = envConfig;
+const { uniqueCollectionIds } = envConfig;
 
 export interface ImageInterface {
   address: string;
@@ -39,12 +39,14 @@ export function useMintApi (): UseMintApiInterface {
   const addMintedTokenToWallet = useCallback(async () => {
     const collections: NftCollectionInterface[] = JSON.parse(localStorage.getItem('tokenCollections') || '[]') as NftCollectionInterface[];
 
-    if (!collections.length || !collections.find((collection: NftCollectionInterface) => collection.id === uniqueCollectionId)) {
-      const collectionInf = await getDetailedCollectionInfo(uniqueCollectionId) as unknown as NftCollectionInterface;
+    for (let i = 0; i < uniqueCollectionIds.length; i++) {
+      if (!collections.length || !collections.find((collection: NftCollectionInterface) => collection.id === uniqueCollectionIds[i])) {
+        const collectionInf = await getDetailedCollectionInfo(uniqueCollectionIds[i]) as unknown as NftCollectionInterface;
 
-      collections.push({ ...collectionInf, id: uniqueCollectionId });
+        collections.push({ ...collectionInf, id: uniqueCollectionIds[i] });
 
-      localStorage.setItem('tokenCollections', JSON.stringify(collections));
+        localStorage.setItem('tokenCollections', JSON.stringify(collections));
+      }
     }
   }, [getDetailedCollectionInfo]);
 

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 window.processEnv = {
-  canAddCollections: true,
+  canAddCollections: false,
   canCreateCollection: true,
   canCreateToken: true,
   canEditCollection: true,
@@ -14,8 +14,7 @@ window.processEnv = {
   maxGas: 1000000000000,
   quoteId: 2,
   showMarketActions: true,
-  singleCollectionMode: false,
-  uniqueCollectionId: '2',
+  uniqueCollectionIds: ['23', '25'],
   value: 0,
   walletMode: false
 };

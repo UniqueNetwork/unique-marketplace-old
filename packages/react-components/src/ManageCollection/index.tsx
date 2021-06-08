@@ -381,7 +381,7 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
           </Grid>
         </form>
         <Header as='h3'>Schema version</Header>
-        <form className='manage-collection--form'>
+        <form className='unique-form'>
           <Grid className='manage-collection--form--grid'>
             <Grid.Row>
               <Grid.Column width={8}>

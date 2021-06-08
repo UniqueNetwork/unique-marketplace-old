@@ -32,18 +32,18 @@ function NftWallet ({ account, addCollection, collections, removeCollectionFromL
   const [selectedCollection, setSelectedCollection] = useState<NftCollectionInterface>();
   const [canTransferTokens] = useState<boolean>(true);
   const currentAccount = useRef<string | null | undefined>();
-  const { presetMintTokenCollection } = useCollections();
+  const { presetCollections } = useCollections();
   const cleanup = useRef<boolean>(false);
 
   const addMintCollectionToList = useCallback(async () => {
-    const firstCollections: NftCollectionInterface[] = await presetMintTokenCollection();
+    const firstCollections: NftCollectionInterface[] = await presetCollections();
 
     if (cleanup.current) {
       return;
     }
 
     setCollections([...firstCollections]);
-  }, [setCollections, presetMintTokenCollection]);
+  }, [setCollections, presetCollections]);
 
   const removeCollection = useCallback((collectionToRemove: string) => {
     if (selectedCollection && selectedCollection.id === collectionToRemove) {

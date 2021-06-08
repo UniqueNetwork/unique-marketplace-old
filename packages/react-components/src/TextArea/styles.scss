@@ -9,13 +9,44 @@
       background: var(--input-background-color);
       padding: 8px 16px;
       width: 100%;
+      font-size: 16px;
+
+      &::-webkit-input-placeholder {
+        color:rgba(191,191,191,.87)
+      }
+
+      &::-moz-placeholder {
+        color:rgba(191,191,191,.87)
+      }
+
+      &:-ms-input-placeholder {
+        color:rgba(191,191,191,.87)
+      }
 
       &:active {
         background: var(--input-background-color);
+        border: 1px solid var(--border-color);
+        outline: none;
       }
 
       &:focus {
         background: var(--input-background-color);
+        border: 1px solid var(--border-color);
+        outline: none;
+      }
+
+      &:active, &:focus {
+        &::-webkit-input-placeholder {
+          color: rgba(115, 115, 115, 0.87);
+        }
+
+        &::-moz-placeholder {
+          color: rgba(115, 115, 115, 0.87);
+        }
+
+        &:-ms-input-placeholder {
+          color: rgba(115, 115, 115, 0.87);
+        }
       }
 
       &:disabled {
