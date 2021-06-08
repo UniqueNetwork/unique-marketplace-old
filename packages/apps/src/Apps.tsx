@@ -127,22 +127,10 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                                       to='/market'
                                     />
                                     <Menu.Item
-                                      active={location.pathname === '/all-tokens'}
-                                      as={NavLink}
-                                      name='gallery'
-                                      to='/all-tokens'
-                                    />
-                                    <Menu.Item
                                       active={location.pathname === '/my-tokens'}
                                       as={NavLink}
                                       name='myTokens'
                                       to='/wallet'
-                                    />
-                                    <Menu.Item
-                                      active={location.pathname === '/trades'}
-                                      as={NavLink}
-                                      name='trades'
-                                      to='/trades'
                                     />
                                     <Menu.Item
                                       active={location.pathname === '/accounts'}

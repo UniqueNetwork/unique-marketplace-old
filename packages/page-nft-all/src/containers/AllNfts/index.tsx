@@ -105,6 +105,8 @@ const AllNfts = ({ account, setShouldUpdateTokens }: BuyTokensProps): ReactEleme
     for (let i = 0; i < uniqueCollectionIds.length; i++) {
       const collectionInfoWithTokensCount: CollectionWithTokensCount = await getCollectionWithTokenCount(uniqueCollectionIds[i]);
 
+      console.log('collectionInfoWithTokensCount', collectionInfoWithTokensCount);
+
       allCollectionsWithTokensCount.push(collectionInfoWithTokensCount);
     }
 
