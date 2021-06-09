@@ -41,7 +41,7 @@ const perPage = 20;
 
 const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTokensProps): ReactElement => {
   const history = useHistory();
-  const { getOffers, offers, offersCount, presetCollections } = useCollections();
+  const { getOffers, offers, offersCount, offersLoading, presetCollections } = useCollections();
   const [searchString, setSearchString] = useState<string>('');
   const [offersWithAttributes, setOffersWithAttributes] = useState<OfferWithAttributes>({});
   // const [collectionSearchString, setCollectionSearchString] = useState<string>('');
@@ -193,7 +193,7 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
                         value={searchString}
                         withLabel
                       >
-                        { !Object.values(offers).length && (
+                        { offersLoading && (
                           <Loader
                             active
                             inline='centered'

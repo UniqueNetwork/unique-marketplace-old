@@ -63,9 +63,10 @@ export function useCollections () {
   const { fetchData } = useFetch();
   const [error, setError] = useState<ErrorType>();
   const [offers, setOffers] = useState<{[key: string]: OfferType}>({});
+  const [offersLoading, setOffersLoading] = useState<boolean>(false);
   const [offersCount, setOffersCount] = useState<number>();
-  const [loadingOffers, setLoadingOffers] = useState<boolean>();
   const [trades, setTrades] = useState<TradeType[]>();
+  const [tradesLoading, setTradesLoading] = useState<boolean>(false);
   const [myTrades, setMyTrades] = useState<TradeType[]>();
   const cleanup = useRef<boolean>(false);
   const { getDetailedCollectionInfo } = useCollection();
@@ -95,9 +96,11 @@ export function useCollections () {
         url = `${url}${collectionIds.map((item: string) => `&collectionId=${item}`).join('')}`;
       }
 
-      setLoadingOffers(true);
+      setOffersLoading(true);
       fetchData<OffersResponseType>(url).subscribe((result: OffersResponseType | ErrorType) => {
         if (cleanup.current) {
+          setOffersLoading(false);
+
           return;
         }
 
@@ -125,11 +128,11 @@ export function useCollections () {
           }
         }
 
-        setLoadingOffers(false);
+        setOffersLoading(false);
       });
     } catch (e) {
       console.log('getOffers error', e);
-      setLoadingOffers(false);
+      setOffersLoading(false);
     }
   }, [fetchData]);
 
@@ -137,33 +140,43 @@ export function useCollections () {
    * Return the list of token trades
    */
   const getTrades = useCallback(({ account, collectionIds, page, pageSize }: { account?: string, collectionIds?: string[], page: number, pageSize: number }) => {
-    let url = '/trades';
+    try {
+      let url = '/trades';
 
-    if (account && account.length) {
-      url = `${url}/${account}`;
-    }
-
-    url = `${url}?page=${page}&pageSize=${pageSize}`;
-
-    if (!canAddCollections && collectionIds && collectionIds.length) {
-      url = `${url}${collectionIds.map((item: string) => `&collectionId=${item}`).join('')}`;
-    }
-
-    fetchData<TradesResponseType>(url).subscribe((result: TradesResponseType | ErrorType) => {
-      if (cleanup.current) {
-        return;
+      if (account && account.length) {
+        url = `${url}/${account}`;
       }
 
-      if ('error' in result) {
-        setError(result);
-      } else {
-        if (!account || !account.length) {
-          setTrades(result.items);
-        } else {
-          setMyTrades(result.items);
+      url = `${url}?page=${page}&pageSize=${pageSize}`;
+
+      if (!canAddCollections && collectionIds && collectionIds.length) {
+        url = `${url}${collectionIds.map((item: string) => `&collectionId=${item}`).join('')}`;
+      }
+
+      setTradesLoading(true);
+      fetchData<TradesResponseType>(url).subscribe((result: TradesResponseType | ErrorType) => {
+        if (cleanup.current) {
+          setTradesLoading(false);
+
+          return;
         }
-      }
-    });
+
+        if ('error' in result) {
+          setError(result);
+        } else {
+          if (!account || !account.length) {
+            setTrades(result.items);
+          } else {
+            setMyTrades(result.items);
+          }
+        }
+
+        setTradesLoading(false);
+      });
+    } catch (e) {
+      console.log('getTrades error', e);
+      setTradesLoading(false);
+    }
   }, [fetchData]);
 
   const presetTokensCollections = useCallback(async (): Promise<NftCollectionInterface[]> => {
@@ -261,12 +274,13 @@ export function useCollections () {
     getOffers,
     getTokensOfCollection,
     getTrades,
-    loadingOffers,
     myTrades,
     offers,
     offersCount,
+    offersLoading,
     presetCollections,
     presetTokensCollections,
-    trades
+    trades,
+    tradesLoading
   };
 }
