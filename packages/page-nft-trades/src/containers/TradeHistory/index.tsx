@@ -12,16 +12,14 @@ import { useCollections } from '@polkadot/react-hooks';
 import { keyring } from '@polkadot/ui-keyring';
 import { base64Decode } from '@polkadot/util-crypto';
 
-const { kusamaDecimals } = envConfig;
+const { kusamaDecimals, uniqueCollectionIds } = envConfig;
 
 function TradeHistory ({ account }: { account?: string }): React.ReactElement {
   const { getTrades, myTrades, trades } = useCollections();
   const [tradesList, setTradesList] = useState<TradeType[]>();
 
   const fetchTrades = useCallback(() => {
-    if (account) {
-      getTrades(account);
-    }
+    getTrades({ account, collectionIds: uniqueCollectionIds, page: 1, pageSize: 100 });
   }, [account, getTrades]);
 
   const headerRef = useRef([

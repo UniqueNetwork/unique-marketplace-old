@@ -133,6 +133,12 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                                       to='/wallet'
                                     />
                                     <Menu.Item
+                                      active={location.pathname === '/trades'}
+                                      as={NavLink}
+                                      name='trades'
+                                      to='/trades'
+                                    />
+                                    <Menu.Item
                                       active={location.pathname === '/accounts'}
                                       as={NavLink}
                                       name='accounts'

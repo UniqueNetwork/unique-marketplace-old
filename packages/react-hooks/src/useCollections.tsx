@@ -87,12 +87,12 @@ export function useCollections () {
   /**
    * Return the list of token sale offers
    */
-  const getOffers = useCallback((page: number, pageSize: number, collectionId?: string) => {
+  const getOffers = useCallback((page: number, pageSize: number, collectionIds?: string[]) => {
     try {
       let url = `/offers?page=${page}&pageSize=${pageSize}`;
 
-      if (collectionId) {
-        url = `${url}&collectionId=${collectionId}`;
+      if (collectionIds && collectionIds.length) {
+        url = `${url}${collectionIds.map((item: string) => `&collectionId=${item}`).join(',')}`;
       }
 
       setLoadingOffers(true);
@@ -136,42 +136,34 @@ export function useCollections () {
   /**
    * Return the list of token trades
    */
-  const getTrades = useCallback((account: string, collectionId?: string) => {
+  const getTrades = useCallback(({ account, collectionIds, page, pageSize }: { account?: string, collectionIds?: string[], page: number, pageSize: number }) => {
     let url = '/trades';
 
     if (account && account.length) {
       url = `${url}/${account}`;
     }
 
-    if (collectionId) {
-      url = `${url}?collectionId=${collectionId}`;
+    url = `${url}?page=${page}&pageSize=${pageSize}`;
+
+    if (collectionIds && collectionIds.length) {
+      url = `${url}${collectionIds.map((item: string) => `&collectionId=${item}`).join(',')}`;
     }
 
-    if (!account || !account.length) {
-      fetchData<TradesResponseType>(url).subscribe((result: TradesResponseType | ErrorType) => {
-        if (cleanup.current) {
-          return;
-        }
+    fetchData<TradesResponseType>(url).subscribe((result: TradesResponseType | ErrorType) => {
+      if (cleanup.current) {
+        return;
+      }
 
-        if ('error' in result) {
-          setError(result);
-        } else {
+      if ('error' in result) {
+        setError(result);
+      } else {
+        if (!account || !account.length) {
           setTrades(result.items);
-        }
-      });
-    } else {
-      fetchData<TradesResponseType>(url).subscribe((result: TradesResponseType | ErrorType) => {
-        if (cleanup.current) {
-          return;
-        }
-
-        if ('error' in result) {
-          setError(result);
         } else {
           setMyTrades(result.items);
         }
-      });
-    }
+      }
+    });
   }, [fetchData]);
 
   const presetTokensCollections = useCallback(async () => {

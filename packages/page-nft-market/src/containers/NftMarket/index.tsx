@@ -17,12 +17,15 @@ import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
 import clearIcon from '@polkadot/app-nft-wallet/components/CollectionSearch/clearIcon.svg';
 import searchIcon from '@polkadot/app-nft-wallet/components/CollectionSearch/searchIcon.svg';
+import envConfig from '@polkadot/apps-config/envConfig';
 import { Input } from '@polkadot/react-components';
 import { useCollections, useDecoder } from '@polkadot/react-hooks';
 import { AttributesDecoded } from '@polkadot/react-hooks/useSchema';
 
 // local imports and components
 import NftTokenCard from '../../components/NftTokenCard';
+
+const { uniqueCollectionIds } = envConfig;
 
 interface BuyTokensProps {
   account?: string;
@@ -72,7 +75,7 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
   }, []);
 
   const fetchData = useCallback((newPage: number) => {
-    getOffers(newPage, perPage);
+    getOffers(newPage, perPage, uniqueCollectionIds);
   }, [getOffers]);
 
   useEffect(() => {
@@ -108,7 +111,7 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
 
   useEffect(() => {
     if (shouldUpdateTokens) {
-      void getOffers(1, perPage);
+      void getOffers(1, perPage, uniqueCollectionIds);
       setShouldUpdateTokens(undefined);
     }
   }, [getOffers, shouldUpdateTokens, setShouldUpdateTokens]);
