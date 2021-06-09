@@ -91,7 +91,7 @@ export function useCollections () {
     try {
       let url = `/offers?page=${page}&pageSize=${pageSize}`;
 
-      if (collectionIds && collectionIds.length) {
+      if (!canAddCollections && collectionIds && collectionIds.length) {
         url = `${url}${collectionIds.map((item: string) => `&collectionId=${item}`).join('')}`;
       }
 
@@ -145,7 +145,7 @@ export function useCollections () {
 
     url = `${url}?page=${page}&pageSize=${pageSize}`;
 
-    if (collectionIds && collectionIds.length) {
+    if (!canAddCollections && collectionIds && collectionIds.length) {
       url = `${url}${collectionIds.map((item: string) => `&collectionId=${item}`).join('')}`;
     }
 
@@ -224,19 +224,21 @@ export function useCollections () {
     try {
       const collections: Array<NftCollectionInterface> = canAddCollections ? JSON.parse(localStorage.getItem('tokenCollections') || '[]') as NftCollectionInterface[] : [];
 
-      for (let i = 0; i < uniqueCollectionIds.length; i++) {
-        const mintCollectionInfo = await getDetailedCollectionInfo(uniqueCollectionIds[i]) as unknown as NftCollectionInterface;
+      if (uniqueCollectionIds && uniqueCollectionIds.length) {
+        for (let i = 0; i < uniqueCollectionIds.length; i++) {
+          const mintCollectionInfo = await getDetailedCollectionInfo(uniqueCollectionIds[i]) as unknown as NftCollectionInterface;
 
-        if (cleanup.current) {
-          return [];
+          if (cleanup.current) {
+            return [];
+          }
+
+          if (mintCollectionInfo && mintCollectionInfo.Owner && mintCollectionInfo.Owner.toString() !== '5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM' && !collections.find((collection) => collection.id === uniqueCollectionIds[i])) {
+            collections.push({ ...mintCollectionInfo, id: uniqueCollectionIds[i] });
+          }
         }
 
-        if (mintCollectionInfo && mintCollectionInfo.Owner && mintCollectionInfo.Owner.toString() !== '5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM' && !collections.find((collection) => collection.id === uniqueCollectionIds[i])) {
-          collections.push({ ...mintCollectionInfo, id: uniqueCollectionIds[i] });
-        }
+        localStorage.setItem('tokenCollections', JSON.stringify(collections));
       }
-
-      localStorage.setItem('tokenCollections', JSON.stringify(collections));
 
       return collections;
     } catch (e) {
