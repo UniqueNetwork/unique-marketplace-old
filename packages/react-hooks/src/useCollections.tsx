@@ -166,7 +166,7 @@ export function useCollections () {
     });
   }, [fetchData]);
 
-  const presetTokensCollections = useCallback(async () => {
+  const presetTokensCollections = useCallback(async (): Promise<NftCollectionInterface[]> => {
     if (!api) {
       return [];
     }
@@ -181,7 +181,7 @@ export function useCollections () {
         const collectionInf = await getDetailedCollectionInfo(i.toString()) as unknown as NftCollectionInterface;
 
         if (cleanup.current) {
-          return;
+          return [];
         }
 
         if (collectionInf && collectionInf.Owner && collectionInf.Owner.toString() !== '5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM') {
