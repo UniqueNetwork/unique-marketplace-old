@@ -92,7 +92,7 @@ export function useCollections () {
       let url = `/offers?page=${page}&pageSize=${pageSize}`;
 
       if (collectionIds && collectionIds.length) {
-        url = `${url}${collectionIds.map((item: string) => `&collectionId=${item}`).join(',')}`;
+        url = `${url}${collectionIds.map((item: string) => `&collectionId=${item}`).join('')}`;
       }
 
       setLoadingOffers(true);
@@ -146,7 +146,7 @@ export function useCollections () {
     url = `${url}?page=${page}&pageSize=${pageSize}`;
 
     if (collectionIds && collectionIds.length) {
-      url = `${url}${collectionIds.map((item: string) => `&collectionId=${item}`).join(',')}`;
+      url = `${url}${collectionIds.map((item: string) => `&collectionId=${item}`).join('')}`;
     }
 
     fetchData<TradesResponseType>(url).subscribe((result: TradesResponseType | ErrorType) => {
