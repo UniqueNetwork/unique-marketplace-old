@@ -14,7 +14,7 @@ window.processEnv = {
   maxGas: 1000000000000,
   quoteId: 2,
   showMarketActions: true,
-  uniqueCollectionIds: ['23', '25', '46'],
+  uniqueCollectionIds: ['23', '25', '53'],
   value: 0,
   walletMode: false
 };
