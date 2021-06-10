@@ -13,7 +13,10 @@ const definitions: OverrideBundleDefinition = {
       minmax: [0, undefined],
       types: {
         AccessMode: {
-          _enum: ['Normal', 'WhiteList']
+          _enum: [
+            'Normal',
+            'WhiteList'
+          ]
         },
         DecimalPoints: 'u8',
         CollectionMode: {
@@ -41,6 +44,13 @@ const definitions: OverrideBundleDefinition = {
           ConstData: 'Vec<u8>',
           VariableData: 'Vec<u8>'
         },
+        SponsorshipState: {
+          _enum: {
+            Disabled: null,
+            Unconfirmed: 'AccountId',
+            Confirmed: 'AccountId'
+          }
+        },
         Collection: {
           Owner: 'AccountId',
           Mode: 'CollectionMode',
@@ -52,8 +62,7 @@ const definitions: OverrideBundleDefinition = {
           MintMode: 'bool',
           OffchainSchema: 'Vec<u8>',
           SchemaVersion: 'SchemaVersion',
-          Sponsor: 'AccountId',
-          SponsorConfirmed: 'bool',
+          Sponsorship: 'SponsorshipState',
           Limits: 'CollectionLimits',
           VariableOnChainSchema: 'Vec<u8>',
           ConstOnChainSchema: 'Vec<u8>'
@@ -109,7 +118,8 @@ const definitions: OverrideBundleDefinition = {
           SponsorTimeout: 'u32',
           OwnerCanTransfer: 'bool',
           OwnerCanDestroy: 'bool'
-        }
+        },
+        AccountInfo: 'AccountInfoWithDualRefCount'
       }
     }
   ]
