@@ -7,6 +7,7 @@ const fs = require('fs');
 const path = require('path');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const ModuleFederationPlugin = require('webpack/lib/container/ModuleFederationPlugin');
 const webpack = require('webpack');
 
 const findPackages = require('../../scripts/findPackages.cjs');
@@ -176,6 +177,14 @@ function createWebpack (context, mode = 'production') {
       new webpack.optimize.SplitChunksPlugin(),
       new MiniCssExtractPlugin({
         filename: '[name].[contenthash:8].css'
+      }),
+      new ModuleFederationPlugin({
+        exposes: {},
+        filename: 'remoteEntry.js',
+        name: 'apps',
+        remotes: {
+          uiCore: 'uiCore@http://localhost:3001/remoteEntry.js'
+        }
       })
     ].concat(plugins),
     resolve: {

@@ -23,11 +23,13 @@ import { AccountSelector, ErrorBoundary, StatusContext } from '@polkadot/react-c
 import GlobalStyle from '@polkadot/react-components/styles';
 import { useApi } from '@polkadot/react-hooks';
 import Signer from '@polkadot/react-signer';
-
 import ConnectingOverlay from './overlays/Connecting';
 import BalancesHeader from './BalancesHeader';
 import ScrollToTop from './ScrollToTop';
 import WarmUp from './WarmUp';
+import TestModule from 'uiCore/TestModule';
+
+// import TestModule from 'uiCore/TestModule';
 
 export const PORTAL_ID = 'portals';
 
@@ -159,12 +161,13 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                           </header>
                           <main className='app-main'>
                             <div className='app-container'>
-                              <Component
+                              <TestModule />
+                              {/* <Component
                                 account={account}
                                 basePath={`/${name}`}
                                 location={location}
                                 onStatusChange={queueAction}
-                              />
+                              /> */}
                               <ConnectingOverlay />
                               <div id={PORTAL_ID} />
                             </div>
