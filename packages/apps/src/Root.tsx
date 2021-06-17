@@ -12,10 +12,17 @@ import { Api } from '@polkadot/react-api';
 import Queue from '@polkadot/react-components/Status/Queue';
 import { BlockAuthors, Events } from '@polkadot/react-query';
 import { settings } from '@polkadot/ui-settings';
+// import ReactApi from 'uiCore/ReactApi';
 
 import Apps from './Apps';
 import { Themes, uniqueTheme } from './themes';
 import WindowDimensions from './WindowDimensions';
+
+const ReactApi = React.lazy(() => import('uiCore/ReactApi'));
+
+console.log('ReactApi', ReactApi);
+
+// const { Api } = ReactApi;
 
 interface Props {
   store?: KeyringStore;

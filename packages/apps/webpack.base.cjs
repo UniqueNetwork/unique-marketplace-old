@@ -11,7 +11,10 @@ const ModuleFederationPlugin = require('webpack/lib/container/ModuleFederationPl
 const webpack = require('webpack');
 
 const findPackages = require('../../scripts/findPackages.cjs');
+
+const deps = require('../../package.json').dependencies;
 const devDeps = require('../../package.json').devDependencies;
+const resDeps = require('../../package.json').resolutions;
 
 function mapChunks (name, regs, inc) {
   return regs.reduce((result, test, index) => ({
@@ -184,18 +187,6 @@ function createWebpack (context, mode = 'production') {
         name: 'apps',
         remotes: {
           uiCore: 'uiCore@http://localhost:3001/uiCore.js'
-        },
-        shared: {
-          react: {
-            eager: true,
-            requiredVersion: devDeps.react,
-            singleton: true
-          },
-          'react-dom': {
-            eager: true,
-            requiredVersion: devDeps['react-dom'],
-            singleton: true
-          }
         }
       })
     ].concat(plugins),
