@@ -74,6 +74,8 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
     setReadyToWithdraw(false);
   }, [sendCurrentUserAction]);
 
+  console.log('tokenInfo', tokenInfo, 'escrowAddress', escrowAddress, 'tokenAsk', tokenAsk, 'uOwnIt', uOwnIt);
+
   return (
     <div className='toke-details'>
       <Header as='h1'>
@@ -167,18 +169,17 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
             { uSellIt && (
               <Header as='h4'>You selling it!</Header>
             )}
-            { (!uOwnIt && tokenInfo && tokenInfo && tokenInfo.Owner && tokenInfo.Owner.toString() === escrowAddress && !tokenAsk?.owner) && (
+            { (!uOwnIt && tokenInfo && tokenInfo.Owner && tokenInfo.Owner.toString() === escrowAddress && !tokenAsk?.owner) && (
               <Header as='h5'>The owner is Escrow</Header>
             )}
 
-            { (!uOwnIt && tokenInfo && tokenInfo && tokenInfo.Owner && tokenInfo.Owner.toString() !== escrowAddress && !tokenAsk?.owner) && (
+            { (!uOwnIt && tokenInfo && tokenInfo.Owner && tokenInfo.Owner.toString() !== escrowAddress && !tokenAsk?.owner) && (
               <Header as='h5'>The owner is {tokenInfo?.Owner?.toString()}</Header>
             )}
 
-            { (!uOwnIt && tokenInfo && tokenInfo && tokenInfo.Owner && tokenInfo.Owner.toString() === escrowAddress && tokenAsk?.owner) && (
+            { (!uOwnIt && tokenInfo && tokenInfo.Owner && tokenInfo.Owner.toString() === escrowAddress && tokenAsk?.owner) && (
               <Header as='h5'>The owner is {tokenAsk?.owner.toString()}</Header>
             )}
-
             <div className='buttons'>
               { (uOwnIt && !uSellIt) && (
                 <Button
