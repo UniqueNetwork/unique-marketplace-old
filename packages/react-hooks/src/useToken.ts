@@ -71,8 +71,6 @@ export function useToken (): UseTokenInterface {
     try {
       const tokenInfo = await api.query.nft.nftItemList(collectionId, tokenId);
 
-      console.log('tokenInfo', tokenInfo);
-
       return tokenInfo.toJSON() as unknown as TokenDetailsInterface;
     } catch (e) {
       console.log('getDetailedTokenInfo error', e);

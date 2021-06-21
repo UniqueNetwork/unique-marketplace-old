@@ -1,24 +1,20 @@
 // Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import type { Option } from '@polkadot/types';
-import type { ContractInfo } from '@polkadot/types/interfaces';
-
 import BN from 'bn.js';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { Abi, ContractPromise } from '@polkadot/api-contract';
 import envConfig from '@polkadot/apps-config/envConfig';
 import { DEFAULT_DECIMALS } from '@polkadot/react-api';
-import { useApi, useCall } from '@polkadot/react-hooks';
+import { useApi } from '@polkadot/react-hooks';
 import keyring from '@polkadot/ui-keyring';
-import { settings } from '@polkadot/ui-settings';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import metadata from './metadata19.03.json';
 
-const { contractAddress, maxGas, value } = envConfig;
+const { contractAddress, maxGas, quoteId, value } = envConfig;
 
 export interface AskOutputInterface {
   output: [string, string, string, BN, string]
@@ -46,12 +42,6 @@ export function useNftContract (account: string): useNftContractInterface {
   const [depositor, setDepositor] = useState<string>();
   const [deposited, setDeposited] = useState<BN>();
   const [tokenAsk, setTokenAsk] = useState<{ owner: string, price: BN }>();
-  const [isStored, setIsStored] = useState(false);
-  const settingsUi = settings.get();
-
-  const contractInfo = useCall<Option<ContractInfo>>(settingsUi.apiUrl.includes('kusama') ? undefined : api.query?.contracts?.contractInfoOf, [contractAddress]);
-  // currency code
-  const quoteId = 2;
 
   // get offers
   // if connection ID not specified, returns 30 last token sale offers
@@ -101,6 +91,8 @@ export function useNftContract (account: string): useNftContractInterface {
   const initAbi = useCallback(() => {
     const jsonAbi = new Abi(metadata, api.registry.getChainProperties());
     const newContractInstance = new ContractPromise(api, jsonAbi, contractAddress);
+
+    console.log('jsonAbi', jsonAbi);
 
     setAbi(jsonAbi);
     setContractInstance(newContractInstance);
@@ -153,7 +145,7 @@ export function useNftContract (account: string): useNftContractInterface {
     try {
       const contract = keyring.getContract(contractAddress);
 
-      if (isStored && !contract) {
+      if (!contract) {
         const json = {
           contract: {
             abi,
@@ -168,21 +160,15 @@ export function useNftContract (account: string): useNftContractInterface {
     } catch (error) {
       console.error(error);
     }
-  }, [abi, api, isStored]);
+  }, [abi, api]);
 
   useEffect(() => {
-    if (isStored) {
-      initAbi();
-    }
-  }, [initAbi, isStored]);
+    initAbi();
+  }, [initAbi]);
 
   useEffect(() => {
     void fetchSystemProperties();
   }, [fetchSystemProperties]);
-
-  useEffect((): void => {
-    setIsStored(!!contractInfo?.isSome);
-  }, [contractInfo]);
 
   // addContract
   useEffect(() => {
