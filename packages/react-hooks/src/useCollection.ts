@@ -13,7 +13,7 @@ import { strToUTF16 } from '@polkadot/react-hooks/utils';
 export type SchemaVersionTypes = 'ImageURL' | 'Unique';
 
 export interface NftCollectionInterface {
-  Access?: 'Normal'
+  Access?: 'Normal' | 'WhiteList'
   id: string;
   DecimalPoints: BN | number;
   Description: number[];
@@ -36,9 +36,13 @@ export interface NftCollectionInterface {
   };
   Limits?: {
     AccountTokenOwnershipLimit: string;
+    SponsoredDataSize: string;
+    SponsoredDataRateLimit: string;
     SponsoredMintSize: string;
     TokenLimit: string;
     SponsorTimeout: string;
+    OwnerCanTransfer: boolean;
+    OwnerCanDestroy: boolean;
   },
   VariableOnChainSchema: string;
   ConstOnChainSchema: string;

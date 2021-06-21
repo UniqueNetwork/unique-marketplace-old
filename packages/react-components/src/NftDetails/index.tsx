@@ -74,8 +74,6 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
     setReadyToWithdraw(false);
   }, [sendCurrentUserAction]);
 
-  console.log('tokenInfo', tokenInfo, 'escrowAddress', escrowAddress, 'tokenAsk', tokenAsk, 'uOwnIt', uOwnIt);
-
   return (
     <div className='toke-details'>
       <Header as='h1'>
