@@ -69,7 +69,11 @@ export function useToken (): UseTokenInterface {
     }
 
     try {
-      return (await api.query.nft.nftItemList(collectionId, tokenId)).toJSON() as unknown as TokenDetailsInterface;
+      const tokenInfo = await api.query.nft.nftItemList(collectionId, tokenId);
+
+      console.log('tokenInfo', tokenInfo);
+
+      return tokenInfo.toJSON() as unknown as TokenDetailsInterface;
     } catch (e) {
       console.log('getDetailedTokenInfo error', e);
 
@@ -101,6 +105,8 @@ export function useToken (): UseTokenInterface {
         tokenDetailsData = await getDetailedReFungibleTokenInfo(collectionInfo.id, tokenId);
       }
     }
+
+    console.log('tokenDetailsData', tokenDetailsData);
 
     return tokenDetailsData;
   }, [getDetailedTokenInfo, getDetailedReFungibleTokenInfo]);
