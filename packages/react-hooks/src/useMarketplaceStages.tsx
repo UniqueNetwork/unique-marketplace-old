@@ -63,11 +63,15 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
   }, [send]);
 
   const loadingTokenInfo = useCallback(async () => {
+    console.log('loadingTokenInfo collectionInfo', collectionInfo);
+
     if (!collectionInfo) {
       return;
     }
 
     const info: TokenDetailsInterface = await getTokenInfo(collectionInfo, tokenId);
+
+    console.log('loadingTokenInfo tokenInfo', info);
 
     setTokenInfo(info);
     const ask = await getTokenAsk(collectionInfo.id, tokenId);
