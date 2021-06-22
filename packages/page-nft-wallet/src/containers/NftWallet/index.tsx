@@ -31,9 +31,38 @@ function NftWallet ({ account, addCollection, collections, removeCollectionFromL
   const [openTransfer, setOpenTransfer] = useState<{ collection: NftCollectionInterface, tokenId: string, balance: number } | null>(null);
   const [selectedCollection, setSelectedCollection] = useState<NftCollectionInterface>();
   const [canTransferTokens] = useState<boolean>(true);
+  const [tokensSelling, setTokensSelling] = useState<{ [collectionId: string]: string[] }>({});
   const currentAccount = useRef<string | null | undefined>();
-  const { presetCollections } = useCollections();
+  const { getOffers, offers, presetCollections } = useCollections();
   const cleanup = useRef<boolean>(false);
+
+  const fetchOffersForCollections = useCallback(() => {
+    const targetCollectionIds = collections.map((collection) => collection.id);
+
+    console.log('targetCollectionIds', targetCollectionIds);
+
+    getOffers(1, 1000, targetCollectionIds);
+  }, [collections, getOffers]);
+
+  const filterTokensFromOffers = useCallback(() => {
+    if (Object.keys(offers).length) {
+      const myOffers = Object.values(offers).filter((offer) => offer.seller === account);
+
+      const tokensSellingByMe: { [collectionId: string]: string[] } = {};
+
+      myOffers.forEach((offer) => {
+        if (!tokensSellingByMe[offer.collectionId]) {
+          tokensSellingByMe[offer.collectionId] = [offer.tokenId];
+        } else {
+          tokensSellingByMe[offer.collectionId].push(offer.tokenId);
+        }
+      });
+
+      console.log('tokensSellingByMe', tokensSellingByMe);
+
+      setTokensSelling(tokensSellingByMe);
+    }
+  }, [account, offers]);
 
   const addMintCollectionToList = useCallback(async () => {
     const firstCollections: NftCollectionInterface[] = await presetCollections();
@@ -71,10 +100,20 @@ function NftWallet ({ account, addCollection, collections, removeCollectionFromL
   }, [addMintCollectionToList]);
 
   useEffect(() => {
+    fetchOffersForCollections();
+  }, [fetchOffersForCollections]);
+
+  useEffect(() => {
+    filterTokensFromOffers();
+  }, [filterTokensFromOffers]);
+
+  useEffect(() => {
     return () => {
       cleanup.current = true;
     };
   }, []);
+
+  console.log('offers', offers);
 
   return (
     <div className='nft-wallet unique-card'>
@@ -110,6 +149,7 @@ function NftWallet ({ account, addCollection, collections, removeCollectionFromL
                   openTransferModal={openTransferModal}
                   removeCollection={removeCollection}
                   shouldUpdateTokens={shouldUpdateTokens}
+                  tokensSelling={tokensSelling[collection.id] || []}
                 />
               </td>
             </tr>
