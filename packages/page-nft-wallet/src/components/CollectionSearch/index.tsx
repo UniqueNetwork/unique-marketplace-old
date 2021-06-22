@@ -11,7 +11,7 @@ import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
-import { Input } from '@polkadot/react-components';
+import { Input } from 'ui-core';
 import { useCollections, useDecoder } from '@polkadot/react-hooks';
 
 import clearIcon from './clearIcon.svg';

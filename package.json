@@ -98,6 +98,7 @@
     "stylelint": "^13.13.1",
     "stylelint-config-recommended": "^5.0.0",
     "stylelint-config-styled-components": "^0.1.1",
+    "ui-core": "git+https://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:x-oauth-basic@github.com/usetech-llc/ui-core.git#8707664d413ff70855e441b946d786a15778a796",
     "webpack": "^5.38.1",
     "webpack-cli": "^4.7.0",
     "webpack-manifest-plugin": "^3.0.0"
@@ -115,6 +116,7 @@
     "react-infinite-scroller": "^1.2.4",
     "style-loader": "^2.0.0",
     "thread-loader": "^3.0.1",
-    "xstate": "^4.15.0"
+    "xstate": "^4.15.0",
+    "zlib": "^1.0.5"
   }
 }
