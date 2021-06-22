@@ -39,8 +39,6 @@ function NftWallet ({ account, addCollection, collections, removeCollectionFromL
   const fetchOffersForCollections = useCallback(() => {
     const targetCollectionIds = collections.map((collection) => collection.id);
 
-    console.log('targetCollectionIds', targetCollectionIds);
-
     getOffers(1, 1000, targetCollectionIds);
   }, [collections, getOffers]);
 
@@ -57,8 +55,6 @@ function NftWallet ({ account, addCollection, collections, removeCollectionFromL
           tokensSellingByMe[offer.collectionId].push(offer.tokenId);
         }
       });
-
-      console.log('tokensSellingByMe', tokensSellingByMe);
 
       setTokensSelling(tokensSellingByMe);
     }
@@ -112,8 +108,6 @@ function NftWallet ({ account, addCollection, collections, removeCollectionFromL
       cleanup.current = true;
     };
   }, []);
-
-  console.log('offers', offers);
 
   return (
     <div className='nft-wallet unique-card'>

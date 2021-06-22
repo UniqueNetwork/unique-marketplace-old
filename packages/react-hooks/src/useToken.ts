@@ -104,8 +104,6 @@ export function useToken (): UseTokenInterface {
       }
     }
 
-    console.log('tokenDetailsData', tokenDetailsData);
-
     return tokenDetailsData;
   }, [getDetailedTokenInfo, getDetailedReFungibleTokenInfo]);
 
