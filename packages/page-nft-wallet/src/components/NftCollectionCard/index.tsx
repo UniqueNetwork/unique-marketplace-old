@@ -30,15 +30,16 @@ interface Props {
   removeCollection: (collection: string) => void;
   openTransferModal: (collection: NftCollectionInterface, tokenId: string, balance: number) => void;
   shouldUpdateTokens: string | undefined;
+  tokensSelling: string[];
 }
 
-function NftCollectionCard ({ account, canTransferTokens, collection, openTransferModal, removeCollection, shouldUpdateTokens }: Props): React.ReactElement<Props> {
+function NftCollectionCard ({ account, canTransferTokens, collection, openTransferModal, removeCollection, shouldUpdateTokens, tokensSelling }: Props): React.ReactElement<Props> {
   const [opened, setOpened] = useState(true);
   const [collectionImageUrl, setCollectionImageUrl] = useState<string>();
   const [ownTokensCount, setOwnTokensCount] = useState<number>();
   const [allTokensCount, setAllTokensCount] = useState<number>();
   const [confirmDeleteCollection, setConfirmDeleteCollection] = useState<boolean>(false);
-  const [tokensOfCollection, setTokensOfCollection] = useState<Array<string>>([]);
+  const [tokensOfCollection, setTokensOfCollection] = useState<string[]>([]);
   const { getTokensOfCollection } = useCollections();
   const { getCollectionTokensCount } = useCollection();
   const { collectionName16Decoder } = useDecoder();
@@ -133,6 +134,8 @@ function NftCollectionCard ({ account, canTransferTokens, collection, openTransf
     };
   }, []);
 
+  console.log('tokensOfCollection', tokensOfCollection, 'tokensSelling', tokensSelling);
+
   return (
     <Expander
       className='nft-collection-item'
@@ -223,7 +226,7 @@ function NftCollectionCard ({ account, canTransferTokens, collection, openTransf
       }
     >
       <div className='token-table'>
-        { account && tokensOfCollection.map((token) => (
+        { account && [...tokensSelling, ...tokensOfCollection].map((token) => (
           <NftTokenCard
             account={account}
             canTransferTokens={canTransferTokens}
