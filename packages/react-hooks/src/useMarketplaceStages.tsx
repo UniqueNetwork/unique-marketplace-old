@@ -16,7 +16,7 @@ import { BalanceInterface } from '@polkadot/react-hooks/useBalance';
 
 import marketplaceStateMachine from './stateMachine';
 
-const { escrowAddress, kusamaDecimals, maxGas, quoteId } = envConfig;
+const { commission, escrowAddress, kusamaDecimals, maxGas, quoteId } = envConfig;
 
 type UserActionType = 'BUY' | 'CANCEL' | 'SELL' | 'REVERT_UNUSED_MONEY' | 'UPDATE_TOKEN_STATE' | 'OFFER_TRANSACTION_FAIL' | 'SUBMIT_OFFER' | 'OFFER_TRANSACTION_SUCCESS';
 
@@ -28,6 +28,7 @@ export interface MarketplaceStagesInterface {
   escrowAddress: string;
   error: string | null;
   formatKsmBalance: (value: BN | undefined) => string;
+  getFee: (price: BN) => BN;
   kusamaBalance: BalanceInterface | undefined;
   saleFee: BN | undefined;
   sendCurrentUserAction: (action: UserActionType) => void;
@@ -90,7 +91,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
   }, [collectionInfo, getTokenInfo, account, getUserDeposit, send, getTokenAsk, tokenId, getDepositor]);
 
   const getFee = useCallback((price: BN): BN => {
-    return price.muln(2).divRound(new BN(100));
+    return price.muln(commission).div(new BN(100));
   }, []);
 
   const queueTransaction = useCallback((transaction: SubmittableExtrinsic, fail: string, start: string, success: string, update: string) => {
@@ -111,7 +112,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
     if (fee) {
       setSaleFee(fee.partialFee);
 
-      return fee.partialFee.muln(2);
+      return fee.partialFee;
     }
 
     return null;
@@ -405,6 +406,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
     error,
     escrowAddress,
     formatKsmBalance,
+    getFee,
     kusamaBalance,
     readyToAskPrice,
     saleFee,
