@@ -7,6 +7,7 @@ export type EnvConfigType = {
   canCreateToken: boolean;
   canEditCollection: boolean;
   canEditToken: boolean;
+  commission: 10;
   contractAddress: string; // 5FgbNg55FCFT3j1KokxsHaEgp4wfnDMGazCLw3mqC359bY72
   escrowAddress: string; // 5FdzbgdBGRM5FDALrnSPRybWhqKv4eiy6QUpWUdBt3v3omAU
   faviconPath: string;
@@ -31,6 +32,7 @@ const envConfig: EnvConfigType = {
   canCreateToken: window.processEnv.canCreateToken || false,
   canEditCollection: window.processEnv.canEditCollection || false,
   canEditToken: window.processEnv.canEditToken || false,
+  commission: window.processEnv.commission || 10,
   contractAddress: window.processEnv.contractAddress || '5FgbNg55FCFT3j1KokxsHaEgp4wfnDMGazCLw3mqC359bY72',
   escrowAddress: window.processEnv.escrowAddress || '5FdzbgdBGRM5FDALrnSPRybWhqKv4eiy6QUpWUdBt3v3omAU',
   faviconPath: window.processEnv.faviconPath || 'favicon.ico',

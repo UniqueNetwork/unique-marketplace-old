@@ -7,6 +7,7 @@ window.processEnv = {
   canCreateToken: false,
   canEditCollection: false,
   canEditToken: false,
+  commission: 10,
   contractAddress: '5FgbNg55FCFT3j1KokxsHaEgp4wfnDMGazCLw3mqC359bY72',
   escrowAddress: '5FdzbgdBGRM5FDALrnSPRybWhqKv4eiy6QUpWUdBt3v3omAU',
   faviconPath: 'favicons/marketplace',

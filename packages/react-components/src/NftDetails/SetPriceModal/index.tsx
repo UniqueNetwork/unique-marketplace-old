@@ -35,9 +35,7 @@ function SetPriceModal (props: Props): React.ReactElement<Props> {
           <Form.Field>
             <Input
               autoFocus
-              className='isSmall'
-              help={<span>Set nft token price</span>}
-              label={'amount'}
+              label={'in KSM'}
               min={0.01}
               onChange={setTokenPriceForSale}
               type='number'

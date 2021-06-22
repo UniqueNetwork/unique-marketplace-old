@@ -38,7 +38,7 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
   const { hex2a } = useDecoder();
   const { attributes, collectionInfo, reFungibleBalance, tokenName, tokenUrl } = useSchema(account, collectionId, tokenId);
   const [tokenPriceForSale, setTokenPriceForSale] = useState<string>('');
-  const { buyFee, cancelStep, deposited, escrowAddress, formatKsmBalance, kusamaBalance, readyToAskPrice, sendCurrentUserAction, setPrice, setReadyToAskPrice, setWithdrawAmount, tokenAsk, tokenInfo, transferStep, withdrawAmount } = useMarketplaceStages(account, collectionInfo, tokenId);
+  const { buyFee, cancelStep, deposited, escrowAddress, formatKsmBalance, getFee, kusamaBalance, readyToAskPrice, sendCurrentUserAction, setPrice, setReadyToAskPrice, setWithdrawAmount, tokenAsk, tokenInfo, transferStep, withdrawAmount } = useMarketplaceStages(account, collectionInfo, tokenId);
 
   const uOwnIt = tokenInfo?.Owner?.toString() === account || (tokenAsk && tokenAsk.owner === account);
   const uSellIt = tokenAsk && tokenAsk.owner === account;
@@ -149,9 +149,9 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
             { (tokenAsk && tokenAsk.price) && (
               <>
                 <Header as={'h2'}>
-                  {formatKsmBalance(tokenAsk.price.add(tokenAsk.price.muln(2).divRound(new BN(100))))} KSM
+                  {formatKsmBalance(tokenAsk.price.add(getFee(tokenAsk.price)))} KSM
                 </Header>
-                <p>Fee: {formatKsmBalance(tokenAsk.price.muln(2).divRound(new BN(100)))} KSM, Price: {formatKsmBalance(tokenAsk.price)} KSM</p>
+                <p>Fee: {formatKsmBalance(getFee(tokenAsk.price))} KSM, Price: {formatKsmBalance(tokenAsk.price)} KSM</p>
                 { (!uOwnIt && !transferStep && tokenAsk) && lowBalanceToBuy && (
                   <div className='warning-block'>Your balance is too low to pay fees. <a href='https://t.me/unique2faucetbot'
                     rel='noreferrer nooperer'
@@ -191,7 +191,7 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
                 <>
                   { (!uOwnIt && !transferStep && tokenAsk) && (
                     <Button
-                      content={`Buy it - ${formatKsmBalance(tokenAsk.price.add(tokenAsk.price.muln(2).divRound(new BN(100))))} KSM`}
+                      content={`Buy it - ${formatKsmBalance(tokenAsk.price.add(getFee(tokenAsk.price)))} KSM`}
                       disabled={lowBalanceToBuy || lowKsmBalanceToBuy}
                       onClick={sendCurrentUserAction.bind(null, 'BUY')}
                     />
@@ -252,7 +252,7 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
                     className='isSmall'
                     defaultValue={(withdrawAmount || 0).toString()}
                     isError={!!(!deposited || (withdrawAmount && parseFloat(withdrawAmount) > parseFloat(formatKsmBalance(deposited))))}
-                    label={'amount'}
+                    label={'KSM'}
                     max={parseFloat(formatKsmBalance(deposited))}
                     onChange={setWithdrawAmount}
                     type='number'
