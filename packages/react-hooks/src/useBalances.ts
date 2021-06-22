@@ -15,10 +15,10 @@ interface UseBalancesInterface {
 }
 
 export const useBalances = (account: string | undefined, deposited: BN | undefined, getUserDeposit: () => Promise<BN | null>): UseBalancesInterface => {
-  const api = useApi();
+  const { api } = useApi();
   const { kusamaApi } = useKusamaApi(account || '');
-  const balancesAll = useCall<DeriveBalancesAll>(api?.api?.derive.balances.all, [account]);
-  const kusamaBalancesAll = useCall<DeriveBalancesAll>(kusamaApi?.derive?.balances.all, [account]);
+  const balancesAll = useCall<DeriveBalancesAll>(api.derive.balances?.all, [account]);
+  const kusamaBalancesAll = useCall<DeriveBalancesAll>(kusamaApi?.derive.balances?.all, [account]);
 
   useEffect(() => {
     void getUserDeposit();

@@ -79,8 +79,6 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
       if (!ask || !ask.price) {
         const tokenDepositor = await getDepositor(collectionInfo.id, tokenId);
 
-        console.log('tokenDepositor', tokenDepositor);
-
         if (tokenDepositor === account) {
           // the token is in escrow - waiting for deposit
           send('WAIT_FOR_DEPOSIT');
@@ -398,8 +396,6 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
       void getBuyFee();
     }
   }, [account, getBuyFee, getSaleFee]);
-
-  console.log('buy / sale stage', state.value);
 
   return {
     buyFee,

@@ -15,7 +15,7 @@ import Button from 'semantic-ui-react/dist/commonjs/elements/Button';
 
 import { ApiPromise } from '@polkadot/api';
 import { AddressInfo, AddressSmall, Badge, CryptoType, Forget, Icon, IdentityIcon } from '@polkadot/react-components';
-import { useAccountInfo, useApi, useCall, useToggle } from '@polkadot/react-hooks';
+import { useAccountInfo, useApi, useBestNumber, useCall, useToggle } from '@polkadot/react-hooks';
 import { keyring } from '@polkadot/ui-keyring';
 import { formatBalance, formatNumber, isFunction } from '@polkadot/util';
 
@@ -78,8 +78,8 @@ const transformRecovery = {
 
 function Account ({ account: { address, meta }, className = '', delegation, filter, isFavorite, proxy, setBalance, toggleFavorite }: Props): React.ReactElement<Props> | null {
   const api = useApi();
-  const bestNumber = useCall<BN>(api.api.derive.chain.bestNumber);
-  const balancesAll = useCall<DeriveBalancesAll>(api.api.derive.balances.all, [address]);
+  const bestNumber = useBestNumber();
+  const balancesAll = useCall<DeriveBalancesAll>(api.api.derive.balances?.all, [address]);
   const democracyLocks = useCall<DeriveDemocracyLock[]>(api.api.derive.democracy?.locks, [address]);
   const recoveryInfo = useCall<RecoveryConfig | null>(api.api.query.recovery?.recoverable, [address], transformRecovery);
   const multiInfos = useMultisigApprovals(address);
