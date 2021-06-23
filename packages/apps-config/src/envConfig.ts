@@ -18,6 +18,7 @@ export type EnvConfigType = {
   uniqueCollectionIds: string[]; // ['23']
   value: number; // 0
   walletMode: boolean; // if only wallet needed
+  wssUrl: string;
 }
 
 declare global {
@@ -42,7 +43,8 @@ const envConfig: EnvConfigType = {
   showMarketActions: window.processEnv.showMarketActions || false,
   uniqueCollectionIds: window.processEnv.uniqueCollectionIds || ['2'],
   value: window.processEnv.value || 0,
-  walletMode: window.processEnv.walletMode || false
+  walletMode: window.processEnv.walletMode || false,
+  wssUrl: window.processEnv.wssUrl || 'wss://testnet2.uniquenetwork.io'
 };
 
 export default envConfig;

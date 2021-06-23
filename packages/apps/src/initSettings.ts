@@ -5,6 +5,7 @@ import queryString from 'query-string';
 import store from 'store';
 
 import { createWsEndpoints } from '@polkadot/apps-config';
+import envConfig from '@polkadot/apps-config/envConfig';
 import { extractIpfsDetails } from '@polkadot/react-hooks/useIpfs';
 import { settings } from '@polkadot/ui-settings';
 import { assert } from '@polkadot/util';
@@ -43,7 +44,7 @@ function getApiUrl (): string {
   const fallbackUrl = endpoints.find(({ info }) => info === 'unique');
 
   // via settings, or the default chain
-  return [stored.apiUrl, process.env.WS_URL].includes(settings.apiUrl)
+  return [stored.apiUrl, process.env.WS_URL].includes(settings.apiUrl) && settings.apiUrl === envConfig.wssUrl
     ? settings.apiUrl // keep as-is
     : fallbackUrl
       ? fallbackUrl.value as string // grab the fallback

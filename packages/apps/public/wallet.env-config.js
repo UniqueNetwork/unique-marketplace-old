@@ -17,5 +17,6 @@ window.processEnv = {
   showMarketActions: false,
   uniqueCollectionIds: ['23', '25'],
   value: 0,
-  walletMode: true
+  walletMode: true,
+  wssUrl: 'wss://testnet2.uniquenetwork.io'
 };

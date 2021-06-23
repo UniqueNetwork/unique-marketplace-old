@@ -4,8 +4,11 @@
 import type { TFunction } from 'i18next';
 import type { LinkOption } from '../settings/types';
 
+import envConfig from '@polkadot/apps-config/envConfig';
+
 import { expandEndpoints } from './util';
 
+const { wssUrl } = envConfig;
 /* eslint-disable sort-keys */
 
 // The available endpoints that will show in the dropdown. For the most part (with the exception of
@@ -237,7 +240,7 @@ export function createTesting (t: TFunction): LinkOption[] {
       info: 'unique',
       text: t('rpc.unique', 'Unique', { ns: 'apps-config' }),
       providers: {
-        Unique: 'wss://testnet2.uniquenetwork.io'
+        Unique: wssUrl || 'wss://testnet2.uniquenetwork.io'
       }
     },
     {

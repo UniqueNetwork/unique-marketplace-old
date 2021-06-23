@@ -40,7 +40,7 @@ function NftWallet ({ account, addCollection, collections, removeCollectionFromL
     if (collections?.length) {
       const targetCollectionIds = collections.map((collection) => collection.id);
 
-      getOffers(1, 1000, targetCollectionIds);
+      getOffers(1, 20000, targetCollectionIds);
     }
   }, [collections, getOffers]);
 
