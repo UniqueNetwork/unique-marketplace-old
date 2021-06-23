@@ -5379,6 +5379,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/resolve@npm:0.0.8":
+  version: 0.0.8
+  resolution: "@types/resolve@npm:0.0.8"
+  dependencies:
+    "@types/node": "*"
+  checksum: f241bb773ab14b14500623ac3b57c52006ce32b20426b6d8bf2fe5fdc0344f42c77ac0f94ff57b443ae1d320a1a86c62b4e47239f0321699404402fbeb24bad6
+  languageName: node
+  linkType: hard
+
 "@types/responselike@npm:*, @types/responselike@npm:^1.0.0":
   version: 1.0.0
   resolution: "@types/responselike@npm:1.0.0"
@@ -7617,6 +7626,13 @@ __metadata:
     stat-mode: ^1.0.0
     temp-file: ^3.3.7
   checksum: fe5bde0a280dc0853a52937c855efb611534d2496cf2343e0a07845530709a51144ba0a3f8324698422674137f8d933c316a3373aaca20decd7876562773fb3a
+  languageName: node
+  linkType: hard
+
+"builtin-modules@npm:^3.1.0":
+  version: 3.2.0
+  resolution: "builtin-modules@npm:3.2.0"
+  checksum: 0265aa1ba78e1a16f4e18668d815cb43fb364e6a6b8aa9189c6f44c7b894a551a43b323c40206959d2d4b2568c1f2805607ad6c88adc306a776ce6904cca6715
   languageName: node
   linkType: hard
 
@@ -13365,6 +13381,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"is-module@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "is-module@npm:1.0.0"
+  checksum: 8cd5390730c7976fb4e8546dd0b38865ee6f7bacfa08dfbb2cc07219606755f0b01709d9361e01f13009bbbd8099fa2927a8ed665118a6105d66e40f1b838c3f
+  languageName: node
+  linkType: hard
+
 "is-negated-glob@npm:^1.0.0":
   version: 1.0.0
   resolution: "is-negated-glob@npm:1.0.0"
@@ -18839,7 +18862,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"resolve@^1.1.6, resolve@^1.10.0, resolve@^1.10.1, resolve@^1.13.1, resolve@^1.14.2, resolve@^1.19.0, resolve@^1.20.0, resolve@^1.9.0":
+"resolve@^1.1.6, resolve@^1.10.0, resolve@^1.10.1, resolve@^1.11.1, resolve@^1.13.1, resolve@^1.14.2, resolve@^1.19.0, resolve@^1.20.0, resolve@^1.9.0":
   version: 1.20.0
   resolution: "resolve@npm:1.20.0"
   dependencies:
@@ -18859,7 +18882,7 @@ resolve@^2.0.0-next.3:
   languageName: node
   linkType: hard
 
-"resolve@patch:resolve@^1.1.6#~builtin<compat/resolve>, resolve@patch:resolve@^1.10.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.10.1#~builtin<compat/resolve>, resolve@patch:resolve@^1.13.1#~builtin<compat/resolve>, resolve@patch:resolve@^1.14.2#~builtin<compat/resolve>, resolve@patch:resolve@^1.19.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.20.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.9.0#~builtin<compat/resolve>":
+"resolve@patch:resolve@^1.1.6#~builtin<compat/resolve>, resolve@patch:resolve@^1.10.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.10.1#~builtin<compat/resolve>, resolve@patch:resolve@^1.11.1#~builtin<compat/resolve>, resolve@patch:resolve@^1.13.1#~builtin<compat/resolve>, resolve@patch:resolve@^1.14.2#~builtin<compat/resolve>, resolve@patch:resolve@^1.19.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.20.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.9.0#~builtin<compat/resolve>":
   version: 1.20.0
   resolution: "resolve@patch:resolve@npm%3A1.20.0#~builtin<compat/resolve>::version=1.20.0&hash=00b1ff"
   dependencies:
@@ -18994,7 +19017,22 @@ resolve@^2.0.0-next.3:
   languageName: node
   linkType: hard
 
-"rollup-pluginutils@npm:^2.8.2":
+"rollup-plugin-node-resolve@npm:^5.2.0":
+  version: 5.2.0
+  resolution: "rollup-plugin-node-resolve@npm:5.2.0"
+  dependencies:
+    "@types/resolve": 0.0.8
+    builtin-modules: ^3.1.0
+    is-module: ^1.0.0
+    resolve: ^1.11.1
+    rollup-pluginutils: ^2.8.1
+  peerDependencies:
+    rollup: ">=1.11.0"
+  checksum: 29687721d2d4332d29042bf6a2d349ba44135dd28e242150b7c4ea02c3207e152f11022f40ede5b3722b32cfab9782c14000d5e2370f45bb2411a769a7c5eee1
+  languageName: node
+  linkType: hard
+
+"rollup-pluginutils@npm:^2.8.1, rollup-pluginutils@npm:^2.8.2":
   version: 2.8.2
   resolution: "rollup-pluginutils@npm:2.8.2"
   dependencies:
@@ -21241,9 +21279,9 @@ resolve@^2.0.0-next.3:
   languageName: node
   linkType: hard
 
-"ui-core@git+https://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:x-oauth-basic@github.com/usetech-llc/ui-core.git#8707664d413ff70855e441b946d786a15778a796":
+"ui-core@git+https://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:x-oauth-basic@github.com/usetech-llc/ui-core.git#6a560ba92f8483c65bea70c97a945eeb679eb42e":
   version: 0.1.0
-  resolution: "ui-core@https://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:x-oauth-basic@github.com/usetech-llc/ui-core.git#commit=8707664d413ff70855e441b946d786a15778a796"
+  resolution: "ui-core@https://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:x-oauth-basic@github.com/usetech-llc/ui-core.git#commit=6a560ba92f8483c65bea70c97a945eeb679eb42e"
   dependencies:
     "@jackfranklin/rollup-plugin-markdown": ^0.3.0
     "@types/lodash": ^4.14.168
@@ -21257,10 +21295,11 @@ resolve@^2.0.0-next.3:
     protobufjs: ^6.10.2
     react-images-uploading: ^3.1.2
     react-infinite-scroller: ^1.2.4
+    rollup-plugin-node-resolve: ^5.2.0
     style-loader: ^2.0.0
     thread-loader: ^3.0.1
     xstate: ^4.15.0
-  checksum: a553926bbf296ae30791059ab9ff0697084bec88737ab49e49fb16f241746bf51eb40def0ec720341b125e32fcc914d490dc40a52ffc4e2a1bf2d33f7d2a8394
+  checksum: 884e1962e74d6e41abfa3e9b7a8acd4ad70e25c1822864c63b2c1eaae7c5b6f34a9aea3b57d418af16f5dcfad358ed462b84773eff1b9412406b1b0312fa5ba7
   languageName: node
   linkType: hard
 
@@ -21407,7 +21446,7 @@ resolve@^2.0.0-next.3:
     stylelint-config-recommended: ^5.0.0
     stylelint-config-styled-components: ^0.1.1
     thread-loader: ^3.0.1
-    ui-core: "git+https://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:x-oauth-basic@github.com/usetech-llc/ui-core.git#8707664d413ff70855e441b946d786a15778a796"
+    ui-core: "git+https://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:x-oauth-basic@github.com/usetech-llc/ui-core.git#6a560ba92f8483c65bea70c97a945eeb679eb42e"
     webpack: ^5.38.1
     webpack-cli: ^4.7.0
     webpack-manifest-plugin: ^3.0.0

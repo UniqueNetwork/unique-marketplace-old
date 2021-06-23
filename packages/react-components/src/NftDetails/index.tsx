@@ -12,9 +12,9 @@ import Button from 'semantic-ui-react/dist/commonjs/elements/Button';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import Image from 'semantic-ui-react/dist/commonjs/elements/Image';
 import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
+import { Input, TransferModal } from 'ui-core';
 
 import envConfig from '@polkadot/apps-config/envConfig';
-import { Input, TransferModal } from '@polkadot/react-components';
 import { useBalance, useDecoder, useMarketplaceStages, useSchema } from '@polkadot/react-hooks';
 
 import BuySteps from './BuySteps';
