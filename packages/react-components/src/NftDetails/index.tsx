@@ -74,6 +74,14 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
     setReadyToWithdraw(false);
   }, [sendCurrentUserAction]);
 
+  const closeAskModal = useCallback(() => {
+    setReadyToAskPrice(false);
+
+    setTimeout(() => {
+      sendCurrentUserAction('ASK_PRICE_FAIL');
+    }, 1000);
+  }, [setReadyToAskPrice, sendCurrentUserAction]);
+
   console.log('tokenInfo', tokenInfo, 'tokenAsk', tokenAsk, 'uOwnIt', uOwnIt, 'uSellIt', uSellIt);
 
   return (
@@ -279,7 +287,7 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
       </Grid>
       { readyToAskPrice && (
         <SetPriceModal
-          closeModal={setReadyToAskPrice.bind(null, false)}
+          closeModal={closeAskModal}
           onSavePrice={onSavePrice}
           setTokenPriceForSale={setTokenPriceForSale}
           tokenPriceForSale={tokenPriceForSale}

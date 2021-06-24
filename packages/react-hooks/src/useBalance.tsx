@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import type { AccountInfoWithProviders, AccountInfoWithRefCount } from '@polkadot/types/interfaces';
+
 import BN from 'bn.js';
 import { useCallback, useEffect, useState } from 'react';
 
