@@ -163,7 +163,7 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
                 { (!uOwnIt && !transferStep && tokenAsk) && lowBalanceToBuy && (
                   <div className='warning-block'>Your balance is too low to pay fees. <a href='https://t.me/unique2faucetbot'
                     rel='noreferrer nooperer'
-                    target='_blank'>Get testUnq here</a></div>
+                    target='_blank'>Get testUNQ here</a></div>
                 )}
                 { (!uOwnIt && !transferStep && tokenAsk) && lowKsmBalanceToBuy && (
                   <div className='warning-block'>Your balance is too low to buy</div>
