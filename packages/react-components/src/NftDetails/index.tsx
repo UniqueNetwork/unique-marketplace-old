@@ -239,9 +239,9 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
             { (showTransferForm && collectionInfo) && (
               <TransferModal
                 account={account}
-                balance={reFungibleBalance}
                 closeModal={setShowTransferForm.bind(null, false)}
                 collection={collectionInfo}
+                reFungibleBalance={reFungibleBalance}
                 tokenId={tokenId}
                 updateTokens={onTransferSuccess}
               />
