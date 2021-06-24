@@ -9,7 +9,7 @@ const marketplaceStateMachine = Machine({
   states: {
     askPrice: {
       on: {
-        ASK_PRICE_FAIL: 'askPrice',
+        ASK_PRICE_FAIL: 'waitForNftDeposit',
         ASK_PRICE_SUCCESS: 'registerSale'
       }
     },
