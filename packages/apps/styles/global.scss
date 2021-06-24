@@ -562,6 +562,14 @@ button.ui.button,
 }
 
 .ui--InputBalance {
+  .ui--Labelled-content {
+    .ui.input.ui--Input {
+      input {
+        width: auto;
+      }
+    }
+  }
+
   .ui.action.input {
     border: 1px solid var(--border-color);
     background: var(--input-background-color);
