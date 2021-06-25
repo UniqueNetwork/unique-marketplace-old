@@ -175,7 +175,7 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
               <Header as='h4'>You own it!</Header>
             )}
             { uSellIt && (
-              <Header as='h4'>You selling it!</Header>
+              <Header as='h4'>You're selling it!</Header>
             )}
             { (!uOwnIt && tokenInfo && tokenInfo.Owner && tokenInfo.Owner.toString() === escrowAddress && !tokenAsk?.owner) && (
               <Header as='h5'>The owner is Escrow</Header>
