@@ -36,7 +36,7 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
   const [showTransferForm, setShowTransferForm] = useState<boolean>(false);
   const { balance } = useBalance(account);
   const { hex2a } = useDecoder();
-  const { attributes, collectionInfo, reFungibleBalance, tokenName, tokenUrl } = useSchema(account, collectionId, tokenId);
+  const { attributes, collectionInfo, reFungibleBalance, tokenUrl } = useSchema(account, collectionId, tokenId);
   const [tokenPriceForSale, setTokenPriceForSale] = useState<string>('');
   const { buyFee, cancelStep, deposited, escrowAddress, formatKsmBalance, getFee, kusamaBalance, readyToAskPrice, sendCurrentUserAction, setPrice, setReadyToAskPrice, setWithdrawAmount, tokenAsk, tokenInfo, transferStep, withdrawAmount } = useMarketplaceStages(account, collectionInfo, tokenId);
 
@@ -82,22 +82,8 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
     }, 1000);
   }, [setReadyToAskPrice, sendCurrentUserAction]);
 
-  console.log('tokenInfo', tokenInfo, 'tokenAsk', tokenAsk, 'uOwnIt', uOwnIt, 'uSellIt', uSellIt);
-
   return (
     <div className='toke-details'>
-      <Header as='h1'>
-        { tokenName && (
-          <span>
-            {tokenName.value} - {tokenId}
-          </span>
-        )}
-        { (!attributes || !tokenName) && (
-          <span>
-            {tokenId}
-          </span>
-        )}
-      </Header>
       <a
         className='go-back'
         href='/'
@@ -175,7 +161,7 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
               <Header as='h4'>You own it!</Header>
             )}
             { uSellIt && (
-              <Header as='h4'>You're selling it!</Header>
+              <Header as='h4'>You`re selling it!</Header>
             )}
             { (!uOwnIt && tokenInfo && tokenInfo.Owner && tokenInfo.Owner.toString() === escrowAddress && !tokenAsk?.owner) && (
               <Header as='h5'>The owner is Escrow</Header>
