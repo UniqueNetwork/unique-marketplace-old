@@ -70,12 +70,11 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
 
     const info: TokenDetailsInterface = await getTokenInfo(collectionInfo, tokenId);
 
-    console.log('info', info);
-
     setTokenInfo(info);
     const ask = await getTokenAsk(collectionInfo.id, tokenId);
 
-    await getUserDeposit();
+    // this was moved to useEffect
+    // await getUserDeposit();
 
     // the token is mine
     if (info?.Owner?.toString() === escrowAddress) {
@@ -90,7 +89,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
     }
 
     send('WAIT_FOR_USER_ACTION');
-  }, [collectionInfo, getTokenInfo, account, getUserDeposit, send, getTokenAsk, tokenId, getDepositor]);
+  }, [collectionInfo, getTokenInfo, account, send, getTokenAsk, tokenId, getDepositor]);
 
   const getFee = useCallback((price: BN): BN => {
     return price.muln(commission).div(new BN(100));
