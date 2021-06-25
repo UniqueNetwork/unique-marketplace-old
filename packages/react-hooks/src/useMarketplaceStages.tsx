@@ -70,6 +70,8 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
 
     const info: TokenDetailsInterface = await getTokenInfo(collectionInfo, tokenId);
 
+    console.log('info', info);
+
     setTokenInfo(info);
     const ask = await getTokenAsk(collectionInfo.id, tokenId);
 

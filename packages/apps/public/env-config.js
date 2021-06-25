@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 window.processEnv = {
-  canAddCollections: false,
-  canCreateCollection: false,
-  canCreateToken: false,
+  canAddCollections: true,
+  canCreateCollection: true,
+  canCreateToken: true,
   canEditCollection: false,
   canEditToken: false,
   commission: 10,

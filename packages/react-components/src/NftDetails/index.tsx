@@ -163,7 +163,7 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
                 { (!uOwnIt && !transferStep && tokenAsk) && lowBalanceToBuy && (
                   <div className='warning-block'>Your balance is too low to pay fees. <a href='https://t.me/unique2faucetbot'
                     rel='noreferrer nooperer'
-                    target='_blank'>Get testUnq here</a></div>
+                    target='_blank'>Get testUNQ here</a></div>
                 )}
                 { (!uOwnIt && !transferStep && tokenAsk) && lowKsmBalanceToBuy && (
                   <div className='warning-block'>Your balance is too low to buy</div>
@@ -175,7 +175,7 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
               <Header as='h4'>You own it!</Header>
             )}
             { uSellIt && (
-              <Header as='h4'>You selling it!</Header>
+              <Header as='h4'>You're selling it!</Header>
             )}
             { (!uOwnIt && tokenInfo && tokenInfo.Owner && tokenInfo.Owner.toString() === escrowAddress && !tokenAsk?.owner) && (
               <Header as='h5'>The owner is Escrow</Header>
@@ -239,9 +239,9 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
             { (showTransferForm && collectionInfo) && (
               <TransferModal
                 account={account}
-                balance={reFungibleBalance}
                 closeModal={setShowTransferForm.bind(null, false)}
                 collection={collectionInfo}
+                reFungibleBalance={reFungibleBalance}
                 tokenId={tokenId}
                 updateTokens={onTransferSuccess}
               />

@@ -155,9 +155,9 @@ function NftWallet ({ account, addCollection, collections, removeCollectionFromL
       { openTransfer && openTransfer.tokenId && openTransfer.collection && (
         <TransferModal
           account={account}
-          balance={openTransfer.balance}
           closeModal={setOpenTransfer.bind(null, null)}
           collection={openTransfer.collection}
+          reFungibleBalance={openTransfer.balance}
           tokenId={openTransfer.tokenId}
           updateTokens={updateTokens}
         />
