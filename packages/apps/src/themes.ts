@@ -21,7 +21,7 @@ export const nf3Theme: ThemeDef = {
 };
 
 export const luvTheme: ThemeDef = {
-  ip: '18.206.14.88',
+  domain: 'luvnft.com',
   theme: 'LUVNFT'
 };
 
