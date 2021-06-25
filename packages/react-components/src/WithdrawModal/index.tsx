@@ -58,7 +58,7 @@ function WithdrawModal ({ account, closeModal, contractInstance, deposited, upda
       size='tiny'
     >
       <Modal.Header>
-        <h2>Transfer NFT Token</h2>
+        <h2>Withdraw KSM from the deposit to your account</h2>
       </Modal.Header>
       <Modal.Content image>
         <Form className='transfer-form'>

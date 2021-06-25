@@ -173,6 +173,10 @@ export function useNftContract (account: string): useNftContractInterface {
     addExistingContract();
   }, [addExistingContract]);
 
+  useEffect(() => {
+    void getUserDeposit();
+  }, [getUserDeposit]);
+
   return {
     abi,
     contractInstance,

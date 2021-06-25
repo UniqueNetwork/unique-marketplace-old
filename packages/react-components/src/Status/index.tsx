@@ -212,6 +212,7 @@ export default React.memo(styled(Status)`
 
   .dismiss {
     margin-bottom: 0.25rem;
+    background: var(--header-background);
 
     .ui--Button {
       border: 1px solid white;

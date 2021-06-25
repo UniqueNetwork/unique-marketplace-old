@@ -24,7 +24,7 @@ interface Props {
 function PaymentInfo ({ accountId, className = '', extrinsic }: Props): React.ReactElement<Props> | null {
   const { api } = useApi();
   const [dispatchInfo, setDispatchInfo] = useState<RuntimeDispatchInfo | null>(null);
-  const balances = useCall<DeriveBalancesAll>(api.derive.balances.all, [accountId]);
+  const balances = useCall<DeriveBalancesAll>(api.derive.balances?.all, [accountId]);
   const mountedRef = useIsMountedRef();
 
   useEffect((): void => {
@@ -45,18 +45,24 @@ function PaymentInfo ({ accountId, className = '', extrinsic }: Props): React.Re
     return null;
   }
 
+  const isFeeError = api.consts.balances && !api.tx.balances?.transfer.is(extrinsic) && balances?.accountId.eq(accountId) && (
+    balances.availableBalance.lte(dispatchInfo.partialFee) ||
+    balances.freeBalance.sub(dispatchInfo.partialFee).lte(api.consts.balances.existentialDeposit)
+  );
+
   return (
     <>
       <Expander
         className={className}
         summary={
           <Trans i18nKey='feesForSubmission'>
-            Fees of <span className='highlight'>{(parseFloat(dispatchInfo.partialFee.toString()) / Math.pow(10, 15)).toString()} testUNQ</span> will be applied to the submission
-            {/* Fees of <span className='highlight'>{formatBalance(dispatchInfo.partialFee, { decimals: 15 })}</span> will be applied to the submission */}
+            Fees of <span className='highlight'>{
+              dispatchInfo.partialFee.gt(new BN(1000000000)) ? (parseFloat(dispatchInfo.partialFee.toString()) / Math.pow(10, 15)).toString() : (parseFloat(dispatchInfo.partialFee.toString()) / Math.pow(10, 15)).toFixed(15)
+            } testUNQ</span> will be applied to the submission
           </Trans>
         }
       />
-      {api.consts.balances && !api.tx.balances?.transfer.is(extrinsic) && balances?.accountId.eq(accountId) && balances.availableBalance.sub(dispatchInfo.partialFee).lte(api.consts.balances.existentialDeposit) && (
+      {isFeeError && (
         <MarkWarning content={'The account does not have enough free funds (excluding locked/bonded/reserved) available to cover the transaction fees without dropping the balance below the account existential amount.'} />
       )}
     </>
