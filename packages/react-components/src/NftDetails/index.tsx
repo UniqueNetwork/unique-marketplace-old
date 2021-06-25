@@ -4,7 +4,7 @@
 import './styles.scss';
 
 import BN from 'bn.js';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
@@ -36,6 +36,7 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
   const [showTransferForm, setShowTransferForm] = useState<boolean>(false);
   const { balance } = useBalance(account);
   const { hex2a } = useDecoder();
+  const [isOwnerEscrow, setIsOwnerEscrow] = useState<boolean>(false);
   const { attributes, collectionInfo, reFungibleBalance, tokenUrl } = useSchema(account, collectionId, tokenId);
   const [tokenPriceForSale, setTokenPriceForSale] = useState<string>('');
   const { buyFee, cancelStep, deposited, escrowAddress, formatKsmBalance, getFee, kusamaBalance, readyToAskPrice, sendCurrentUserAction, setPrice, setReadyToAskPrice, setWithdrawAmount, tokenAsk, tokenInfo, transferStep, withdrawAmount } = useMarketplaceStages(account, collectionInfo, tokenId);
@@ -83,6 +84,12 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
       sendCurrentUserAction('ASK_PRICE_FAIL');
     }, 1000);
   }, [setReadyToAskPrice, sendCurrentUserAction]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setIsOwnerEscrow(!!(!uOwnIt && tokenInfo && tokenInfo.Owner && tokenInfo.Owner.toString() === escrowAddress && !tokenAsk?.owner));
+    }, 3000);
+  }, [escrowAddress, tokenAsk, tokenInfo, uOwnIt]);
 
   return (
     <div className='toke-details'>
@@ -165,7 +172,7 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
             { uSellIt && (
               <Header as='h4'>You`re selling it!</Header>
             )}
-            { (!uOwnIt && tokenInfo && tokenInfo.Owner && tokenInfo.Owner.toString() === escrowAddress && !tokenAsk?.owner) && (
+            { isOwnerEscrow && (
               <Header as='h5'>The owner is Escrow</Header>
             )}
 
