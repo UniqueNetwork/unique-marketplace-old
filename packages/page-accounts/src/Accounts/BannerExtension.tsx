@@ -5,7 +5,7 @@ import { detect } from 'detect-browser';
 import React, { useRef } from 'react';
 import { Trans } from 'react-i18next';
 
-import useExtensionCounter from '@polkadot/app-settings/useCounter';
+import useExtensionCounter from './useCounter';
 import { availableExtensions } from '@polkadot/apps-config';
 import { isWeb3Injected } from '@polkadot/extension-dapp';
 import { onlyOnWeb } from '@polkadot/react-api/hoc';

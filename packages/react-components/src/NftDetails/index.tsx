@@ -47,6 +47,8 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
   // sponsoring is enabled
   // const lowBalanceToSell = !!(saleFee && !balance?.free.gte(saleFee));
 
+  console.log('lowBalanceToBuy', lowBalanceToBuy, 'buyFee', buyFee, 'balance?.free', balance?.free.toString(), 'gte', balance?.free.gte(buyFee || new BN(0)));
+
   const goBack = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     setShouldUpdateTokens && setShouldUpdateTokens('all');
