@@ -103,6 +103,7 @@
     "webpack-manifest-plugin": "^3.0.0"
   },
   "dependencies": {
+    "@polkadot/api-contract": "^4.15.1",
     "@types/lodash": "^4.14.168",
     "@types/lodash.memoize": "^4.1.6",
     "@types/react-infinite-scroller": "^1.2.1",
