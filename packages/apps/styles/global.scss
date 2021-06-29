@@ -686,3 +686,16 @@ button.ui.button,
     }
   }
 }
+.modalDescription{
+  margin: 0 !important;
+  div {
+    p{
+        margin: 0;
+        color: var(--title-color);
+        opacity: 0.7;
+        font-family: var(--font-roboto);
+        padding: 0.3rem 1.5rem 0px 1.5rem !important;
+    }
+  }
+}
+

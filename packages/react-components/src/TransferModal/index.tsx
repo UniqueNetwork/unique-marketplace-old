@@ -54,6 +54,7 @@ function TransferModal ({ account, closeModal, collection, reFungibleBalance, to
       setRecipient(value);
     } catch (e) {
       setIsAddressError(true);
+      setRecipient(undefined);
     }
   }, [setIsAddressError, setRecipient]);
 
@@ -90,8 +91,6 @@ function TransferModal ({ account, closeModal, collection, reFungibleBalance, to
   useEffect(() => {
     void checkBalanceEnough();
   }, [checkBalanceEnough]);
-
-  console.log('balanceTooLow', balanceTooLow);
 
   return (
     <Modal
@@ -141,6 +140,14 @@ function TransferModal ({ account, closeModal, collection, reFungibleBalance, to
             target='_blank'>Get testUNQ here.</a></div>
         )}
       </Modal.Content>
+      <Modal.Description className='modalDescription'>
+        <div >
+          <p>Be careful, the transaction cannot be reverted.</p>
+          <p>  Make sure to use the Substrate address created with polkadot.js or this marketplace.</p>
+          <p> Do not use address of third party wallets, exchanges or hardware signers, like ledger nano.</p>
+        </div>
+      </Modal.Description>
+
       <Modal.Actions>
         <Button
           content='Transfer token'
