@@ -141,9 +141,9 @@ function TransferModal ({ account, closeModal, collection, reFungibleBalance, to
         )}
       </Modal.Content>
       <Modal.Description className='modalDescription'>
-        <div >
-          <p>Be careful, the transaction cannot be reverted.</p>
-          <p>  Make sure to use the Substrate address created with polkadot.js or this marketplace.</p>
+        <div>
+          <p> Be careful, the transaction cannot be reverted.</p>
+          <p> Make sure to use the Substrate address created with polkadot.js or this marketplace.</p>
           <p> Do not use address of third party wallets, exchanges or hardware signers, like ledger nano.</p>
         </div>
       </Modal.Description>
