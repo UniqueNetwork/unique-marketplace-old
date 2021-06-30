@@ -3,12 +3,15 @@
 
 import './styles.scss';
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form/Form';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button';
 import Modal from 'semantic-ui-react/dist/commonjs/modules/Modal/Modal';
 
+import envConfig from '@polkadot/apps-config/envConfig';
 import { Input } from '@polkadot/react-components';
+
+const { decimals, minPrice } = envConfig;
 
 interface Props {
   closeModal: () => void;
@@ -19,6 +22,32 @@ interface Props {
 
 function SetPriceModal (props: Props): React.ReactElement<Props> {
   const { closeModal, onSavePrice, setTokenPriceForSale, tokenPriceForSale } = props;
+
+  const digitsLenFromIndexExceeded = useCallback((index: number, price: string): boolean => {
+    return price.substr(index + 1, price.length).length > decimals;
+  }, []);
+
+  const onSetPrice = useCallback((price: string) => {
+    if (minPrice && parseFloat(price) < minPrice && parseFloat(price) > 0) {
+      return;
+    }
+
+    const commaIndex = price.indexOf(',');
+    const dotIndex = price.indexOf('.');
+    let exceeded = false;
+
+    if (commaIndex !== -1) {
+      exceeded = digitsLenFromIndexExceeded(commaIndex, price);
+    } else if (dotIndex !== -1) {
+      exceeded = digitsLenFromIndexExceeded(dotIndex, price);
+    }
+
+    if (exceeded) {
+      return;
+    }
+
+    setTokenPriceForSale(price);
+  }, [digitsLenFromIndexExceeded, setTokenPriceForSale]);
 
   return (
     <Modal
@@ -37,7 +66,7 @@ function SetPriceModal (props: Props): React.ReactElement<Props> {
               autoFocus
               label={'in KSM'}
               min={0.01}
-              onChange={setTokenPriceForSale}
+              onChange={onSetPrice}
               type='number'
               value={tokenPriceForSale}
             />

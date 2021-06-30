@@ -106,8 +106,6 @@ export function useNftContract (account: string): useNftContractInterface {
         if (askId !== 0) {
           const askResult = await contractInstance.query.getAskById(contractAddress, { gasLimit: maxGas, value }, askId) as unknown as AskOutputInterface;
 
-          console.log('askResult', askResult);
-
           if (askResult.output) {
             const askOwnerAddress = keyring.encodeAddress(askResult.output[4].toString());
             const ask = {
