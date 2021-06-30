@@ -78,8 +78,6 @@ function TransferModal ({ account, closeModal, collection, reFungibleBalance, to
     if (account && recipient) {
       const transferFee = await api.tx.nft.transfer(recipient, collection.id, tokenId, (tokenPart * Math.pow(10, decimalPoints))).paymentInfo(account) as { partialFee: BN };
 
-      console.log('transferFee', transferFee, 'balance', balance?.free, 'existentialDeposit', api.consts.balances.existentialDeposit);
-
       if (transferFee && (!balance?.free || balance?.free.sub(transferFee.partialFee).lt(api.consts.balances.existentialDeposit))) {
         setBalanceTooLow(true);
       } else {
