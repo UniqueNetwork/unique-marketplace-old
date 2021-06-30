@@ -15,17 +15,31 @@ import { AppProps as Props } from '@polkadot/react-components/types';
 import TradeHistory from './containers/TradeHistory';
 
 function App ({ account, basePath }: Props): React.ReactElement<Props> {
-  const items = useMemo(() => [
-    {
-      isRoot: true,
-      name: 'my-trades',
-      text: 'My trades'
-    },
-    {
-      name: 'all-trades',
-      text: 'All trades'
+  const items = useMemo(() => {
+    if (account) {
+      return [
+        {
+          isRoot: true,
+          name: 'all-trades',
+          text: 'All trades'
+        },
+        {
+          name: 'my-trades',
+          text: 'My trades'
+        }
+      ];
+    } else {
+      return [
+        {
+          isRoot: true,
+          name: 'all-trades',
+          text: 'All trades'
+        }
+      ];
     }
-  ], []);
+  }, [account]);
+
+  console.log('account', account);
 
   return (
     <main className='nft--App'>
@@ -38,11 +52,11 @@ function App ({ account, basePath }: Props): React.ReactElement<Props> {
         />
       </header>
       <Switch>
-        <Route path={`${basePath}/all-trades`}>
-          <TradeHistory />
+        <Route path={`${basePath}/my-trades`}>
+          <TradeHistory account={account} />
         </Route>
         <Route path={`${basePath}`}>
-          <TradeHistory account={account} />
+          <TradeHistory />
         </Route>
       </Switch>
     </main>
