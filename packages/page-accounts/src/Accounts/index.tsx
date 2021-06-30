@@ -22,6 +22,7 @@ import Ledger from '../modals/Ledger';
 import Multisig from '../modals/MultisigCreate';
 import Proxy from '../modals/ProxiedAdd';
 import Qr from '../modals/Qr';
+import RestoreFromSeed from '../modals/RestoreFromSeed';
 import { sortAccounts } from '../util';
 import Account from './Account';
 import BannerClaims from './BannerClaims';
@@ -49,6 +50,7 @@ function Overview ({ className = 'page-accounts', onStatusChange }: Props): Reac
   const { allAccounts } = useAccounts();
   const { isIpfs } = useIpfs();
   const [isCreateOpen, toggleCreate] = useToggle();
+  const [isRestoreOpen, toggleRestore] = useToggle();
   const [isImportOpen, toggleImport] = useToggle();
   const [isLedgerOpen, toggleLedger] = useToggle();
   const [isMultisigOpen, toggleMultisig] = useToggle();
@@ -150,6 +152,12 @@ function Overview ({ className = 'page-accounts', onStatusChange }: Props): Reac
           onStatusChange={onStatusChange}
         />
       )}
+      {isRestoreOpen && (
+        <RestoreFromSeed
+          onClose={toggleRestore}
+          onStatusChange={onStatusChange}
+        />
+      )}
       {isImportOpen && (
         <ImportModal
           onClose={toggleImport}
@@ -187,6 +195,11 @@ function Overview ({ className = 'page-accounts', onStatusChange }: Props): Reac
           content={'Restore JSON'}
           disabled={isIpfs}
           onClick={toggleImport}
+        />
+        <Button
+          content={'Restore from seed'}
+          disabled={isIpfs}
+          onClick={toggleRestore}
         />
         <Button
           content={'Add via Qr'}
