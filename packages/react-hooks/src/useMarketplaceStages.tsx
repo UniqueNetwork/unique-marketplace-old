@@ -73,6 +73,13 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
     setTokenInfo(info);
     const ask = await getTokenAsk(collectionInfo.id, tokenId);
 
+    if (ask && ask.price) {
+      const userDeposit = await getUserDeposit();
+      const needed = depositNeeded(userDeposit || new BN(0), ask.price);
+
+      console.log('price', ask.price, 'userDeposit', userDeposit?.toString(), 'needed', needed.toString());
+    }
+
     // this was moved to useEffect
     // await getUserDeposit();
 
@@ -92,7 +99,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
   }, [collectionInfo, getTokenInfo, account, send, getTokenAsk, tokenId, getDepositor]);
 
   const getFee = useCallback((price: BN): BN => {
-    return price.muln(commission).div(new BN(100));
+    return price.mul(new BN(commission)).div(new BN(100));
   }, []);
 
   const queueTransaction = useCallback((transaction: SubmittableExtrinsic, fail: string, start: string, success: string, update: string) => {
