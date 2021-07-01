@@ -22,7 +22,6 @@ import Ledger from '../modals/Ledger';
 import Multisig from '../modals/MultisigCreate';
 import Proxy from '../modals/ProxiedAdd';
 import Qr from '../modals/Qr';
-import RestoreFromSeed from '../modals/RestoreFromSeed';
 import { sortAccounts } from '../util';
 import Account from './Account';
 import BannerClaims from './BannerClaims';
@@ -153,9 +152,10 @@ function Overview ({ className = 'page-accounts', onStatusChange }: Props): Reac
         />
       )}
       {isRestoreOpen && (
-        <RestoreFromSeed
+        <CreateModal
           onClose={toggleRestore}
           onStatusChange={onStatusChange}
+          restoreFromSeed={true}
         />
       )}
       {isImportOpen && (
