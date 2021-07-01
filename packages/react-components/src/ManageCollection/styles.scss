@@ -51,6 +51,11 @@
         display: grid;
         grid-template-columns: 200px 200px 200px 1fr 24px 24px;
         grid-column-gap: var(--gap);
+        margin: 5px 0;
+
+        .td {
+          overflow: hidden;
+        }
       }
     }
   }
@@ -140,7 +145,8 @@
         .enum-attributes {
           min-height: 40px;
           overflow-x: auto;
-          line-height: 40px;
+          max-height: 100px;
+          line-height: 25px;
         }
       }
 
