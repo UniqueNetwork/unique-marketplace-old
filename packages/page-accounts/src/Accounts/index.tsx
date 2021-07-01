@@ -48,6 +48,7 @@ function Overview ({ className = 'page-accounts', onStatusChange }: Props): Reac
   const { allAccounts } = useAccounts();
   const { isIpfs } = useIpfs();
   const [isCreateOpen, toggleCreate] = useToggle();
+  const [isRestoreOpen, toggleRestore] = useToggle();
   const [isImportOpen, toggleImport] = useToggle();
   const [isLedgerOpen, toggleLedger] = useToggle();
   const [isMultisigOpen, toggleMultisig] = useToggle();
@@ -149,6 +150,13 @@ function Overview ({ className = 'page-accounts', onStatusChange }: Props): Reac
           onStatusChange={onStatusChange}
         />
       )}
+      {isRestoreOpen && (
+        <CreateModal
+          onClose={toggleRestore}
+          onStatusChange={onStatusChange}
+          restoreFromSeed={true}
+        />
+      )}
       {isImportOpen && (
         <ImportModal
           onClose={toggleImport}
@@ -186,6 +194,11 @@ function Overview ({ className = 'page-accounts', onStatusChange }: Props): Reac
           content={'Restore JSON'}
           disabled={isIpfs}
           onClick={toggleImport}
+        />
+        <Button
+          content={'Restore from seed'}
+          disabled={isIpfs}
+          onClick={toggleRestore}
         />
         <Button
           content={'Add via Qr'}

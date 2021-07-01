@@ -29,6 +29,7 @@ interface Props extends ModalProps {
   className?: string;
   onClose: () => void;
   onStatusChange: (status: ActionStatus) => void;
+  restoreFromSeed?: boolean;
   seed?: string;
   type?: PairType;
 }
@@ -196,8 +197,9 @@ function createAccount (seed: string, derivePath: string, pairType: PairType, { 
   return status;
 }
 
-function Create ({ className = '', onClose, onStatusChange, seed: propsSeed, type: propsType }: Props): React.ReactElement<Props> {
+function Create ({ className = '', onClose, onStatusChange, restoreFromSeed, seed: propsSeed, type: propsType }: Props): React.ReactElement<Props> {
   const { api, isDevelopment, isEthereum } = useApi();
+  const [text, setText] = useState<string>('');
   const [{ address, derivePath, deriveValidation, isSeedValid, pairType, seed, seedType }, setAddress] = useState<AddressState>(() => generateSeed(
     propsSeed,
     isEthereum ? ETH_DEFAULT_PATH : '',
@@ -208,7 +210,7 @@ function Create ({ className = '', onClose, onStatusChange, seed: propsSeed, typ
   const [isBusy, setIsBusy] = useState(false);
   const [{ isNameValid, name }, setName] = useState({ isNameValid: false, name: '' });
   const [{ isPasswordValid, password }, setPassword] = useState({ isPasswordValid: false, password: '' });
-  const isFirstStepValid = !!address && isMnemonicSaved && !deriveValidation?.error && isSeedValid;
+  const isFirstStepValid = !!address && isMnemonicSaved && !deriveValidation?.error && isSeedValid && (restoreFromSeed ? text : true);
   const isSecondStepValid = isNameValid && isPasswordValid;
   const isValid = isFirstStepValid && isSecondStepValid;
 
@@ -224,10 +226,13 @@ function Create ({ className = '', onClose, onStatusChange, seed: propsSeed, typ
   ));
 
   const _onChangeSeed = useCallback(
-    (newSeed: string) => setAddress(
-      updateAddress(newSeed, derivePath, seedType, pairType)
-    ),
-    [derivePath, pairType, seedType]
+    (newSeed: string) => {
+      restoreFromSeed && setText(newSeed);
+      setAddress(
+        updateAddress(newSeed, derivePath, seedType, pairType)
+      );
+    },
+    [derivePath, pairType, seedType, restoreFromSeed]
   );
 
   const _selectSeedType = useCallback(
@@ -275,7 +280,7 @@ function Create ({ className = '', onClose, onStatusChange, seed: propsSeed, typ
   return (
     <Modal
       className={className}
-      header={'Add an account via seed {{step}}/{{STEPS_COUNT}}'.replace('{{STEPS_COUNT}}', STEPS_COUNT.toString()).replace('{{step}}', step.toString())}
+      header={`${restoreFromSeed ? 'Restore an account from seed' : 'Add an account via seed'} ${'{{step}}/{{STEPS_COUNT}}'.replace('{{STEPS_COUNT}}', STEPS_COUNT.toString()).replace('{{step}}', step.toString())}` }
       size='small'
     >
       <Modal.Content>
@@ -286,13 +291,14 @@ function Create ({ className = '', onClose, onStatusChange, seed: propsSeed, typ
               fullLength
               isEditableName={false}
               noDefaultNameOpacity
-              value={isSeedValid ? address : ''}
+              value={restoreFromSeed ? text === '' ? '' : isSeedValid ? address : '' : isSeedValid ? address : ''}
             />
           </Modal.Column>
         </Modal.Columns>
         {step === 1 && <>
           <div>
             <TextArea
+              className={restoreFromSeed ? 'textRow' : ''}
               help={isEthereum
                 ? 'Your ethereum key pair is derived from your private key. Don\'t divulge this key.'
                 : 'The private key for your account is derived from this seed. This seed must be kept secret as anyone in its possession has access to the funds of this account. If you validate, use the seed of the session account as the "--key" parameter of your node.'}
@@ -308,20 +314,26 @@ function Create ({ className = '', onClose, onStatusChange, seed: propsSeed, typ
                       : 'seed (hex or string)'
               }
               onChange={_onChangeSeed}
-              seed={seed}
+              seed={restoreFromSeed ? text : seed}
               withLabel
             >
-              <CopyButton
-                className='copyMoved'
-                type={seedType === 'bip' ? 'mnemonic' : seedType === 'raw' ? isEthereum ? 'private key' : 'seed' : 'raw seed'}
-                value={seed}
-              />
-              <Dropdown
-                defaultValue={seedType}
-                isButton
-                onChange={_selectSeedType}
-                options={seedOpt.current}
-              />
+              { restoreFromSeed
+                ? null
+                : (
+                  <>
+                    <CopyButton
+                      className='copyMoved'
+                      type={seedType === 'bip' ? 'mnemonic' : seedType === 'raw' ? isEthereum ? 'private key' : 'seed' : 'raw seed'}
+                      value={seed}
+                    />
+                    <Dropdown
+                      defaultValue={seedType}
+                      isButton
+                      onChange={_selectSeedType}
+                      options={seedOpt.current}
+                    />
+                  </>) }
+
             </TextArea>
             <p>{'The secret seed value for this account. Ensure that you keep this in a safe place, with access to the seed you can re-create the account.'}</p>
           </div>
@@ -476,5 +488,8 @@ export default React.memo(styled(Create)`
         font-weight: var(--font-weight-normal);
       }
     }
+  }
+    .textRow textarea{
+    width: 100% !important;
   }
 `);
