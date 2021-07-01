@@ -270,20 +270,24 @@ function ManageOnChainSchema (props: Props): React.ReactElement<Props> {
                     {attribute.values.join(', ')}
                   </div>
                 </div>
-                <div className='td action'>
-                  <img
-                    alt='edit'
-                    onClick={editAttribute.bind(null, attribute)}
-                    src={pencil as string}
-                  />
-                </div>
-                <div className='td action'>
-                  <img
-                    alt='delete'
-                    onClick={deleteAttribute.bind(null, attribute)}
-                    src={trash as string}
-                  />
-                </div>
+                { isAdmin && (
+                  <>
+                    <div className='td action'>
+                      <img
+                        alt='edit'
+                        onClick={editAttribute.bind(null, attribute)}
+                        src={pencil as string}
+                      />
+                    </div>
+                    <div className='td action'>
+                      <img
+                        alt='delete'
+                        onClick={deleteAttribute.bind(null, attribute)}
+                        src={trash as string}
+                      />
+                    </div>
+                  </>
+                )}
               </div>
             );
           })}
@@ -324,20 +328,24 @@ function ManageOnChainSchema (props: Props): React.ReactElement<Props> {
                   values={currentAttributeValues}
                 />
               </div>
-              <div className='td no-padded'>
-                <img
-                  alt={'Save'}
-                  onClick={onSaveItem}
-                  src={floppy as string}
-                />
-              </div>
-              <div className='td no-padded'>
-                <img
-                  alt={'Cancel'}
-                  onClick={onCancelSavingItem}
-                  src={close as string}
-                />
-              </div>
+              { isAdmin && (
+                <>
+                  <div className='td no-padded'>
+                    <img
+                      alt={'Save'}
+                      onClick={onSaveItem}
+                      src={floppy as string}
+                    />
+                  </div>
+                  <div className='td no-padded'>
+                    <img
+                      alt={'Cancel'}
+                      onClick={onCancelSavingItem}
+                      src={close as string}
+                    />
+                  </div>
+                </>
+              )}
             </div>
           )}
         </div>
