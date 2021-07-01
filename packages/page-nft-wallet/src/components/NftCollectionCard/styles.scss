@@ -5,6 +5,12 @@
   }
 
   .ui--Expander-content {
+
+    .expander-inner {
+      max-height: 195px;
+      overflow: auto;
+    }
+
     .token-table {
       padding-left: 50px;
     }
