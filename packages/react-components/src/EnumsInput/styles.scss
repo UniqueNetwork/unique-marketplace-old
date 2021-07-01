@@ -5,8 +5,8 @@
   width: 100%;
   padding: 4px 8px;
   font-family: var(--font-roboto) var(--font-mono);
-  overflow: hidden;
-  overflow-x: auto;
+  overflow-y: scroll;
+  max-height: 100px;
   // -ms-overflow-style: none;  /* IE and Edge */
   // scrollbar-width: none;  /* Firefox */
 
