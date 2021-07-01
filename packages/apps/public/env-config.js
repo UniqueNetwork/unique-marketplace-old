@@ -17,7 +17,7 @@ window.processEnv = {
   minPrice: 0.000001,
   quoteId: 2,
   showMarketActions: true,
-  uniqueCollectionIds: ['18', '23', '25'],
+  uniqueCollectionIds: ['23', '25'],
   value: 0,
   walletMode: false,
   wssUrl: 'wss://testnet2.uniquenetwork.io'
