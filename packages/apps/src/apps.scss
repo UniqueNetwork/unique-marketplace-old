@@ -119,7 +119,12 @@
   border: 1px solid var(--link-color);
   color: var(--link-color);
   padding: 5px;
+  border-radius: var(--bradius) !important;
+  text-transform: lowercase;
   font: 400 16px/24px var(--font-roboto);
+  &:first-letter {
+    text-transform: uppercase;
+  }
 }
 .noAccount {
   background-color: #ffb05642;
