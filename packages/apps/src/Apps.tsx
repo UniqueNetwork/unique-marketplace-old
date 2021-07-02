@@ -30,6 +30,7 @@ import ScrollToTop from './ScrollToTop';
 import WarmUp from './WarmUp';
 
 export const PORTAL_ID = 'portals';
+
 const { walletMode } = envConfig;
 
 const NOT_FOUND: Route = {
@@ -56,6 +57,7 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
     () => getSystemChainColor(systemChain, systemName),
     [systemChain, systemName]
   );
+
   const { Component, display: { needsApi }, name } = useMemo(
     (): Route => {
       const app = location.pathname.slice(1) || '';
@@ -70,7 +72,6 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
 
   return (
     <>
-
       <GlobalStyle uiHighlight={uiHighlight} />
       <ScrollToTop />
       <div className={`app-wrapper theme--${theme.theme} ${className}`}>
@@ -88,6 +89,14 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
             )
             : (
               <>
+                {(!account && !currentLocation) && (
+                  <div className='noAccount'>
+                    <p> Some features are currently hidden and will only become available once you connect your wallet.  </p>
+                    <p> You can create new or add your existing substrate account on the account page
+                      <span> account page</span>
+                    </p>
+                  </div>
+                )}
                 <Suspense fallback='...'>
                   <ErrorBoundary trigger={name}>
                     {missingApis.length
@@ -159,20 +168,12 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                           </header>
                           <main className='app-main'>
                             <div className='app-container'>
-                              {account || !!currentLocation
-                                ? <Component
-                                  account={account}
-                                  basePath={`/${name}`}
-                                  location={location}
-                                  onStatusChange={queueAction}
-                                />
-                                : <div className='noAccount'>
-                                  <p> Some features are currently hidden and will only become available once you connect your wallet.  </p>
-                                  <p> You can create new or add your existing substrate account on the account page
-                                    <span> account page</span>
-                                  </p>
-                                </div>
-                              }
+                              <Component
+                                account={account}
+                                basePath={`/${name}`}
+                                location={location}
+                                onStatusChange={queueAction}
+                              />
                               <ConnectingOverlay />
                               <div id={PORTAL_ID} />
                             </div>
