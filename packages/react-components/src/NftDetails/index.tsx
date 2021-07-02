@@ -4,7 +4,7 @@
 import './styles.scss';
 
 import BN from 'bn.js';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
@@ -36,13 +36,13 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
   const [showTransferForm, setShowTransferForm] = useState<boolean>(false);
   const { balance } = useBalance(account);
   const { hex2a } = useDecoder();
-  const [isOwnerEscrow, setIsOwnerEscrow] = useState<boolean>(false);
   const { attributes, collectionInfo, reFungibleBalance, tokenUrl } = useSchema(account, collectionId, tokenId);
   const [tokenPriceForSale, setTokenPriceForSale] = useState<string>('');
-  const { buyFee, cancelStep, deposited, escrowAddress, formatKsmBalance, getFee, kusamaBalance, readyToAskPrice, sendCurrentUserAction, setPrice, setReadyToAskPrice, setWithdrawAmount, tokenAsk, tokenInfo, transferStep, withdrawAmount } = useMarketplaceStages(account, collectionInfo, tokenId);
+  const { buyFee, cancelStep, deposited, escrowAddress, formatKsmBalance, getFee, kusamaBalance, readyToAskPrice, sendCurrentUserAction, setPrice, setReadyToAskPrice, setWithdrawAmount, tokenAsk, tokenDepositor, tokenInfo, transferStep, withdrawAmount } = useMarketplaceStages(account, collectionInfo, tokenId);
 
   const uOwnIt = tokenInfo?.Owner?.toString() === account || (tokenAsk && tokenAsk.owner === account);
   const uSellIt = tokenAsk && tokenAsk.owner === account;
+  const isOwnerEscrow = !uOwnIt && tokenInfo && tokenInfo.Owner && tokenInfo.Owner.toString() === escrowAddress && tokenDepositor && (tokenAsk && tokenAsk.owner !== account);
   const lowBalanceToBuy = !!(buyFee && !balance?.free.gte(buyFee));
   const lowKsmBalanceToBuy = tokenAsk?.price && kusamaBalance?.free.add(deposited || new BN(0)).lte(tokenAsk.price);
   // sponsoring is enabled
@@ -82,12 +82,6 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
       sendCurrentUserAction('ASK_PRICE_FAIL');
     }, 1000);
   }, [setReadyToAskPrice, sendCurrentUserAction]);
-
-  useEffect(() => {
-    setTimeout(() => {
-      setIsOwnerEscrow(!!(!uOwnIt && tokenInfo && tokenInfo.Owner && tokenInfo.Owner.toString() === escrowAddress && !tokenAsk?.owner));
-    }, 3000);
-  }, [escrowAddress, tokenAsk, tokenInfo, uOwnIt]);
 
   return (
     <div className='toke-details'>
@@ -245,14 +239,14 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
             { !!(transferStep && transferStep >= 4) && (
               <BuySteps step={transferStep - 3} />
             )}
-            { readyToWithdraw && (
+            { (parseFloat(formatKsmBalance(deposited)) > 0 && readyToWithdraw) && (
               <Form className='transfer-form'>
                 <Form.Field>
                   <Input
                     autoFocus
                     className='isSmall'
                     defaultValue={(withdrawAmount || 0).toString()}
-                    isError={!!(!deposited || (withdrawAmount && parseFloat(withdrawAmount) > parseFloat(formatKsmBalance(deposited))))}
+                    isError={!!(withdrawAmount && parseFloat(withdrawAmount) > parseFloat(formatKsmBalance(deposited)))}
                     label={'KSM'}
                     max={parseFloat(formatKsmBalance(deposited))}
                     onChange={setWithdrawAmount}
@@ -264,11 +258,11 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
                   <div className='buttons'>
                     <Button
                       content={`Withdraw max ${formatKsmBalance(deposited)}`}
-                      onClick={deposited ? setWithdrawAmount.bind(null, formatKsmBalance(deposited)) : () => null}
+                      onClick={setWithdrawAmount.bind(null, formatKsmBalance(deposited))}
                     />
                     <Button
                       content='confirm withdraw'
-                      disabled={!deposited || !parseFloat(withdrawAmount) || (parseFloat(withdrawAmount) > parseFloat(formatKsmBalance(deposited)))}
+                      disabled={!parseFloat(withdrawAmount) || (parseFloat(withdrawAmount) > parseFloat(formatKsmBalance(deposited)))}
                       onClick={onConfirmWithdraw}
                     />
                   </div>
