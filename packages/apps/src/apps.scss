@@ -1,4 +1,4 @@
-@import '../styles/global.scss';
+@import "../styles/global.scss";
 
 .app-wrapper {
   background: var(--bg-page);
@@ -85,7 +85,6 @@
   display: flex;
 
   &--item {
-
   }
 
   .app-balance--item {
@@ -114,5 +113,25 @@
   img {
     margin-left: 8px;
     cursor: pointer;
+  }
+}
+.crateAccountBtn {
+  border: 1px solid var(--link-color);
+  color: var(--link-color);
+  padding: 5px;
+  font: 400 16px/24px var(--font-roboto);
+}
+.noAccount {
+  background-color: #ffb05642;
+  border-radius: 5px;
+  padding: 5px;
+  float: right;
+  color: #f58d17;
+  p {
+    margin: 0;
+
+    span {
+      color: var(--link-color);
+    }
   }
 }

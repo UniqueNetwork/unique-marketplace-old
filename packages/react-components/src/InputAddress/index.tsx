@@ -5,6 +5,8 @@ import type { KeyringOption$Type, KeyringOptions, KeyringSectionOption, KeyringS
 import type { Option } from './types';
 
 import React from 'react';
+import { NavLink } from 'react-router-dom';
+import { Menu } from 'semantic-ui-react';
 import store from 'store';
 
 import { withMulti, withObservable } from '@polkadot/react-api/hoc';
@@ -13,7 +15,6 @@ import { createOptionItem } from '@polkadot/ui-keyring/options/item';
 import { isNull, isUndefined } from '@polkadot/util';
 
 import Dropdown from '../Dropdown';
-import Static from '../Static';
 import { getAddressName } from '../util';
 import addressToAddress from '../util/toAddress';
 import createHeader from './createHeader';
@@ -141,13 +142,15 @@ class InputAddress extends React.PureComponent<Props, State> {
       // This is nasty, but since this things is non-functional, there is not much
       // we can do (well, wrap it, however that approach is deprecated here)
       return (
-        <Static
-          className={className}
-          help={help}
-          label={label}
-        >
-          No accounts are available for selection.
-        </Static>
+
+        <Menu.Item
+          active={location.pathname === '/accounts'}
+          as={NavLink}
+          className='crateAccountBtn'
+          name='Create or connect account'
+          to='/accounts'
+        />
+
       );
     }
 
