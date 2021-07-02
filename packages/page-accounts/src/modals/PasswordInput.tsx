@@ -3,7 +3,7 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 
-import { Password, PasswordStrength} from '@polkadot/react-components';
+import { Password, PasswordStrength } from '@polkadot/react-components';
 import { keyring } from '@polkadot/ui-keyring';
 
 type Props = {
@@ -36,7 +36,7 @@ export default function PasswordInput ({ onChange, onEnter }: Props): React.Reac
 
   const onPassword2Change = useCallback(
     (password2: string) => setPassword2({
-      isPass2Valid: keyring.isPassValid(password2) && (password2 === password1),
+      isPass2Valid: keyring.isPassValid(password2) && (password2 === password1) && (password2.length >= 6),
       password2
     }),
     [password1]
