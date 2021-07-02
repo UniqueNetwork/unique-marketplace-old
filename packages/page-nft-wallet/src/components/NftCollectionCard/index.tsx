@@ -171,7 +171,7 @@ function NftCollectionCard ({ account, canTransferTokens, collection, openTransf
             )}
           </div>
           <div className='tokens-count'>
-            <span>Total: {allTokensCount} {!allTokensCount || allTokensCount > 1 ? 'items' : 'item'} {tokensSelling.length ? `(own: ${ownTokensCount || 0}, selling: ${tokensSelling.length})` : `(own: ${ownTokensCount || 0})`}</span>
+            <span>Total: {allTokensCount} {!allTokensCount || allTokensCount > 1 ? 'items' : 'item'} {tokensSelling.length ? `(own: ${ownTokensCount || 0}, on sale: ${tokensSelling.length})` : `(own: ${ownTokensCount || 0})`}</span>
           </div>
           <div className='link-button'>
             { canEditCollection && (

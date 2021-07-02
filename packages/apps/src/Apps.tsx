@@ -90,7 +90,7 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
             : (
               <>
                 {(!account && !currentLocation) && (
-                  <div className='noAccount'>
+                  <div className='no-account'>
                     <p> Some features are currently hidden and will only become available once you connect your wallet.  </p>
                     <p> You can create new or add your existing substrate account on the
                       <Link to='accounts' > <span> account page</span> </Link >
