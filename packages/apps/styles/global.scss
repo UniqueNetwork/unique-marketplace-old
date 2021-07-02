@@ -1,3 +1,19 @@
+::-webkit-scrollbar{
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-thumb{
+  border-radius: 10px;
+  background: var(--dropdown-scrollbar-color);
+}
+::-webkit-scrollbar-thumb:hover{
+  background: var(--dropdown-scrollbar-color);
+}
+::-webkit-scrollbar-track{
+  border-radius: 10px;
+  background: var(--dropdown-scrollbar-track-color);
+}
+
 body {
   color: var(--text-color);
 
@@ -10,6 +26,7 @@ body {
 
   &:before, &:after {
     background: var(--bg-page) !important;
+
   }
 }
 
