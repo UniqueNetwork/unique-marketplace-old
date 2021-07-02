@@ -37,6 +37,7 @@ export interface MarketplaceStagesInterface {
   setTokenPriceForSale: (price: number) => void;
   setWithdrawAmount: (withdrawAmount: string) => void;
   tokenAsk: { owner: string, price: BN } | undefined;
+  tokenDepositor: string | undefined;
   tokenInfo: TokenDetailsInterface | undefined;
   tokenPriceForSale: number | undefined;
   transferStep: number;
@@ -48,6 +49,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
   const { api } = useApi();
   const [state, send] = useMachine(marketplaceStateMachine);
   const [withdrawAmount, setWithdrawAmount] = useState<string>('0');
+  const [tokenDepositor, setTokenDepositor] = useState<string>();
   const [tokenInfo, setTokenInfo] = useState<TokenDetailsInterface>();
   const [saleFee, setSaleFee] = useState<BN>();
   const [buyFee, setBuyFee] = useState<BN>();
@@ -71,14 +73,13 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
     const info: TokenDetailsInterface = await getTokenInfo(collectionInfo, tokenId);
 
     setTokenInfo(info);
-    const ask = await getTokenAsk(collectionInfo.id, tokenId);
+    const tokenDepositor = await getDepositor(collectionInfo.id, tokenId);
 
-    if (ask && ask.price) {
-      const userDeposit = await getUserDeposit();
-      const needed = depositNeeded(userDeposit || new BN(0), ask.price);
-
-      console.log('price', ask.price, 'userDeposit', userDeposit?.toString(), 'needed', needed.toString());
+    if (tokenDepositor) {
+      setTokenDepositor(tokenDepositor);
     }
+
+    const ask = await getTokenAsk(collectionInfo.id, tokenId);
 
     // this was moved to useEffect
     // await getUserDeposit();
@@ -86,8 +87,6 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
     // the token is mine
     if (info?.Owner?.toString() === escrowAddress) {
       if (!ask || !ask.price) {
-        const tokenDepositor = await getDepositor(collectionInfo.id, tokenId);
-
         if (tokenDepositor === account) {
           // the token is in escrow - waiting for deposit
           send('WAIT_FOR_DEPOSIT');
@@ -424,6 +423,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
     setTokenPriceForSale,
     setWithdrawAmount,
     tokenAsk,
+    tokenDepositor,
     tokenInfo,
     tokenPriceForSale,
     transferStep,
