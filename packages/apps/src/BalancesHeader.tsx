@@ -1,6 +1,7 @@
 // Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import BN from 'bn.js';
 import React, { memo, useCallback, useState } from 'react';
 import Popup from 'semantic-ui-react/dist/commonjs/modules/Popup';
 
@@ -19,12 +20,10 @@ function BalancesHeader ({ account }: { account?: string }): React.ReactElement<
     toggleWithdrawModal(false);
   }, []);
 
-  const balanceUpdate = deposited && parseFloat(formatKsmBalance(deposited)) > 0.000001 ? ArrowCircleUpRight : ArrowCircleUpRightGreen;
+  const balanceUpdate = deposited && deposited.div(new BN(1000000)).gt(new BN(1)) ? ArrowCircleUpRight : ArrowCircleUpRightGreen;
   const openModal = useCallback(() => {
-    if (deposited && parseFloat(formatKsmBalance(deposited)) >= 0.000001) {
-      toggleWithdrawModal(true);
-    }
-  }, []);
+    deposited && deposited.div(new BN(1000000)).gt(new BN(1)) && toggleWithdrawModal(true);
+  }, [deposited]);
 
   return (
     <div className='app-balances'>
