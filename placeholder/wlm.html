@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="theme-color" content="#000000">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="manifest" href="manifest.json">
   <title><%= htmlWebpackPlugin.options.PAGE_TITLE %></title>
   <link rel="preconnect" href="https://fonts.gstatic.com">
@@ -83,6 +84,32 @@
     color: #1DB0FF;
   }
 
+  .follow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    grid-column-gap: 12px;
+  }
+
+  @media screen and (max-width: 1024px) {
+    .container {
+      margin: 24px 0;
+      padding: 170px 16px;
+    }
+
+    h1 {
+      line-height: 48px;
+    }
+
+    .links {
+      display: block;
+    }
+
+    .follow {
+      margin-top: 14px;
+    }
+  }
+
 </style>
 <body>
   <div class="header">
@@ -98,32 +125,36 @@
     <p>
       New version of the White label market would be here soon, we are making some cool changes right now!
     </p>
-    <!--<p>
+    <p>
       Marketplace for Substrapunks and Chelobricks collections is life on <a href="http://unknft.io/">unknft.io</a>
-    </p>-->
+    </p>
     <h2>
       Thank you for being with us!
     </h2>
     <div class="links">
-      Stay tuned with our:
-      <a
-        href="https://t.me/Uniquechain"
-      >
-        <img
-          alt="telegram"
-          src="telegram.svg"
-        />
-        Telegram channel
-      </a>
-      <a
-        href="https://twitter.com/Unique_NFTchain"
-      >
-        <img
-          alt="twitter"
-          src="twiter.svg"
-        />
-        Twitter
-      </a>
+      <span>
+        Stay tuned with our:
+      </span>
+      <div class="follow">
+        <a
+          href="https://t.me/Uniquechain"
+        >
+          <img
+            alt="telegram"
+            src="telegram.svg"
+          />
+          Telegram channel
+        </a>
+        <a
+          href="https://twitter.com/Unique_NFTchain"
+        >
+          <img
+            alt="twitter"
+            src="twiter.svg"
+          />
+          Twitter
+        </a>
+      </div>
     </div>
   </div>
 </body>
