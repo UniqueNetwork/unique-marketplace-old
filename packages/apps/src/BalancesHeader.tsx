@@ -19,12 +19,12 @@ function BalancesHeader ({ account }: { account?: string }): React.ReactElement<
     toggleWithdrawModal(false);
   }, []);
 
-  const balanceUpdate = deposited && parseFloat(formatKsmBalance(deposited)) > 0 ? ArrowCircleUpRight : ArrowCircleUpRightGreen;
+  const balanceUpdate = deposited && parseFloat(formatKsmBalance(deposited)) > 0.000001 ? ArrowCircleUpRight : ArrowCircleUpRightGreen;
   const openModal = useCallback(() => {
     if (deposited && parseFloat(formatKsmBalance(deposited)) >= 0.000001) {
       toggleWithdrawModal(true);
     }
-  }, [deposited]);
+  }, []);
 
   return (
     <div className='app-balances'>
