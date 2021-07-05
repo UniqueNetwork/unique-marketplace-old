@@ -52,38 +52,51 @@ function WithdrawModal ({ account, closeModal, contractInstance, deposited, upda
 
   return (
     <Modal
-      className='unique-modal withdraw'
+      className='unique-modal withdraw modal-position'
       onClose={closeModal}
       open
       size='tiny'
     >
       <Modal.Header>
-        <h2>Withdraw KSM from the deposit to your account</h2>
+        <h2>Withdrawal from the market deposit to the your main Kusama account</h2>
+        <p className='help-text'> <i ></i><span>The amount of the commission is determined in the next step</span> </p>
       </Modal.Header>
       <Modal.Content image>
         <Form className='transfer-form'>
           <Form.Field>
-            <Input
-              autoFocus
-              className='isSmall'
-              defaultValue={(withdrawAmount || 0).toString()}
-              isError={!!(!deposited || (withdrawAmount && parseFloat(withdrawAmount) > parseFloat(formatKsmBalance(deposited))))}
-              label={'amount'}
-              max={parseFloat(formatKsmBalance(deposited))}
-              onChange={setWithdrawAmount}
-              type='number'
-              value={withdrawAmount}
-            />
+            <div className='deposit-flex'>
+              <div className='deposit-input'>
+                <Input
+                  autoFocus
+                  className='isSmall balance-number'
+                  defaultValue={(withdrawAmount || 0).toString()}
+                  isError={!!(!deposited || (withdrawAmount && parseFloat(withdrawAmount) > parseFloat(formatKsmBalance(deposited))))}
+                  label={'amount'}
+                  max={parseFloat(formatKsmBalance(deposited))}
+                  onChange={setWithdrawAmount}
+                  value={withdrawAmount}
+                />
+                <Button
+                  content='Max'
+                  onClick={deposited ? setWithdrawAmount.bind(null, formatKsmBalance(deposited)) : () => null}
+                />
+              </div>
+
+              <Input
+                className='isSmall ksm-text'
+                isReadOnly
+                label={'ksm'}
+                type='text'
+                value='KSM'
+              />
+            </div>
           </Form.Field>
         </Form>
       </Modal.Content>
       <Modal.Actions>
+
         <Button
-          content={`Withdraw max ${formatKsmBalance(deposited)}`}
-          onClick={deposited ? setWithdrawAmount.bind(null, formatKsmBalance(deposited)) : () => null}
-        />
-        <Button
-          content='confirm withdraw'
+          content='Confirm'
           disabled={!deposited || !parseFloat(withdrawAmount) || (parseFloat(withdrawAmount) > parseFloat(formatKsmBalance(deposited)))}
           onClick={revertMoney}
         />
