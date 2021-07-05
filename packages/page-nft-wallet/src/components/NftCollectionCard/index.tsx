@@ -43,7 +43,6 @@ function NftCollectionCard ({ account, canTransferTokens, collection, openTransf
   const [ownTokensCount, setOwnTokensCount] = useState<number>();
   const [allTokensCount, setAllTokensCount] = useState<number>();
   const [confirmDeleteCollection, setConfirmDeleteCollection] = useState<boolean>(false);
-  const [tokensOfCollection, setTokensOfCollection] = useState<string[]>([]);
   const [tokensOnPage, setTokensOnPage] = useState<string[]>([]);
   const [allMyTokens, setAllMyTokens] = useState<string[]>([]);
   const { getTokensOfCollection } = useCollections();
@@ -95,15 +94,16 @@ function NftCollectionCard ({ account, canTransferTokens, collection, openTransf
       return;
     }
 
-    const tokensOfCollection = (await getTokensOfCollection(collection.id, account)) as string[];
+    const tokens = (await getTokensOfCollection(collection.id, account)) as string[];
 
     if (cleanup.current) {
       return;
     }
 
-    setOwnTokensCount(tokensOfCollection.length);
-    setTokensOfCollection(tokensOfCollection);
-  }, [account, collection, getTokensOfCollection]);
+    setOwnTokensCount(tokens.length);
+    setAllMyTokens([...tokensSelling, ...tokens]);
+    setTokensOnPage([...tokensSelling, ...tokens].slice(0, perPage));
+  }, [account, collection, getTokensOfCollection, tokensSelling]);
 
   const toggleConfirmation = useCallback((status, e: React.MouseEvent<any>) => {
     e.stopPropagation();
@@ -144,18 +144,6 @@ function NftCollectionCard ({ account, canTransferTokens, collection, openTransf
       cleanup.current = true;
     };
   }, []);
-
-  useEffect(() => {
-    if (tokensOfCollection?.length) {
-      setAllMyTokens([...tokensSelling, ...tokensOfCollection]);
-    }
-  }, [tokensOfCollection, tokensSelling]);
-
-  useEffect(() => {
-    if (allMyTokens?.length && !tokensOnPage.length) {
-      setTokensOnPage(allMyTokens.slice(0, perPage));
-    }
-  }, [allMyTokens, tokensOnPage]);
 
   return (
     <Expander
