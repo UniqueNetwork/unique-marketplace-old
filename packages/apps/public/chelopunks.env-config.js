@@ -10,7 +10,7 @@ window.processEnv = {
   commission: 10,
   contractAddress: '5FgbNg55FCFT3j1KokxsHaEgp4wfnDMGazCLw3mqC359bY72',
   decimals: 6,
-  escrowAddress: '5FdzbgdBGRM5FDALrnSPRybWhqKv4eiy6QUpWUdBt3v3omAU',
+  escrowAddress: '5E4Mz8UYe5EaRuBgEStfikiX8GT2GvYetH7GirjSB8Fi1yaf',
   faviconPath: 'favicons/marketplace',
   kusamaDecimals: 12,
   maxGas: 1000000000000,
