@@ -357,6 +357,12 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
     setTokenInfo(info);
   }, [collectionInfo, getTokenInfo, tokenId]);
 
+  const updateTokenAsk = useCallback(() => {
+    if (collectionInfo) {
+      void getTokenAsk(collectionInfo.id, tokenId);
+    }
+  }, [collectionInfo, getTokenAsk, tokenId]);
+
   useEffect(() => {
     switch (true) {
       // on load - update token state
@@ -413,6 +419,10 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
       void getBuyFee();
     }
   }, [account, getBuyFee, getSaleFee]);
+
+  useEffect(() => {
+    updateTokenAsk();
+  }, [updateTokenAsk]);
 
   useEffect(() => {
     void updateTokenInfo();
