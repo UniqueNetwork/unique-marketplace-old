@@ -70,9 +70,6 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
       return;
     }
 
-    const info: TokenDetailsInterface = await getTokenInfo(collectionInfo, tokenId);
-
-    setTokenInfo(info);
     const tokenDepositor = await getDepositor(collectionInfo.id, tokenId);
 
     if (tokenDepositor) {
@@ -85,7 +82,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
     // await getUserDeposit();
 
     // the token is mine
-    if (info?.Owner?.toString() === escrowAddress) {
+    if (tokenInfo?.Owner?.toString() === escrowAddress) {
       if (!ask || !ask.price) {
         if (tokenDepositor === account) {
           // the token is in escrow - waiting for deposit
@@ -95,7 +92,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
     }
 
     send('WAIT_FOR_USER_ACTION');
-  }, [collectionInfo, getTokenInfo, account, send, getTokenAsk, tokenId, getDepositor]);
+  }, [collectionInfo, account, send, getTokenAsk, tokenId, tokenInfo, getDepositor]);
 
   const getFee = useCallback((price: BN): BN => {
     return price.mul(new BN(commission)).div(new BN(100));
@@ -348,6 +345,16 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
     return state.matches('cancelSell') || state.matches('waitForTokenRevert');
   }, [state]);
 
+  const updateTokenInfo = useCallback(async () => {
+    if (!collectionInfo) {
+      return;
+    }
+
+    const info: TokenDetailsInterface = await getTokenInfo(collectionInfo, tokenId);
+
+    setTokenInfo(info);
+  }, [collectionInfo, getTokenInfo, tokenId]);
+
   useEffect(() => {
     switch (true) {
       // on load - update token state
@@ -404,6 +411,10 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
       void getBuyFee();
     }
   }, [account, getBuyFee, getSaleFee]);
+
+  useEffect(() => {
+    void updateTokenInfo();
+  }, [updateTokenInfo]);
 
   return {
     buyFee,

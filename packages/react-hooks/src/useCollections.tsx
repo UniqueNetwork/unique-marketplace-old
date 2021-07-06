@@ -172,23 +172,22 @@ export function useCollections () {
 
         if ('error' in result) {
           setError(result);
+          setMyHold({});
         } else {
-          if (result) {
-            if (result.items.length) {
-              setMyHold((prevState: {[key: string]: HoldType[]}) => {
-                const newState = { ...prevState };
+          if (result?.items.length) {
+            const newState: {[key: string]: HoldType[]} = {};
 
-                result.items.forEach((hold: HoldType) => {
-                  if (!newState[hold.collectionId]) {
-                    newState[hold.collectionId] = [];
-                  }
+            result.items.forEach((hold: HoldType) => {
+              if (!newState[hold.collectionId]) {
+                newState[hold.collectionId] = [];
+              }
 
-                  newState[hold.collectionId].push(hold);
-                });
+              newState[hold.collectionId].push(hold);
+            });
 
-                return newState;
-              });
-            }
+            setMyHold(newState);
+          } else {
+            setMyHold({});
           }
         }
 

@@ -59,8 +59,6 @@ function NftWallet ({ account, addCollection, collections, removeCollectionFromL
         }
       });
 
-      console.log('tokensSellingByMe', tokensSellingByMe);
-
       setTokensSelling(tokensSellingByMe);
     }
   }, [account, offers]);

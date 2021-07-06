@@ -37,7 +37,7 @@ interface Props {
   tokensSelling: string[];
 }
 
-const perPage = 2;
+const perPage = 5;
 
 function NftCollectionCard ({ account, canTransferTokens, collection, onHold, openTransferModal, removeCollection, shouldUpdateTokens, tokensSelling }: Props): React.ReactElement<Props> {
   const [opened, setOpened] = useState(true);
