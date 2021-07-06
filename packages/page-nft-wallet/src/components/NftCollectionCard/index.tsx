@@ -103,9 +103,11 @@ function NftCollectionCard ({ account, canTransferTokens, collection, onHold, op
     }
 
     setOwnTokensCount(tokens.length);
-    setAllMyTokens([...tokensSelling, ...tokens]);
-    setTokensOnPage([...tokensSelling, ...tokens].slice(0, perPage));
-  }, [account, collection, getTokensOfCollection, tokensSelling]);
+    const holdingTokens = onHold.map((item) => item.tokenId);
+
+    setAllMyTokens([...tokensSelling, ...tokens, ...holdingTokens]);
+    setTokensOnPage([...tokensSelling, ...tokens, ...holdingTokens].slice(0, perPage));
+  }, [account, collection, getTokensOfCollection, onHold, tokensSelling]);
 
   const toggleConfirmation = useCallback((status, e: React.MouseEvent<any>) => {
     e.stopPropagation();
@@ -258,9 +260,11 @@ function NftCollectionCard ({ account, canTransferTokens, collection, onHold, op
                 canTransferTokens={canTransferTokens}
                 collection={collection}
                 key={token}
+                onHold={onHold}
                 openTransferModal={openTransferModal}
                 shouldUpdateTokens={shouldUpdateTokens}
                 token={token}
+                tokensSelling={tokensSelling}
               />
             ))}
           </div>

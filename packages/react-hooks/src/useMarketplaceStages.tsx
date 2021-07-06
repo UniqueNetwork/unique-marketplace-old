@@ -70,6 +70,8 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
       return;
     }
 
+    const info: TokenDetailsInterface = await getTokenInfo(collectionInfo, tokenId);
+
     const tokenDepositor = await getDepositor(collectionInfo.id, tokenId);
 
     if (tokenDepositor) {
@@ -82,7 +84,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
     // await getUserDeposit();
 
     // the token is mine
-    if (tokenInfo?.Owner?.toString() === escrowAddress) {
+    if (info?.Owner?.toString() === escrowAddress) {
       if (!ask || !ask.price) {
         if (tokenDepositor === account) {
           // the token is in escrow - waiting for deposit
@@ -92,7 +94,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
     }
 
     send('WAIT_FOR_USER_ACTION');
-  }, [collectionInfo, account, send, getTokenAsk, tokenId, tokenInfo, getDepositor]);
+  }, [collectionInfo, getTokenInfo, account, send, getTokenAsk, tokenId, getDepositor]);
 
   const getFee = useCallback((price: BN): BN => {
     return price.mul(new BN(commission)).div(new BN(100));
