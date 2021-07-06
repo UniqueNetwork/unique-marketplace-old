@@ -130,13 +130,18 @@
       width: 40px;
       height: 28px;
       padding: 3px;
-      right: 25px;
+      right: 10px;
       top: 7px;
       letter-spacing: 0px;
     }
   }
   .balance-number {
     width: 100%;
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
   }
   .ksm-text {
     margin-left: 10px;

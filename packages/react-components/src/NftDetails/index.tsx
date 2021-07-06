@@ -191,12 +191,7 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
                       onClick={sendCurrentUserAction.bind(null, 'BUY')}
                     />
                   )}
-                  { (parseFloat(formatKsmBalance(deposited)) > 0) && (
-                    <Button
-                      content='Withdraw ksm deposit'
-                      onClick={setReadyToWithdraw.bind(null, !readyToWithdraw)}
-                    />
-                  )}
+
                   { (uOwnIt && !uSellIt) && (
                     <Button
                       content='Sell'
