@@ -59,6 +59,10 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
           if (typeof collectionInfo?.DecimalPoints === 'number') {
             const balance = owner && owner.fraction.toNumber() / Math.pow(10, collectionInfo.DecimalPoints);
 
+            if (cleanup.current) {
+              return;
+            }
+
             setReFungibleBalance(balance || 0);
           }
         }
@@ -89,6 +93,10 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
     if (tokenId && collectionInfo) {
       const tokenDetailsData = await getTokenInfo(collectionInfo, tokenId.toString());
 
+      if (cleanup.current) {
+        return;
+      }
+
       setTokenDetails(tokenDetailsData);
     }
   }, [collectionInfo, getTokenInfo, tokenId]);
@@ -97,12 +105,20 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
     if (collectionInfo && tokenId) {
       const attrs = await getTokenAttributes(collectionInfo, tokenId.toString());
 
+      if (cleanup.current) {
+        return;
+      }
+
       setAttributes(attrs);
     }
   }, [collectionInfo, getTokenAttributes, tokenId]);
 
   const saveTokenImageUrl = useCallback(async (collectionInf: NftCollectionInterface, tokenId: string) => {
     const tokenImageUrl = await getTokenImageUrl(collectionInf, tokenId);
+
+    if (cleanup.current) {
+      return;
+    }
 
     setTokenUrl(tokenImageUrl);
   }, [getTokenImageUrl]);

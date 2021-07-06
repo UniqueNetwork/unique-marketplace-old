@@ -72,7 +72,6 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
 
     const info: TokenDetailsInterface = await getTokenInfo(collectionInfo, tokenId);
 
-    setTokenInfo(info);
     const tokenDepositor = await getDepositor(collectionInfo.id, tokenId);
 
     if (tokenDepositor) {
@@ -348,6 +347,16 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
     return state.matches('cancelSell') || state.matches('waitForTokenRevert');
   }, [state]);
 
+  const updateTokenInfo = useCallback(async () => {
+    if (!collectionInfo) {
+      return;
+    }
+
+    const info: TokenDetailsInterface = await getTokenInfo(collectionInfo, tokenId);
+
+    setTokenInfo(info);
+  }, [collectionInfo, getTokenInfo, tokenId]);
+
   useEffect(() => {
     switch (true) {
       // on load - update token state
@@ -404,6 +413,10 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
       void getBuyFee();
     }
   }, [account, getBuyFee, getSaleFee]);
+
+  useEffect(() => {
+    void updateTokenInfo();
+  }, [updateTokenInfo]);
 
   return {
     buyFee,

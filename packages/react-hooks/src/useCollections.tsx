@@ -38,6 +38,19 @@ export type OffersResponseType = {
   pageSize: number;
 }
 
+export type HoldType = {
+  collectionId: number;
+  tokenId: string;
+  owner: string;
+}
+
+export type HoldResponseType = {
+  items: HoldType[];
+  itemsCount: number;
+  page: number;
+  pageSize: number;
+}
+
 export type TradeType = {
   buyer?: string;
   collectionId: number;
@@ -63,7 +76,9 @@ export function useCollections () {
   const { fetchData } = useFetch();
   const [error, setError] = useState<ErrorType>();
   const [offers, setOffers] = useState<{[key: string]: OfferType}>({});
+  const [myHold, setMyHold] = useState<{[key: string]: HoldType[]}>({});
   const [offersLoading, setOffersLoading] = useState<boolean>(false);
+  const [holdLoading, setHoldLoading] = useState<boolean>(false);
   const [offersCount, setOffersCount] = useState<number>();
   const [trades, setTrades] = useState<TradeType[]>();
   const [tradesLoading, setTradesLoading] = useState<boolean>(false);
@@ -133,6 +148,54 @@ export function useCollections () {
     } catch (e) {
       console.log('getOffers error', e);
       setOffersLoading(false);
+    }
+  }, [fetchData]);
+
+  /**
+   * Return the list of token were hold on the escrow
+   */
+  const getHoldByMe = useCallback((account: string, page: number, pageSize: number, collectionIds?: string[]) => {
+    try {
+      let url = `/OnHold/${account}?page=${page}&pageSize=${pageSize}`;
+
+      if (!canAddCollections && collectionIds && collectionIds.length) {
+        url = `${url}${collectionIds.map((item: string) => `&collectionId=${item}`).join('')}`;
+      }
+
+      setHoldLoading(true);
+      fetchData<HoldResponseType>(url).subscribe((result: HoldResponseType | ErrorType) => {
+        if (cleanup.current) {
+          setHoldLoading(false);
+
+          return;
+        }
+
+        if ('error' in result) {
+          setError(result);
+          setMyHold({});
+        } else {
+          if (result?.items.length) {
+            const newState: {[key: string]: HoldType[]} = {};
+
+            result.items.forEach((hold: HoldType) => {
+              if (!newState[hold.collectionId]) {
+                newState[hold.collectionId] = [];
+              }
+
+              newState[hold.collectionId].push(hold);
+            });
+
+            setMyHold(newState);
+          } else {
+            setMyHold({});
+          }
+        }
+
+        setHoldLoading(false);
+      });
+    } catch (e) {
+      console.log('getOffers error', e);
+      setHoldLoading(false);
     }
   }, [fetchData]);
 
@@ -271,9 +334,12 @@ export function useCollections () {
     error,
     getCollectionWithTokenCount,
     getDetailedCollectionInfo,
+    getHoldByMe,
     getOffers,
     getTokensOfCollection,
     getTrades,
+    holdLoading,
+    myHold,
     myTrades,
     offers,
     offersCount,

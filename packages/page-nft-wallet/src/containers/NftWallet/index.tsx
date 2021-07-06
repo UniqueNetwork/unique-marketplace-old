@@ -33,16 +33,17 @@ function NftWallet ({ account, addCollection, collections, removeCollectionFromL
   const [canTransferTokens] = useState<boolean>(true);
   const [tokensSelling, setTokensSelling] = useState<{ [collectionId: string]: string[] }>({});
   const currentAccount = useRef<string | null | undefined>();
-  const { getOffers, offers, presetCollections } = useCollections();
+  const { getHoldByMe, getOffers, myHold, offers, presetCollections } = useCollections();
   const cleanup = useRef<boolean>(false);
 
   const fetchOffersForCollections = useCallback(() => {
-    if (collections?.length) {
+    if (account && collections?.length) {
       const targetCollectionIds = collections.map((collection) => collection.id);
 
       getOffers(1, 20000, targetCollectionIds);
+      getHoldByMe(account, 1, 20000, targetCollectionIds);
     }
-  }, [collections, getOffers]);
+  }, [account, collections, getHoldByMe, getOffers]);
 
   const filterTokensFromOffers = useCallback(() => {
     if (Object.keys(offers).length) {
@@ -142,6 +143,7 @@ function NftWallet ({ account, addCollection, collections, removeCollectionFromL
                   account={account}
                   canTransferTokens={canTransferTokens}
                   collection={collection}
+                  onHold={myHold[collection.id] || []}
                   openTransferModal={openTransferModal}
                   removeCollection={removeCollection}
                   shouldUpdateTokens={shouldUpdateTokens}

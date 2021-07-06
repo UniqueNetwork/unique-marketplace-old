@@ -17,19 +17,23 @@ module.exports = merge(
       proxy: {
         '/health': {
           changeOrigin: true,
-          target: 'https://whitelabel.market/'
+          target: 'https://chelopunktest.uniquenetwork.io/'
         },
         '/mint': {
           changeOrigin: true,
-          target: 'https://whitelabel.market/'
+          target: 'https://chelopunktest.uniquenetwork.io/'
         },
         '/offers': {
           changeOrigin: true,
-          target: 'https://whitelabel.market/'
+          target: 'https://chelopunktest.uniquenetwork.io/'
         },
         '/trades': {
           changeOrigin: true,
-          target: 'https://whitelabel.market/'
+          target: 'https://chelopunktest.uniquenetwork.io/'
+        },
+        'https://chelopunktest.uniquenetwork.io': {
+          changeOrigin: true,
+          target: 'https://chelopunktest.uniquenetwork.io/'
         },
         'https://whitelabel.market': {
           changeOrigin: true,
