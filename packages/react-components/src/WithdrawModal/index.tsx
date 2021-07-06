@@ -74,6 +74,7 @@ function WithdrawModal ({ account, closeModal, contractInstance, deposited, upda
                   label={'amount'}
                   max={parseFloat(formatKsmBalance(deposited))}
                   onChange={setWithdrawAmount}
+                  type='number'
                   value={withdrawAmount}
                 />
                 <Button
