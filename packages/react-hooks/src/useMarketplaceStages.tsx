@@ -72,6 +72,8 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
 
     const info: TokenDetailsInterface = await getTokenInfo(collectionInfo, tokenId);
 
+    setTokenInfo(info);
+
     const tokenDepositor = await getDepositor(collectionInfo.id, tokenId);
 
     if (tokenDepositor) {
@@ -80,8 +82,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
 
     const ask = await getTokenAsk(collectionInfo.id, tokenId);
 
-    // this was moved to useEffect
-    // await getUserDeposit();
+    await getUserDeposit();
 
     // the token is mine
     if (info?.Owner?.toString() === escrowAddress) {
@@ -94,7 +95,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
     }
 
     send('WAIT_FOR_USER_ACTION');
-  }, [collectionInfo, getTokenInfo, account, send, getTokenAsk, tokenId, getDepositor]);
+  }, [collectionInfo, getTokenInfo, getUserDeposit, account, send, getTokenAsk, tokenId, getDepositor]);
 
   const getFee = useCallback((price: BN): BN => {
     return price.mul(new BN(commission)).div(new BN(100));
@@ -178,6 +179,8 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
   const waitForTokenRevert = useCallback(async () => {
     if (collectionInfo) {
       const info = await getTokenInfo(collectionInfo, tokenId);
+
+      setTokenInfo(info);
 
       if (info?.Owner?.toString() === account) {
         send('TOKEN_REVERT_SUCCESS');
@@ -357,6 +360,12 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
     setTokenInfo(info);
   }, [collectionInfo, getTokenInfo, tokenId]);
 
+  const updateTokenAsk = useCallback(() => {
+    if (collectionInfo) {
+      void getTokenAsk(collectionInfo.id, tokenId);
+    }
+  }, [collectionInfo, getTokenAsk, tokenId]);
+
   useEffect(() => {
     switch (true) {
       // on load - update token state
@@ -413,6 +422,10 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
       void getBuyFee();
     }
   }, [account, getBuyFee, getSaleFee]);
+
+  useEffect(() => {
+    updateTokenAsk();
+  }, [updateTokenAsk]);
 
   useEffect(() => {
     void updateTokenInfo();
