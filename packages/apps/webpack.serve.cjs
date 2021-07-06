@@ -34,6 +34,10 @@ module.exports = merge(
         'https://chelopunktest.uniquenetwork.io': {
           changeOrigin: true,
           target: 'https://chelopunktest.uniquenetwork.io/'
+        },
+        'https://whitelabel.market': {
+          changeOrigin: true,
+          target: 'https://whitelabel.market/'
         }
       },
       static: path.resolve(__dirname, 'build')
