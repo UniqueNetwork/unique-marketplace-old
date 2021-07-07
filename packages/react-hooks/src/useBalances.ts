@@ -23,7 +23,7 @@ export const useBalances = (account: string | undefined, deposited: BN | undefin
   useEffect(() => {
     void getUserDeposit();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [balancesAll, kusamaBalancesAll]);
+  }, [balancesAll, kusamaBalancesAll, deposited]);
 
   return {
     balancesAll,

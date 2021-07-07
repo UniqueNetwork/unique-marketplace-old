@@ -1,14 +1,15 @@
 // Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import BN from 'bn.js';
 import React, { memo, useCallback, useState } from 'react';
 import Popup from 'semantic-ui-react/dist/commonjs/modules/Popup';
 
 import { WithdrawModal } from '@polkadot/react-components';
+import ArrowCircleUpRight from '@polkadot/react-components/ManageCollection/ArrowCircleUpRight.svg';
+import ArrowCircleUpRightGreen from '@polkadot/react-components/ManageCollection/ArrowCircleUpRightGreen.svg';
 import { useBalances, useNftContract } from '@polkadot/react-hooks';
 import { formatKsmBalance, formatStrBalance } from '@polkadot/react-hooks/useKusamaApi';
-
-import balanceUpdate from '../public/icons/balanceUpdate.svg';
 
 function BalancesHeader ({ account }: { account?: string }): React.ReactElement<{ account?: string }> {
   const { contractInstance, deposited, getUserDeposit } = useNftContract(account || '');
@@ -19,10 +20,9 @@ function BalancesHeader ({ account }: { account?: string }): React.ReactElement<
     toggleWithdrawModal(false);
   }, []);
 
+  const balanceUpdate = deposited && deposited.div(new BN(1000000)).gt(new BN(1)) ? ArrowCircleUpRight : ArrowCircleUpRightGreen;
   const openModal = useCallback(() => {
-    if (deposited && parseFloat(formatKsmBalance(deposited)) > 0) {
-      toggleWithdrawModal(true);
-    }
+    deposited && deposited.div(new BN(1000000)).gt(new BN(1)) && toggleWithdrawModal(true);
   }, [deposited]);
 
   return (

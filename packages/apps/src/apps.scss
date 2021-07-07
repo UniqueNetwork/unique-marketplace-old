@@ -115,28 +115,58 @@
     cursor: pointer;
   }
 }
-.crateAccountBtn {
-  border: 1px solid var(--link-color);
-  color: var(--link-color);
-  padding: 5px;
-  border-radius: var(--bradius) !important;
-  text-transform: lowercase;
-  font: 400 16px/24px var(--font-roboto);
-  &:first-letter {
-    text-transform: uppercase;
+
+.deposit-flex {
+  display: flex;
+  .deposit-input {
+    width: 85%;
+    display: flex;
+    position: relative;
+
+    button {
+      position: absolute;
+      background-color: transparent !important;
+      color: var(--link-color) !important;
+      width: 40px;
+      height: 28px;
+      padding: 3px;
+      right: 10px;
+      top: 7px;
+      letter-spacing: 0px;
+    }
+  }
+  .balance-number {
+    width: 100%;
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+  }
+  .ksm-text {
+    margin-left: 10px;
+    width: 15%;
   }
 }
-.no-account {
-  background-color: #ffb05642;
+.modal-position {
+  top: 30%;
+}
+.help-text {
+  padding: 4px;
   border-radius: 5px;
-  padding: 5px;
-  float: right;
-  color: #f58d17;
-  p {
-    margin: 0;
+  color: var(--link-color);
+  font-size: 13px;
+  background-color: #eff9ff;
 
-    span {
-      color: var(--link-color);
-    }
+  i {
+    vertical-align: bottom;
+    margin-right: 8px;
+    width: 16px;
+    height: 16px;
+    color: var(--link-color);
+    display: inline-block;
+    background: url("../../react-components/src/ManageCollection/warning-alert.svg")
+      no-repeat;
+    background-size: contain;
   }
 }
