@@ -50,7 +50,10 @@ function TradeHistory ({ account }: { account?: string }): React.ReactElement {
   }, [history]);
 
   return (
-    <div className='trades'>
+    <div
+      className='trades'
+      style={{ cursor: 'pointer' }}>
+
       <ListComponent
         empty={'No trades found'}
         header={headerRef.current}
@@ -59,6 +62,7 @@ function TradeHistory ({ account }: { account?: string }): React.ReactElement {
           <tr
             key={`${trade.collectionId}-${trade.tokenId}-${trade.buyer || ''}`}
             onClick={openDetailedInformationModal.bind(null, trade.collectionId, trade.tokenId)}
+
           >
             <td className='overflow tradeList'>
               {trade.tokenId}
