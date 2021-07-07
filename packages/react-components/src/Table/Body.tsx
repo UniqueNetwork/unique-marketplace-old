@@ -130,6 +130,11 @@ export default React.memo(styled(Body)`
       overflow: hidden;
       text-overflow: ellipsis;
     }
+     &.tradeList {
+      max-width: 300px;
+      white-space: nowrap;
+       text-align: center;
+    }
 
     &.start {
       text-align: left;
