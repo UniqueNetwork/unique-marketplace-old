@@ -126,10 +126,8 @@ function NftCollectionCard ({ account, canTransferTokens, collection, onHold, op
   }, [collection.id, shouldUpdateTokens, updateTokens]);
 
   useEffect(() => {
-    if (opened) {
-      void updateTokens();
-    }
-  }, [account, opened, updateTokens]);
+    void updateTokens();
+  }, [account, updateTokens]);
 
   useEffect(() => {
     if (!collectionImageUrl && collection) {
