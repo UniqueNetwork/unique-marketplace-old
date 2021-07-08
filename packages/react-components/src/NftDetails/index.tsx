@@ -4,7 +4,7 @@
 import './styles.scss';
 
 import BN from 'bn.js';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 // import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
@@ -33,17 +33,17 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
   const tokenId = query.get('tokenId') || '';
   const collectionId = query.get('collectionId') || '';
   const [showTransferForm, setShowTransferForm] = useState<boolean>(false);
+  const [lowKsmBalanceToBuy, setLowKsmBalanceToBuy] = useState<boolean>(false);
   const { balance } = useBalance(account);
   const { hex2a } = useDecoder();
   const { attributes, collectionInfo, reFungibleBalance, tokenUrl } = useSchema(account, collectionId, tokenId);
   const [tokenPriceForSale, setTokenPriceForSale] = useState<string>('');
-  const { cancelStep, deposited, escrowAddress, formatKsmBalance, getFee, kusamaBalance, readyToAskPrice, sendCurrentUserAction, setPrice, setReadyToAskPrice, tokenAsk, tokenDepositor, tokenInfo, transferStep } = useMarketplaceStages(account, collectionInfo, tokenId);
+  const { cancelStep, deposited, escrowAddress, formatKsmBalance, getFee, getKusamaTransferFee, kusamaBalance, readyToAskPrice, sendCurrentUserAction, setPrice, setReadyToAskPrice, tokenAsk, tokenDepositor, tokenInfo, transferStep } = useMarketplaceStages(account, collectionInfo, tokenId);
 
   const uOwnIt = tokenInfo?.Owner?.toString() === account || (tokenAsk && tokenAsk.owner === account);
   const uSellIt = tokenAsk && tokenAsk.owner === account;
   const isOwnerEscrow = !!(!uOwnIt && tokenInfo && tokenInfo.Owner && tokenInfo.Owner.toString() === escrowAddress && tokenDepositor && (tokenAsk && tokenAsk.owner !== account));
   // const lowBalanceToBuy = !!(buyFee && !balance?.free.gte(buyFee));
-  const lowKsmBalanceToBuy = tokenAsk?.price && kusamaBalance?.free.add(deposited || new BN(0)).lte(tokenAsk.price);
   // sponsoring is enabled
   // const lowBalanceToSell = !!(saleFee && !balance?.free.gte(saleFee));
 
@@ -72,6 +72,24 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
       sendCurrentUserAction('ASK_PRICE_FAIL');
     }, 1000);
   }, [setReadyToAskPrice, sendCurrentUserAction]);
+
+  const ksmFeesCheck = useCallback(async () => {
+    // tokenPrice + marketFees + kusamaFees * 2
+    if (tokenAsk?.price) {
+      const kusamaFees = await getKusamaTransferFee(escrowAddress, tokenAsk.price);
+
+      if (kusamaFees) {
+        const balanceNeeded = tokenAsk.price.add(getFee(tokenAsk.price)).add(kusamaFees.muln(2));
+        const low = !!kusamaBalance?.free.add(deposited || new BN(0)).lte(balanceNeeded);
+
+        setLowKsmBalanceToBuy(low);
+      }
+    }
+  }, [deposited, escrowAddress, getFee, getKusamaTransferFee, kusamaBalance, tokenAsk]);
+
+  useEffect(() => {
+    void ksmFeesCheck();
+  }, [ksmFeesCheck]);
 
   return (
     <div className='toke-details'>

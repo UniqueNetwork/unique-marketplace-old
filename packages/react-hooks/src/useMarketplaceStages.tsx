@@ -29,6 +29,7 @@ export interface MarketplaceStagesInterface {
   error: string | null;
   formatKsmBalance: (value: BN | undefined) => string;
   getFee: (price: BN) => BN;
+  getKusamaTransferFee: (recipient: string, value: BN) => Promise<BN | null>;
   kusamaBalance: BalanceInterface | undefined;
   saleFee: BN | undefined;
   sendCurrentUserAction: (action: UserActionType) => void;
@@ -59,7 +60,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
   const { queueExtrinsic } = useContext(StatusContext);
   const [readyToAskPrice, setReadyToAskPrice] = useState<boolean>(false);
   const [tokenPriceForSale, setTokenPriceForSale] = useState<number>();
-  const { formatKsmBalance, kusamaBalance, kusamaTransfer } = useKusamaApi(account);
+  const { formatKsmBalance, getKusamaTransferFee, kusamaBalance, kusamaTransfer } = useKusamaApi(account);
 
   const sendCurrentUserAction = useCallback((userAction: UserActionType) => {
     send(userAction);
@@ -440,6 +441,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
     escrowAddress,
     formatKsmBalance,
     getFee,
+    getKusamaTransferFee,
     kusamaBalance,
     readyToAskPrice,
     saleFee,

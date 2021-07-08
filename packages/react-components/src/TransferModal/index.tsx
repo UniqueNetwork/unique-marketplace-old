@@ -6,13 +6,13 @@ import './styles.scss';
 import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
 
 import BN from 'bn.js';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useState } from 'react';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form/Form';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button';
 import Modal from 'semantic-ui-react/dist/commonjs/modules/Modal/Modal';
 
 import { Input, Label, StatusContext } from '@polkadot/react-components';
-import { useApi, useBalance } from '@polkadot/react-hooks';
+import { useApi } from '@polkadot/react-hooks';
 import { keyring } from '@polkadot/ui-keyring';
 
 import closeIcon from './closeIconBlack.svg';
@@ -29,7 +29,7 @@ interface Props {
 function TransferModal ({ account, closeModal, collection, reFungibleBalance, tokenId, updateTokens }: Props): React.ReactElement<Props> {
   const { api } = useApi();
   const [recipient, setRecipient] = useState<string>();
-  const { balance } = useBalance(account);
+  // const { balance } = useBalance(account);
   const { queueExtrinsic } = useContext(StatusContext);
   const [tokenPart, setTokenPart] = useState<number>(0);
   // const [balanceTooLow, setBalanceTooLow] = useState<boolean>(false);
@@ -74,7 +74,7 @@ function TransferModal ({ account, closeModal, collection, reFungibleBalance, to
     setTokenPart(parseFloat(value));
   }, [reFungibleBalance, decimalPoints]);
 
-  const checkBalanceEnough = useCallback(async () => {
+  /* const checkBalanceEnough = useCallback(async () => {
     if (account && recipient) {
       const transferFee = await api.tx.nft.transfer(recipient, collection.id, tokenId, (tokenPart * Math.pow(10, decimalPoints))).paymentInfo(account) as { partialFee: BN };
 
@@ -84,11 +84,11 @@ function TransferModal ({ account, closeModal, collection, reFungibleBalance, to
         setBalanceTooLow(false);
       }
     }
-  }, [account, api, balance, collection, decimalPoints, recipient, tokenId, tokenPart]);
+  }, [account, api, balance, collection, decimalPoints, recipient, tokenId, tokenPart]); */
 
-  useEffect(() => {
+  /* useEffect(() => {
     void checkBalanceEnough();
-  }, [checkBalanceEnough]);
+  }, [checkBalanceEnough]); */
 
   return (
     <Modal

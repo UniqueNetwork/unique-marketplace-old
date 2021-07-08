@@ -19,6 +19,7 @@ const { kusamaDecimals, minPrice } = envConfig;
 interface UseKusamaApiInterface {
   formatKsmBalance: (balance: BN | undefined) => string;
   getKusamaBalance: () => void;
+  getKusamaTransferFee: (recipient: string, value: BN) => Promise<BN | null>;
   kusamaApi: ApiPromise | undefined;
   kusamaBalance: BalanceInterface | undefined;
   kusamaTransfer: (recipient: string, value: BN, onSuccess: (status: string) => void, onFail: (status: string) => void) => void;
@@ -101,6 +102,14 @@ export const useKusamaApi = (account?: string): UseKusamaApiInterface => {
     }
   }, [encodedKusamaAccount, kusamaApi, queueExtrinsic]);
 
+  const getKusamaTransferFee = useCallback(async (recipient: string, value: BN): Promise<BN | null> => {
+    if (encodedKusamaAccount && kusamaApi) {
+      const transferFee = await kusamaApi.tx.balances.transfer(recipient, value).paymentInfo(encodedKusamaAccount) as { partialFee: BN };
+
+      return transferFee.partialFee;
+    } else return null;
+  }, [encodedKusamaAccount, kusamaApi]);
+
   useEffect(() => {
     if (account) {
       setEncodedKusamaAccount(encodeAddress(account, 2));
@@ -119,6 +128,7 @@ export const useKusamaApi = (account?: string): UseKusamaApiInterface => {
   return {
     formatKsmBalance,
     getKusamaBalance,
+    getKusamaTransferFee,
     kusamaApi,
     kusamaBalance,
     kusamaTransfer
