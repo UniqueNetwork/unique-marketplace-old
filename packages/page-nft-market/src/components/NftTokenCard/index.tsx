@@ -9,7 +9,7 @@ import React, { useEffect } from 'react';
 import Image from 'semantic-ui-react/dist/commonjs/elements/Image';
 import Card from 'semantic-ui-react/dist/commonjs/views/Card';
 
-import { useSchema } from '@polkadot/react-hooks';
+import { useDecoder, useSchema } from '@polkadot/react-hooks';
 import { formatKsmBalance } from '@polkadot/react-hooks/useKusamaApi';
 import { AttributesDecoded } from '@polkadot/react-hooks/useSchema';
 
@@ -22,7 +22,8 @@ interface Props {
 }
 
 const NftTokenCard = ({ account, collectionId, onSetTokenAttributes, openDetailedInformationModal, token }: Props): React.ReactElement<Props> => {
-  const { attributes, tokenName, tokenUrl } = useSchema(account, collectionId, token.tokenId);
+  const { attributes, collectionInfo, tokenName, tokenUrl } = useSchema(account, collectionId, token.tokenId);
+  const { collectionName16Decoder, hex2a } = useDecoder();
 
   useEffect(() => {
     if (attributes && onSetTokenAttributes) {
@@ -43,18 +44,15 @@ const NftTokenCard = ({ account, collectionId, onSetTokenAttributes, openDetaile
           wrapped
         />
       )}
-      { token && (
+      { !!(token && collectionInfo) && (
         <Card.Content>
           <Card.Description>
-            {tokenName && (
-              <div className='card-name'>
-                <div className='card-name__title'>{tokenName.name}</div>
-                <div className='card-name__field'>{tokenName.value}</div>
-              </div>
-            )}
+            <div className='card-name'>
+              <div className='card-name__title'>{hex2a(collectionInfo.TokenPrefix)} {`#${token.tokenId}`} {tokenName?.value}</div>
+              <div className='card-name__field'>{ collectionName16Decoder(collectionInfo.Name)}</div>
+            </div>
             <div className='card-price'>
-              <div className='card-price__title'>Price</div>
-              <div className='card-price__field'>{formatKsmBalance(token.price)} KSM</div>
+              <div className='card-price__title'>{formatKsmBalance(token.price)} KSM</div>
             </div>
           </Card.Description>
           <Card.Meta>

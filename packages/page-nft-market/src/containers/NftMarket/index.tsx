@@ -44,7 +44,6 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
   const { getOffers, offers, offersCount, offersLoading, presetCollections } = useCollections();
   const [searchString, setSearchString] = useState<string>('');
   const [offersWithAttributes, setOffersWithAttributes] = useState<OfferWithAttributes>({});
-  // const [collectionSearchString, setCollectionSearchString] = useState<string>('');
   const [collections, setCollections] = useState<NftCollectionInterface[]>([]);
   const [filteredOffers, setFilteredOffers] = useState<OfferType[]>([]);
   const { collectionName16Decoder } = useDecoder();
@@ -82,20 +81,21 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
     if (offers) {
       if (searchString && searchString.length) {
         const filtered = Object.values(offers).filter((item: OfferType) => {
+          let target: string | undefined | string[];
+
           if (offersWithAttributes[item.collectionId] && offersWithAttributes[item.collectionId][item.tokenId]) {
             const offerItemAttrs = offersWithAttributes[item.collectionId][item.tokenId];
-            const target = Object.values(offerItemAttrs).find((value: string | string[]) => {
+
+            target = Object.values(offerItemAttrs).find((value: string | string[]) => {
               if (Array.isArray(value)) {
                 return value.find((valItem: string) => valItem.toLowerCase().includes(searchString.toLowerCase()));
               }
 
               return value.toLowerCase().includes(searchString.toLowerCase());
             });
-
-            return target || item.price.toString().includes(searchString.toLowerCase());
           }
 
-          return false;
+          return target || item.price.toString().includes(searchString.toLowerCase());
         });
 
         setFilteredOffers(filtered);
