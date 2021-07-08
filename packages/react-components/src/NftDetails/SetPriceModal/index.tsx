@@ -11,7 +11,7 @@ import Modal from 'semantic-ui-react/dist/commonjs/modules/Modal/Modal';
 import envConfig from '@polkadot/apps-config/envConfig';
 import { Input } from '@polkadot/react-components';
 
-const { decimals, minPrice } = envConfig;
+const { kusamaDecimals, minPrice } = envConfig;
 
 interface Props {
   closeModal: () => void;
@@ -24,7 +24,7 @@ function SetPriceModal (props: Props): React.ReactElement<Props> {
   const { closeModal, onSavePrice, setTokenPriceForSale, tokenPriceForSale } = props;
 
   const digitsLenFromIndexExceeded = useCallback((index: number, price: string): boolean => {
-    return price.substr(index + 1, price.length).length > decimals;
+    return price.substr(index + 1, price.length).length > kusamaDecimals;
   }, []);
 
   const onSetPrice = useCallback((price: string) => {

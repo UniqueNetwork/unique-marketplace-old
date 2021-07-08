@@ -30,8 +30,9 @@ export function formatKsmBalance (value: BN | undefined = new BN(0)): string {
 
 export function formatStrBalance (decimals: number, value: BN | undefined = new BN(0)): string {
   const floatValue = parseFloat(value.toString()) / Math.pow(10, decimals);
+  const arr = floatValue.toString().split('.');
 
-  return (Math.trunc(floatValue * 10000) / 10000).toFixed(4);
+  return `${arr[0]}.${arr[1]?.substr(0, 4) || '0000'}`;
 }
 
 export const useKusamaApi = (account?: string): UseKusamaApiInterface => {
