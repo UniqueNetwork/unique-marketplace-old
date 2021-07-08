@@ -16,7 +16,6 @@ interface Props {
 }
 
 function Transaction ({ className, currentItem: { accountId, extrinsic, isUnsigned, payload }, tip }: Props): React.ReactElement<Props> | null {
-
   if (!extrinsic) {
     return null;
   }

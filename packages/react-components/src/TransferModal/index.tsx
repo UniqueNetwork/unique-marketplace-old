@@ -32,7 +32,7 @@ function TransferModal ({ account, closeModal, collection, reFungibleBalance, to
   const { balance } = useBalance(account);
   const { queueExtrinsic } = useContext(StatusContext);
   const [tokenPart, setTokenPart] = useState<number>(0);
-  const [balanceTooLow, setBalanceTooLow] = useState<boolean>(false);
+  // const [balanceTooLow, setBalanceTooLow] = useState<boolean>(false);
   const [isAddressError, setIsAddressError] = useState<boolean>(true);
   const [isError, setIsError] = useState<boolean>(false);
   const decimalPoints = collection?.DecimalPoints instanceof BN ? collection?.DecimalPoints.toNumber() : 1;
@@ -132,11 +132,11 @@ function TransferModal ({ account, closeModal, collection, reFungibleBalance, to
             </Form.Field>
           )}
         </Form>
-        { balanceTooLow && (
+        {/* { balanceTooLow && (
           <div className='warning-block'>Your balance is too low to pay fees. <a href='https://t.me/unique2faucetbot'
             rel='noreferrer nooperer'
             target='_blank'>Get testUNQ here.</a></div>
-        )}
+        )} */}
       </Modal.Content>
       <Modal.Description className='modalDescription'>
         <div>
@@ -149,7 +149,7 @@ function TransferModal ({ account, closeModal, collection, reFungibleBalance, to
       <Modal.Actions>
         <Button
           content='Transfer token'
-          disabled={balanceTooLow || !recipient}
+          disabled={!recipient}
           onClick={transferToken}
         />
       </Modal.Actions>

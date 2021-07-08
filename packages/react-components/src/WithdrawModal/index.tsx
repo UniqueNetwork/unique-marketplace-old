@@ -59,7 +59,6 @@ function WithdrawModal ({ account, closeModal, contractInstance, deposited, upda
     >
       <Modal.Header>
         <h2>Withdrawal from the market deposit to the your main Kusama account</h2>
-        <p className='help-text'> <i ></i><span>The amount of the commission is determined in the next step</span> </p>
       </Modal.Header>
       <Modal.Content image>
         <Form className='transfer-form'>
