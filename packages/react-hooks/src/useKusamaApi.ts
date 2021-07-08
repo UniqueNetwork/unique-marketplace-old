@@ -37,8 +37,6 @@ export function formatStrBalance (decimals: number, value: BN | undefined = new 
   }
 
   if (floatValue < minPrice && floatValue > 0) {
-    console.log('floatValue', floatValue);
-
     return `< ${minPrice}`;
   }
 
