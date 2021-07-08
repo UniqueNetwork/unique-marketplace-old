@@ -37,7 +37,7 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
   const { hex2a } = useDecoder();
   const { attributes, collectionInfo, reFungibleBalance, tokenUrl } = useSchema(account, collectionId, tokenId);
   const [tokenPriceForSale, setTokenPriceForSale] = useState<string>('');
-  const { buyFee, cancelStep, deposited, escrowAddress, formatKsmBalance, getFee, kusamaBalance, readyToAskPrice, sendCurrentUserAction, setPrice, setReadyToAskPrice, tokenAsk, tokenDepositor, tokenInfo, transferStep } = useMarketplaceStages(account, collectionInfo, tokenId);
+  const { cancelStep, deposited, escrowAddress, formatKsmBalance, getFee, kusamaBalance, readyToAskPrice, sendCurrentUserAction, setPrice, setReadyToAskPrice, tokenAsk, tokenDepositor, tokenInfo, transferStep } = useMarketplaceStages(account, collectionInfo, tokenId);
 
   const uOwnIt = tokenInfo?.Owner?.toString() === account || (tokenAsk && tokenAsk.owner === account);
   const uSellIt = tokenAsk && tokenAsk.owner === account;
@@ -54,12 +54,6 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
   }, [setShouldUpdateTokens]);
 
   const onSavePrice = useCallback(() => {
-    if (tokenPriceForSale && ((parseFloat(tokenPriceForSale) < 0.01) || (parseFloat(tokenPriceForSale) > 100000))) {
-      alert(`Sorry, price should be in the range between 0.01 and 100000 KSM. You have input: ${tokenPriceForSale}`);
-
-      return;
-    }
-
     setPrice(new BN(+tokenPriceForSale * Math.pow(10, kusamaDecimals)).toString());
   }, [setPrice, tokenPriceForSale]);
 

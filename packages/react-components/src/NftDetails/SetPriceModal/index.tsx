@@ -65,7 +65,6 @@ function SetPriceModal (props: Props): React.ReactElement<Props> {
             <Input
               autoFocus
               label={'in KSM'}
-              min={0.01}
               onChange={onSetPrice}
               type='number'
               value={tokenPriceForSale}
