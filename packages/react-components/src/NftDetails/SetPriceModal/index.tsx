@@ -28,7 +28,9 @@ function SetPriceModal (props: Props): React.ReactElement<Props> {
   }, []);
 
   const onSetPrice = useCallback((price: string) => {
-    if (minPrice && parseFloat(price) < minPrice && parseFloat(price) > 0) {
+    const floatPrice = parseFloat(price);
+
+    if (minPrice && floatPrice < minPrice && floatPrice > 0) {
       alert(`Sorry, price should be more than: ${minPrice}`);
 
       return;

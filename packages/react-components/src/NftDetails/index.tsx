@@ -54,7 +54,9 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
   }, [setShouldUpdateTokens]);
 
   const onSavePrice = useCallback(() => {
-    setPrice(new BN(+tokenPriceForSale * Math.pow(10, kusamaDecimals)).toString());
+    const price = new BN(tokenPriceForSale).mul(new BN(Math.pow(10, kusamaDecimals))).toString();
+
+    setPrice(price);
   }, [setPrice, tokenPriceForSale]);
 
   const onTransferSuccess = useCallback(() => {
@@ -70,8 +72,6 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
       sendCurrentUserAction('ASK_PRICE_FAIL');
     }, 1000);
   }, [setReadyToAskPrice, sendCurrentUserAction]);
-
-  console.log('tokenAsk.price', tokenAsk?.price.toString()); // 1000000
 
   return (
     <div className='toke-details'>
