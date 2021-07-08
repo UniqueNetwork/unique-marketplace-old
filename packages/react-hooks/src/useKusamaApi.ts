@@ -14,7 +14,7 @@ import { WsProvider } from '@polkadot/rpc-provider';
 import { TypeRegistry } from '@polkadot/types/create';
 import { encodeAddress } from '@polkadot/util-crypto';
 
-const { kusamaDecimals } = envConfig;
+const { kusamaDecimals, minPrice } = envConfig;
 
 interface UseKusamaApiInterface {
   formatKsmBalance: (balance: BN | undefined) => string;
@@ -32,7 +32,15 @@ export function formatStrBalance (decimals: number, value: BN | undefined = new 
   const floatValue = parseFloat(value.toString()) / Math.pow(10, decimals);
   const arr = floatValue.toString().split('.');
 
-  return `${arr[0]}.${arr[1]?.substr(0, 4) || '0000'}`;
+  if (floatValue === 0) {
+    return '0';
+  }
+
+  if (floatValue < minPrice && floatValue > 0) {
+    return `< ${minPrice}`;
+  }
+
+  return `${arr[0]}${arr[1] ? `.${arr[1].substr(0, 6)}` : ''}`;
 }
 
 export const useKusamaApi = (account?: string): UseKusamaApiInterface => {

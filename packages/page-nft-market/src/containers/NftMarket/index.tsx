@@ -103,7 +103,11 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
             });
           }
 
-          return target || item.price.toString().includes(searchString.toLowerCase()) || (collectionsNames[item.collectionId]?.toLowerCase().includes(searchString.toLowerCase()));
+          return target ||
+            item.price.toString().includes(searchString.toLowerCase()) ||
+            (collectionsNames[item.collectionId]?.toLowerCase().includes(searchString.toLowerCase())) ||
+            item.tokenId.toString().includes(searchString.toLowerCase()) ||
+            item.collectionId.toString().includes(searchString.toLowerCase());
         });
 
         setFilteredOffers(filtered);
@@ -197,7 +201,7 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
                         }
                         isDisabled={!Object.values(offers).length}
                         onChange={setSearchString}
-                        placeholder='Find token by name or collection'
+                        placeholder='Find token by collection, name or attribute'
                         value={searchString}
                         withLabel
                       >
