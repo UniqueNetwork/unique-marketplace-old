@@ -40,7 +40,10 @@ function TradeHistory ({ account }: { account?: string }): React.ReactElement {
   useEffect(() => {
     if (account) {
       setTradesList(myTrades);
+      console.log(1111111111111);
     } else {
+      console.log(2222222222222);
+
       setTradesList(trades);
     }
   }, [account, myTrades, trades]);
@@ -60,7 +63,7 @@ function TradeHistory ({ account }: { account?: string }): React.ReactElement {
       >
         { tradesList && tradesList.map((trade: TradeType) => (
           <tr
-            key={`${trade.collectionId}-${trade.tokenId}-${trade.buyer || ''}`}
+            key={`${trade.collectionId}-${trade.tokenId}-${trade.buyer || ''} + ${Math.random() * 100}  `}
             onClick={openDetailedInformationModal.bind(null, trade.collectionId, trade.tokenId)}
 
           >
