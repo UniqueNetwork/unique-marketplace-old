@@ -54,9 +54,12 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
   }, [setShouldUpdateTokens]);
 
   const onSavePrice = useCallback(() => {
-    const price = new BN(tokenPriceForSale).mul(new BN(Math.pow(10, kusamaDecimals))).toString();
+    const parts = tokenPriceForSale.split('.');
+    const priceLeft = new BN(parts[0]).mul(new BN(10).pow(new BN(12)));
+    const priceRight = new BN(parseFloat(`0.${parts[1]}`) * Math.pow(10, kusamaDecimals));
+    const price = priceLeft.add(priceRight);
 
-    setPrice(price);
+    setPrice(price.toString());
   }, [setPrice, tokenPriceForSale]);
 
   const onTransferSuccess = useCallback(() => {
