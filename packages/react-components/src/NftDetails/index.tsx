@@ -71,6 +71,8 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
     }, 1000);
   }, [setReadyToAskPrice, sendCurrentUserAction]);
 
+  console.log('tokenAsk.price', tokenAsk?.price.toString()); // 1000000
+
   return (
     <div className='toke-details'>
       <a
