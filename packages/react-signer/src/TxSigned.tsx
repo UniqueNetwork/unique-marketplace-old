@@ -23,7 +23,6 @@ import { assert, BN_ZERO } from '@polkadot/util';
 import Address from './Address';
 import Qr from './Qr';
 import { AccountSigner, LedgerSigner, QrSigner } from './signers';
-import Transaction from './Transaction';
 import { cacheUnlock, extractExternal, handleTxResults } from './util';
 
 interface Props {
@@ -250,6 +249,7 @@ function TxSigned ({ className, currentItem, requestAddress }: Props): React.Rea
   );
 
   const _onSend = useCallback(
+
     async (queueSetTxStatus: QueueTxMessageSetStatus, currentItem: QueueTx, senderInfo: AddressProxy): Promise<void> => {
       if (senderInfo.signAddress) {
         const [tx, [status, pairOrAddress, options]] = await Promise.all([
@@ -330,10 +330,10 @@ function TxSigned ({ className, currentItem, requestAddress }: Props): React.Rea
             )
             : (
               <>
-                <Transaction
+                {/* <Transaction
                   currentItem={currentItem}
                   onError={toggleRenderError}
-                />
+                /> */}
                 <Address
                   currentItem={currentItem}
                   onChange={setSenderInfo}

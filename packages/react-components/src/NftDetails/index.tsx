@@ -42,7 +42,7 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
   const uOwnIt = tokenInfo?.Owner?.toString() === account || (tokenAsk && tokenAsk.owner === account);
   const uSellIt = tokenAsk && tokenAsk.owner === account;
   const isOwnerEscrow = !!(!uOwnIt && tokenInfo && tokenInfo.Owner && tokenInfo.Owner.toString() === escrowAddress && tokenDepositor && (tokenAsk && tokenAsk.owner !== account));
-  const lowBalanceToBuy = !!(buyFee && !balance?.free.gte(buyFee));
+  // const lowBalanceToBuy = !!(buyFee && !balance?.free.gte(buyFee));
   const lowKsmBalanceToBuy = tokenAsk?.price && kusamaBalance?.free.add(deposited || new BN(0)).lte(tokenAsk.price);
   // sponsoring is enabled
   // const lowBalanceToSell = !!(saleFee && !balance?.free.gte(saleFee));
@@ -141,11 +141,11 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
                   {formatKsmBalance(tokenAsk.price.add(getFee(tokenAsk.price)))} KSM
                 </Header>
                 <p>Fee: {formatKsmBalance(getFee(tokenAsk.price))} KSM, Price: {formatKsmBalance(tokenAsk.price)} KSM</p>
-                { (!uOwnIt && !transferStep && tokenAsk) && lowBalanceToBuy && (
+                {/* { (!uOwnIt && !transferStep && tokenAsk) && lowBalanceToBuy && (
                   <div className='warning-block'>Your balance is too low to pay fees. <a href='https://t.me/unique2faucetbot'
                     rel='noreferrer nooperer'
                     target='_blank'>Get testUNQ here</a></div>
-                )}
+                )} */}
                 { (!uOwnIt && !transferStep && tokenAsk) && lowKsmBalanceToBuy && (
                   <div className='warning-block'>Your balance is too low to buy</div>
                 )}
@@ -181,7 +181,7 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
                   { (!uOwnIt && !transferStep && tokenAsk) && (
                     <Button
                       content={`Buy it - ${formatKsmBalance(tokenAsk.price.add(getFee(tokenAsk.price)))} KSM`}
-                      disabled={lowBalanceToBuy || lowKsmBalanceToBuy}
+                      disabled={ lowKsmBalanceToBuy}
                       onClick={sendCurrentUserAction.bind(null, 'BUY')}
                     />
                   )}
