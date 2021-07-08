@@ -182,7 +182,9 @@ export function useCollections () {
                 newState[hold.collectionId] = [];
               }
 
-              newState[hold.collectionId].push(hold);
+              if (!newState[hold.collectionId].find((holdItem) => holdItem.tokenId === hold.tokenId)) {
+                newState[hold.collectionId].push(hold);
+              }
             });
 
             setMyHold(newState);
