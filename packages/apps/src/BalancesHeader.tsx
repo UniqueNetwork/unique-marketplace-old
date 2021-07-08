@@ -37,9 +37,9 @@ function BalancesHeader ({ account }: { account?: string }): React.ReactElement<
       </div>
       <div className='app-balance--item'>
         <small>deposit</small>
-        {formatKsmBalance(deposited)} KSM
+        { +formatKsmBalance(deposited) > 0.000001 ? formatKsmBalance(deposited) : 0}  KSM
         <Popup
-          content='Withdraw your ksm deposit'
+          content='Withdrawal from the market deposit to the your main Kusama account (available for the deposit sum greater than 0.000001 KSM)'
           trigger={<img
             alt='balance-update'
             onClick={openModal}
