@@ -44,6 +44,7 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
   const { getOffers, offers, offersCount, offersLoading, presetCollections } = useCollections();
   const [searchString, setSearchString] = useState<string>('');
   const [offersWithAttributes, setOffersWithAttributes] = useState<OfferWithAttributes>({});
+  const [collectionsNames, setCollectionsNames] = useState<{ [key: string]: string }>({});
   const [collections, setCollections] = useState<NftCollectionInterface[]>([]);
   const [filteredOffers, setFilteredOffers] = useState<OfferType[]>([]);
   const { collectionName16Decoder } = useDecoder();
@@ -73,6 +74,13 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
     });
   }, []);
 
+  const onSetCollectionName = useCallback((collectionId: string, collectionName: string) => {
+    setCollectionsNames((prevState) => ({
+      ...prevState,
+      [collectionId]: collectionName
+    }));
+  }, []);
+
   const fetchData = useCallback((newPage: number) => {
     getOffers(newPage, perPage, uniqueCollectionIds);
   }, [getOffers]);
@@ -95,7 +103,7 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
             });
           }
 
-          return target || item.price.toString().includes(searchString.toLowerCase());
+          return target || item.price.toString().includes(searchString.toLowerCase()) || (collectionsNames[item.collectionId]?.toLowerCase().includes(searchString.toLowerCase()));
         });
 
         setFilteredOffers(filtered);
@@ -103,7 +111,7 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
         setFilteredOffers(Object.values(offers));
       }
     }
-  }, [offers, offersWithAttributes, searchString]);
+  }, [collectionsNames, offers, offersWithAttributes, searchString]);
 
   const clearSearch = useCallback(() => {
     setSearchString('');
@@ -238,6 +246,7 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
                               account={account}
                               collectionId={token.collectionId.toString()}
                               key={`${token.collectionId}-${token.tokenId}`}
+                              onSetCollectionName={onSetCollectionName}
                               onSetTokenAttributes={onSetTokenAttributes}
                               openDetailedInformationModal={openDetailedInformationModal}
                               token={token}

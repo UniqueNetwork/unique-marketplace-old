@@ -16,12 +16,13 @@ import { AttributesDecoded } from '@polkadot/react-hooks/useSchema';
 interface Props {
   account: string;
   collectionId: string;
+  onSetCollectionName: (collectionId: string, collectionName: string) => void;
   onSetTokenAttributes?: (collectionId: string, tokenId: string, attributes: AttributesDecoded) => void;
   openDetailedInformationModal: (collectionId: string, tokenId: string) => void;
   token: OfferType;
 }
 
-const NftTokenCard = ({ account, collectionId, onSetTokenAttributes, openDetailedInformationModal, token }: Props): React.ReactElement<Props> => {
+const NftTokenCard = ({ account, collectionId, onSetCollectionName, onSetTokenAttributes, openDetailedInformationModal, token }: Props): React.ReactElement<Props> => {
   const { attributes, collectionInfo, tokenName, tokenUrl } = useSchema(account, collectionId, token.tokenId);
   const { collectionName16Decoder, hex2a } = useDecoder();
 
@@ -30,6 +31,14 @@ const NftTokenCard = ({ account, collectionId, onSetTokenAttributes, openDetaile
       onSetTokenAttributes(collectionId, token.tokenId, attributes);
     }
   }, [attributes, collectionId, onSetTokenAttributes, token]);
+
+  useEffect(() => {
+    if (collectionInfo) {
+      const collectionName = collectionName16Decoder(collectionInfo.Name);
+
+      onSetCollectionName(collectionId, collectionName);
+    }
+  }, [collectionId, collectionInfo, collectionName16Decoder, onSetCollectionName]);
 
   return (
     <Card

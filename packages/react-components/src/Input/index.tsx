@@ -138,8 +138,6 @@ function Index ({ autoFocus = false, children, className, defaultValue, help, ic
     [onPaste]
   );
 
-  console.log('type', type, 'min', min);
-
   return (
     <Labelled
       className={className}
