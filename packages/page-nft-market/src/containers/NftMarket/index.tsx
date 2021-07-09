@@ -10,15 +10,15 @@ import type { OfferType } from '@polkadot/react-hooks/useCollections';
 import React, { memo, ReactElement, useCallback, useEffect, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
 import { useHistory } from 'react-router';
-import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
+// import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
-import clearIcon from '@polkadot/app-nft-wallet/components/CollectionSearch/clearIcon.svg';
-import searchIcon from '@polkadot/app-nft-wallet/components/CollectionSearch/searchIcon.svg';
+// import clearIcon from '@polkadot/app-nft-wallet/components/CollectionSearch/clearIcon.svg';
+// import searchIcon from '@polkadot/app-nft-wallet/components/CollectionSearch/searchIcon.svg';
 import envConfig from '@polkadot/apps-config/envConfig';
-import { Input } from '@polkadot/react-components';
+// import { Input } from '@polkadot/react-components';
 import { useCollections, useDecoder } from '@polkadot/react-hooks';
 import { AttributesDecoded } from '@polkadot/react-hooks/useSchema';
 
@@ -41,8 +41,10 @@ const perPage = 20;
 
 const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTokensProps): ReactElement => {
   const history = useHistory();
-  const { getOffers, offers, offersCount, offersLoading, presetCollections } = useCollections();
-  const [searchString, setSearchString] = useState<string>('');
+  // const { getOffers, offers, offersCount, offersLoading, presetCollections } = useCollections();
+  const { getOffers, offers, offersCount, presetCollections } = useCollections();
+  // const [searchString, setSearchString] = useState<string>('');
+  const [searchString] = useState<string>('');
   const [offersWithAttributes, setOffersWithAttributes] = useState<OfferWithAttributes>({});
   const [collectionsNames, setCollectionsNames] = useState<{ [key: string]: string }>({});
   const [collections, setCollections] = useState<NftCollectionInterface[]>([]);
@@ -117,9 +119,9 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
     }
   }, [collectionsNames, offers, offersWithAttributes, searchString]);
 
-  const clearSearch = useCallback(() => {
+  /* const clearSearch = useCallback(() => {
     setSearchString('');
-  }, []);
+  }, []); */
 
   useEffect(() => {
     if (shouldUpdateTokens) {
@@ -176,10 +178,10 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
           </Grid.Column>
           <Grid.Column width={12}>
             <Grid>
-              <Grid.Row>
+              {/* <Grid.Row>
                 <Grid.Column width={16}>
                   <Form className='collection-search-form'>
-                    {/* <Input
+                     <Input
                     className='isSmall search'
                     help={<span>Find and select token.</span>}
                     isDisabled={!offers || !Object.values(offers).length}
@@ -188,7 +190,7 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
                     placeholder='Search...'
                     value={searchString}
                     withLabel
-                  /> */}
+                  />
                     <Form.Field className='search-field'>
                       <Input
                         className='isSmall'
@@ -223,7 +225,7 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
                     </Form.Field>
                   </Form>
                 </Grid.Column>
-              </Grid.Row>
+              </Grid.Row> */}
               {(account && filteredOffers.length > 0) && (
                 <Grid.Row>
                   <Grid.Column width={16}>
