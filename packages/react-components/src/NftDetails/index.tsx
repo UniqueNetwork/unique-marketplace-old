@@ -34,6 +34,7 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
   const collectionId = query.get('collectionId') || '';
   const [showTransferForm, setShowTransferForm] = useState<boolean>(false);
   const [lowKsmBalanceToBuy, setLowKsmBalanceToBuy] = useState<boolean>(false);
+  const [kusamaFees, setKusamaFees] = useState<BN | null>(null);
   const { balance } = useBalance(account);
   const { hex2a } = useDecoder();
   const { attributes, collectionInfo, reFungibleBalance, tokenUrl } = useSchema(account, collectionId, tokenId);
@@ -79,9 +80,10 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
   const ksmFeesCheck = useCallback(async () => {
     // tokenPrice + marketFees + kusamaFees * 2
     if (tokenAsk?.price) {
-      const kusamaFees = await getKusamaTransferFee(escrowAddress, tokenAsk.price);
+      const kusamaFees: BN | null = await getKusamaTransferFee(escrowAddress, tokenAsk.price);
 
       if (kusamaFees) {
+        setKusamaFees(kusamaFees);
         const balanceNeeded = tokenAsk.price.add(getFee(tokenAsk.price)).add(kusamaFees.muln(2));
         const low = !!kusamaBalance?.free.add(deposited || new BN(0)).lte(balanceNeeded);
 
@@ -195,14 +197,15 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
               )}
               { showMarketActions && (
                 <>
-                  { (!uOwnIt && !transferStep && tokenAsk) && (
+                  { (!uOwnIt && !transferStep && tokenAsk && kusamaFees) && (
                     <>
+                      <div className='warning-block'>A small Kusama Network transaction fee up to {formatKsmBalance(kusamaFees.muln(2))} KSM will be
+                        applied to the transaction</div>
                       <Button
-                        content={`Buy it - ${formatKsmBalance(tokenAsk.price.add(getFee(tokenAsk.price)))} KSM`}
+                        content={`Buy it - ${formatKsmBalance(tokenAsk.price.add(getFee(tokenAsk.price)).add(kusamaFees.muln(2)))} KSM`}
                         disabled={ lowKsmBalanceToBuy}
                         onClick={sendCurrentUserAction.bind(null, 'BUY')}
                       />
-                      <p>A small Kusama Network transaction fee up to 0.001 KSM will be applied to the transaction</p>
                     </>
                   )}
 
