@@ -3,6 +3,7 @@
 
   h1.ui.header  {
     font-family: var(--font-inter);
+    letter-spacing: normal;
   }
 
   .faq {
@@ -20,6 +21,7 @@
       margin-top: 48px;
       margin-bottom: 12px;
       min-height: 0;
+      letter-spacing: normal;
 
       &:first-child {
         margin-top: 0;
@@ -32,6 +34,7 @@
       font-family: var(--font-roboto);
       font-weight: 400;
       margin-bottom: 0;
+      letter-spacing: normal;
     }
 
     a {

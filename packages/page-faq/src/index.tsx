@@ -27,19 +27,19 @@ function Faq (): React.ReactElement<Props> {
         <Header as='h4'>Q: How can I get KSM to my account?</Header>
         <p>A: You need to transfer (withdraw) from the other wallet or exchange. To do that:</p>
         <ol>
-          <li>Copy your address at the marketplace (click on the icon at the top right corner)</li>
-          <li>Go to the <a href='https://polkadot.subscan.io/tools/ss58_transform'>https://polkadot.subscan.io/tools/ss58_transform</a> and transform your address</li>
-          <li>Copy your address at Kusama network</li>
-          <li>Use this Kusama address to send KSM from any wallet or exchange</li>
+          <li>Copy your address at the marketplace (click on the icon at the top right corner);</li>
+          <li>Go to the <a href='https://polkadot.subscan.io/tools/ss58_transform'>https://polkadot.subscan.io/tools/ss58_transform</a> and transform your address;</li>
+          <li>Copy your address at Kusama network;</li>
+          <li>Use this Kusama address to send KSM from any wallet or exchange;</li>
         </ol>
         <Header as='h4'>Q: I see my NTF on the My tokens page twice and one of them is `on hold`</Header>
         <p>A: It can happen if the previous version of the market had information about an unfinished listing. In that case:</p>
         <ol>
-          <li>Go to the page of ‘on hold’ token and complete listing</li>
-          <li>Then delist this token</li>
+          <li>Go to the page of ‘on hold’ token and complete listing;</li>
+          <li>Then delist this token;</li>
         </ol>
         <Header as='h4'>Q: I see the error `1010: Invalid Transaction: Inability to pay some fees, e.g. account balance too low`</Header>
-        <p>Just wail for half a minute and try again</p>
+        <p>A: Just wail for half a minute and try again</p>
         <Header as='h4'>Q: I am trying to buy an NFT, but I am seeing the other owner and the “Withdraw your KSM” button on the header is active. Why?</Header>
         <p>A: Unfortunately someone has beaten you in buying the same NFT, but you can either withdraw your KSM back to your wallet or leave it in the deposit balance to use in future purchases.</p>
       </div>
