@@ -38,7 +38,7 @@ function Faq (): React.ReactElement<Props> {
           <li>Go to the page of ‘on hold’ token and complete listing</li>
           <li>Then delist this token</li>
         </ol>
-        <Header as='h4'>Q: I see the error `1010: Invalid Transaction: Inability to pay some fees , e.g. account balance too low`</Header>
+        <Header as='h4'>Q: I see the error `1010: Invalid Transaction: Inability to pay some fees, e.g. account balance too low`</Header>
         <p>Just wail for half a minute and try again</p>
         <Header as='h4'>Q: I am trying to buy an NFT, but I am seeing the other owner and the “Withdraw your KSM” button on the header is active. Why?</Header>
         <p>A: Unfortunately someone has beaten you in buying the same NFT, but you can either withdraw your KSM back to your wallet or leave it in the deposit balance to use in future purchases.</p>
