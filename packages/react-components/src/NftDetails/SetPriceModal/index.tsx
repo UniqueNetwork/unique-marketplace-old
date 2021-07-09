@@ -54,6 +54,7 @@ function SetPriceModal (props: Props): React.ReactElement<Props> {
               autoFocus
               label={'in KSM'}
               onChange={onSetPrice}
+              onKeyDown={(evt) => ['e', 'E', '+', '-'].includes(evt.key) && evt.preventDefault()}
               type='number'
               value={tokenPriceForSale}
             />
