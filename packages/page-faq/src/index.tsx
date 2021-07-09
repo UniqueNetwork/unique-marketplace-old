@@ -10,9 +10,7 @@ import Header from 'semantic-ui-react/dist/commonjs/elements/Header/Header';
 // local imports and components
 import { AppProps as Props } from '@polkadot/react-components/types';
 
-function Faq ({ account }: Props): React.ReactElement<Props> {
-  console.log('account', account);
-
+function Faq (): React.ReactElement<Props> {
   return (
     <main className='faq-page'>
       <Header as='h1'>FAQ</Header>
