@@ -22,6 +22,8 @@
       "@polkadot/app-nft-market/*": [ "packages/page-nft-market/src/*" ],
       "@polkadot/app-nft-trades": [ "packages/page-nft-trades/src" ],
       "@polkadot/app-nft-trades/*": [ "packages/page-nft-trades/src/*" ],
+      "@polkadot/app-faq": [ "packages/page-faq/src" ],
+      "@polkadot/app-faq/*": [ "packages/page-faq/src/*" ],
       "@polkadot/react-api": [ "packages/react-api/src" ],
       "@polkadot/react-api/*": [ "packages/react-api/src/*" ],
       "@polkadot/react-components": [ "packages/react-components/src" ],

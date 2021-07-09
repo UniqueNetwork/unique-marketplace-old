@@ -1,0 +1,48 @@
+.faq-page {
+  font-family: var(--font-inter);
+
+  h1.ui.header  {
+    font-family: var(--font-inter);
+    letter-spacing: normal;
+  }
+
+  .faq {
+    background: #FFFFFF;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.08);
+    border-radius: 4px 4px 0px 0px;
+    padding: 36px;
+    margin-top: 48px;
+
+    h4.ui.header {
+      font-family: var(--font-inter);
+      font-weight: bold;
+      font-size: 18px;
+      line-height: 26px;
+      margin-top: 48px;
+      margin-bottom: 12px;
+      min-height: 0;
+      letter-spacing: normal;
+
+      &:first-child {
+        margin-top: 0;
+      }
+    }
+
+    p, ol li {
+      font-size: 16px;
+      line-height: 24px;
+      font-family: var(--font-roboto);
+      font-weight: 400;
+      margin-bottom: 0;
+      letter-spacing: normal;
+    }
+
+    a {
+      color: var(--link-color);
+    }
+
+    ol {
+      padding-left: 17px;
+    }
+  }
+}

@@ -162,6 +162,12 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                                       name='accounts'
                                       to='/accounts'
                                     />
+                                    <Menu.Item
+                                      active={location.pathname === '/faq'}
+                                      as={NavLink}
+                                      name='FAQ'
+                                      to='/faq'
+                                    />
                                   </>
                                 )}
                               </Menu>
