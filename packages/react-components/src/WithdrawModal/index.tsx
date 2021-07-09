@@ -80,6 +80,7 @@ function WithdrawModal ({ account, closeModal, contractInstance, deposited, upda
                   label={'amount'}
                   max={parseFloat(formatKsmBalance(deposited))}
                   onChange={setValue}
+                  onKeyDown={(evt) => ['e', 'E', '+', '-'].includes(evt.key) && evt.preventDefault()}
                   placeholder='0'
                   type='number'
                   value={withdrawAmount}
