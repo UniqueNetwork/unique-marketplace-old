@@ -178,11 +178,14 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
               { showMarketActions && (
                 <>
                   { (!uOwnIt && !transferStep && tokenAsk) && (
-                    <Button
-                      content={`Buy it - ${formatKsmBalance(tokenAsk.price.add(getFee(tokenAsk.price)))} KSM`}
-                      disabled={ lowKsmBalanceToBuy}
-                      onClick={sendCurrentUserAction.bind(null, 'BUY')}
-                    />
+                    <>
+                      <Button
+                        content={`Buy it - ${formatKsmBalance(tokenAsk.price.add(getFee(tokenAsk.price)))} KSM`}
+                        disabled={ lowKsmBalanceToBuy}
+                        onClick={sendCurrentUserAction.bind(null, 'BUY')}
+                      />
+                      <p>A small Kusama Network transaction fee up to 0.001 KSM will be applied to the transaction</p>
+                    </>
                   )}
 
                   { (uOwnIt && !uSellIt) && (
