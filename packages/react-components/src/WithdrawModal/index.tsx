@@ -27,7 +27,7 @@ interface Props {
 
 function WithdrawModal ({ account, closeModal, contractInstance, deposited, updateDeposit }: Props): React.ReactElement<Props> {
   const { queueExtrinsic } = useContext(StatusContext);
-  const [withdrawAmount, setWithdrawAmount] = useState<string>('0');
+  const [withdrawAmount, setWithdrawAmount] = useState<string>('');
 
   const revertMoney = useCallback(() => {
     const message = findCallMethodByName(contractInstance, 'withdraw');
@@ -49,6 +49,13 @@ function WithdrawModal ({ account, closeModal, contractInstance, deposited, upda
       });
     }
   }, [account, closeModal, contractInstance, queueExtrinsic, updateDeposit, withdrawAmount]);
+
+  const setValue = (val: string) => {
+    val = val.slice(0, 8);
+    if (+val > 100000 || +val < 0) return;
+
+    setWithdrawAmount(val);
+  };
 
   return (
     <Modal
@@ -72,7 +79,8 @@ function WithdrawModal ({ account, closeModal, contractInstance, deposited, upda
                   isError={!!(!deposited || (withdrawAmount && parseFloat(withdrawAmount) > parseFloat(formatKsmBalance(deposited))))}
                   label={'amount'}
                   max={parseFloat(formatKsmBalance(deposited))}
-                  onChange={setWithdrawAmount}
+                  onChange={setValue}
+                  placeholder='0'
                   type='number'
                   value={withdrawAmount}
                 />

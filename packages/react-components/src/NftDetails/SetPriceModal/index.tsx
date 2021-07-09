@@ -11,7 +11,7 @@ import Modal from 'semantic-ui-react/dist/commonjs/modules/Modal/Modal';
 import envConfig from '@polkadot/apps-config/envConfig';
 import { Input } from '@polkadot/react-components';
 
-const { kusamaDecimals, minPrice } = envConfig;
+const { minPrice } = envConfig;
 
 interface Props {
   closeModal: () => void;
@@ -23,35 +23,19 @@ interface Props {
 function SetPriceModal (props: Props): React.ReactElement<Props> {
   const { closeModal, onSavePrice, setTokenPriceForSale, tokenPriceForSale } = props;
 
-  const digitsLenFromIndexExceeded = useCallback((index: number, price: string): boolean => {
-    return price.substr(index + 1, price.length).length > kusamaDecimals;
-  }, []);
-
   const onSetPrice = useCallback((price: string) => {
     const floatPrice = parseFloat(price);
 
     if (minPrice && floatPrice < minPrice && floatPrice > 0) {
-      alert(`Sorry, price should be more than: ${minPrice}`);
-
       return;
     }
 
-    const commaIndex = price.indexOf(',');
-    const dotIndex = price.indexOf('.');
-    let exceeded = false;
-
-    if (commaIndex !== -1) {
-      exceeded = digitsLenFromIndexExceeded(commaIndex, price);
-    } else if (dotIndex !== -1) {
-      exceeded = digitsLenFromIndexExceeded(dotIndex, price);
-    }
-
-    if (exceeded) {
+    if (price.replace(',', '.').split('.')[1]?.length > 6) {
       return;
     }
 
     setTokenPriceForSale(price);
-  }, [digitsLenFromIndexExceeded, setTokenPriceForSale]);
+  }, [setTokenPriceForSale]);
 
   return (
     <Modal
