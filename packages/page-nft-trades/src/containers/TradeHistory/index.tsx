@@ -28,7 +28,7 @@ function TradeHistory ({ account }: { account?: string }): React.ReactElement {
     ['Token', 'start'],
     ['Collection', 'start'],
     ['Price', 'start'],
-    ['UTC', 'start'],
+    ['Date', 'start'],
     ['Buyer', 'start'],
     ['Seller', 'start']
   ]);
