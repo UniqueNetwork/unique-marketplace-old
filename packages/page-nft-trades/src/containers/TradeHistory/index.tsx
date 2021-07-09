@@ -28,7 +28,7 @@ function TradeHistory ({ account }: { account?: string }): React.ReactElement {
     ['Token', 'start'],
     ['Collection', 'start'],
     ['Price', 'start'],
-    ['Date', 'start'],
+    ['UTC', 'start'],
     ['Buyer', 'start'],
     ['Seller', 'start']
   ]);
@@ -40,10 +40,7 @@ function TradeHistory ({ account }: { account?: string }): React.ReactElement {
   useEffect(() => {
     if (account) {
       setTradesList(myTrades);
-      console.log(1111111111111);
     } else {
-      console.log(2222222222222);
-
       setTradesList(trades);
     }
   }, [account, myTrades, trades]);
@@ -77,7 +74,7 @@ function TradeHistory ({ account }: { account?: string }): React.ReactElement {
               {parseFloat(trade.price) / Math.pow(10, kusamaDecimals)} KSM
             </td>
             <td className='overflow tradeList'>
-              {moment(trade.tradeDate).format('YYYY-MM-DD')}
+              {moment.utc(trade.tradeDate).local().format(' YYYY-DD-MM HH:mm:ss   (Z)')}
             </td>
             <td className='overflow tradeList'>
               {trade.buyer ? keyring.encodeAddress(base64Decode(trade.buyer)) : ''}
