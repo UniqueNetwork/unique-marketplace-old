@@ -19,7 +19,7 @@ function Faq (): React.ReactElement<Props> {
         <p>A: You can use either <a href='https://polkadot.js.org/extension/'>https://polkadot.js.org/extension/</a> or the market `Accounts` page. Restore your wallet through the seed phrase, JSON file+password or QR code.</p>
         <p>Make sure that using Chrome or Firefox desktop with the Polkadot.js browser extension you’ve set your wallet account setting to `allow use on any chain`.</p>
         <p>Note that this option is not available to Ledger or TrustWallet users, their support will be added later. Rest assured your NFT is still safe in your wallet!</p>
-        <Header as='h4'>Q: I connected the right wallet to the app but it shows that my Subbstrapunk|Chelobrick belongs to a different address. Why?</Header>
+        <Header as='h4'>Q: I connected the right wallet to the app but it shows that my SubstraPunk|Chelobrick belongs to a different address. Why?</Header>
         <p>A: Substrate account addresses (Polkadot, Kusama etc.) may look different on different networks but they have all the same private key underneath. You can see all transformations of any address on <a href='https://polkadot.subscan.io/tools/ss58_transform'>https://polkadot.subscan.io/tools/ss58_transform</a></p>
         <Header as='h4'>Q: How can I create a wallet?</Header>
         <p>A: You can use either <a href='https://polkadot.js.org/extension/'>https://polkadot.js.org/extension/</a> or the market ‘Accounts’ page and follow the instructions. </p>
