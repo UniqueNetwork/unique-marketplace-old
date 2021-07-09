@@ -24,6 +24,7 @@ import GlobalStyle from '@polkadot/react-components/styles';
 import { useApi } from '@polkadot/react-hooks';
 import Signer from '@polkadot/react-signer';
 
+import infoSvg from '../src/images/info.svg';
 import ConnectingOverlay from './overlays/Connecting';
 import BalancesHeader from './BalancesHeader';
 import ScrollToTop from './ScrollToTop';
@@ -91,11 +92,19 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
               <>
                 {(!account && !currentLocation) && (
                   <div className='no-account'>
-                    <p> Some features are currently hidden and will only become available once you connect your wallet.  </p>
-                    <p> You can create new or add your existing substrate account on the
-                      <Link to='accounts' > <span> account page</span> </Link >
-                    </p>
+                    <div className='error-info-svg'>
+                      <img src = {String(infoSvg)}/>
+                    </div>
+                    <div className='error-message-info'>
+                      <div>
+                        <p> Some features are currently hidden and will only become available once you connect your wallet.  </p>
+                        <p> You can create new or add your existing substrate account on the
+                          <Link to='accounts' > <span> account page</span> </Link >
+                        </p>
+                      </div>
+                    </div>
                   </div>
+
                 )}
                 <Suspense fallback='...'>
                   <ErrorBoundary trigger={name}>
