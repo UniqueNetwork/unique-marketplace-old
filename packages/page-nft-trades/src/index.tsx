@@ -39,8 +39,6 @@ function App ({ account, basePath }: Props): React.ReactElement<Props> {
     }
   }, [account]);
 
-  console.log('account', account);
-
   return (
     <main className='nft--App'>
       <Header as='h1'>Trades</Header>
