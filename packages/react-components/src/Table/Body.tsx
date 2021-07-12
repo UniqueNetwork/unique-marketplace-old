@@ -33,6 +33,10 @@ export default React.memo(styled(Body)`
   position: relative;
   background: var(--bg-table);
 
+      .trades-row:hover{
+      background-color: #EBF8FF;
+    }
+
   td {
     padding: calc(var(--gap) / 2) var(--gap);
     text-align: left;
@@ -131,9 +135,18 @@ export default React.memo(styled(Body)`
       text-overflow: ellipsis;
     }
      &.tradeList {
-      max-width: 300px;
+
+      max-width:300px;
       white-space: nowrap;
-       text-align: center;
+      text-align: left;
+    }
+     &.token-id:hover {
+      cursor:pointer;
+      color: #1DB0FF;
+      text-decoration: underline;
+    }
+    &.box-buyer-seler{
+
     }
 
     &.start {
