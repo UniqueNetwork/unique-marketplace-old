@@ -60,6 +60,7 @@ export function useNftContract (account: string): useNftContractInterface {
       return null;
     } catch (e) {
       console.log('getUserDeposit Error: ', e);
+      window.location.reload();
 
       return null;
     }

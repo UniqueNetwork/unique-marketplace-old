@@ -31,8 +31,6 @@ const NftTokenCard = ({ account, collectionId, onSetCollectionName, onSetTokenAt
   const { collectionName16Decoder, hex2a } = useDecoder();
 
   const getFee = useCallback((price: BN): BN => {
-    console.log('price', price);
-
     return new BN(price).mul(new BN(commission)).div(new BN(100));
   }, []);
 
