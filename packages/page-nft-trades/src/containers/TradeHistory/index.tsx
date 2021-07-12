@@ -72,10 +72,10 @@ function TradeHistory ({ account }: { account?: string }): React.ReactElement {
             <td className='overflow tradeList'>
               {trade.collectionId}
             </td>
-            <td className='overflow tradeList'>
+            <td className='overflow tradeList price '>
               {parseFloat(trade.price) / Math.pow(10, kusamaDecimals)} KSM
             </td>
-            <td className='overflow tradeList'>
+            <td className='overflow tradeList date'>
               {moment.utc(trade.tradeDate).local().format(' YYYY-DD-MM HH:mm:ss   (Z)')}
             </td>
             <td className='overflow tradeList box-buyer-seler'>
