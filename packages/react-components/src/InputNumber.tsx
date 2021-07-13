@@ -141,6 +141,8 @@ function inputToBn (api: ApiPromise, input: string, si: SiDef | null, bitLength:
 function getValuesFromString (api: ApiPromise, value: string, si: SiDef | null, bitLength: BitLength, isZeroable: boolean, maxValue?: BN): [string, BN, boolean] {
   const [valueBn, isValid] = inputToBn(api, value, si, bitLength, isZeroable, maxValue);
 
+  value = value.slice(0, 8);
+
   return [
     value,
     valueBn,
