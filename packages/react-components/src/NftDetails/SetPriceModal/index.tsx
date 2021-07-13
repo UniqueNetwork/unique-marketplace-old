@@ -26,6 +26,11 @@ function SetPriceModal (props: Props): React.ReactElement<Props> {
   const onSetPrice = useCallback((price: string) => {
     const floatPrice = parseFloat(price);
 
+    price = price.slice(0, 8);
+
+    if (+price > 100000 || +price < 0) return;
+    if (price.length === 2 && price[0] === '0' && price[1] !== '.') price = '0';
+
     if (minPrice && floatPrice < minPrice && floatPrice > 0) {
       return;
     }
@@ -69,6 +74,7 @@ function SetPriceModal (props: Props): React.ReactElement<Props> {
         />
         <Button
           content='Submit'
+          disabled={+tokenPriceForSale <= 0}
           onClick={onSavePrice}
         />
       </Modal.Actions>

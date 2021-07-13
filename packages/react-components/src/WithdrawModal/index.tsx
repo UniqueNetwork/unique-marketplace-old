@@ -52,7 +52,9 @@ function WithdrawModal ({ account, closeModal, contractInstance, deposited, upda
 
   const setValue = (val: string) => {
     val = val.slice(0, 8);
+
     if (+val > 100000 || +val < 0) return;
+    if (val.length === 2 && val[0] === '0' && val[1] !== '.') val = '0';
 
     setWithdrawAmount(val);
   };
