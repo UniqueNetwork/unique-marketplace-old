@@ -26,7 +26,7 @@
         "Helvetica Neue", Arial, sans-serif;
       color: #040b1d;
       font-size: 16px;
-      background: #e5e5e5;
+      background: #f9faff;
       margin: 0;
       padding: 0;
       line-height: 24px;
@@ -46,7 +46,7 @@
 
     .header {
       height: 80px;
-      background: white;
+      background: #ffffff;
       line-height: 100px;
     }
 
@@ -55,9 +55,11 @@
     }
 
     .container {
-      margin: 64px 112px;
-      padding: 200px 0;
-      background: white;
+      margin: 60px 112px;
+      padding: 180px 0;
+      background: #ffffff;
+      box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.08);
+      border-radius: 4px;
       text-align: center;
     }
 
@@ -97,15 +99,58 @@
       justify-content: center;
       grid-column-gap: 12px;
     }
-
-    @media screen and (max-width: 1024px) {
+    @media screen and (max-width: 1600px) {
       .container {
-        margin: 24px 0;
-        padding: 170px 16px;
+        margin: 40px 0;
+        padding: 100px 16px;
       }
 
       h1 {
-        line-height: 48px;
+        line-height: 38px;
+      }
+      h2 {
+        margin: 60px 0 28px 0;
+        font-weight: 500;
+      }
+
+      .links {
+        display: block;
+      }
+
+      .follow {
+        margin-top: 14px;
+      }
+    }
+    @media screen and (max-width: 1366px) {
+      .container {
+        margin: 20px 0;
+        padding: 65px 16px;
+      }
+
+      h1 {
+        line-height: 38px;
+      }
+      h2 {
+        margin: 40px 0 28px 0;
+        font-weight: 400;
+      }
+
+      .links {
+        display: block;
+      }
+
+      .follow {
+        margin-top: 14px;
+      }
+    }
+    @media screen and (max-width: 1024px) {
+      .container {
+        margin: 12px 0;
+        padding: 60px 16px;
+      }
+
+      h1 {
+        line-height: 30px;
       }
 
       .links {
@@ -130,7 +175,7 @@
         some cool changes right now!
       </p>
       <p>
-        Marketplace for Substrapunks and Chelobricks collections is life on
+        Marketplace for Substrapunks and Chelobricks collections is live on
         <a href="https://unqnft.io/">unqnft.io</a>
       </p>
       <h2>
