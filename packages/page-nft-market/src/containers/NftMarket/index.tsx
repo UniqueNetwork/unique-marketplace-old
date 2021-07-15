@@ -26,7 +26,7 @@ import { AttributesDecoded } from '@polkadot/react-hooks/useSchema';
 import NftTokenCard from '../../components/NftTokenCard';
 import FilterContainer from '../market_filters/filter_container';
 
-const { uniqueCollectionIds } = envConfig;
+// let { uniqueCollectionIds } = envConfig;
 
 interface BuyTokensProps {
   account?: string;
@@ -45,6 +45,7 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
   // const { getOffers, offers, offersCount, offersLoading, presetCollections } = useCollections();
   const { getOffers, offers, offersCount, presetCollections } = useCollections();
   // const [searchString, setSearchString] = useState<string>('');
+  const [uniqueCollectionIds, setSniqueCollectionIds] = useState(envConfig.uniqueCollectionIds);
   const [searchString] = useState<string>('');
   const [offersWithAttributes, setOffersWithAttributes] = useState<OfferWithAttributes>({});
   const [collectionsNames, setCollectionsNames] = useState<{ [key: string]: string }>({});
@@ -52,10 +53,14 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
   const [filteredOffers, setFilteredOffers] = useState<OfferType[]>([]);
   const { collectionName16Decoder } = useDecoder();
   const hasMore = !!(offers && offersCount) && Object.keys(offers).length < offersCount;
-  const [filteredCollection, setFilteredCollection] = useState<any>([]);
+  // const [filteredCollection, setFilteredCollection] = useState<any>([]);
   const openDetailedInformationModal = useCallback((collectionId: string, tokenId: string) => {
     history.push(`/market/token-details?collectionId=${collectionId}&tokenId=${tokenId}`);
   }, [history]);
+
+  const changeuniqueCollectionIds = (newIds: string[]) => {
+    setSniqueCollectionIds(newIds);
+  };
 
   const addMintCollectionToList = useCallback(async () => {
     const firstCollections: NftCollectionInterface[] = await presetCollections();
@@ -86,7 +91,7 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
 
   const fetchData = useCallback((newPage: number) => {
     getOffers(newPage, perPage, uniqueCollectionIds);
-  }, [getOffers]);
+  }, [getOffers, uniqueCollectionIds]);
 
   useEffect(() => {
     if (offers) {
@@ -125,14 +130,11 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
 
   useEffect(() => {
     if (shouldUpdateTokens) {
-      void getOffers(1, perPage, uniqueCollectionIds);
       setShouldUpdateTokens(undefined);
     }
-  }, [getOffers, shouldUpdateTokens, setShouldUpdateTokens]);
 
-  useEffect(() => {
-    setFilteredCollection([...filteredOffers]);
-  }, [filteredOffers]);
+    void getOffers(1, perPage, uniqueCollectionIds);
+  }, [getOffers, shouldUpdateTokens, setShouldUpdateTokens, uniqueCollectionIds]);
 
   useEffect(() => {
     void addMintCollectionToList();
@@ -150,9 +152,10 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
           <Grid.Column width={4}>
 
             <FilterContainer
-              changeFilter={setFilteredCollection}
+              changeuniqueCollectionIds={changeuniqueCollectionIds}
               collections={collections}
-              filteredOffers={filteredOffers} />
+              filteredOffers={filteredOffers}
+              uniqueCollectionIds={uniqueCollectionIds} />
             {/* <Input
               className='isSmall search'
               help={<span>Find and select tokens collection.</span>}
@@ -164,36 +167,22 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
               withLabel
             /> */}
 
-            <ul className='collections-list'>
-              { collections.map((collection) => (
-                <li
-                  className='collections-list__item'
-                  key={collection.id}
-                >
-                  <div className='collections-list__img'>
-                    {/* <Image src={} /> */}
-                  </div>
-                  <div className='collections-list__name'>{collectionName16Decoder(collection.Name)}</div>
-                </li>
-              ))}
-            </ul>
-            <hr/>
           </Grid.Column>
           <Grid.Column width={12}>
             <Grid>
               {/* <Grid.Row>
                 <Grid.Column width={16}>
                   <Form className='collection-search-form'>
-                     <Input
-                    className='isSmall search'
-                    help={<span>Find and select token.</span>}
-                    isDisabled={!offers || !Object.values(offers).length}
-                    label={'Find token by name or collection'}
-                    onChange={setSearchString}
-                    placeholder='Search...'
-                    value={searchString}
-                    withLabel
-                  />
+                    <Input
+                      className='isSmall search'
+                      help={<span>Find and select token.</span>}
+                      isDisabled={!offers || !Object.values(offers).length}
+                      label={'Find token by name or collection'}
+                      onChange={setSearchString}
+                      placeholder='Search...'
+                      value={searchString}
+                      withLabel
+                    />
                     <Form.Field className='search-field'>
                       <Input
                         className='isSmall'
@@ -250,7 +239,7 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
                         useWindow={true}
                       >
                         <div className='market-pallet__item'>
-                          {filteredCollection.map((token) => (
+                          {filteredOffers.map((token) => (
                             <NftTokenCard
                               account={account}
                               collectionId={token.collectionId.toString()}
