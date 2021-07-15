@@ -33,6 +33,10 @@ export default React.memo(styled(Body)`
   position: relative;
   background: var(--bg-table);
 
+      .trades-row:hover{
+      background-color: #EBF8FF;
+    }
+
   td {
     padding: calc(var(--gap) / 2) var(--gap);
     text-align: left;
@@ -129,11 +133,23 @@ export default React.memo(styled(Body)`
       max-width: 0;
       overflow: hidden;
       text-overflow: ellipsis;
+
     }
      &.tradeList {
-      max-width: 300px;
+
+      max-width:300px;
       white-space: nowrap;
-       text-align: center;
+      text-align: left;
+      font-size:12px;
+    }
+
+     &.token-id:hover {
+      cursor:pointer;
+      color: #1DB0FF;
+      text-decoration: underline;
+    }
+    &.box-buyer-seler{
+
     }
 
     &.start {
@@ -191,6 +207,14 @@ export default React.memo(styled(Body)`
     .ui.toggle.checkbox input:checked~.box:before,
     .ui.toggle.checkbox input:checked~label:before {
       background-color: #eee !important;
+    }
+     @media  (max-width: 1366px) {
+        .date{
+          width:190px;
+        }
+          .price{
+          width:80px;
+        }
     }
   }
 `);

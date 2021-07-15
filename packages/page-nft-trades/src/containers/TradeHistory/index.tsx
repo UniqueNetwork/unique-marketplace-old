@@ -52,7 +52,7 @@ function TradeHistory ({ account }: { account?: string }): React.ReactElement {
   return (
     <div
       className='trades'
-      style={{ cursor: 'pointer' }}>
+    >
 
       <ListComponent
         empty={'No trades found'}
@@ -60,26 +60,28 @@ function TradeHistory ({ account }: { account?: string }): React.ReactElement {
       >
         { tradesList && tradesList.map((trade: TradeType) => (
           <tr
+            className='trades-row'
             key={`${trade.collectionId}-${trade.tokenId}-${trade.buyer || ''} + ${Math.random() * 100}  `}
-            onClick={openDetailedInformationModal.bind(null, trade.collectionId, trade.tokenId)}
 
           >
-            <td className='overflow tradeList'>
+            <td className='overflow tradeList token-id'
+              onClick={openDetailedInformationModal.bind(null, trade.collectionId, trade.tokenId)}
+            >
               {trade.tokenId}
             </td>
             <td className='overflow tradeList'>
               {trade.collectionId}
             </td>
-            <td className='overflow tradeList'>
+            <td className='overflow tradeList price '>
               {parseFloat(trade.price) / Math.pow(10, kusamaDecimals)} KSM
             </td>
-            <td className='overflow tradeList'>
+            <td className='overflow tradeList date'>
               {moment.utc(trade.tradeDate).local().format(' YYYY-DD-MM HH:mm:ss   (Z)')}
             </td>
-            <td className='overflow tradeList'>
+            <td className='overflow tradeList box-buyer-seler'>
               {trade.buyer ? keyring.encodeAddress(base64Decode(trade.buyer)) : ''}
             </td>
-            <td className='overflow tradeList'>
+            <td className='overflow tradeList box-buyer-seler'>
               {keyring.encodeAddress(base64Decode(trade.seller))}
             </td>
           </tr>
