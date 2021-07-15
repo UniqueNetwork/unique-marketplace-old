@@ -76,6 +76,13 @@ export default React.memo(styled(Table)`
     &.isFixed {
       table-layout: fixed;
     }
+    th {
+      font-size:12px;
+      text-align: left;
+    }
+    td{
+      padding-left: 0;
+    }
 
     tr {
       max-width: 100%;
