@@ -124,17 +124,18 @@ export function useCollections () {
         } else {
           if (result) {
             if (result.items.length) {
-              setOffers((prevState: {[key: string]: OfferType}) => {
-                const newState = { ...prevState };
+              setOffers(result.items);
+              // setOffers((prevState: {[key: string]: OfferType}) => {
+              //   const newState = { ...prevState };
 
-                result.items.forEach((offer: OfferType) => {
-                  if (!newState[`${offer.collectionId}-${offer.tokenId}`]) {
-                    newState[`${offer.collectionId}-${offer.tokenId}`] = { ...offer, seller: encodeAddress(base64Decode(offer.seller)) };
-                  }
-                });
+              //   result.items.forEach((offer: OfferType) => {
+              //     if (!newState[`${offer.collectionId}-${offer.tokenId}`]) {
+              //       newState[`${offer.collectionId}-${offer.tokenId}`] = { ...offer, seller: encodeAddress(base64Decode(offer.seller)) };
+              //     }
+              //   });
 
-                return newState;
-              });
+              //   return newState;
+              // });
             }
 
             if (result.itemsCount) {
