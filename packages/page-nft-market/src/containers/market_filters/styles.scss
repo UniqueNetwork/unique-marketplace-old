@@ -45,6 +45,10 @@
   font-weight: 500;
   font-size: 16px;
   line-height: 24px;
+}
+
+.clear-title-active {
+  cursor: pointer;
   color: #1db0ff;
 }
 
@@ -75,8 +79,8 @@
   display: flex;
   justify-content: space-around;
 }
-.collections-main-none {
-  display: none;
+.display-none {
+  display: none !important;
 }
 .collection-img {
   background-size: contain;
@@ -220,7 +224,7 @@ input:checked + .slider:before {
   display: flex;
   justify-content: space-between;
   input {
-    width: 106px;
+    width: 118px;
     background: #ffffff;
     border: 1px solid #ececec;
     box-sizing: border-box;

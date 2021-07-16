@@ -155,7 +155,7 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
               changeuniqueCollectionIds={changeuniqueCollectionIds}
               collections={collections}
               filteredOffers={filteredOffers}
-              uniqueCollectionIds={uniqueCollectionIds} />
+            />
             {/* <Input
               className='isSmall search'
               help={<span>Find and select tokens collection.</span>}
@@ -218,8 +218,10 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
                   </Form>
                 </Grid.Column>
               </Grid.Row> */}
+
               {(account && filteredOffers.length > 0) && (
                 <Grid.Row>
+
                   <Grid.Column width={16}>
                     <div className='market-pallet'>
                       <InfiniteScroll
@@ -238,7 +240,9 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
                         threshold={200}
                         useWindow={true}
                       >
+                        
                         <div className='market-pallet__item'>
+
                           {filteredOffers.map((token) => (
                             <NftTokenCard
                               account={account}

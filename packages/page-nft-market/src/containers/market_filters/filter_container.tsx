@@ -15,19 +15,18 @@ const { uniqueCollectionIds: envIds } = envConfig;
 
 interface PropTypes {
   changeuniqueCollectionIds: (arr: string[]) => void;
-  uniqueCollectionIds: string[];
   collections: NftCollectionInterface[]
-  filteredOffers: any
   changeFilter: any
 }
 
-const FilterContainer: React.FC<PropTypes> = ({ changeuniqueCollectionIds, collections, uniqueCollectionIds }) => {
+const FilterContainer: React.FC<PropTypes> = ({ changeuniqueCollectionIds, collections }) => {
   const { collectionName16Decoder } = useDecoder();
   const currentCollection = useMetadata();
   const [images, setImages] = useState<string[]>([]);
   const [inputChecked, setInputChecked] = useState([]);
   const [isCheked, setIsCheked] = useState<boolean>(false);
   const [isShowCollection, setisShowCollection] = useState<boolean>(false);
+  const [isShowPrice, setisShowPrice] = useState<boolean>(false);
 
   const [checkedIds, setCheckedids] = useState<string[]>([]);
 
@@ -48,16 +47,14 @@ const FilterContainer: React.FC<PropTypes> = ({ changeuniqueCollectionIds, colle
       setCheckedids(envIds);
     } else if (!!checkedIds.length && checkedIds.includes(id)) {
       const _ = checkedIds.filter((item) => item !== id);
-      let arg = null;
 
       if (_.length > 0) {
-        arg = _;
+        changeuniqueCollectionIds(_);
+        setCheckedids(_);
       } else {
-        arg = envIds;
+        setCheckedids([]);
+        changeuniqueCollectionIds(envIds);
       }
-
-      setCheckedids(arg);
-      changeuniqueCollectionIds(arg);
     } else {
       changeuniqueCollectionIds([...checkedIds, id]);
       setCheckedids([...checkedIds, id]);
@@ -83,7 +80,7 @@ const FilterContainer: React.FC<PropTypes> = ({ changeuniqueCollectionIds, colle
 
   return (
     <div className='filter-main'>
-
+      {/*
       <div className='switch-my-tokens'>
         <label className='switch'>
           <input
@@ -94,19 +91,19 @@ const FilterContainer: React.FC<PropTypes> = ({ changeuniqueCollectionIds, colle
         </label>
         <div>Only my tokens</div>
 
-      </div>
+      </div> */}
       <div className='collection-header' >
         <div className='collection-title' >Collections</div>
         <div onClick={clearCheckedValues}>
           <div className='clear'>
-            <div className='clear-title'>Clear</div>
+            <div className={`clear-title ${inputChecked.length ? 'clear-title-active' : ''}`}>Clear</div>
             <div className={`clear-icon ${isShowCollection ? 'rotate-icon' : ''}`}
               onClick={() => setisShowCollection(!isShowCollection)}>^</div>
           </div>
         </div>
 
       </div>
-      <div className={`${isShowCollection ? 'collections-main-none' : ''}  `}>
+      <div className={`${isShowCollection ? 'display-none' : ''}  `}>
         <div className='collection-filter'>
           <input className='collection-search'
             placeholder='Search'
@@ -143,24 +140,27 @@ const FilterContainer: React.FC<PropTypes> = ({ changeuniqueCollectionIds, colle
           })}
         </div>
       </div>
-      <div className='price'>
+      {/* <div className='price'>
         <div className='price-title'>
           <div>Price</div>
-          <div>^</div>
+          <div className={`clear-icon ${isShowPrice ? 'rotate-icon' : ''}`}
+            onClick={() => setisShowPrice(!isShowPrice)}>^</div>
         </div>
-        <div className='price-main'>
-          <input placeholder='min'
-            type='text' />
-          <p>to</p>
-          <input placeholder='max'
-            type='text' />
-        </div>
-        <div >
+        <div className={`  ${isShowPrice ? 'display-none' : ''}  `}>
+          <div className='price-main' >
+            <input placeholder='min'
+              type='text' />
+            <p>to</p>
+            <input placeholder='max'
+              type='text' />
 
+          </div>
           <button className='price-btn'
           >Aplly</button>
         </div>
-      </div>
+        <div >
+        </div>
+      </div> */}
     </div>
   );
 };
