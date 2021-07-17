@@ -154,7 +154,6 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
             <FilterContainer
               changeuniqueCollectionIds={changeuniqueCollectionIds}
               collections={collections}
-              filteredOffers={filteredOffers}
             />
             {/* <Input
               className='isSmall search'
@@ -219,7 +218,7 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
                 </Grid.Column>
               </Grid.Row> */}
 
-              {(account && filteredOffers.length > 0) && (
+              {filteredOffers.length > 0 && (
                 <Grid.Row>
 
                   <Grid.Column width={16}>
@@ -240,7 +239,7 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
                         threshold={200}
                         useWindow={true}
                       >
-                        
+
                         <div className='market-pallet__item'>
 
                           {filteredOffers.map((token) => (
