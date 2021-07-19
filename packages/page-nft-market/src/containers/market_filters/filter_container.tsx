@@ -16,6 +16,7 @@ const { uniqueCollectionIds: envIds } = envConfig;
 interface PropTypes {
   changeuniqueCollectionIds: (arr: string[]) => void;
   collections: NftCollectionInterface[]
+<<<<<<< HEAD
   changeFilter: any
   changePrices: (minPrice: string, maxPrice: string) => void
 
@@ -23,6 +24,8 @@ interface PropTypes {
 interface PricesTypes{
   minPrice: string;
   maxPrice: string;
+=======
+>>>>>>> a9d667096690db976c0afcfc04918958ea2247cf
 }
 
 const FilterContainer: React.FC<PropTypes> = ({ changePrices, changeuniqueCollectionIds, collections }) => {

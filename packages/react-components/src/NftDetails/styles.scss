@@ -19,6 +19,10 @@
     margin-right: 24px;
     margin-bottom: 0;
   }
+  .text-with-button {
+    color: red !important;
+    opacity: 0.8;
+  }
 
   .token-info {
     margin-top: 40px;
@@ -46,7 +50,8 @@
       }
     }
 
-    h4, h5 {
+    h4,
+    h5 {
       font-family: var(--font-roboto) var(--font-mono);
       font-style: normal;
       font-weight: bold;
@@ -74,7 +79,6 @@
     }
 
     .accessories {
-
       word-break: break-all;
       color: var(--title-color);
       font-family: var(--font-inter);
@@ -121,9 +125,7 @@
     grid-row-gap: 16px;
 
     .ui.button {
-
       .ui.loader {
-
         &:after {
           position: absolute;
           left: 50%;
@@ -141,7 +143,8 @@
     }
   }
 
-  .sale-steps, .buy-steps {
+  .sale-steps,
+  .buy-steps {
     margin-top: 16px;
   }
 

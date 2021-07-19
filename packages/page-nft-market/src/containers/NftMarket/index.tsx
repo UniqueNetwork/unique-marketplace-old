@@ -189,7 +189,6 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
               changePrices={changePrices}
               changeuniqueCollectionIds={changeuniqueCollectionIds}
               collections={collections}
-              filteredOffers={filteredOffers}
             />
             {/* <Input
               className='isSmall search'
