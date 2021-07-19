@@ -16,7 +16,6 @@ const { uniqueCollectionIds: envIds } = envConfig;
 interface PropTypes {
   changeuniqueCollectionIds: (arr: string[]) => void;
   collections: NftCollectionInterface[]
-  changeFilter: any
 }
 
 const FilterContainer: React.FC<PropTypes> = ({ changeuniqueCollectionIds, collections }) => {
