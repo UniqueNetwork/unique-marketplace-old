@@ -26,12 +26,20 @@ import { AttributesDecoded } from '@polkadot/react-hooks/useSchema';
 import NftTokenCard from '../../components/NftTokenCard';
 import FilterContainer from '../market_filters/filter_container';
 
+const { commission } = envConfig;
+
 // let { uniqueCollectionIds } = envConfig;
 
 interface BuyTokensProps {
   account?: string;
   setShouldUpdateTokens: (value?: string) => void;
   shouldUpdateTokens?: string;
+}
+
+export interface FiltredFildes {
+  collectionIds?: string[];
+  minPrice?: string;
+  maxPrice?: string;
 }
 
 interface OfferWithAttributes {
@@ -42,14 +50,20 @@ const perPage = 20;
 
 const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTokensProps): ReactElement => {
   const history = useHistory();
+
   // const { getOffers, offers, offersCount, offersLoading, presetCollections } = useCollections();
   const { getOffers, offers, offersCount, presetCollections } = useCollections();
   // const [searchString, setSearchString] = useState<string>('');
   const [uniqueCollectionIds, setSniqueCollectionIds] = useState(envConfig.uniqueCollectionIds);
   const [searchString] = useState<string>('');
+  const [minKSMPrice, setMinKSMPrice] = useState('');
+  const [maxKSMPrice, setMaxKSMPrice] = useState('');
+
   const [offersWithAttributes, setOffersWithAttributes] = useState<OfferWithAttributes>({});
   const [collectionsNames, setCollectionsNames] = useState<{ [key: string]: string }>({});
   const [collections, setCollections] = useState<NftCollectionInterface[]>([]);
+  const [filtredFildes, setfiltredFildes] = useState<FiltredFildes>({ collectionIds: uniqueCollectionIds });
+
   const [filteredOffers, setFilteredOffers] = useState<OfferType[]>([]);
   const { collectionName16Decoder } = useDecoder();
   const hasMore = !!(offers && offersCount) && Object.keys(offers).length < offersCount;
@@ -60,6 +74,7 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
 
   const changeuniqueCollectionIds = (newIds: string[]) => {
     setSniqueCollectionIds(newIds);
+    setfiltredFildes({ ...filtredFildes, collectionIds: newIds });
   };
 
   const addMintCollectionToList = useCallback(async () => {
@@ -67,6 +82,25 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
 
     setCollections(() => [...firstCollections]);
   }, [presetCollections]);
+
+  const changePrices = (minPrice: string|undefined, maxPrice: string|undefined) => {
+    if (minPrice === '') {
+      minPrice = undefined;
+    } else {
+      minPrice = String(Math.trunc(+minPrice * 1000000000000 / (1 + (+commission / 100))));
+    }
+
+    setMinKSMPrice(() => minPrice);
+
+    if (maxPrice === '') {
+      maxPrice = undefined;
+    } else {
+      maxPrice = String(Math.trunc(+maxPrice * 1000000000000 / (1 + (+commission / 100))));
+    }
+
+    setMaxKSMPrice(() => maxPrice);
+    setfiltredFildes({ ...filtredFildes, minPrice, maxPrice });
+  };
 
   const onSetTokenAttributes = useCallback((collectionId: string, tokenId: string, attributes: AttributesDecoded) => {
     setOffersWithAttributes((prevOffers: OfferWithAttributes) => {
@@ -90,8 +124,8 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
   }, []);
 
   const fetchData = useCallback((newPage: number) => {
-    getOffers(newPage, perPage, uniqueCollectionIds);
-  }, [getOffers, uniqueCollectionIds]);
+    getOffers(newPage, perPage, filtredFildes);
+  }, [getOffers, filtredFildes, minKSMPrice, maxKSMPrice]);
 
   useEffect(() => {
     if (offers) {
@@ -133,8 +167,8 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
       setShouldUpdateTokens(undefined);
     }
 
-    void getOffers(1, perPage, uniqueCollectionIds);
-  }, [getOffers, shouldUpdateTokens, setShouldUpdateTokens, uniqueCollectionIds]);
+    void getOffers(1, perPage, filtredFildes);
+  }, [getOffers, shouldUpdateTokens, setShouldUpdateTokens, filtredFildes, minKSMPrice, maxKSMPrice]);
 
   useEffect(() => {
     void addMintCollectionToList();
@@ -152,6 +186,7 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
           <Grid.Column width={4}>
 
             <FilterContainer
+              changePrices={changePrices}
               changeuniqueCollectionIds={changeuniqueCollectionIds}
               collections={collections}
               filteredOffers={filteredOffers}
@@ -219,7 +254,7 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
                 </Grid.Column>
               </Grid.Row> */}
 
-              {(account && filteredOffers.length > 0) && (
+              {filteredOffers.length > 0 && (
                 <Grid.Row>
 
                   <Grid.Column width={16}>
@@ -240,7 +275,7 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
                         threshold={200}
                         useWindow={true}
                       >
-                        
+
                         <div className='market-pallet__item'>
 
                           {filteredOffers.map((token) => (

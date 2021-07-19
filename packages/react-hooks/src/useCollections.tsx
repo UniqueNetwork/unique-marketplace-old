@@ -8,6 +8,7 @@ import type { TokenDetailsInterface } from '@polkadot/react-hooks/useToken';
 import BN from 'bn.js';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import { FiltredFildes } from '@polkadot/app-nft-market/containers/NftMarket';
 import envConfig from '@polkadot/apps-config/envConfig';
 import { useApi, useCollection, useFetch } from '@polkadot/react-hooks';
 import { base64Decode, encodeAddress } from '@polkadot/util-crypto';
@@ -103,13 +104,22 @@ export function useCollections () {
   /**
    * Return the list of token sale offers
    */
-  const getOffers = useCallback((page: number, pageSize: number, collectionIds?: string[]) => {
+  const getOffers = useCallback((page: number, pageSize: number, filtredFildes?: FiltredFildes) => {
     try {
       let url = `/offers?page=${page}&pageSize=${pageSize}`;
 
-      if (!canAddCollections && collectionIds && collectionIds.length) {
-        url = `${url}${collectionIds.map((item: string) => `&collectionId=${item}`).join('')}`;
+      for (const key in filtredFildes) {
+        if (filtredFildes[key] !== undefined) {
+          if (Array.isArray(filtredFildes[key])) {
+            url += filtredFildes[key].map((item: string) => `&collectionId=${item}`).join('');
+            // url = `${url}${filtredFildes[key].map((item: string) => `&collectionId=${item}`).join('')}`
+          } else url += '&' + key + '=' + filtredFildes[key];
+        }
       }
+
+      // if (!canAddCollections && collectionIds && collectionIds.length) {
+      //   url = `${url}${collectionIds.map((item: string) => `&collectionId=${item}`).join('')}`;
+      // }
 
       setOffersLoading(true);
       fetchData<OffersResponseType>(url).subscribe((result: OffersResponseType | ErrorType) => {
@@ -123,8 +133,11 @@ export function useCollections () {
           setError(result);
         } else {
           if (result) {
+            if (result.itemsCount === 0) setOffers([]);
+
             if (result.items.length) {
               setOffers(result.items);
+
               // setOffers((prevState: {[key: string]: OfferType}) => {
               //   const newState = { ...prevState };
 
@@ -134,8 +147,8 @@ export function useCollections () {
               //     }
               //   });
 
-              //   return newState;
-              // });
+            //   return newState;
+            // });
             }
 
             if (result.itemsCount) {
