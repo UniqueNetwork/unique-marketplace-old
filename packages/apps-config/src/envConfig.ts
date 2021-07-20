@@ -7,48 +7,50 @@ export type EnvConfigType = {
   canCreateToken: boolean;
   canEditCollection: boolean;
   canEditToken: boolean;
-  commission: 10;
+  commission: number;
   contractAddress: string; // 5FgbNg55FCFT3j1KokxsHaEgp4wfnDMGazCLw3mqC359bY72
   decimals: number;
+  environment: string;
   escrowAddress: string; // 5FdzbgdBGRM5FDALrnSPRybWhqKv4eiy6QUpWUdBt3v3omAU
   faviconPath: string;
   kusamaDecimals: number; // 12
   maxGas: number; // 1000000000000
+  midTedCollection: number;
   minPrice: number;
   quoteId: number; // 2
   showMarketActions: boolean; // buy, sell, cancel and withdraw buttons on the token details page
   uniqueCollectionIds: string[]; // ['23']
   value: number; // 0
+  vaultAddress: string; // 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
+  version: string;
   walletMode: boolean; // if only wallet needed
   wssUrl: string;
 }
 
-declare global {
-  interface Window {
-    processEnv: EnvConfigType
-  }
-}
-
 const envConfig: EnvConfigType = {
-  canAddCollections: window.processEnv.canAddCollections || false,
-  canCreateCollection: window.processEnv.canCreateCollection || false,
-  canCreateToken: window.processEnv.canCreateToken || false,
-  canEditCollection: window.processEnv.canEditCollection || false,
-  canEditToken: window.processEnv.canEditToken || false,
-  commission: window.processEnv.commission || 10,
-  contractAddress: window.processEnv.contractAddress || '5FgbNg55FCFT3j1KokxsHaEgp4wfnDMGazCLw3mqC359bY72',
-  decimals: window.processEnv.decimals || 6,
-  escrowAddress: window.processEnv.escrowAddress || '5FdzbgdBGRM5FDALrnSPRybWhqKv4eiy6QUpWUdBt3v3omAU',
-  faviconPath: window.processEnv.faviconPath || 'favicon.ico',
-  kusamaDecimals: window.processEnv.kusamaDecimals || 12,
-  maxGas: window.processEnv.maxGas || 1000000000000,
-  minPrice: window.processEnv.minPrice || 0.000001,
-  quoteId: window.processEnv.quoteId || 2,
-  showMarketActions: window.processEnv.showMarketActions || false,
-  uniqueCollectionIds: window.processEnv.uniqueCollectionIds || ['2'],
-  value: window.processEnv.value || 0,
-  walletMode: window.processEnv.walletMode || false,
-  wssUrl: window.processEnv.wssUrl || 'wss://testnet2.uniquenetwork.io'
+  canAddCollections: JSON.parse(process.env.CAN_ADD_COLLECTIONS) || false,
+  canCreateCollection: JSON.parse(process.env.CAN_CREATE_COLLECTION) || true,
+  canCreateToken: JSON.parse(process.env.CAN_CREATE_TOKEN) || true,
+  canEditCollection: JSON.parse(process.env.CAN_EDIT_COLLECTION) || true,
+  canEditToken: JSON.parse(process.env.CAN_EDIT_TOKEN) || true,
+  commission: +process.env.COMMISSION || 10,
+  contractAddress: process.env.CONTRACT_ADDRESS || '5GPbxrVzvjRHUSQUS9BNUFe2Q4KVfsYZtG1CTRaqe51rNSAX',
+  decimals: +process.env.DECIMALS|| 6,
+  environment: process.env.ENVIRONMENT || 'development',
+  escrowAddress: process.env.ESCROW_ADDRESS || '5DXRqSKrXeSmYin1kLqDR74aqnjxShVo9DDdgvnPP3tAtxV4',
+  faviconPath: process.env.FAVICON_PATH || 'favicons/marketplace',
+  kusamaDecimals: +process.env.KUSAMA_DECIMALS || 12,
+  maxGas: +process.env.MAX_GAS || 1000000000000,
+  midTedCollection: +process.env.MIN_TED_COLLECTION || 1,
+  minPrice: +process.env.MIN_PRICE || 0.000001,
+  quoteId: +process.env.QUOTE_ID || 2,
+  showMarketActions: JSON.parse(process.env.SHOW_MARKET_ACTIONS) || true,
+  uniqueCollectionIds: process.env.UNIQUE_COLLECTION_IDS.split(',') || ['18', '23', '25'],
+  value: +process.env.VALUE || 0,
+  vaultAddress: process.env.VAULT_ADDRESS || '5DXRqSKrXeSmYin1kLqDR74aqnjxShVo9DDdgvnPP3tAtxV4',
+  version: process.env.VERSION || '1.0',
+  walletMode: JSON.parse(process.env.WALLET_MODE) || false,
+  wssUrl: process.env.WSS_URL || 'wss://testnet2.uniquenetwork.io'
 };
 
 export default envConfig;
