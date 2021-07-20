@@ -75,18 +75,13 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
     history.push(`/market/token-details?collectionId=${collectionId}&tokenId=${tokenId}`);
   }, [history]);
 
-  // account && console.log(keyring.encodeAddress(base64Decode(account)), '/////');
-  // account && console.log(base64Decode(account));
-
   const changeuniqueCollectionIds = (newIds: string[]) => {
     setSniqueCollectionIds(newIds);
     setfiltredFildes({ ...filtredFildes, collectionIds: newIds });
   };
 
   const filterBySeller = (OnlyMyTokens: boolean) => {
-    console.log(22);
     if (OnlyMyTokens) {
-      console.log(11);
       setfiltredFildes({ ...filtredFildes, seller: account });
     } else setfiltredFildes({ ...filtredFildes, seller: undefined });
   };
