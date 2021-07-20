@@ -14,6 +14,7 @@ import { useDecoder, useMetadata } from '@polkadot/react-hooks';
 const { uniqueCollectionIds: envIds } = envConfig;
 
 interface PropTypes {
+  filterBySeller: (isOnlyMyToken: boolean) => void;
   changeuniqueCollectionIds: (arr: string[]) => void;
   collections: NftCollectionInterface[]
   changeFilter: any
@@ -25,11 +26,12 @@ interface PricesTypes{
   maxPrice: string;
 }
 
-const FilterContainer: React.FC<PropTypes> = ({ changePrices, changeuniqueCollectionIds, collections }) => {
+const FilterContainer: React.FC<PropTypes> = ({ changePrices, changeuniqueCollectionIds, collections, filterBySeller }) => {
   const { collectionName16Decoder } = useDecoder();
   const currentCollection = useMetadata();
   const [images, setImages] = useState<string[]>([]);
   const [inputChecked, setInputChecked] = useState([]);
+  const [isOnlyMyToken, setisOnlyMyToken] = useState(false);
   const [KSMPrices, setKSMPrices] = useState<PricesTypes>({ maxPrice: '', minPrice: '' });
 
   const [isShowCollection, setisShowCollection] = useState<boolean>(false);
@@ -38,7 +40,18 @@ const FilterContainer: React.FC<PropTypes> = ({ changePrices, changeuniqueCollec
   const [checkedIds, setCheckedids] = useState<string[]>([]);
 
   const setKSMPrice: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-    setKSMPrices({ ...KSMPrices, [e.target.name]: e.target.value });
+    let val = e.target.value;
+
+    val = val.slice(0, 8);
+    if (+val > 100000 || +val < 0) return;
+    if (val.length === 2 && val[0] === '0' && val[1] !== '.') val = '0';
+
+    setKSMPrices({ ...KSMPrices, [e.target.name]: val });
+  };
+
+  const handleOnlyMyToken = () => {
+    setisOnlyMyToken(!isOnlyMyToken);
+    filterBySeller(!isOnlyMyToken);
   };
 
   const filterCurrent = (id) => {
@@ -91,18 +104,18 @@ const FilterContainer: React.FC<PropTypes> = ({ changePrices, changeuniqueCollec
 
   return (
     <div className='filter-main'>
-      {/*
+
       <div className='switch-my-tokens'>
         <label className='switch'>
           <input
-            checked={isCheked}
-            onChange={() => setIsCheked((prev) => !prev)}
+            checked={isOnlyMyToken}
+            onChange={handleOnlyMyToken}
             type='checkbox'></input>
           <span className='slider round'></span>
         </label>
         <div>Only my tokens</div>
 
-      </div> */}
+      </div>
       <div className='collection-header' >
         <div className='collection-title' >Collections</div>
         <div onClick={clearCheckedValues}>
@@ -178,7 +191,7 @@ const FilterContainer: React.FC<PropTypes> = ({ changePrices, changeuniqueCollec
 
           </div>
           <button
-            className='price-btn'
+            className={`price-btn ${(KSMPrices.minPrice || KSMPrices.maxPrice) ? 'price-btn-active' : ''}`}
             disabled={!KSMPrices.minPrice && !KSMPrices.maxPrice}
             onClick={() => changePrices(KSMPrices.minPrice, KSMPrices.maxPrice)}
           >Aplly</button>

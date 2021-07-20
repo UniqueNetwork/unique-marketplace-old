@@ -21,6 +21,8 @@ import envConfig from '@polkadot/apps-config/envConfig';
 // import { Input } from '@polkadot/react-components';
 import { useCollections, useDecoder } from '@polkadot/react-hooks';
 import { AttributesDecoded } from '@polkadot/react-hooks/useSchema';
+import { keyring } from '@polkadot/ui-keyring';
+import { base64Decode, encodeAddress } from '@polkadot/util-crypto';
 
 // local imports and components
 import NftTokenCard from '../../components/NftTokenCard';
@@ -40,6 +42,7 @@ export interface FiltredFildes {
   collectionIds?: string[];
   minPrice?: string;
   maxPrice?: string;
+  seller?: string
 }
 
 interface OfferWithAttributes {
@@ -56,8 +59,8 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
   // const [searchString, setSearchString] = useState<string>('');
   const [uniqueCollectionIds, setSniqueCollectionIds] = useState(envConfig.uniqueCollectionIds);
   const [searchString] = useState<string>('');
-  const [minKSMPrice, setMinKSMPrice] = useState('');
-  const [maxKSMPrice, setMaxKSMPrice] = useState('');
+  const [minKSMPrice, setMinKSMPrice] = useState<string|undefined>('');
+  const [maxKSMPrice, setMaxKSMPrice] = useState<string|undefined>('');
 
   const [offersWithAttributes, setOffersWithAttributes] = useState<OfferWithAttributes>({});
   const [collectionsNames, setCollectionsNames] = useState<{ [key: string]: string }>({});
@@ -75,6 +78,12 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
   const changeuniqueCollectionIds = (newIds: string[]) => {
     setSniqueCollectionIds(newIds);
     setfiltredFildes({ ...filtredFildes, collectionIds: newIds });
+  };
+
+  const filterBySeller = (OnlyMyTokens: boolean) => {
+    if (OnlyMyTokens) {
+      setfiltredFildes({ ...filtredFildes, seller: account });
+    } else setfiltredFildes({ ...filtredFildes, seller: undefined });
   };
 
   const addMintCollectionToList = useCallback(async () => {
@@ -125,7 +134,7 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
 
   const fetchData = useCallback((newPage: number) => {
     getOffers(newPage, perPage, filtredFildes);
-  }, [getOffers, filtredFildes, minKSMPrice, maxKSMPrice]);
+  }, [getOffers, filtredFildes]);
 
   useEffect(() => {
     if (offers) {
@@ -189,6 +198,7 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
               changePrices={changePrices}
               changeuniqueCollectionIds={changeuniqueCollectionIds}
               collections={collections}
+              filterBySeller={filterBySeller}
             />
             {/* <Input
               className='isSmall search'
