@@ -19,10 +19,8 @@ import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 // import searchIcon from '@polkadot/app-nft-wallet/components/CollectionSearch/searchIcon.svg';
 import envConfig from '@polkadot/apps-config/envConfig';
 // import { Input } from '@polkadot/react-components';
-import { useCollections, useDecoder } from '@polkadot/react-hooks';
+import { useCollections } from '@polkadot/react-hooks';
 import { AttributesDecoded } from '@polkadot/react-hooks/useSchema';
-import { keyring } from '@polkadot/ui-keyring';
-import { base64Decode, encodeAddress } from '@polkadot/util-crypto';
 
 // local imports and components
 import NftTokenCard from '../../components/NftTokenCard';
@@ -33,7 +31,7 @@ const { commission } = envConfig;
 // let { uniqueCollectionIds } = envConfig;
 
 interface BuyTokensProps {
-  account?: string;
+  account?: string|undefined;
   setShouldUpdateTokens: (value?: string) => void;
   shouldUpdateTokens?: string;
 }
@@ -68,7 +66,6 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
   const [filtredFildes, setfiltredFildes] = useState<FiltredFildes>({ collectionIds: uniqueCollectionIds });
 
   const [filteredOffers, setFilteredOffers] = useState<OfferType[]>([]);
-  const { collectionName16Decoder } = useDecoder();
   const hasMore = !!(offers && offersCount) && Object.keys(offers).length < offersCount;
   // const [filteredCollection, setFilteredCollection] = useState<any>([]);
   const openDetailedInformationModal = useCallback((collectionId: string, tokenId: string) => {
@@ -96,7 +93,7 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
     if (minPrice === '') {
       minPrice = undefined;
     } else {
-      minPrice = String(Math.trunc(+minPrice * 1000000000000 / (1 + (+commission / 100))));
+      minPrice = String(Math.trunc(Number(minPrice) * 1000000000000 / (1 + (+commission / 100))));
     }
 
     setMinKSMPrice(() => minPrice);
@@ -104,11 +101,11 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
     if (maxPrice === '') {
       maxPrice = undefined;
     } else {
-      maxPrice = String(Math.trunc(+maxPrice * 1000000000000 / (1 + (+commission / 100))));
+      maxPrice = String(Math.trunc(Number(maxPrice) * 1000000000000 / (1 + (+commission / 100))));
     }
 
     setMaxKSMPrice(() => maxPrice);
-    setfiltredFildes({ ...filtredFildes, minPrice, maxPrice });
+    setfiltredFildes({ ...filtredFildes, maxPrice, minPrice });
   };
 
   const onSetTokenAttributes = useCallback((collectionId: string, tokenId: string, attributes: AttributesDecoded) => {
@@ -195,6 +192,7 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
           <Grid.Column width={4}>
 
             <FilterContainer
+              account={account}
               changePrices={changePrices}
               changeuniqueCollectionIds={changeuniqueCollectionIds}
               collections={collections}

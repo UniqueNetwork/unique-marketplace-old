@@ -14,6 +14,7 @@ import { useDecoder, useMetadata } from '@polkadot/react-hooks';
 const { uniqueCollectionIds: envIds } = envConfig;
 
 interface PropTypes {
+  account: string|undefined
   filterBySeller: (isOnlyMyToken: boolean) => void;
   changeuniqueCollectionIds: (arr: string[]) => void;
   collections: NftCollectionInterface[]
@@ -25,7 +26,7 @@ interface PricesTypes{
   maxPrice: string;
 }
 
-const FilterContainer: React.FC<PropTypes> = ({ changePrices, changeuniqueCollectionIds, collections, filterBySeller }) => {
+const FilterContainer: React.FC<PropTypes> = ({ account, changePrices, changeuniqueCollectionIds, collections, filterBySeller }) => {
   const { collectionName16Decoder } = useDecoder();
   const currentCollection = useMetadata();
   const [images, setImages] = useState<string[]>([]);
@@ -113,9 +114,10 @@ const FilterContainer: React.FC<PropTypes> = ({ changePrices, changeuniqueCollec
         <label className='switch'>
           <input
             checked={isOnlyMyToken}
+            disabled={!account}
             onChange={handleOnlyMyToken}
             type='checkbox'></input>
-          <span className='slider round'></span>
+          <span className={` slider round ${account ? '' : 'disable-token'}`}></span>
         </label>
         <div className='title'>Only my tokens</div>
 
