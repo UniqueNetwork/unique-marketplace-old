@@ -11,6 +11,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { FiltredFildes } from '@polkadot/app-nft-market/containers/NftMarket';
 import envConfig from '@polkadot/apps-config/envConfig';
 import { useApi, useCollection, useFetch } from '@polkadot/react-hooks';
+import { base64Decode, encodeAddress } from '@polkadot/util-crypto';
 
 const { canAddCollections, uniqueCollectionIds } = envConfig;
 
@@ -135,6 +136,9 @@ export function useCollections () {
             if (result.itemsCount === 0) setOffers([]);
 
             if (result.items.length) {
+              result.items.forEach((item) => {
+                item.seller = encodeAddress(base64Decode(item.seller));
+              });
               setOffers(result.items);
 
               // setOffers((prevState: {[key: string]: OfferType}) => {

@@ -74,7 +74,7 @@ export const useKusamaApi = (account?: string): UseKusamaApiInterface => {
     const api = new ApiPromise({ provider, registry, signer, types, typesBundle, typesChain });
 
     api.on('ready', (): void => {
-      console.log('kusama api ready');
+      // console.log('kusama api ready');
       setKusamaApi(api);
     });
 
