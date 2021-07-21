@@ -1,15 +1,15 @@
-::-webkit-scrollbar{
+::-webkit-scrollbar {
   width: 5px;
   height: 5px;
 }
-::-webkit-scrollbar-thumb{
+::-webkit-scrollbar-thumb {
   border-radius: 10px;
   background: var(--dropdown-scrollbar-color);
 }
-::-webkit-scrollbar-thumb:hover{
+::-webkit-scrollbar-thumb:hover {
   background: var(--dropdown-scrollbar-color);
 }
-::-webkit-scrollbar-track{
+::-webkit-scrollbar-track {
   border-radius: 10px;
   background: var(--dropdown-scrollbar-track-color);
 }
@@ -24,9 +24,9 @@ body {
 .ui.popup {
   background: var(--bg-page) !important;
 
-  &:before, &:after {
+  &:before,
+  &:after {
     background: var(--bg-page) !important;
-
   }
 }
 
@@ -79,7 +79,6 @@ hr {
   }
 
   .actions {
-
     .ui--Button {
       background: var(--link-color);
       color: var(--text-color);
@@ -113,7 +112,7 @@ hr {
 h1.ui.header {
   font: 700 36px/48px var(--font-inter);
   color: var(--title-color);
-  margin-bottom: calc(var(--gap) / 2);
+  margin-bottom: calc(var(--gap) / 0);
 }
 
 h2.ui.header {
@@ -131,17 +130,16 @@ h4.ui.header {
   min-height: 60px;
 }
 
-.ui--LabelHelp  {
+.ui--LabelHelp {
   font-size: 0.5em;
   vertical-align: middle;
 }
 
 .ui--Labelled {
-
   &.search {
     input {
       padding-left: calc(var(--gap) * 2.5);
-      background-image: url('../public/icons/magnifying.svg') !important;
+      background-image: url("../public/icons/magnifying.svg") !important;
       background-size: 24px 24px !important;
       background-repeat: no-repeat !important;
       background-position: 8px !important;
@@ -153,7 +151,6 @@ h4.ui.header {
   }
 
   &.ui--Dropdown {
-
     &.dropdown-button {
       width: 130px;
       height: 40px;
@@ -188,14 +185,12 @@ h4.ui.header {
           .text {
             color: var(--text-color) !important;
           }
-
         }
       }
     }
   }
 
   .ui.dropdown {
-
     &.active {
       &:hover {
         border: 1px solid var(--account-selector-background);
@@ -220,7 +215,7 @@ h4.ui.header {
     padding-left: 0 !important;
   }
 
-  & label{
+  & label {
     left: 1.55rem !important;
   }
 
@@ -230,7 +225,7 @@ h4.ui.header {
     padding: calc(var(--gap) / 3) calc(var(--gap) * 2);
     height: 48px;
 
-    & .menu>.item {
+    & .menu > .item {
       padding: calc(var(--gap) / 3) calc(var(--gap) * 2) !important;
     }
   }
@@ -269,7 +264,7 @@ h4.ui.header {
   .dropdown.icon {
     display: flex;
     align-items: center;
-    margin:  0 !important;
+    margin: 0 !important;
     top: 0 !important;
     right: 0 !important;
     height: 100% !important;
@@ -293,7 +288,7 @@ h4.ui.header {
   }
 }
 
-.ui.grid>.row {
+.ui.grid > .row {
   padding: 0 0 24px;
 }
 
@@ -310,7 +305,8 @@ form {
       min-height: 0;
       padding: calc(var(--gap) / 2) var(--gap);
 
-      &:focus, &:active {
+      &:focus,
+      &:active {
         .menu {
           border-color: var(--border-color);
         }
@@ -345,7 +341,7 @@ form {
         white-space: nowrap;
 
         .delete.icon {
-          background: url('../public/icons/closeIcon.svg') !important;
+          background: url("../public/icons/closeIcon.svg") !important;
           width: 13px;
           height: 13px;
 
@@ -361,7 +357,6 @@ form {
 .ui--Dropdown {
   &.dropdown-button {
     .ui.item.dropdown {
-
       .text {
         font-weight: 500;
       }
@@ -373,7 +368,7 @@ form {
       }
 
       .dropdown.icon {
-        background: url('../public/icons/arrowDown.svg') !important;
+        background: url("../public/icons/arrowDown.svg") !important;
         background-position: 100px 100px;
         background-repeat: no-repeat;
         height: 13px !important;
@@ -479,7 +474,6 @@ button.ui.button,
   }
 }
 
-
 .ui.attached {
   &.tabular {
     &.menu {
@@ -497,7 +491,7 @@ button.ui.button,
 
         &.active {
           color: var(--link-color);
-          border-bottom:1px solid var(--link-color);
+          border-bottom: 1px solid var(--link-color);
         }
       }
     }
@@ -509,7 +503,8 @@ button.ui.button,
   height: 25px;
   width: 25px;
 
-  &:after, &:before {
+  &:after,
+  &:before {
     height: 25px;
     width: 25px;
     margin: 0;
@@ -662,7 +657,6 @@ button.ui.button,
 
 .collection-search-form {
   .search-field {
-
     &.with-results {
       .ui--Labelled {
         .ui.input {
@@ -679,20 +673,20 @@ button.ui.button,
         .loader {
           position: absolute;
           left: 95%;
-          top: 7px
+          top: 7px;
         }
 
         img {
           position: absolute;
           &.search-icon {
             left: 16px;
-            top: 7px
+            top: 7px;
           }
 
           &.clear-icon {
             cursor: pointer;
             right: 16px;
-            top: 7px
+            top: 7px;
           }
         }
 
@@ -703,16 +697,20 @@ button.ui.button,
     }
   }
 }
-.modalDescription{
+.modalDescription {
   margin: 0 !important;
   div {
-    p{
-        margin: 0;
-        color: var(--title-color);
-        opacity: 0.7;
-        font-family: var(--font-roboto);
-        padding: 0.3rem 1.5rem 0px 1.5rem !important;
+    p {
+      margin: 0;
+      color: var(--title-color);
+      opacity: 0.7;
+      font-family: var(--font-roboto);
+      padding: 0.3rem 1.5rem 0px 1.5rem !important;
     }
   }
 }
-
+@media (max-width: 768px) {
+  .ui.grid > .row {
+    display: grid;
+  }
+}
