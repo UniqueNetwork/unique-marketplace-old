@@ -17,7 +17,6 @@ interface PropTypes {
   filterBySeller: (isOnlyMyToken: boolean) => void;
   changeuniqueCollectionIds: (arr: string[]) => void;
   collections: NftCollectionInterface[]
-  changeFilter: any
   changePrices: (minPrice: string, maxPrice: string) => void
 
 }
@@ -30,7 +29,7 @@ const FilterContainer: React.FC<PropTypes> = ({ changePrices, changeuniqueCollec
   const { collectionName16Decoder } = useDecoder();
   const currentCollection = useMetadata();
   const [images, setImages] = useState<string[]>([]);
-  const [inputChecked, setInputChecked] = useState([]);
+  const [inputChecked, setInputChecked] = useState<string[]>([]);
   const [isOnlyMyToken, setisOnlyMyToken] = useState(false);
   const [KSMPrices, setKSMPrices] = useState<PricesTypes>({ maxPrice: '', minPrice: '' });
 
@@ -38,6 +37,11 @@ const FilterContainer: React.FC<PropTypes> = ({ changePrices, changeuniqueCollec
   const [isShowPrice, setisShowPrice] = useState<boolean>(false);
 
   const [checkedIds, setCheckedids] = useState<string[]>([]);
+
+  const clearPrices = () => {
+    setKSMPrices({ maxPrice: '', minPrice: '' });
+    changePrices('', '');
+  };
 
   const setKSMPrice: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     let val = e.target.value;
@@ -54,7 +58,7 @@ const FilterContainer: React.FC<PropTypes> = ({ changePrices, changeuniqueCollec
     filterBySeller(!isOnlyMyToken);
   };
 
-  const filterCurrent = (id) => {
+  const filterCurrent = (id: string) => {
     if (inputChecked.includes(id)) {
       const filteredData = inputChecked.filter((item) => item !== id);
 
@@ -113,62 +117,72 @@ const FilterContainer: React.FC<PropTypes> = ({ changePrices, changeuniqueCollec
             type='checkbox'></input>
           <span className='slider round'></span>
         </label>
-        <div>Only my tokens</div>
+        <div className='title'>Only my tokens</div>
 
       </div>
-      <div className='collection-header' >
-        <div className='collection-title' >Collections</div>
-        <div onClick={clearCheckedValues}>
-          <div className='clear'>
-            <div className={`clear-title ${inputChecked.length ? 'clear-title-active' : ''}`}>Clear</div>
-            <div className={`clear-icon ${isShowCollection ? 'rotate-icon' : ''}`}
-              onClick={() => setisShowCollection(!isShowCollection)}></div>
+      <div className='collection'>
+        <div className='collection-header' >
+          <div className='collection-title' >Collections</div>
+          <div >
+            <div className='clear'>
+              <div
+                className={`clear-title ${inputChecked.length ? 'clear-title-active' : ''}`}
+                onClick={clearCheckedValues}>Clear</div>
+              <div className={`clear-icon ${isShowCollection ? 'rotate-icon' : ''}`}
+                onClick={() => setisShowCollection(!isShowCollection)}></div>
+            </div>
           </div>
-        </div>
 
-      </div>
-      <div className={`${isShowCollection ? 'display-none' : ''}  `}>
-        {/* <div className='collection-filter'>
+        </div>
+        <div className={`${isShowCollection ? 'display-none' : ''}  `}>
+          {/* <div className='collection-filter'>
           <input className='collection-search'
             placeholder='Search'
             type='text'>
           </input>
         </div> */}
-        <div className='collection-list'>
-          {collections.map((collection, index) => {
-            return (
-              <div className={`collections-main ${inputChecked.includes(String(collection.id)) ? 'collections-main-background' : ''}`}
-                key={collection.id}
-                onClick={() => { filterCurrent(collection.id); }}>
+          <div className='collection-list'>
+            {collections.map((collection, index) => {
+              return (
+                <div className={`collections-main ${inputChecked.includes(String(collection.id)) ? 'collections-main-background' : ''}`}
+                  key={collection.id}
+                  onClick={() => { filterCurrent(collection.id); }}>
 
-                <div className='collection-name-checkbox'>
-                  <div>
-                    <input
-                      checked={inputChecked && inputChecked.includes(String(collection.id))}
-                      data-current={collection.id}
-                      onChange={() => null}
-                      type='checkbox'/>
+                  <div className='collection-name-checkbox'>
+                    <div>
+                      <input
+                        checked={inputChecked && inputChecked.includes(String(collection.id))}
+                        data-current={collection.id}
+                        onChange={() => null}
+                        type='checkbox'/>
+                    </div>
+                    <div className='collection-name'>{collectionName16Decoder(collection.Name)}</div>
                   </div>
-                  <div className='collection-name'>{collectionName16Decoder(collection.Name)}</div>
+                  {
+                    images.length === collections.length && images[index] !== '' && (
+                      <div className='collection-img'
+                        style={ { backgroundImage: `url(${images.length === collections.length ? images[index] : ''})` }} />
+                    )
+
+                  }
                 </div>
-                {
-                  images.length === collections.length && images[index] !== '' && (
-                    <div className='collection-img'
-                      style={ { backgroundImage: `url(${images.length === collections.length ? images[index] : ''})` }} />
-                  )
 
-                }
-              </div>
-
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       </div>
       <div className='price'>
         <div className='price-title'>
           <div>Price</div>
-          <div className={`clear-icon ${isShowPrice ? 'rotate-icon' : ''}`}
-            onClick={() => setisShowPrice(!isShowPrice)}></div>
+          <div className='clear'>
+            <div
+              className={`clear-title ${(KSMPrices.minPrice || KSMPrices.maxPrice) ? 'clear-title-active' : ''}`}
+              onClick={clearPrices}
+            >Clear</div>
+            <div className={`clear-icon ${isShowPrice ? 'rotate-icon' : ''}`}
+              onClick={() => setisShowPrice(!isShowPrice)}></div>
+          </div>
         </div>
         <div className={`  ${isShowPrice ? 'display-none' : ''}  `}>
           <div className='price-main' >
@@ -194,7 +208,7 @@ const FilterContainer: React.FC<PropTypes> = ({ changePrices, changeuniqueCollec
             className={`price-btn ${(KSMPrices.minPrice || KSMPrices.maxPrice) ? 'price-btn-active' : ''}`}
             disabled={!KSMPrices.minPrice && !KSMPrices.maxPrice}
             onClick={() => changePrices(KSMPrices.minPrice, KSMPrices.maxPrice)}
-          >Aplly</button>
+          >Apply</button>
         </div>
         <div >
         </div>
