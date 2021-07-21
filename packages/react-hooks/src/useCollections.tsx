@@ -11,7 +11,6 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { FiltredFildes } from '@polkadot/app-nft-market/containers/NftMarket';
 import envConfig from '@polkadot/apps-config/envConfig';
 import { useApi, useCollection, useFetch } from '@polkadot/react-hooks';
-import { base64Decode, encodeAddress } from '@polkadot/util-crypto';
 
 const { canAddCollections, uniqueCollectionIds } = envConfig;
 

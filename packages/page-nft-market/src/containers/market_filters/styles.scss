@@ -1,8 +1,10 @@
 .filter-main {
   background: #ffffff;
   border-radius: 4px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.08);
   padding: 20px 20px;
   width: 280px;
+  margin-top: -13px;
 }
 .collections-main {
   align-items: center;
@@ -193,10 +195,14 @@ input[type="checkbox"]:checked:after {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #ffffff;
+  background-color: #a9afbd;
   border: 2px solid #c7cbd4;
   -webkit-transition: 0.4s;
   transition: 0.4s;
+}
+.disable-token {
+  background-color: #ffffff !important;
+  cursor: default;
 }
 
 .slider:before {
