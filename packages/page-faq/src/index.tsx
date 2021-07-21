@@ -42,6 +42,16 @@ function Faq (): React.ReactElement<Props> {
         <p>A: Just wail for half a minute and try again</p>
         <Header as='h4'>Q: I am trying to buy an NFT, but I am seeing the other owner and the “Withdraw your KSM” button on the header is active. Why?</Header>
         <p>A: Unfortunately someone has beaten you in buying the same NFT, but you can either withdraw your KSM back to your wallet or leave it in the deposit balance to use in future purchases.</p>
+
+        <Header as='h4'>Q: How to transfer KSM to the other wallet or exchange?</Header>
+        <p>A: KSM that you use and see on the marketplace is on your Kusama (Substrate) account, you don't have to withdraw it. You can interact with your wallet using any Polkadot/Kusama network tool.
+              To transfer KSM to the other wallet or exchange:</p>
+        <ol>
+          <li>Go to 'Accounts' at <a href='https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Fkusama-rpc.polkadot.io#/accounts'>https://polkadot.js.org/apps/accounts</a></li>
+          <li> Restore your wallet through the seed phrase, JSON file+password or QR code.Make sure that using Chrome or Firefox desktop with the Polkadot.js browser extension you’ve set your wallet account setting to 'allow use on any chain'.</li>
+          <li>Send KSM anywhere you want</li>
+        </ol>
+
       </div>
     </main>
   );

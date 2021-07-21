@@ -195,7 +195,19 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
                   onClick={setShowTransferForm.bind(null, !showTransferForm)}
                 />
               )}
-              { showMarketActions && (
+              {(!account && tokenAsk) && (
+
+                <div>
+                  <Button
+                    content='Buy it'
+                    disabled
+                    title='ass'
+                  />
+                  <p className='text-with-button'>Сonnect your wallet to make transactions</p>
+
+                </div>
+              )}
+              {showMarketActions && (
                 <>
                   { (!uOwnIt && !transferStep && tokenAsk && kusamaFees) && (
                     <>

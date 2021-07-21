@@ -5,7 +5,10 @@
 }
 
 .market-pallet {
+  background-color: #ffffff;
   width: 100%;
+  box-shadow: 0px 4px 12px rgb(0 0 0 / 8%);
+  border-radius: 4px;
 
   &__item {
     width: 100%;
@@ -52,5 +55,33 @@
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+  }
+}
+@media (max-width: 1280px) {
+  .market-pallet {
+    margin-left: 25px;
+    width: 95%;
+
+    &__item {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+  }
+}
+@media (max-width: 1024px) {
+  .market-pallet {
+    margin-left: 90px;
+    width: 85%;
+    &__item {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+}
+@media (max-width: 768px) {
+  .market-pallet {
+    margin: 40px 0 0 0;
+    width: 52%;
+    &__item {
+      grid-template-columns: 1fr;
+    }
   }
 }
