@@ -8,7 +8,7 @@ import type { TokenDetailsInterface } from '@polkadot/react-hooks/useToken';
 import BN from 'bn.js';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { FiltredFildes } from '@polkadot/app-nft-market/containers/NftMarket';
+import { Filters } from '@polkadot/app-nft-market/containers/NftMarket';
 import envConfig from '@polkadot/apps-config/envConfig';
 import { useApi, useCollection, useFetch } from '@polkadot/react-hooks';
 import { base64Decode, encodeAddress } from '@polkadot/util-crypto';
@@ -76,8 +76,8 @@ export function useCollections () {
   const { api } = useApi();
   const { fetchData } = useFetch();
   const [error, setError] = useState<ErrorType>();
-  const [offers, setOffers] = useState<{[key: string]: OfferType}>({});
-  const [myHold, setMyHold] = useState<{[key: string]: HoldType[]}>({});
+  const [offers, setOffers] = useState<{ [key: string]: OfferType }>({});
+  const [myHold, setMyHold] = useState<{ [key: string]: HoldType[] }>({});
   const [offersLoading, setOffersLoading] = useState<boolean>(false);
   const [holdLoading, setHoldLoading] = useState<boolean>(false);
   const [offersCount, setOffersCount] = useState<number>();
@@ -104,16 +104,23 @@ export function useCollections () {
   /**
    * Return the list of token sale offers
    */
-  const getOffers = useCallback((page: number, pageSize: number, filtredFildes?: FiltredFildes) => {
+  const getOffers = useCallback((page: number, pageSize, filters?: Filters, isOnScroll = false) => {
+    if (isOnScroll) {
+      pageSize = page * pageSize;
+    }
+
+    page = 1;
+
     try {
       let url = `/offers?page=${page}&pageSize=${pageSize}`;
 
-      for (const key in filtredFildes) {
-        if (filtredFildes[key] !== undefined) {
-          if (Array.isArray(filtredFildes[key])) {
-            url += filtredFildes[key].map((item: string) => `&collectionId=${item}`).join('');
-            // url = `${url}${filtredFildes[key].map((item: string) => `&collectionId=${item}`).join('')}`
-          } else url += '&' + key + '=' + filtredFildes[key];
+      for (const key in filters) {
+        if (filters[key] !== undefined) {
+          if (Array.isArray(filters[key])) {
+            url += filters[key].map((item: string) => `&collectionId=${item}`).join('');
+          } else {
+            url += '&' + key + '=' + filters[key];
+          }
         }
       }
 
@@ -121,7 +128,6 @@ export function useCollections () {
       //   url = `${url}${collectionIds.map((item: string) => `&collectionId=${item}`).join('')}`;
       // }
 
-      setOffersLoading(true);
       fetchData<OffersResponseType>(url).subscribe((result: OffersResponseType | ErrorType) => {
         if (cleanup.current) {
           setOffersLoading(false);
@@ -133,25 +139,40 @@ export function useCollections () {
           setError(result);
         } else {
           if (result) {
-            if (result.itemsCount === 0) setOffers([]);
+            if (result.itemsCount === 0) {
+              setOffers([]);
+            }
 
             if (result.items.length) {
-              result.items.forEach((item) => {
-                item.seller = encodeAddress(base64Decode(item.seller));
-              });
-              setOffers(result.items);
+              if (isOnScroll) {
+                setOffers((prevState: { [key: string]: OfferType }) => {
+                  const prevStateCopy = { ...prevState };
 
-              // setOffers((prevState: {[key: string]: OfferType}) => {
-              //   const newState = { ...prevState };
+                  result.items.forEach((offer: OfferType) => {
+                    if (!prevStateCopy[`${offer.collectionId}-${offer.tokenId}`]) {
+                      prevStateCopy[`${offer.collectionId}-${offer.tokenId}`] = {
+                        ...offer,
+                        seller: encodeAddress(base64Decode(offer.seller))
+                      };
+                    }
+                  });
 
-              //   result.items.forEach((offer: OfferType) => {
-              //     if (!newState[`${offer.collectionId}-${offer.tokenId}`]) {
-              //       newState[`${offer.collectionId}-${offer.tokenId}`] = { ...offer, seller: encodeAddress(base64Decode(offer.seller)) };
-              //     }
-              //   });
+                  return prevStateCopy;
+                });
+              } else {
+                const newOffers: { [key: string]: OfferType } = {};
 
-            //   return newState;
-            // });
+                result.items.forEach((offer: OfferType) => {
+                  if (offer) {
+                    newOffers[`${offer.collectionId}-${offer.tokenId}`] = {
+                      ...offer,
+                      seller: encodeAddress(base64Decode(offer.seller))
+                    };
+                  }
+                });
+
+                setOffers(newOffers);
+              }
             }
 
             if (result.itemsCount) {
@@ -192,7 +213,7 @@ export function useCollections () {
           setMyHold({});
         } else {
           if (result?.items.length) {
-            const newState: {[key: string]: HoldType[]} = {};
+            const newState: { [key: string]: HoldType[] } = {};
 
             result.items.forEach((hold: HoldType) => {
               if (!newState[hold.collectionId]) {
@@ -221,7 +242,10 @@ export function useCollections () {
   /**
    * Return the list of token trades
    */
-  const getTrades = useCallback(({ account, collectionIds, page, pageSize }: { account?: string, collectionIds?: string[], page: number, pageSize: number }) => {
+  const getTrades = useCallback(({ account,
+    collectionIds,
+    page,
+    pageSize }: { account?: string, collectionIds?: string[], page: number, pageSize: number }) => {
     try {
       let url = '/trades';
 
