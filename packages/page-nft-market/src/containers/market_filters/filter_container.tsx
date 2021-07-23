@@ -101,7 +101,7 @@ const FilterContainer: React.FC<PropTypes> = ({ account, changePrices, changeuni
       currentCollection.getTokenImageUrl(element, '1')
         .then((res) => {
           if (res) {
-            setImages((prev) => [res, ...prev]);
+            setImages((prev) => [...prev, res]);
           } else setImages((prev) => ['', ...prev]);
         });
     });
