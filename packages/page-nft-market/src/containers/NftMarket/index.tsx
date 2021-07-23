@@ -58,13 +58,11 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
   // const [searchString, setSearchString] = useState<string>('');
   const [uniqueCollectionIds, setSniqueCollectionIds] = useState(envConfig.uniqueCollectionIds);
   const [searchString] = useState<string>('');
-  const [minKSMPrice, setMinKSMPrice] = useState<string | undefined>('');
-  const [maxKSMPrice, setMaxKSMPrice] = useState<string | undefined>('');
 
   const [offersWithAttributes, setOffersWithAttributes] = useState<OfferWithAttributes>({});
   const [collectionsNames, setCollectionsNames] = useState<{ [key: string]: string }>({});
   const [collections, setCollections] = useState<NftCollectionInterface[]>([]);
-  const [filters, setfilters] = useState<Filters>({ collectionIds: [...uniqueCollectionIds] });
+  const [filters, setFilters] = useState<Filters>({ collectionIds: [...uniqueCollectionIds] });
 
   const [filteredOffers, setFilteredOffers] = useState<OfferType[]>([]);
   const hasMore = !!(offers && offersCount) && Object.keys(offers).length < offersCount;
@@ -74,15 +72,21 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
   }, [history]);
 
   const changeuniqueCollectionIds = (newIds: string[]) => {
+    page = 1;
     setSniqueCollectionIds(newIds);
-    setfilters({ ...filters, collectionIds: newIds });
+    setFilters({ ...filters, collectionIds: newIds });
   };
 
   const filterBySeller = (OnlyMyTokens: boolean) => {
+    page = 1;
+
     if (OnlyMyTokens) {
-      setfilters({ ...filters, seller: account });
+      setFilters({ ...filters, seller: account });
     } else {
-      setfilters({ ...filters, seller: undefined });
+      const filtersCopy = { ...filters };
+
+      delete filtersCopy.seller;
+      setFilters({ ...filtersCopy });
     }
   };
 
@@ -94,22 +98,23 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
 
   const changePrices = (minPrice: string | undefined, maxPrice: string | undefined) => {
     page = 1;
+    const filtersCopy = { ...filters };
+
     if (minPrice === '') {
-      minPrice = undefined;
+      delete filtersCopy.minPrice;
     } else {
       minPrice = String(Math.trunc(Number(minPrice) * 1000000000000 / (1 + (+commission / 100))));
+      filtersCopy.minPrice = minPrice;
     }
-
-    setMinKSMPrice(() => minPrice);
 
     if (maxPrice === '') {
-      maxPrice = undefined;
+      delete filtersCopy.maxPrice;
     } else {
       maxPrice = String(Math.trunc(Number(maxPrice) * 1000000000000 / (1 + (+commission / 100))));
+      filtersCopy.maxPrice = maxPrice;
     }
 
-    setMaxKSMPrice(() => maxPrice);
-    setfilters({ ...filters, maxPrice, minPrice });
+    setFilters({ ...filtersCopy });
   };
 
   const onSetTokenAttributes = useCallback((collectionId: string, tokenId: string, attributes: AttributesDecoded) => {
