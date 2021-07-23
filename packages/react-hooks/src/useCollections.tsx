@@ -104,7 +104,7 @@ export function useCollections () {
   /**
    * Return the list of token sale offers
    */
-  const getOffers = useCallback((page: number, pageSize, filters?: Filters, isOnScroll = false) => {
+  const getOffers = useCallback((page: number, pageSize: number, filters?: Filters, isOnScroll = false) => {
     if (isOnScroll) {
       pageSize = page * pageSize;
     }
@@ -115,12 +115,10 @@ export function useCollections () {
       let url = `/offers?page=${page}&pageSize=${pageSize}`;
 
       for (const key in filters) {
-        if (filters[key] !== undefined) {
-          if (Array.isArray(filters[key])) {
-            url += filters[key].map((item: string) => `&collectionId=${item}`).join('');
-          } else {
-            url += '&' + key + '=' + filters[key];
-          }
+        if (Array.isArray(filters[key])) {
+          url += filters[key].map((item: string) => `&collectionId=${item}`).join('');
+        } else {
+          url += '&' + key + '=' + filters[key];
         }
       }
 
@@ -140,7 +138,7 @@ export function useCollections () {
         } else {
           if (result) {
             if (result.itemsCount === 0) {
-              setOffers([]);
+              setOffers({});
             }
 
             if (result.items.length) {
