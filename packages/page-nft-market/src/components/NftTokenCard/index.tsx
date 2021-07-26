@@ -6,47 +6,30 @@ import './styles.scss';
 import type { OfferType } from '@polkadot/react-hooks/useCollections';
 
 import BN from 'bn.js';
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback } from 'react';
 import Image from 'semantic-ui-react/dist/commonjs/elements/Image';
 import Card from 'semantic-ui-react/dist/commonjs/views/Card';
 
 import envConfig from '@polkadot/apps-config/envConfig';
 import { useDecoder, useSchema } from '@polkadot/react-hooks';
 import { formatKsmBalance } from '@polkadot/react-hooks/useKusamaApi';
-import { AttributesDecoded } from '@polkadot/react-hooks/useSchema';
 
 const { commission } = envConfig;
 
 interface Props {
   account: string | undefined;
   collectionId: string;
-  onSetCollectionName: (collectionId: string, collectionName: string) => void;
-  onSetTokenAttributes?: (collectionId: string, tokenId: string, attributes: AttributesDecoded) => void;
   openDetailedInformationModal: (collectionId: string, tokenId: string) => void;
   token: OfferType;
 }
 
-const NftTokenCard = ({ account, collectionId, onSetCollectionName, onSetTokenAttributes, openDetailedInformationModal, token }: Props): React.ReactElement<Props> => {
-  const { attributes, collectionInfo, tokenName, tokenUrl } = useSchema(account, collectionId, token.tokenId);
+const NftTokenCard = ({ account, collectionId, openDetailedInformationModal, token }: Props): React.ReactElement<Props> => {
+  const { collectionInfo, tokenName, tokenUrl } = useSchema(account, collectionId, token.tokenId);
   const { collectionName16Decoder, hex2a } = useDecoder();
 
   const getFee = useCallback((price: BN): BN => {
     return new BN(price).mul(new BN(commission)).div(new BN(100));
   }, []);
-
-  useEffect(() => {
-    if (attributes && onSetTokenAttributes) {
-      onSetTokenAttributes(collectionId, token.tokenId, attributes);
-    }
-  }, [attributes, collectionId, onSetTokenAttributes, token]);
-
-  useEffect(() => {
-    if (collectionInfo) {
-      const collectionName = collectionName16Decoder(collectionInfo.Name);
-
-      onSetCollectionName(collectionId, collectionName);
-    }
-  }, [collectionId, collectionInfo, collectionName16Decoder, onSetCollectionName]);
 
   return (
     <Card

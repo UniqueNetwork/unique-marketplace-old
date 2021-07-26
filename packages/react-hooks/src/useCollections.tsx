@@ -104,15 +104,14 @@ export function useCollections () {
   /**
    * Return the list of token sale offers
    */
-  const getOffers = useCallback((page: number, pageSize: number, filters?: Filters, isOnScroll = false) => {
-    if (isOnScroll) {
-      pageSize = page * pageSize;
-    }
-
-    page = 1;
-
+  const getOffers = useCallback((page: number, pageSize: number, filters?: Filters) => {
     try {
       let url = `/offers?page=${page}&pageSize=${pageSize}`;
+
+      // reset offers before loading first page
+      if (page === 1) {
+        setOffers({});
+      }
 
       if (filters) {
         Object.keys(filters).forEach((filterKey: string) => {
@@ -142,44 +141,22 @@ export function useCollections () {
           setError(result);
         } else {
           if (result) {
+            setOffersCount(result.itemsCount);
+
             if (result.itemsCount === 0) {
               setOffers({});
-            }
-
-            if (result.items.length) {
-              if (isOnScroll) {
-                setOffers((prevState: { [key: string]: OfferType }) => {
-                  const prevStateCopy = { ...prevState };
-
-                  result.items.forEach((offer: OfferType) => {
-                    if (!prevStateCopy[`${offer.collectionId}-${offer.tokenId}`]) {
-                      prevStateCopy[`${offer.collectionId}-${offer.tokenId}`] = {
-                        ...offer,
-                        seller: encodeAddress(base64Decode(offer.seller))
-                      };
-                    }
-                  });
-
-                  return prevStateCopy;
-                });
-              } else {
-                const newOffers: { [key: string]: OfferType } = {};
+            } else if (result.items.length) {
+              setOffers((prevState: {[key: string]: OfferType}) => {
+                const newState = { ...prevState };
 
                 result.items.forEach((offer: OfferType) => {
-                  if (offer) {
-                    newOffers[`${offer.collectionId}-${offer.tokenId}`] = {
-                      ...offer,
-                      seller: encodeAddress(base64Decode(offer.seller))
-                    };
+                  if (!newState[`${offer.collectionId}-${offer.tokenId}`]) {
+                    newState[`${offer.collectionId}-${offer.tokenId}`] = { ...offer, seller: encodeAddress(base64Decode(offer.seller)) };
                   }
                 });
 
-                setOffers(newOffers);
-              }
-            }
-
-            if (result.itemsCount) {
-              setOffersCount(result.itemsCount);
+                return newState;
+              });
             }
           }
         }

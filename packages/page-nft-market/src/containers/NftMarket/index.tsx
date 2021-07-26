@@ -4,7 +4,6 @@
 import './styles.scss';
 
 import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
-import type { OfferType } from '@polkadot/react-hooks/useCollections';
 
 // external imports
 import React, { memo, ReactElement, useCallback, useEffect, useState } from 'react';
@@ -20,15 +19,12 @@ import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 import envConfig from '@polkadot/apps-config/envConfig';
 // import { Input } from '@polkadot/react-components';
 import { useCollections } from '@polkadot/react-hooks';
-import { AttributesDecoded } from '@polkadot/react-hooks/useSchema';
 
 // local imports and components
 import NftTokenCard from '../../components/NftTokenCard';
 import FilterContainer from '../market_filters/filter_container';
 
 const { commission } = envConfig;
-
-// let { uniqueCollectionIds } = envConfig;
 
 interface BuyTokensProps {
   account?: string | undefined;
@@ -44,10 +40,6 @@ export interface Filters {
   [key: string]: string | string[];
 }
 
-interface OfferWithAttributes {
-  [collectionId: string]: { [tokenId: string]: AttributesDecoded }
-}
-
 const perPage = 20;
 
 const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTokensProps): ReactElement => {
@@ -59,12 +51,9 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
   const [uniqueCollectionIds, setSniqueCollectionIds] = useState(envConfig.uniqueCollectionIds);
   const [searchString] = useState<string>('');
 
-  const [offersWithAttributes, setOffersWithAttributes] = useState<OfferWithAttributes>({});
-  const [collectionsNames, setCollectionsNames] = useState<{ [key: string]: string }>({});
   const [collections, setCollections] = useState<NftCollectionInterface[]>([]);
   const [filters, setFilters] = useState<Filters>({ collectionIds: [...uniqueCollectionIds] });
 
-  const [filteredOffers, setFilteredOffers] = useState<OfferType[]>([]);
   const hasMore = !!(offers && offersCount) && Object.keys(offers).length < offersCount;
   // const [filteredCollection, setFilteredCollection] = useState<any>([]);
   const openDetailedInformationModal = useCallback((collectionId: string, tokenId: string) => {
@@ -113,62 +102,9 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
     setFilters({ ...filtersCopy });
   };
 
-  const onSetTokenAttributes = useCallback((collectionId: string, tokenId: string, attributes: AttributesDecoded) => {
-    setOffersWithAttributes((prevOffers: OfferWithAttributes) => {
-      const newOffers = { ...prevOffers };
-
-      if (newOffers[collectionId]) {
-        newOffers[collectionId][tokenId] = attributes;
-      } else {
-        newOffers[collectionId] = { [tokenId]: attributes };
-      }
-
-      return newOffers;
-    });
-  }, []);
-
-  const onSetCollectionName = useCallback((collectionId: string, collectionName: string) => {
-    setCollectionsNames((prevState) => ({
-      ...prevState,
-      [collectionId]: collectionName
-    }));
-  }, []);
-
   const fetchScrolledData = useCallback((page) => {
-    getOffers(page, perPage, filters, true);
+    getOffers(page, perPage, filters);
   }, [filters, getOffers]);
-
-  useEffect(() => {
-    if (offers) {
-      if (searchString && searchString.length) {
-        const filtered = Object.values(offers).filter((item: OfferType) => {
-          let target: string | undefined | string[];
-
-          if (offersWithAttributes[item.collectionId] && offersWithAttributes[item.collectionId][item.tokenId]) {
-            const offerItemAttrs = offersWithAttributes[item.collectionId][item.tokenId];
-
-            target = Object.values(offerItemAttrs).find((value: string | string[]) => {
-              if (Array.isArray(value)) {
-                return value.find((valItem: string) => valItem.toLowerCase().includes(searchString.toLowerCase()));
-              }
-
-              return value.toLowerCase().includes(searchString.toLowerCase());
-            });
-          }
-
-          return target ||
-            item.price.toString().includes(searchString.toLowerCase()) ||
-            (collectionsNames[item.collectionId]?.toLowerCase().includes(searchString.toLowerCase())) ||
-            item.tokenId.toString().includes(searchString.toLowerCase()) ||
-            item.collectionId.toString().includes(searchString.toLowerCase());
-        });
-
-        setFilteredOffers(filtered);
-      } else {
-        setFilteredOffers(Object.values(offers));
-      }
-    }
-  }, [collectionsNames, offers, offersWithAttributes, searchString]);
 
   /* const clearSearch = useCallback(() => {
     setSearchString('');
@@ -266,9 +202,8 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
                 </Grid.Column>
               </Grid.Row> */}
 
-              {filteredOffers.length > 0 && (
+              {Object.keys(offers).length > 0 && (
                 <Grid.Row>
-
                   <Grid.Column width={16}>
                     <div className='market-pallet'>
                       <InfiniteScroll
@@ -287,13 +222,11 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
                         threshold={200}
                       >
                         <div className='market-pallet__item'>
-                          {filteredOffers.map((token) => (
+                          {Object.values(offers).map((token) => (
                             <NftTokenCard
                               account={account}
                               collectionId={token.collectionId.toString()}
                               key={`${token.collectionId}-${token.tokenId}`}
-                              onSetCollectionName={onSetCollectionName}
-                              onSetTokenAttributes={onSetTokenAttributes}
                               openDetailedInformationModal={openDetailedInformationModal}
                               token={token}
                             />
