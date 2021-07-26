@@ -190,9 +190,6 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
     setShouldUpdateTokens('all');
   }, [setShouldUpdateTokens]);
 
-  console.log('hasMore', hasMore);
-  console.log('filters', filters);
-
   return (
     <div className='nft-market'>
       <Header as='h1'>Market</Header>
