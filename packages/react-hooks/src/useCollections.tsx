@@ -114,12 +114,17 @@ export function useCollections () {
     try {
       let url = `/offers?page=${page}&pageSize=${pageSize}`;
 
-      for (const key in filters) {
-        if (Array.isArray(filters[key])) {
-          url += filters[key].map((item: string) => `&collectionId=${item}`).join('');
-        } else {
-          url += '&' + key + '=' + filters[key];
-        }
+      if (filters) {
+        Object.keys(filters).forEach((filterKey: string) => {
+          const currentFilter: string | string[] = filters[filterKey];
+
+          if (Array.isArray(currentFilter)) {
+            // url += filters[key].map((item: string) => `&collectionId=${item}`).join('');
+            url = `${url}${currentFilter.map((item: string) => `&collectionId=${item}`).join('')}`;
+          } else {
+            url += '&' + filterKey + '=' + currentFilter;
+          }
+        });
       }
 
       // if (!canAddCollections && collectionIds && collectionIds.length) {

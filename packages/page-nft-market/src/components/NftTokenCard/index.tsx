@@ -18,7 +18,7 @@ import { AttributesDecoded } from '@polkadot/react-hooks/useSchema';
 const { commission } = envConfig;
 
 interface Props {
-  account: string;
+  account: string | undefined;
   collectionId: string;
   onSetCollectionName: (collectionId: string, collectionName: string) => void;
   onSetTokenAttributes?: (collectionId: string, tokenId: string, attributes: AttributesDecoded) => void;

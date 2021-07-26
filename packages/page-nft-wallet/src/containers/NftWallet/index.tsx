@@ -39,8 +39,9 @@ function NftWallet ({ account, addCollection, collections, removeCollectionFromL
   const fetchOffersForCollections = useCallback(() => {
     if (account && collections?.length) {
       const targetCollectionIds = collections.map((collection) => collection.id);
+      const filters = { collectionIds: targetCollectionIds };
 
-      getOffers(1, 20000, targetCollectionIds);
+      getOffers(1, 20000, filters);
       getHoldByMe(account, 1, 20000, targetCollectionIds);
     }
   }, [account, collections, getHoldByMe, getOffers]);

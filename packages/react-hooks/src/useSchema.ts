@@ -27,7 +27,7 @@ interface UseSchemaInterface {
   tokenUrl: string;
 }
 
-export function useSchema (account: string, collectionId: string, tokenId: string | number): UseSchemaInterface {
+export function useSchema (account: string | undefined, collectionId: string, tokenId: string | number): UseSchemaInterface {
   const [collectionInfo, setCollectionInfo] = useState<NftCollectionInterface>();
   const [reFungibleBalance, setReFungibleBalance] = useState<number>(0);
   const [tokenUrl, setTokenUrl] = useState<string>('');
@@ -52,7 +52,7 @@ export function useSchema (account: string, collectionId: string, tokenId: strin
 
   const getReFungibleDetails = useCallback(() => {
     try {
-      if (tokenDetails?.Owner) {
+      if (account && tokenDetails?.Owner) {
         if (Object.prototype.hasOwnProperty.call(collectionInfo?.Mode, 'reFungible')) {
           const owner = tokenDetails.Owner.find((item: { fraction: BN, owner: string }) => item.owner.toString() === account) as { fraction: BN, owner: string } | undefined;
 
