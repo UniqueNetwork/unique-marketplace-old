@@ -61,8 +61,7 @@ function TradeHistory ({ account }: { account?: string }): React.ReactElement {
         { tradesList && tradesList.map((trade: TradeType) => (
           <tr
             className='trades-row'
-            key={`${trade.collectionId}-${trade.tokenId}-${trade.buyer || ''} + ${Math.random() * 100}  `}
-
+            key={`${trade.collectionId}-${trade.tokenId}-${trade.buyer || ''}-${Math.random() * 100}`}
           >
             <td className='overflow tradeList token-id'
               onClick={openDetailedInformationModal.bind(null, trade.collectionId, trade.tokenId)}

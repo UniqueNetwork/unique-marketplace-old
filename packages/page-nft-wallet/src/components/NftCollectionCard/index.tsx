@@ -257,7 +257,7 @@ function NftCollectionCard ({ account, canTransferTokens, collection, onHold, op
                 account={account}
                 canTransferTokens={canTransferTokens}
                 collection={collection}
-                key={token}
+                key={`${collection.id}-${token}-${Math.random() * 100}  `}
                 onHold={onHold}
                 openTransferModal={openTransferModal}
                 shouldUpdateTokens={shouldUpdateTokens}
