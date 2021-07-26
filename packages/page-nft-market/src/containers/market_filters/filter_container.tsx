@@ -6,7 +6,7 @@ import './styles.scss';
 
 import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import envConfig from '@polkadot/apps-config/envConfig';
 import { useDecoder, useMetadata } from '@polkadot/react-hooks';
@@ -28,7 +28,7 @@ interface PricesTypes{
 
 const FilterContainer: React.FC<PropTypes> = ({ account, changePrices, changeuniqueCollectionIds, collections, filterBySeller }) => {
   const { collectionName16Decoder } = useDecoder();
-  const currentCollection = useMetadata();
+  const { getTokenImageUrl } = useMetadata();
   const [images, setImages] = useState<string[]>([]);
   const [inputChecked, setInputChecked] = useState<string[]>([]);
   const [isOnlyMyToken, setisOnlyMyToken] = useState(false);
@@ -96,16 +96,20 @@ const FilterContainer: React.FC<PropTypes> = ({ account, changePrices, changeuni
     setCheckedids([]);
   };
 
-  useEffect(() => {
+  const updateImageUrl = useCallback(() => {
     collections.forEach((element) => {
-      currentCollection.getTokenImageUrl(element, '1')
+      void getTokenImageUrl(element, '1')
         .then((res) => {
           if (res) {
             setImages((prev) => [...prev, res]);
           } else setImages((prev) => ['', ...prev]);
         });
     });
-  }, [collections]);
+  }, [collections, getTokenImageUrl]);
+
+  useEffect(() => {
+    void updateImageUrl();
+  }, [updateImageUrl]);
 
   return (
     <div className='filter-main'>
@@ -116,8 +120,9 @@ const FilterContainer: React.FC<PropTypes> = ({ account, changePrices, changeuni
             checked={isOnlyMyToken}
             disabled={!account}
             onChange={handleOnlyMyToken}
-            type='checkbox'></input>
-          <span className={` slider round ${account ? '' : 'disable-token'}`}></span>
+            type='checkbox'
+          />
+          <span className={` slider round ${account ? '' : 'disable-token'}`} />
         </label>
         <div className='title'>Only my tokens</div>
 
@@ -130,8 +135,10 @@ const FilterContainer: React.FC<PropTypes> = ({ account, changePrices, changeuni
               <div
                 className={`clear-title ${inputChecked.length ? 'clear-title-active' : ''}`}
                 onClick={clearCheckedValues}>Clear</div>
-              <div className={`clear-icon ${isShowCollection ? 'rotate-icon' : ''}`}
-                onClick={() => setisShowCollection(!isShowCollection)}></div>
+              <div
+                className={`clear-icon ${isShowCollection ? 'rotate-icon' : ''}`}
+                onClick={() => setisShowCollection(!isShowCollection)}
+              />
             </div>
           </div>
 
@@ -181,9 +188,13 @@ const FilterContainer: React.FC<PropTypes> = ({ account, changePrices, changeuni
             <div
               className={`clear-title ${(KSMPrices.minPrice || KSMPrices.maxPrice) ? 'clear-title-active' : ''}`}
               onClick={clearPrices}
-            >Clear</div>
-            <div className={`clear-icon ${isShowPrice ? 'rotate-icon' : ''}`}
-              onClick={() => setisShowPrice(!isShowPrice)}></div>
+            >
+              Clear
+            </div>
+            <div
+              className={`clear-icon ${isShowPrice ? 'rotate-icon' : ''}`}
+              onClick={() => setisShowPrice(!isShowPrice)}
+            />
           </div>
         </div>
         <div className={`  ${isShowPrice ? 'display-none' : ''}  `}>

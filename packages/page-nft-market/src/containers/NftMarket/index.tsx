@@ -37,17 +37,17 @@ interface BuyTokensProps {
 }
 
 export interface Filters {
-  collectionIds?: string[];
+  /* collectionIds?: string[];
   minPrice?: string;
   maxPrice?: string;
-  seller?: string
+  seller?: string */
+  [key: string]: string | string[];
 }
 
 interface OfferWithAttributes {
   [collectionId: string]: { [tokenId: string]: AttributesDecoded }
 }
 
-let page = 1;
 const perPage = 20;
 
 const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTokensProps): ReactElement => {
@@ -72,15 +72,12 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
   }, [history]);
 
   const changeuniqueCollectionIds = (newIds: string[]) => {
-    page = 1;
     setSniqueCollectionIds(newIds);
     setFilters({ ...filters, collectionIds: newIds });
   };
 
   const filterBySeller = (OnlyMyTokens: boolean) => {
-    page = 1;
-
-    if (OnlyMyTokens) {
+    if (OnlyMyTokens && account) {
       setFilters({ ...filters, seller: account });
     } else {
       const filtersCopy = { ...filters };
@@ -97,7 +94,6 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
   }, [presetCollections]);
 
   const changePrices = (minPrice: string | undefined, maxPrice: string | undefined) => {
-    page = 1;
     const filtersCopy = { ...filters };
 
     if (minPrice === '') {
@@ -138,8 +134,7 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
     }));
   }, []);
 
-  const fetchScrolledData = useCallback(() => {
-    page = page + 1;
+  const fetchScrolledData = useCallback((page) => {
     getOffers(page, perPage, filters, true);
   }, [filters, getOffers]);
 
@@ -174,6 +169,7 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
       }
     }
   }, [collectionsNames, offers, offersWithAttributes, searchString]);
+
   /* const clearSearch = useCallback(() => {
     setSearchString('');
   }, []); */
@@ -183,7 +179,7 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
       setShouldUpdateTokens(undefined);
     }
 
-    void getOffers(page, perPage, filters);
+    void getOffers(1, perPage, filters);
   }, [getOffers, shouldUpdateTokens, setShouldUpdateTokens, filters]);
 
   useEffect(() => {
@@ -194,13 +190,15 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
     setShouldUpdateTokens('all');
   }, [setShouldUpdateTokens]);
 
+  console.log('hasMore', hasMore);
+  console.log('filters', filters);
+
   return (
     <div className='nft-market'>
       <Header as='h1'>Market</Header>
       <Grid>
         <Grid.Row>
           <Grid.Column width={4}>
-
             <FilterContainer
               account={account}
               changePrices={changePrices}
