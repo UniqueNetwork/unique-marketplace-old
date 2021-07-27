@@ -8,6 +8,8 @@ const { merge } = require('webpack-merge');
 
 const baseConfig = require('./webpack.base.cjs');
 
+require('dotenv-defaults').config();
+
 module.exports = merge(
   baseConfig(__dirname, 'development'),
   {
@@ -17,27 +19,27 @@ module.exports = merge(
       proxy: {
         '/health': {
           changeOrigin: true,
-          target: 'https://chelopunktest.uniquenetwork.io/'
+          target: process.env.DEVELOPMENT_PROXY_URL
         },
         '/mint': {
           changeOrigin: true,
-          target: 'https://chelopunktest.uniquenetwork.io/'
+          target: process.env.DEVELOPMENT_PROXY_URL
         },
         '/offers': {
           changeOrigin: true,
-          target: 'https://chelopunktest.uniquenetwork.io/'
+          target: process.env.DEVELOPMENT_PROXY_URL
         },
         '/trades': {
           changeOrigin: true,
-          target: 'https://chelopunktest.uniquenetwork.io/'
+          target: process.env.DEVELOPMENT_PROXY_URL
         },
-        'https://chelopunktest.uniquenetwork.io': {
+        [process.env.DEVELOPMENT_PROXY_URL]: {
           changeOrigin: true,
-          target: 'https://chelopunktest.uniquenetwork.io/'
+          target: process.env.DEVELOPMENT_PROXY_URL
         },
-        'https://whitelabel.market': {
+        [process.env.WHITE_LABEL_URL]: {
           changeOrigin: true,
-          target: 'https://whitelabel.market/'
+          target: process.env.WHITE_LABEL_URL
         }
       },
       static: path.resolve(__dirname, 'build')

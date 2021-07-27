@@ -13,15 +13,18 @@ const Dotenv = require('dotenv-webpack');
 const findPackages = require('../../scripts/findPackages.cjs');
 
 function mapChunks (name, regs, inc) {
-  return regs.reduce((result, test, index) => ({
-    ...result,
-    [`${name}${index}`]: {
-      chunks: 'initial',
-      enforce: true,
-      name: `${name}.${`0${index + (inc || 0)}`.slice(-2)}`,
-      test
-    }
-  }), {});
+  return regs.reduce(
+    (result, test, index) => ({
+      ...result,
+      [`${name}${index}`]: {
+        chunks: 'initial',
+        enforce: true,
+        name: `${name}.${`0${index + (inc || 0)}`.slice(-2)}`,
+        test
+      }
+    }),
+    {}
+  );
 }
 
 function createWebpack (context, mode = 'production') {
@@ -45,9 +48,7 @@ function createWebpack (context, mode = 'production') {
           exclude: /(node_modules)/,
           test: /\.(s[ac]|c)ss$/,
           use: [
-            mode === 'production'
-              ? MiniCssExtractPlugin.loader
-              : require.resolve('style-loader'),
+            mode === 'production' ? MiniCssExtractPlugin.loader : require.resolve('style-loader'),
             {
               loader: require.resolve('css-loader'),
               options: {
@@ -60,10 +61,7 @@ function createWebpack (context, mode = 'production') {
         {
           include: /node_modules/,
           test: /\.css$/,
-          use: [
-            MiniCssExtractPlugin.loader,
-            require.resolve('css-loader')
-          ]
+          use: [MiniCssExtractPlugin.loader, require.resolve('css-loader')]
         },
         {
           exclude: /(node_modules)/,
@@ -78,10 +76,7 @@ function createWebpack (context, mode = 'production') {
         },
         {
           test: /\.md$/,
-          use: [
-            require.resolve('html-loader'),
-            require.resolve('markdown-loader')
-          ]
+          use: [require.resolve('html-loader'), require.resolve('markdown-loader')]
         },
         {
           exclude: [/semantic-ui-css/],
@@ -154,7 +149,7 @@ function createWebpack (context, mode = 'production') {
     output: {
       chunkFilename: '[name].[chunkhash:8].js',
       filename: '[name].[contenthash:8].js',
-      globalObject: '(typeof self !== \'undefined\' ? self : this)',
+      globalObject: '(typeof self !== "undefined" ? self : this)',
       path: path.join(context, 'build'),
       publicPath: ''
     },
@@ -167,10 +162,10 @@ function createWebpack (context, mode = 'production') {
         process: 'process/browser.js'
       }),
       new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
-      new Dotenv({path: __dirname + '/../../.env', systemvars: true}),
+      new Dotenv({ defaults: true, path: './.env', systemvars: true }),
       new webpack.DefinePlugin({
-        'process.env.NODE_ENV' : JSON.stringify(mode),
-        'process.env.VERSION' : JSON.stringify(pkgJson.version)
+        'process.env.NODE_ENV': JSON.stringify(mode),
+        'process.env.VERSION': JSON.stringify(pkgJson.version)
       }),
       new webpack.optimize.SplitChunksPlugin(),
       new MiniCssExtractPlugin({
