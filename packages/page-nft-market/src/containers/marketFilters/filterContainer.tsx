@@ -19,8 +19,8 @@ interface PropTypes {
   changeuniqueCollectionIds: (arr: string[]) => void;
   collections: NftCollectionInterface[]
   changePrices: (minPrice: string, maxPrice: string) => void
-
 }
+
 interface PricesTypes{
   minPrice: string;
   maxPrice: string;
@@ -34,8 +34,8 @@ const FilterContainer: React.FC<PropTypes> = ({ account, changePrices, changeuni
   const [isOnlyMyToken, setisOnlyMyToken] = useState(false);
   const [KSMPrices, setKSMPrices] = useState<PricesTypes>({ maxPrice: '', minPrice: '' });
 
-  const [isShowCollection, setisShowCollection] = useState<boolean>(false);
-  const [isShowPrice, setisShowPrice] = useState<boolean>(false);
+  const [isShowCollection, setIsShowCollection] = useState<boolean>(true);
+  const [isShowPrice, setIsShowPrice] = useState<boolean>(true);
 
   const [checkedIds, setCheckedids] = useState<string[]>([]);
 
@@ -112,8 +112,7 @@ const FilterContainer: React.FC<PropTypes> = ({ account, changePrices, changeuni
   }, [updateImageUrl]);
 
   return (
-    <div className='filter-main'>
-
+    <>
       <div className='switch-my-tokens'>
         <label className='switch'>
           <input
@@ -125,64 +124,60 @@ const FilterContainer: React.FC<PropTypes> = ({ account, changePrices, changeuni
           <span className={` slider round ${account ? '' : 'disable-token'}`} />
         </label>
         <div className='title'>Only my tokens</div>
-
       </div>
-      <div className='collection'>
-        <div className='collection-header' >
-          <div className='collection-title' >Collections</div>
-          <div >
-            <div className='clear'>
-              <div
-                className={`clear-title ${inputChecked.length ? 'clear-title-active' : ''}`}
-                onClick={clearCheckedValues}>Clear</div>
-              <div
-                className={`clear-icon ${isShowCollection ? 'rotate-icon' : ''}`}
-                onClick={() => setisShowCollection(!isShowCollection)}
-              />
-            </div>
-          </div>
 
+      <div className='filter'>
+        <div className='filter--title'>
+          <div>Collections</div>
+          <div className='clear'>
+            <div
+              className={`clear-title ${inputChecked.length ? 'clear-title-active' : ''}`}
+              onClick={clearCheckedValues}>Clear</div>
+            <div
+              className={`clear-icon ${isShowCollection ? 'rotate-icon' : ''}`}
+              onClick={setIsShowCollection.bind(null, !isShowCollection)}
+            />
+          </div>
         </div>
-        <div className={`${isShowCollection ? 'display-none' : ''}  `}>
-          {/* <div className='collection-filter'>
+        { isShowCollection && (
+          <div className='filter--body'>
+            {/* <div className='collection-filter'>
           <input className='collection-search'
             placeholder='Search'
             type='text'>
           </input>
         </div> */}
-          <div className='collection-list'>
-            {collections.map((collection, index) => {
-              return (
-                <div className={`collections-main ${inputChecked.includes(String(collection.id)) ? 'collections-main-background' : ''}`}
-                  key={collection.id}
-                  onClick={() => { filterCurrent(collection.id); }}>
-
-                  <div className='collection-name-checkbox'>
-                    <div>
-                      <input
-                        checked={inputChecked && inputChecked.includes(String(collection.id))}
-                        data-current={collection.id}
-                        onChange={() => null}
-                        type='checkbox'/>
+            <div className='collection-list'>
+              {collections.map((collection, index) => {
+                return (
+                  <div
+                    className={`collections-main ${inputChecked.includes(String(collection.id)) ? 'collections-main-background' : ''}`}
+                    key={collection.id}
+                    onClick={filterCurrent.bind(null, collection.id)}
+                  >
+                    <div className='custom-checkbox'>
+                      <div className='checkbox-input'>
+                        <input
+                          checked={inputChecked && inputChecked.includes(String(collection.id))}
+                          data-current={collection.id}
+                          onChange={() => null}
+                          type='checkbox'/>
+                      </div>
+                      <div className='checkbox-title'>{collectionName16Decoder(collection.Name)}</div>
                     </div>
-                    <div className='collection-name'>{collectionName16Decoder(collection.Name)}</div>
-                  </div>
-                  {
-                    images.length === collections.length && images[index] !== '' && (
+                    { images.length === collections.length && images[index] !== '' && (
                       <div className='collection-img'
                         style={ { backgroundImage: `url(${images.length === collections.length ? images[index] : ''})` }} />
-                    )
-
-                  }
-                </div>
-
-              );
-            })}
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
-        </div>
+        )}
       </div>
-      <div className='price'>
-        <div className='price-title'>
+      <div className='filter'>
+        <div className='filter--title'>
           <div>Price</div>
           <div className='clear'>
             <div
@@ -193,40 +188,42 @@ const FilterContainer: React.FC<PropTypes> = ({ account, changePrices, changeuni
             </div>
             <div
               className={`clear-icon ${isShowPrice ? 'rotate-icon' : ''}`}
-              onClick={() => setisShowPrice(!isShowPrice)}
+              onClick={setIsShowPrice.bind(null, !isShowPrice)}
             />
           </div>
         </div>
-        <div className={`  ${isShowPrice ? 'display-none' : ''}  `}>
-          <div className='price-main' >
-            <input className='min-input'
-              name='minPrice'
-              onChange= {setKSMPrice}
-              onKeyDown={(evt) => ['e', 'E', '+', '-'].includes(evt.key) && evt.preventDefault()}
-              placeholder='Min'
-              type='number'
-              value={KSMPrices.minPrice}
-            />
-            <p>to</p>
-            <input name='maxPrice'
-              onChange= {setKSMPrice}
-              onKeyDown={(evt) => ['e', 'E', '+', '-'].includes(evt.key) && evt.preventDefault()}
-              placeholder='Max'
-              type='number'
-              value={KSMPrices.maxPrice}
-            />
+        { isShowPrice && (
+          <div className='filter--body'>
+            <div className='price-main' >
+              <input className='min-input'
+                name='minPrice'
+                onChange= {setKSMPrice}
+                onKeyDown={(evt) => ['e', 'E', '+', '-'].includes(evt.key) && evt.preventDefault()}
+                placeholder='Min'
+                type='number'
+                value={KSMPrices.minPrice}
+              />
+              <p>to</p>
+              <input name='maxPrice'
+                onChange= {setKSMPrice}
+                onKeyDown={(evt) => ['e', 'E', '+', '-'].includes(evt.key) && evt.preventDefault()}
+                placeholder='Max'
+                type='number'
+                value={KSMPrices.maxPrice}
+              />
 
+            </div>
+            <button
+              className={`price-btn ${(KSMPrices.minPrice || KSMPrices.maxPrice) ? 'price-btn-active' : ''}`}
+              disabled={!KSMPrices.minPrice && !KSMPrices.maxPrice}
+              onClick={() => changePrices(KSMPrices.minPrice, KSMPrices.maxPrice)}
+            >
+              Apply
+            </button>
           </div>
-          <button
-            className={`price-btn ${(KSMPrices.minPrice || KSMPrices.maxPrice) ? 'price-btn-active' : ''}`}
-            disabled={!KSMPrices.minPrice && !KSMPrices.maxPrice}
-            onClick={() => changePrices(KSMPrices.minPrice, KSMPrices.maxPrice)}
-          >Apply</button>
-        </div>
-        <div >
-        </div>
+        )}
       </div>
-    </div>
+    </>
   );
 };
 

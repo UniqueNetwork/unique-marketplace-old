@@ -9,22 +9,22 @@ import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection
 import React, { memo, ReactElement, useCallback, useEffect, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
 import { useHistory } from 'react-router';
-// import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
-import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
+import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
+import Dropdown from 'semantic-ui-react/dist/commonjs/modules/Dropdown';
 
-// import clearIcon from '@polkadot/app-nft-wallet/components/CollectionSearch/clearIcon.svg';
-// import searchIcon from '@polkadot/app-nft-wallet/components/CollectionSearch/searchIcon.svg';
+import ArrowDown from '@polkadot/app-nft-market/components/arrowDown';
+import ArrowUp from '@polkadot/app-nft-market/components/arrowUp';
+import clearIcon from '@polkadot/app-nft-wallet/components/CollectionSearch/clearIcon.svg';
+import searchIcon from '@polkadot/app-nft-wallet/components/CollectionSearch/searchIcon.svg';
 import envConfig from '@polkadot/apps-config/envConfig';
-// import { Input } from '@polkadot/react-components';
+import { Input } from '@polkadot/react-components';
 import { useCollections } from '@polkadot/react-hooks';
 
 // local imports and components
 import NftTokenCard from '../../components/NftTokenCard';
-import FilterContainer from '../market_filters/filter_container';
-
-const { commission } = envConfig;
+import MarketFilters from '../marketFilters';
 
 interface BuyTokensProps {
   account?: string | undefined;
@@ -36,8 +36,10 @@ export interface Filters {
   /* collectionIds?: string[];
   minPrice?: string;
   maxPrice?: string;
+  traitsCount: string[];
   seller?: string */
-  [key: string]: string | string[];
+  traitsCount: string[];
+  [key: string]: string | string[] | number;
 }
 
 const perPage = 20;
@@ -45,14 +47,13 @@ const perPage = 20;
 const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTokensProps): ReactElement => {
   const history = useHistory();
 
-  // const { getOffers, offers, offersCount, offersLoading, presetCollections } = useCollections();
-  const { getOffers, offers, offersCount, presetCollections } = useCollections();
-  // const [searchString, setSearchString] = useState<string>('');
-  const [uniqueCollectionIds, setSniqueCollectionIds] = useState(envConfig.uniqueCollectionIds);
-  const [searchString] = useState<string>('');
+  const { getOffers, offers, offersCount, offersLoading, presetCollections } = useCollections();
+  // const { getOffers, offers, offersCount, presetCollections } = useCollections();
+  const [searchString, setSearchString] = useState<string>('');
+  const [uniqueCollectionIds, setUniqueCollectionIds] = useState(envConfig.uniqueCollectionIds);
 
   const [collections, setCollections] = useState<NftCollectionInterface[]>([]);
-  const [filters, setFilters] = useState<Filters>({ collectionIds: [...uniqueCollectionIds] });
+  const [filters, setFilters] = useState<Filters>({ collectionIds: [...uniqueCollectionIds], traitsCount: [] });
 
   const hasMore = !!(offers && offersCount) && Object.keys(offers).length < offersCount;
   // const [filteredCollection, setFilteredCollection] = useState<any>([]);
@@ -60,55 +61,42 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
     history.push(`/market/token-details?collectionId=${collectionId}&tokenId=${tokenId}`);
   }, [history]);
 
-  const changeuniqueCollectionIds = (newIds: string[]) => {
-    setSniqueCollectionIds(newIds);
-    setFilters({ ...filters, collectionIds: newIds });
-  };
-
-  const filterBySeller = (OnlyMyTokens: boolean) => {
-    if (OnlyMyTokens && account) {
-      setFilters({ ...filters, seller: account });
-    } else {
-      const filtersCopy = { ...filters };
-
-      delete filtersCopy.seller;
-      setFilters({ ...filtersCopy });
-    }
-  };
-
   const addMintCollectionToList = useCallback(async () => {
     const firstCollections: NftCollectionInterface[] = await presetCollections();
 
     setCollections(() => [...firstCollections]);
   }, [presetCollections]);
 
-  const changePrices = (minPrice: string | undefined, maxPrice: string | undefined) => {
-    const filtersCopy = { ...filters };
-
-    if (minPrice === '') {
-      delete filtersCopy.minPrice;
-    } else {
-      minPrice = String(Math.trunc(Number(minPrice) * 1000000000000 / (1 + (+commission / 100))));
-      filtersCopy.minPrice = minPrice;
-    }
-
-    if (maxPrice === '') {
-      delete filtersCopy.maxPrice;
-    } else {
-      maxPrice = String(Math.trunc(Number(maxPrice) * 1000000000000 / (1 + (+commission / 100))));
-      filtersCopy.maxPrice = maxPrice;
-    }
-
-    setFilters({ ...filtersCopy });
-  };
-
   const fetchScrolledData = useCallback((page) => {
     getOffers(page, perPage, filters);
   }, [filters, getOffers]);
 
-  /* const clearSearch = useCallback(() => {
+  const clearSearch = useCallback(() => {
     setSearchString('');
-  }, []); */
+  }, []);
+
+  const optionNode = useCallback((active: boolean, order: string, text: string) => {
+    return (
+      <div className={active ? 'active' : ''}>
+        {text}
+        {order === 'asc' && (
+          <ArrowUp active={active} />
+        )}
+        {order === 'desc' && (
+          <ArrowDown active={active} />
+        )}
+      </div>
+    );
+  }, []);
+
+  const sortOptions = [
+    { content: (optionNode(false, 'asc', 'Price')), key: 'PriceUp', text: 'Price', value: 'priceUp' },
+    { content: (optionNode(true, 'desc', 'Price')), key: 'PriceDown', text: 'Price', value: 'priceDown' },
+    { content: (optionNode(false, 'asc', 'Token ID')), key: 'TokenIDUp', text: 'Token ID', value: 'tokenIdUp' },
+    { content: (optionNode(false, 'desc', 'Token ID')), key: 'TokenIDDown', text: 'Token ID', value: 'tokenIdDown' },
+    { content: (optionNode(false, 'asc', 'Listing date')), key: 'ListingDateUp', text: 'Listing date', value: 'listingDateUp' },
+    { content: (optionNode(false, 'desc', 'Listing date')), key: 'ListingDateDown', text: 'Listing date', value: 'listingDateDown' }
+  ];
 
   useEffect(() => {
     if (shouldUpdateTokens) {
@@ -126,121 +114,97 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
     setShouldUpdateTokens('all');
   }, [setShouldUpdateTokens]);
 
+  const showSearch = false;
+
   return (
     <div className='nft-market'>
       <Header as='h1'>Market</Header>
-      <Grid>
-        <Grid.Row>
-          <Grid.Column width={4}>
-            <FilterContainer
-              account={account}
-              changePrices={changePrices}
-              changeuniqueCollectionIds={changeuniqueCollectionIds}
-              collections={collections}
-              filterBySeller={filterBySeller}
-            />
-            {/* <Input
-              className='isSmall search'
-              help={<span>Find and select tokens collection.</span>}
-              isDisabled={!offers || !offers.length}
-              label={'Find collection by name'}
-              onChange={setSearchString}
-              placeholder='Find collection by name or id'
-              value={searchString}
-              withLabel
-            /> */}
-
-          </Grid.Column>
-          <Grid.Column width={12}>
-            <Grid>
-              {/* <Grid.Row>
-                <Grid.Column width={16}>
-                  <Form className='collection-search-form'>
-                    <Input
-                      className='isSmall search'
-                      help={<span>Find and select token.</span>}
-                      isDisabled={!offers || !Object.values(offers).length}
-                      label={'Find token by name or collection'}
-                      onChange={setSearchString}
-                      placeholder='Search...'
-                      value={searchString}
-                      withLabel
+      <div className='nft-market--panel'>
+        <MarketFilters
+          account={account}
+          collections={collections}
+          filters={filters}
+          setFilters={setFilters}
+          setUniqueCollectionIds={setUniqueCollectionIds}
+        />
+        <div className='marketplace-body'>
+          { showSearch && (
+            <div className='collection-search-form'>
+              <Form>
+                <Form.Field className='search-field'>
+                  <Input
+                    className='isSmall'
+                    icon={
+                      <img
+                        alt='search'
+                        className='search-icon'
+                        src={searchIcon as string}
+                      />
+                    }
+                    isDisabled={!Object.values(offers).length}
+                    onChange={setSearchString}
+                    placeholder='Find token by collection, name or attribute'
+                    value={searchString}
+                    withLabel
+                  >
+                    { offersLoading && (
+                      <Loader
+                        active
+                        inline='centered'
+                      />
+                    )}
+                    { searchString?.length > 0 && (
+                      <img
+                        alt='clear'
+                        className='clear-icon'
+                        onClick={clearSearch}
+                        src={clearIcon as string}
+                      />
+                    )}
+                  </Input>
+                </Form.Field>
+                <Form.Field className='sort-field'>
+                  <Dropdown
+                    options={sortOptions}
+                    trigger={optionNode(false, 'asc', 'Price')}
+                  />
+                </Form.Field>
+              </Form>
+            </div>
+          )}
+          {Object.keys(offers).length > 0 && (
+            <div className='market-pallet'>
+              <InfiniteScroll
+                hasMore={hasMore}
+                initialLoad={false}
+                loadMore={fetchScrolledData}
+                loader={searchString && searchString.length
+                  ? <></>
+                  : <Loader
+                    active
+                    className='load-more'
+                    inline='centered'
+                    key={'nft-market'}
+                  />}
+                pageStart={1}
+                threshold={200}
+              >
+                <div className='market-pallet__item'>
+                  {Object.values(offers).map((token) => (
+                    <NftTokenCard
+                      account={account}
+                      collectionId={token.collectionId.toString()}
+                      key={`${token.collectionId}-${token.tokenId}`}
+                      openDetailedInformationModal={openDetailedInformationModal}
+                      token={token}
                     />
-                    <Form.Field className='search-field'>
-                      <Input
-                        className='isSmall'
-                        icon={
-                          <img
-                            alt='search'
-                            className='search-icon'
-                            src={searchIcon as string}
-                          />
-                        }
-                        isDisabled={!Object.values(offers).length}
-                        onChange={setSearchString}
-                        placeholder='Find token by collection, name or attribute'
-                        value={searchString}
-                        withLabel
-                      >
-                        { offersLoading && (
-                          <Loader
-                            active
-                            inline='centered'
-                          />
-                        )}
-                        { searchString?.length > 0 && (
-                          <img
-                            alt='clear'
-                            className='clear-icon'
-                            onClick={clearSearch}
-                            src={clearIcon as string}
-                          />
-                        )}
-                      </Input>
-                    </Form.Field>
-                  </Form>
-                </Grid.Column>
-              </Grid.Row> */}
-
-              {Object.keys(offers).length > 0 && (
-                <Grid.Row>
-                  <Grid.Column width={16}>
-                    <div className='market-pallet'>
-                      <InfiniteScroll
-                        hasMore={hasMore}
-                        initialLoad={false}
-                        loadMore={fetchScrolledData}
-                        loader={searchString && searchString.length
-                          ? <></>
-                          : <Loader
-                            active
-                            className='load-more'
-                            inline='centered'
-                            key={'nft-market'}
-                          />}
-                        pageStart={1}
-                        threshold={200}
-                      >
-                        <div className='market-pallet__item'>
-                          {Object.values(offers).map((token) => (
-                            <NftTokenCard
-                              account={account}
-                              collectionId={token.collectionId.toString()}
-                              key={`${token.collectionId}-${token.tokenId}`}
-                              openDetailedInformationModal={openDetailedInformationModal}
-                              token={token}
-                            />
-                          ))}
-                        </div>
-                      </InfiniteScroll>
-                    </div>
-                  </Grid.Column>
-                </Grid.Row>
-              )}
-            </Grid>
-          </Grid.Column>
-        </Grid.Row>
-      </Grid>
+                  ))}
+                </div>
+              </InfiniteScroll>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 };

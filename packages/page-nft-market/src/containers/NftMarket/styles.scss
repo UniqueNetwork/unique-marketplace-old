@@ -2,13 +2,30 @@
   .ui.centered.inline.loader.active.load-more {
     margin: var(--gap) auto;
   }
+
+  &--panel {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    grid-column-gap: 32px;
+  }
+
+  .marketplace-body {
+    .collection-search-form {
+      padding: 32px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      background-color: var(--card-background);
+      border-radius: 4px;
+      margin-bottom: 16px;
+    }
+  }
 }
 
 .market-pallet {
-  background-color: #ffffff;
+  background-color: var(--card-background);
   width: 100%;
-  box-shadow: 0px 4px 12px rgb(0 0 0 / 8%);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   border-radius: 4px;
+  padding: 32px;
 
   &__item {
     width: 100%;

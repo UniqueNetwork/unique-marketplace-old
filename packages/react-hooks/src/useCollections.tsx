@@ -115,20 +115,19 @@ export function useCollections () {
 
       if (filters) {
         Object.keys(filters).forEach((filterKey: string) => {
-          const currentFilter: string | string[] = filters[filterKey];
+          const currentFilter: string | string[] | number = filters[filterKey];
 
           if (Array.isArray(currentFilter)) {
-            // url += filters[key].map((item: string) => `&collectionId=${item}`).join('');
-            url = `${url}${currentFilter.map((item: string) => `&collectionId=${item}`).join('')}`;
+            if (filterKey === 'collectionIds') {
+              url = `${url}${currentFilter.map((item: string) => `&collectionId=${item}`).join('')}`;
+            } else if (filterKey === 'traitsCount') {
+              url = `${url}${currentFilter.map((item: string) => `&traitsCount=${item}`).join('')}`;
+            }
           } else {
-            url += '&' + filterKey + '=' + currentFilter;
+            url += `&${filterKey}=${currentFilter}`;
           }
         });
       }
-
-      // if (!canAddCollections && collectionIds && collectionIds.length) {
-      //   url = `${url}${collectionIds.map((item: string) => `&collectionId=${item}`).join('')}`;
-      // }
 
       fetchData<OffersResponseType>(url).subscribe((result: OffersResponseType | ErrorType) => {
         if (cleanup.current) {
