@@ -77,7 +77,7 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
 
   const optionNode = useCallback((active: boolean, order: string, text: string) => {
     return (
-      <div className={active ? 'active' : ''}>
+      <div className={active ? 'current active' : 'current'}>
         {text}
         {order === 'asc' && (
           <ArrowUp active={active} />
@@ -114,8 +114,6 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
     setShouldUpdateTokens('all');
   }, [setShouldUpdateTokens]);
 
-  const showSearch = false;
-
   return (
     <div className='nft-market'>
       <Header as='h1'>Market</Header>
@@ -128,50 +126,48 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
           setUniqueCollectionIds={setUniqueCollectionIds}
         />
         <div className='marketplace-body'>
-          { showSearch && (
-            <div className='collection-search-form'>
-              <Form>
-                <Form.Field className='search-field'>
-                  <Input
-                    className='isSmall'
-                    icon={
-                      <img
-                        alt='search'
-                        className='search-icon'
-                        src={searchIcon as string}
-                      />
-                    }
-                    isDisabled={!Object.values(offers).length}
-                    onChange={setSearchString}
-                    placeholder='Find token by collection, name or attribute'
-                    value={searchString}
-                    withLabel
-                  >
-                    { offersLoading && (
-                      <Loader
-                        active
-                        inline='centered'
-                      />
-                    )}
-                    { searchString?.length > 0 && (
-                      <img
-                        alt='clear'
-                        className='clear-icon'
-                        onClick={clearSearch}
-                        src={clearIcon as string}
-                      />
-                    )}
-                  </Input>
-                </Form.Field>
-                <Form.Field className='sort-field'>
-                  <Dropdown
-                    options={sortOptions}
-                    trigger={optionNode(false, 'asc', 'Price')}
-                  />
-                </Form.Field>
-              </Form>
-            </div>
-          )}
+          <div className='collection-search-form'>
+            <Form>
+              <Form.Field className='search-field'>
+                <Input
+                  className='isSmall'
+                  icon={
+                    <img
+                      alt='search'
+                      className='search-icon'
+                      src={searchIcon as string}
+                    />
+                  }
+                  isDisabled={!Object.values(offers).length}
+                  onChange={setSearchString}
+                  placeholder='Find token by collection, name or attribute'
+                  value={searchString}
+                  withLabel
+                >
+                  { offersLoading && (
+                    <Loader
+                      active
+                      inline='centered'
+                    />
+                  )}
+                  { searchString?.length > 0 && (
+                    <img
+                      alt='clear'
+                      className='clear-icon'
+                      onClick={clearSearch}
+                      src={clearIcon as string}
+                    />
+                  )}
+                </Input>
+              </Form.Field>
+              <Form.Field className='sort-field'>
+                <Dropdown
+                  options={sortOptions}
+                  trigger={optionNode(false, 'asc', 'Price')}
+                />
+              </Form.Field>
+            </Form>
+          </div>
           {Object.keys(offers).length > 0 && (
             <div className='market-pallet'>
               <InfiniteScroll

@@ -16,6 +16,51 @@
       background-color: var(--card-background);
       border-radius: 4px;
       margin-bottom: 16px;
+
+      form {
+        display: grid;
+        grid-template-columns: 1fr 192px;
+        grid-column-gap: 24px;
+      }
+    }
+  }
+}
+
+.sort-field {
+  .ui.dropdown {
+    width: 100%;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    padding: 8px 16px;
+
+    .current {
+      display: flex;
+      align-items: center;
+      grid-column-gap: 8px;
+      color: var(--tabs-color);
+    }
+
+    .dropdown.icon {
+      position: absolute;
+      right: 18px;
+      color: var(--tabs-color);
+    }
+
+    .menu {
+      width: 100%;
+      background-color: var(--card-background);
+
+      .item {
+        .text.current {
+          &.active {
+            color: var(--link-color);
+            font-weight: normal;
+          }
+        }
+      }
     }
   }
 }
