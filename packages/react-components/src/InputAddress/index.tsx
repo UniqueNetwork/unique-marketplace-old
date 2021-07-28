@@ -142,7 +142,6 @@ class InputAddress extends React.PureComponent<Props, State> {
       // This is nasty, but since this things is non-functional, there is not much
       // we can do (well, wrap it, however that approach is deprecated here)
       return (
-
         <Menu.Item
           active={location.pathname === '/accounts'}
           as={NavLink}
@@ -150,7 +149,6 @@ class InputAddress extends React.PureComponent<Props, State> {
           name='Create or connect account'
           to='/accounts'
         />
-
       );
     }
 
