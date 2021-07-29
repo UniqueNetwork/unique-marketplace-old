@@ -10,8 +10,8 @@ import FilterContainer from './filterContainer';
 import TreatsFilter from './TreatsFilter';
 
 interface PropTypes {
-  account: string|undefined;
-  filters: Filters;
+  account: string | undefined;
+  filters: Filters | undefined;
   collections: NftCollectionInterface[]
   setFilters: (filters: Filters) => void;
   setUniqueCollectionIds: (collectionIds: string[]) => void;
@@ -21,17 +21,21 @@ const MarketFilters = ({ account, collections, filters, setFilters, setUniqueCol
 
   return (
     <div className='filter-main'>
-      <FilterContainer
-        account={account}
-        collections={collections}
-        filters={filters}
-        setFilters={setFilters}
-        setUniqueCollectionIds={setUniqueCollectionIds}
-      />
-      <TreatsFilter
-        filters={filters}
-        setFilters={setFilters}
-      />
+      { filters && (
+        <>
+          <FilterContainer
+            account={account}
+            collections={collections}
+            filters={filters}
+            setFilters={setFilters}
+            setUniqueCollectionIds={setUniqueCollectionIds}
+          />
+          <TreatsFilter
+            filters={filters}
+            setFilters={setFilters}
+          />
+        </>
+      )}
     </div>
   );
 };

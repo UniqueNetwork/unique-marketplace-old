@@ -37,23 +37,31 @@ export interface Filters {
   minPrice?: string;
   maxPrice?: string;
   traitsCount: string[];
-  seller?: string */
+  seller?: string;
+  sort: string; */
+  sort: string;
   traitsCount: string[];
   [key: string]: string | string[] | number;
 }
 
 const perPage = 20;
 
+const defaultFilters = {
+  collectionIds: [...envConfig.uniqueCollectionIds],
+  sort: 'desc(creationDate)',
+  traitsCount: []
+};
+
 const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTokensProps): ReactElement => {
   const history = useHistory();
 
   const { getOffers, offers, offersCount, offersLoading, presetCollections } = useCollections();
   const [searchString, setSearchString] = useState<string>('');
-  const [sortValue, setSortValue] = useState<string>();
+  const [sortValue, setSortValue] = useState<string>('creationDate-desc');
   const [uniqueCollectionIds, setUniqueCollectionIds] = useState(envConfig.uniqueCollectionIds);
 
   const [collections, setCollections] = useState<NftCollectionInterface[]>([]);
-  const [filters, setFilters] = useState<Filters>({ collectionIds: [...uniqueCollectionIds], traitsCount: [] });
+  const [filters, setFilters] = useState<Filters | undefined>({ collectionIds: uniqueCollectionIds, sort: 'desc(creationDate)', traitsCount: [] });
 
   const hasMore = !!(offers && offersCount) && Object.keys(offers).length < offersCount;
   const openDetailedInformationModal = useCallback((collectionId: string, tokenId: string) => {
@@ -100,9 +108,9 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
   const setSort = useCallback((event: React.SyntheticEvent<HTMLElement, Event>, data: DropdownProps) => {
     const { value } = data;
 
-    setSortValue(value?.toString());
+    setSortValue(value?.toString() || 'creationDate-desc');
 
-    if (value) {
+    if (value && filters) {
       setFilters({ ...filters, sort: `${value.toString().split('-')[1]}(${value.toString().split('-')[0]})` });
     }
   }, [filters]);
@@ -120,8 +128,25 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
   }, [optionNode, sortOptions, sortValue]);
 
   const clearAllFilters = useCallback(() => {
-    setFilters({ collectionIds: envConfig.uniqueCollectionIds, traitsCount: [] });
+    setFilters(undefined);
   }, []);
+
+  const setSortByFilter = useCallback(() => {
+    if (filters) {
+      const sort = filters.sort;
+
+      // desc(creationDate)
+      if (sort.includes('(') && sort.includes(')')) {
+        const sortString = sort.replace(')', '').replace('(', '-');
+        const sortArr = sortString.split('-');
+
+        // 'creationDate-desc'
+        setSortValue(`${sortArr[1]}-${sortArr[0]}`);
+      } else {
+        console.log('something wrong with sort filer');
+      }
+    }
+  }, [filters]);
 
   useEffect(() => {
     if (shouldUpdateTokens) {
@@ -138,6 +163,17 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
   useEffect(() => {
     setShouldUpdateTokens('all');
   }, [setShouldUpdateTokens]);
+
+  useEffect(() => {
+    setSortByFilter();
+  }, [setSortByFilter]);
+
+  // set default filters after clearing. Needs for collectionIds correct initialization
+  useEffect(() => {
+    if (!filters) {
+      setFilters(defaultFilters);
+    }
+  }, [filters]);
 
   const showSearch = false;
 
@@ -156,14 +192,10 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
           <div className='collection-search-form'>
             <Form>
               <Form.Field className='search-results'>
-                { offersCount && (
-                  <>
-                    <span>
-                      {offersCount} items
-                    </span>
-                    <a onClick={clearAllFilters}>Clear all filters</a>
-                  </>
-                )}
+                <span>
+                  {offersCount} items
+                </span>
+                <a onClick={clearAllFilters}>Clear all filters</a>
               </Form.Field>
               { showSearch && (
                 <Form.Field className='search-field'>
