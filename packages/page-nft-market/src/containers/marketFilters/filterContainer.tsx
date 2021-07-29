@@ -8,17 +8,18 @@ import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection
 
 import React, { useCallback, useEffect, useState } from 'react';
 
+import { Filters } from '@polkadot/app-nft-market/containers/NftMarket';
 import envConfig from '@polkadot/apps-config/envConfig';
 import { useDecoder, useMetadata } from '@polkadot/react-hooks';
 
-const { uniqueCollectionIds: envIds } = envConfig;
+const { commission, uniqueCollectionIds: envIds } = envConfig;
 
 interface PropTypes {
-  account: string|undefined
-  filterBySeller: (isOnlyMyToken: boolean) => void;
-  changeuniqueCollectionIds: (arr: string[]) => void;
-  collections: NftCollectionInterface[]
-  changePrices: (minPrice: string, maxPrice: string) => void
+  account: string|undefined;
+  collections: NftCollectionInterface[];
+  filters: Filters;
+  setFilters: (filters: Filters) => void;
+  setUniqueCollectionIds: (collectionIds: string[]) => void;
 }
 
 interface PricesTypes{
@@ -26,18 +27,46 @@ interface PricesTypes{
   maxPrice: string;
 }
 
-const FilterContainer: React.FC<PropTypes> = ({ account, changePrices, changeuniqueCollectionIds, collections, filterBySeller }) => {
+const FilterContainer: React.FC<PropTypes> = ({ account, collections, filters, setFilters, setUniqueCollectionIds }) => {
   const { collectionName16Decoder } = useDecoder();
   const { getTokenImageUrl } = useMetadata();
   const [images, setImages] = useState<string[]>([]);
   const [inputChecked, setInputChecked] = useState<string[]>([]);
-  const [isOnlyMyToken, setisOnlyMyToken] = useState(false);
+  const [isOnlyMyToken, setIsOnlyMyToken] = useState(false);
   const [KSMPrices, setKSMPrices] = useState<PricesTypes>({ maxPrice: '', minPrice: '' });
-
   const [isShowCollection, setIsShowCollection] = useState<boolean>(true);
   const [isShowPrice, setIsShowPrice] = useState<boolean>(true);
 
-  const [checkedIds, setCheckedids] = useState<string[]>([]);
+  const changePrices = (minPrice: string | undefined, maxPrice: string | undefined) => {
+    const filtersCopy = { ...filters };
+
+    if (minPrice === '') {
+      delete filtersCopy.minPrice;
+    } else {
+      minPrice = String(Math.trunc(Number(minPrice) * 1000000000000 / (1 + (+commission / 100))));
+      filtersCopy.minPrice = minPrice;
+    }
+
+    if (maxPrice === '') {
+      delete filtersCopy.maxPrice;
+    } else {
+      maxPrice = String(Math.trunc(Number(maxPrice) * 1000000000000 / (1 + (+commission / 100))));
+      filtersCopy.maxPrice = maxPrice;
+    }
+
+    setFilters({ ...filtersCopy });
+  };
+
+  const filterBySeller = useCallback((onlyMyTokens: boolean) => {
+    if (onlyMyTokens && account) {
+      setFilters({ ...filters, seller: account });
+    } else {
+      const filtersCopy = { ...filters };
+
+      delete filtersCopy.seller;
+      setFilters({ ...filtersCopy });
+    }
+  }, [account, filters, setFilters]);
 
   const clearPrices = () => {
     setKSMPrices({ maxPrice: '', minPrice: '' });
@@ -55,45 +84,30 @@ const FilterContainer: React.FC<PropTypes> = ({ account, changePrices, changeuni
   };
 
   const handleOnlyMyToken = () => {
-    setisOnlyMyToken(!isOnlyMyToken);
+    setIsOnlyMyToken(!isOnlyMyToken);
     filterBySeller(!isOnlyMyToken);
   };
 
-  const filterCurrent = (id: string) => {
+  const changeUniqueCollectionIds = useCallback((newIds: string[]) => {
+    setUniqueCollectionIds(newIds);
+    setFilters({ ...filters, collectionIds: newIds });
+  }, [filters, setUniqueCollectionIds, setFilters]);
+
+  const filterCurrent = useCallback((id: string) => {
     if (inputChecked.includes(id)) {
       const filteredData = inputChecked.filter((item) => item !== id);
 
       setInputChecked(filteredData);
+      changeUniqueCollectionIds(filteredData);
     } else {
       setInputChecked([...inputChecked, id]);
+      changeUniqueCollectionIds([...inputChecked, id]);
     }
-
-    if (id && checkedIds.length === 0) {
-      changeuniqueCollectionIds([id]);
-      setCheckedids([id]);
-    } else if (!checkedIds.length) {
-      changeuniqueCollectionIds(envIds);
-      setCheckedids(envIds);
-    } else if (!!checkedIds.length && checkedIds.includes(id)) {
-      const _ = checkedIds.filter((item) => item !== id);
-
-      if (_.length > 0) {
-        changeuniqueCollectionIds(_);
-        setCheckedids(_);
-      } else {
-        setCheckedids([]);
-        changeuniqueCollectionIds(envIds);
-      }
-    } else {
-      changeuniqueCollectionIds([...checkedIds, id]);
-      setCheckedids([...checkedIds, id]);
-    }
-  };
+  }, [changeUniqueCollectionIds, inputChecked]);
 
   const clearCheckedValues = () => {
     setInputChecked([]);
-    changeuniqueCollectionIds(envIds);
-    setCheckedids([]);
+    changeUniqueCollectionIds(envIds);
   };
 
   const updateImageUrl = useCallback(() => {
@@ -107,9 +121,35 @@ const FilterContainer: React.FC<PropTypes> = ({ account, changePrices, changeuni
     });
   }, [collections, getTokenImageUrl]);
 
+  const resetFromFilter = useCallback(() => {
+    if (!filters.maxPrice && !filters.minPrice) {
+      setKSMPrices({ maxPrice: '', minPrice: '' });
+    }
+
+    if (!filters.seller) {
+      setIsOnlyMyToken(false);
+    }
+
+    const filteredCollections = filters.collectionIds as string[];
+
+    if (filteredCollections.length === envConfig.uniqueCollectionIds.length) {
+      setInputChecked((prevState) => {
+        if (prevState.length === envConfig.uniqueCollectionIds.length) {
+          return prevState;
+        } else {
+          return [];
+        }
+      });
+    }
+  }, [filters]);
+
   useEffect(() => {
     void updateImageUrl();
   }, [updateImageUrl]);
+
+  useEffect(() => {
+    resetFromFilter();
+  }, [resetFromFilter]);
 
   return (
     <>
@@ -158,10 +198,11 @@ const FilterContainer: React.FC<PropTypes> = ({ account, changePrices, changeuni
                     <div className='custom-checkbox'>
                       <div className='checkbox-input'>
                         <input
-                          checked={inputChecked && inputChecked.includes(String(collection.id))}
+                          checked={inputChecked.includes(String(collection.id))}
                           data-current={collection.id}
                           onChange={() => null}
-                          type='checkbox'/>
+                          type='checkbox'
+                        />
                       </div>
                       <div className='checkbox-title'>{collectionName16Decoder(collection.Name)}</div>
                     </div>
