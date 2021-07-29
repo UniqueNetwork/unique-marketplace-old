@@ -21,6 +21,20 @@
         display: grid;
         grid-template-columns: 1fr 192px;
         grid-column-gap: 24px;
+
+        .search-results {
+          font-size: 16px;
+          line-height: 40px;
+          margin-bottom: 0;
+          margin-left: 16px;
+
+          a {
+            color: var(--error-color);
+            font-weight: 500;
+            margin-left: 16px;
+            cursor: pointer;
+          }
+        }
       }
     }
   }
@@ -54,8 +68,8 @@
       background-color: var(--card-background);
 
       .item {
-        .text.current {
-          &.active {
+        &.active {
+          .text.current {
             color: var(--link-color);
             font-weight: normal;
           }
