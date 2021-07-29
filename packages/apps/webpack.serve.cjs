@@ -19,23 +19,23 @@ module.exports = merge(
       proxy: {
         '/health': {
           changeOrigin: true,
-          target: process.env.DEVELOPMENT_PROXY_URL
+          target: process.env.UNIQUE_API
         },
         '/mint': {
           changeOrigin: true,
-          target: process.env.DEVELOPMENT_PROXY_URL
+          target: process.env.UNIQUE_API
         },
         '/offers': {
           changeOrigin: true,
-          target: process.env.DEVELOPMENT_PROXY_URL
+          target: process.env.UNIQUE_API
         },
         '/trades': {
           changeOrigin: true,
-          target: process.env.DEVELOPMENT_PROXY_URL
+          target: process.env.UNIQUE_API
         },
-        [process.env.DEVELOPMENT_PROXY_URL]: {
+        [process.env.UNIQUE_API]: {
           changeOrigin: true,
-          target: process.env.DEVELOPMENT_PROXY_URL
+          target: process.env.UNIQUE_API
         },
         [process.env.WHITE_LABEL_URL]: {
           changeOrigin: true,

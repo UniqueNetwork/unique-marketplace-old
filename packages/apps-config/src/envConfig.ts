@@ -20,13 +20,13 @@ export type EnvConfigType = {
   quoteId: number; // 2
   showMarketActions: boolean; // buy, sell, cancel and withdraw buttons on the token details page
   uniqueCollectionIds: string[]; // ['23']
+  uniqueApi: string;
+  uniqueSubstrateApi: string;
   value: number; // 0
   vaultAddress: string; // 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
   version: string;
   walletMode: boolean; // if only wallet needed
-  wssUrl: string;
   whiteLabelUrl: string;
-  devProxyUrl: string;
 };
 
 const envConfig: EnvConfigType = {
@@ -48,13 +48,13 @@ const envConfig: EnvConfigType = {
   quoteId: +process.env.QUOTE_ID,
   showMarketActions: JSON.parse(process.env.SHOW_MARKET_ACTIONS),
   uniqueCollectionIds: process.env.UNIQUE_COLLECTION_IDS.split(','),
+  uniqueApi: process.env.UNIQUE_API,
+  uniqueSubstrateApi: process.env.UNIQUE_SUBSTRATE_API,
   value: +process.env.VALUE,
   vaultAddress: process.env.VAULT_ADDRESS,
   version: process.env.VERSION,
   walletMode: JSON.parse(process.env.WALLET_MODE),
-  wssUrl: process.env.WEBSOCKET_SECURE_URL,
-  whiteLabelUrl: process.env.WHITE_LABEL_URL,
-  devProxyUrl: process.env.DEVELOPMENT_PROXY_URL
+  whiteLabelUrl: process.env.WHITE_LABEL_URL
 };
 
 export default envConfig;
