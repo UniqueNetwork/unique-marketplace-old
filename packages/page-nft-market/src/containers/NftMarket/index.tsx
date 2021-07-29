@@ -59,9 +59,10 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
   const [searchString, setSearchString] = useState<string>('');
   const [sortValue, setSortValue] = useState<string>('creationDate-desc');
   const [uniqueCollectionIds, setUniqueCollectionIds] = useState(envConfig.uniqueCollectionIds);
+  const [allowClearCollections, setAllowClearCollections] = useState<boolean>(false);
 
   const [collections, setCollections] = useState<NftCollectionInterface[]>([]);
-  const [filters, setFilters] = useState<Filters | undefined>({ collectionIds: uniqueCollectionIds, sort: 'desc(creationDate)', traitsCount: [] });
+  const [filters, setFilters] = useState<Filters>({ collectionIds: uniqueCollectionIds, sort: 'desc(creationDate)', traitsCount: [] });
 
   const hasMore = !!(offers && offersCount) && Object.keys(offers).length < offersCount;
   const openDetailedInformationModal = useCallback((collectionId: string, tokenId: string) => {
@@ -128,23 +129,22 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
   }, [optionNode, sortOptions, sortValue]);
 
   const clearAllFilters = useCallback(() => {
-    setFilters(undefined);
+    setAllowClearCollections(true);
+    setFilters(defaultFilters);
   }, []);
 
   const setSortByFilter = useCallback(() => {
-    if (filters) {
-      const sort = filters.sort;
+    const sort = filters.sort;
 
-      // desc(creationDate)
-      if (sort.includes('(') && sort.includes(')')) {
-        const sortString = sort.replace(')', '').replace('(', '-');
-        const sortArr = sortString.split('-');
+    // desc(creationDate)
+    if (sort.includes('(') && sort.includes(')')) {
+      const sortString = sort.replace(')', '').replace('(', '-');
+      const sortArr = sortString.split('-');
 
-        // 'creationDate-desc'
-        setSortValue(`${sortArr[1]}-${sortArr[0]}`);
-      } else {
-        console.log('something wrong with sort filer');
-      }
+      // 'creationDate-desc'
+      setSortValue(`${sortArr[1]}-${sortArr[0]}`);
+    } else {
+      console.log('something wrong with sort filer');
     }
   }, [filters]);
 
@@ -168,13 +168,6 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
     setSortByFilter();
   }, [setSortByFilter]);
 
-  // set default filters after clearing. Needs for collectionIds correct initialization
-  useEffect(() => {
-    if (!filters) {
-      setFilters(defaultFilters);
-    }
-  }, [filters]);
-
   const showSearch = false;
 
   return (
@@ -183,8 +176,10 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
       <div className='nft-market--panel'>
         <MarketFilters
           account={account}
+          allowClearCollections={allowClearCollections}
           collections={collections}
           filters={filters}
+          setAllowClearCollections={setAllowClearCollections}
           setFilters={setFilters}
           setUniqueCollectionIds={setUniqueCollectionIds}
         />

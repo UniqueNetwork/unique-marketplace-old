@@ -12,12 +12,14 @@ import { Filters } from '@polkadot/app-nft-market/containers/NftMarket';
 import envConfig from '@polkadot/apps-config/envConfig';
 import { useDecoder, useMetadata } from '@polkadot/react-hooks';
 
-const { commission, uniqueCollectionIds: envIds } = envConfig;
+const { commission, uniqueCollectionIds } = envConfig;
 
 interface PropTypes {
   account: string|undefined;
+  allowClearCollections: boolean;
   collections: NftCollectionInterface[];
   filters: Filters;
+  setAllowClearCollections: (allow: boolean) => void;
   setFilters: (filters: Filters) => void;
   setUniqueCollectionIds: (collectionIds: string[]) => void;
 }
@@ -27,7 +29,7 @@ interface PricesTypes{
   maxPrice: string;
 }
 
-const FilterContainer: React.FC<PropTypes> = ({ account, collections, filters, setFilters, setUniqueCollectionIds }) => {
+const FilterContainer: React.FC<PropTypes> = ({ account, allowClearCollections, collections, filters, setAllowClearCollections, setFilters, setUniqueCollectionIds }) => {
   const { collectionName16Decoder } = useDecoder();
   const { getTokenImageUrl } = useMetadata();
   const [images, setImages] = useState<string[]>([]);
@@ -107,7 +109,7 @@ const FilterContainer: React.FC<PropTypes> = ({ account, collections, filters, s
 
   const clearCheckedValues = () => {
     setInputChecked([]);
-    changeUniqueCollectionIds(envIds);
+    changeUniqueCollectionIds(uniqueCollectionIds);
   };
 
   const updateImageUrl = useCallback(() => {
@@ -132,9 +134,9 @@ const FilterContainer: React.FC<PropTypes> = ({ account, collections, filters, s
 
     const filteredCollections = filters.collectionIds as string[];
 
-    if (filteredCollections.length === envConfig.uniqueCollectionIds.length) {
+    if (filteredCollections.length === uniqueCollectionIds.length) {
       setInputChecked((prevState) => {
-        if (prevState.length === envConfig.uniqueCollectionIds.length) {
+        if (prevState.length === uniqueCollectionIds.length) {
           return prevState;
         } else {
           return [];
@@ -150,6 +152,13 @@ const FilterContainer: React.FC<PropTypes> = ({ account, collections, filters, s
   useEffect(() => {
     resetFromFilter();
   }, [resetFromFilter]);
+
+  useEffect(() => {
+    if (allowClearCollections) {
+      setInputChecked([]);
+      setAllowClearCollections(false);
+    }
+  }, [allowClearCollections, setAllowClearCollections]);
 
   return (
     <>
@@ -172,7 +181,10 @@ const FilterContainer: React.FC<PropTypes> = ({ account, collections, filters, s
           <div className='clear'>
             <div
               className={`clear-title ${inputChecked.length ? 'clear-title-active' : ''}`}
-              onClick={clearCheckedValues}>Clear</div>
+              onClick={clearCheckedValues}
+            >
+              Clear
+            </div>
             <div
               className={`clear-icon ${isShowCollection ? 'rotate-icon' : ''}`}
               onClick={setIsShowCollection.bind(null, !isShowCollection)}

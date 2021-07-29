@@ -11,31 +11,31 @@ import TreatsFilter from './TreatsFilter';
 
 interface PropTypes {
   account: string | undefined;
-  filters: Filters | undefined;
-  collections: NftCollectionInterface[]
+  allowClearCollections: boolean;
+  filters: Filters;
+  collections: NftCollectionInterface[];
+  setAllowClearCollections: (allow: boolean) => void;
   setFilters: (filters: Filters) => void;
   setUniqueCollectionIds: (collectionIds: string[]) => void;
 }
 
-const MarketFilters = ({ account, collections, filters, setFilters, setUniqueCollectionIds }: PropTypes): ReactElement => {
+const MarketFilters = ({ account, allowClearCollections, collections, filters, setAllowClearCollections, setFilters, setUniqueCollectionIds }: PropTypes): ReactElement => {
 
   return (
     <div className='filter-main'>
-      { filters && (
-        <>
-          <FilterContainer
-            account={account}
-            collections={collections}
-            filters={filters}
-            setFilters={setFilters}
-            setUniqueCollectionIds={setUniqueCollectionIds}
-          />
-          <TreatsFilter
-            filters={filters}
-            setFilters={setFilters}
-          />
-        </>
-      )}
+      <FilterContainer
+        account={account}
+        allowClearCollections={allowClearCollections}
+        collections={collections}
+        filters={filters}
+        setAllowClearCollections={setAllowClearCollections}
+        setFilters={setFilters}
+        setUniqueCollectionIds={setUniqueCollectionIds}
+      />
+      <TreatsFilter
+        filters={filters}
+        setFilters={setFilters}
+      />
     </div>
   );
 };
