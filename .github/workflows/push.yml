@@ -6,6 +6,7 @@ on:
       - dev
       - master
       - feature/env-file-support
+      - feature/ci-cd
 
 jobs:
   build-and-publish:
