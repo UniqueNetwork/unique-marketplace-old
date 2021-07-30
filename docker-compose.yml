@@ -1,0 +1,34 @@
+version: "3.7"
+
+networks:
+  unique-network:
+    driver: bridge
+    name: ${DOCKER_NETWORK:-unique-network}
+    attachable: true
+
+services:
+  unique-network-marketplace:
+    container_name: ${DOCKER_NAME:-unique-network-marketplace.latest}
+    image: ${DOCKER_IMAGE:-unique-network-marketplace:latest}
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - NODE_ENV
+    init: true
+    tty: true
+    stdin_open: true    
+    ports:
+      - 127.0.0.1:${PORT}:80
+    networks:
+      - ${DOCKER_NETWORK:-unique-network}
+    logging:
+      options:
+        max-size: 10M
+        max-file: '5'
+    deploy:
+      resources:
+        limits:
+          cpus: ${DOCKER_CPUS_LIMIT:-0.5}
+          memory: ${DOCKER_MEMORY_LIMIT:-1024M}
+    restart: always

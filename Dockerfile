@@ -1,20 +1,35 @@
-# ======================BUILD======================================
+FROM node:lts
 
-FROM node:latest as builder
+# Get build args 
+ARG NODE_ENV="production"
 
-WORKDIR /apps
-COPY . .
+# Set environment variables
+ENV NODE_ENV=${NODE_ENV}
 
-RUN yarn install && yarn build:www
+# Install system packages
+RUN apt-get update && apt-get install -y nginx
 
-# ======================RUN========================================
+# Configuring Nginx
+RUN echo "daemon off;" >> /etc/nginx/nginx.conf \
+    && ln -sf /dev/stdout /var/log/nginx/access.log \
+    && ln -sf /dev/stderr /var/log/nginx/error.log
 
-FROM nginx:1.19
+# Cleanups
+RUN apt-get remove -y --purge software-properties-common \
+    && apt-get -y autoremove \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+# Set working directory and copy project files
 WORKDIR /usr/share/nginx/html
 
-COPY --from=builder /apps/packages/apps/build /usr/share/nginx/html
+COPY ./packages/apps/build /usr/share/nginx/html
 
+# Copying Nginx's site configuration
+COPY ./nginx-default.conf /etc/nginx/sites-available/default
+
+# Port to expose for other containers
 EXPOSE 80
 
-CMD ["nginx", "-g", "daemon off;"]
+# Launching Nginx
+CMD ["nginx"]
