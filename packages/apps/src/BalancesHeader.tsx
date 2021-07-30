@@ -13,7 +13,7 @@ import { formatKsmBalance, formatStrBalance } from '@polkadot/react-hooks/useKus
 
 function BalancesHeader ({ account }: { account?: string }): React.ReactElement<{ account?: string }> {
   const { contractInstance, deposited, getUserDeposit } = useNftContract(account || '');
-  const { balancesAll, kusamaBalancesAll } = useBalances(account, deposited, getUserDeposit);
+  const { freeBalance, freeKusamaBalance } = useBalances(account, getUserDeposit);
   const [showWithdrawModal, toggleWithdrawModal] = useState<boolean>(false);
 
   const closeModal = useCallback(() => {
@@ -29,11 +29,11 @@ function BalancesHeader ({ account }: { account?: string }): React.ReactElement<
     <div className='app-balances'>
       <div className='app-balance--item'>
         <small>balance</small>
-        {formatStrBalance(15, balancesAll?.freeBalance)} UNQ
+        {formatStrBalance(15, freeBalance)} UNQ
       </div>
       <div className='app-balance--item'>
         <small>balance</small>
-        {formatKsmBalance(kusamaBalancesAll?.freeBalance)} KSM
+        {formatKsmBalance(freeKusamaBalance)} KSM
       </div>
       <div className='app-balance--item'>
         <small>deposit</small>
