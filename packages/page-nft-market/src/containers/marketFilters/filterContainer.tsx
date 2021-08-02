@@ -11,6 +11,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Filters } from '@polkadot/app-nft-market/containers/NftMarket';
 import envConfig from '@polkadot/apps-config/envConfig';
 import { useDecoder, useMetadata } from '@polkadot/react-hooks';
+import BN from "bn.js";
 
 const { commission, uniqueCollectionIds } = envConfig;
 
@@ -45,15 +46,15 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearCollections, 
     if (minPrice === '') {
       delete filtersCopy.minPrice;
     } else {
-      minPrice = String(Number(minPrice) * 10000000000000 / (10 + (+commission / 10)));
-      filtersCopy.minPrice = minPrice;
+      const currentMinPrice = new BN(Number(minPrice) * 100000000000000)
+      filtersCopy.minPrice = String(currentMinPrice.mul(new BN(10)).div(new BN(1000 + commission * 10)));
     }
 
     if (maxPrice === '') {
       delete filtersCopy.maxPrice;
     } else {
-      maxPrice = String(Number(maxPrice) * 10000000000000 / (10 + (+commission / 10)));
-      filtersCopy.maxPrice = maxPrice;
+      const currentMaxPrice = new BN(Number(maxPrice) * 100000000000000)
+      filtersCopy.maxPrice = String(currentMaxPrice.mul(new BN(10)).div(new BN(1000 + commission * 10)));
     }
 
     setFilters({ ...filtersCopy });
