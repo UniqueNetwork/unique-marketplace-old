@@ -65,16 +65,6 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
     getOffers(page, perPage, filters);
   }, [filters, getOffers]);
 
-  /* const onSetSearchString = useCallback((searchText: string) => {
-    if (searchText) {
-      setFilters((prevFilters: Filters) => {
-        return { ...prevFilters, searchLocale: 'en', searchText };
-      });
-    } else {
-      clearSearch();
-    }
-  }, [clearSearch]); */
-
   useEffect(() => {
     if (shouldUpdateTokens) {
       setShouldUpdateTokens(undefined);
@@ -90,10 +80,6 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
   useEffect(() => {
     setShouldUpdateTokens('all');
   }, [setShouldUpdateTokens]);
-
-  /* useEffect(() => {
-    onSetSearchString(searchString);
-  }, [searchString, onSetSearchString]); */
 
   return (
     <div className='nft-market'>
