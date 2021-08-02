@@ -45,14 +45,14 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearCollections, 
     if (minPrice === '') {
       delete filtersCopy.minPrice;
     } else {
-      minPrice = String(Math.trunc(Number(minPrice) * 1000000000000 / (1 + (+commission / 100))));
+      minPrice = String(Number(minPrice) * 10000000000000 / (10 + (+commission / 10)));
       filtersCopy.minPrice = minPrice;
     }
 
     if (maxPrice === '') {
       delete filtersCopy.maxPrice;
     } else {
-      maxPrice = String(Math.trunc(Number(maxPrice) * 1000000000000 / (1 + (+commission / 100))));
+      maxPrice = String(Number(maxPrice) * 10000000000000 / (10 + (+commission / 10)));
       filtersCopy.maxPrice = maxPrice;
     }
 
@@ -250,6 +250,7 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearCollections, 
             <div className='price-main' >
               <input className='min-input'
                 name='minPrice'
+                onKeyPress={(e) => e.charCode === 13 ? changePrices(KSMPrices.minPrice, KSMPrices.maxPrice) : null}
                 onChange= {setKSMPrice}
                 onKeyDown={(evt) => ['e', 'E', '+', '-'].includes(evt.key) && evt.preventDefault()}
                 placeholder='Min'
@@ -259,6 +260,7 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearCollections, 
               <p>to</p>
               <input name='maxPrice'
                 onChange= {setKSMPrice}
+                onKeyPress={(e) => e.charCode === 13 ? changePrices(KSMPrices.minPrice, KSMPrices.maxPrice) : null}
                 onKeyDown={(evt) => ['e', 'E', '+', '-'].includes(evt.key) && evt.preventDefault()}
                 placeholder='Max'
                 type='number'
