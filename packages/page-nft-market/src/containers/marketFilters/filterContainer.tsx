@@ -11,6 +11,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Filters } from '@polkadot/app-nft-market/containers/NftMarket';
 import envConfig from '@polkadot/apps-config/envConfig';
 import { useDecoder, useMetadata } from '@polkadot/react-hooks';
+import BN from "bn.js";
 
 const { commission, uniqueCollectionIds } = envConfig;
 
@@ -45,15 +46,15 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearCollections, 
     if (minPrice === '') {
       delete filtersCopy.minPrice;
     } else {
-      minPrice = String(Math.trunc(Number(minPrice) * 1000000000000 / (1 + (+commission / 100))));
-      filtersCopy.minPrice = minPrice;
+      const currentMinPrice = new BN(Number(minPrice) * 100000000000000)
+      filtersCopy.minPrice = String(currentMinPrice.mul(new BN(10)).div(new BN(1000 + commission * 10)));
     }
 
     if (maxPrice === '') {
       delete filtersCopy.maxPrice;
     } else {
-      maxPrice = String(Math.trunc(Number(maxPrice) * 1000000000000 / (1 + (+commission / 100))));
-      filtersCopy.maxPrice = maxPrice;
+      const currentMaxPrice = new BN(Number(maxPrice) * 100000000000000)
+      filtersCopy.maxPrice = String(currentMaxPrice.mul(new BN(10)).div(new BN(1000 + commission * 10)));
     }
 
     setFilters({ ...filtersCopy });
@@ -250,6 +251,7 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearCollections, 
             <div className='price-main' >
               <input className='min-input'
                 name='minPrice'
+                onKeyPress={(e) => e.charCode === 13 ? changePrices(KSMPrices.minPrice, KSMPrices.maxPrice) : null}
                 onChange= {setKSMPrice}
                 onKeyDown={(evt) => ['e', 'E', '+', '-'].includes(evt.key) && evt.preventDefault()}
                 placeholder='Min'
@@ -259,6 +261,7 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearCollections, 
               <p>to</p>
               <input name='maxPrice'
                 onChange= {setKSMPrice}
+                onKeyPress={(e) => e.charCode === 13 ? changePrices(KSMPrices.minPrice, KSMPrices.maxPrice) : null}
                 onKeyDown={(evt) => ['e', 'E', '+', '-'].includes(evt.key) && evt.preventDefault()}
                 placeholder='Max'
                 type='number'
