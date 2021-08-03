@@ -22,14 +22,16 @@ export const useBalances = (account: string | undefined, getUserDeposit: () => P
   const [freeKusamaBalance, setFreeKusamaBalance] = useState<BN>();
 
   useEffect(() => {
+    // available balance used as free (transferable)
     if (balancesAll) {
-      setFreeBalance(balancesAll.freeBalance);
+      setFreeBalance(balancesAll.availableBalance);
     }
   }, [balancesAll]);
 
   useEffect(() => {
+    // available balance used as free (transferable)
     if (kusamaBalancesAll) {
-      setFreeKusamaBalance(kusamaBalancesAll.freeBalance);
+      setFreeKusamaBalance(kusamaBalancesAll.availableBalance);
     }
   }, [kusamaBalancesAll]);
 
