@@ -1,12 +1,13 @@
 {
-  "name": "unique-marketplace",
-  "repository": "https://github.com/usetech-llc/marketplace",
+  "name": "unique-network-marketplace",
+  "repository": "https://github.com/UniqueNetwork/marketplace",
   "main": "packages/apps-electron/build/electron.js",
-  "description": "A marketplace for unique nft tokens",
+  "description": "A marketplace for unique NFT tokens",
   "author": "Jaco Greeff <jacogr@gmail.com>, Konstantin Pozdnikin <kpozdnikin@usetech.ru>",
   "version": "0.83.2-28",
   "license": "Apache-2",
   "homepage": ".",
+  "private": true,
   "workspaces": [
     "packages/*"
   ],
