@@ -211,3 +211,86 @@
 .crateAccountBtn:first-letter {
   text-transform: uppercase;
 }
+
+.menu-mobile {
+  .menu-icon {
+    cursor: pointer;
+  }
+}
+
+@media (min-width: 1024px) {
+  .app-header {
+    .menu-mobile {
+      display: none;
+    }
+
+    .ui.tabular.header-menu.menu {
+      display: inline-flex;
+    }
+
+    .app-user {
+      .app-balances-mobile {
+        display: none;
+      }
+
+      .account-selector-block {
+        .mobile-account-selector {
+          display: none;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 1024px) {
+  .app-header {
+    .ui.tabular.header-menu.menu {
+      display: none;
+    }
+
+    .menu-mobile {
+      display: block;
+    }
+
+    .app-user {
+      .app-balances {
+        display: none;
+      }
+
+      .app-balances-mobile {
+        display: grid;
+        grid-template-columns: 1fr 24px;
+        align-items: center;
+        min-width: 180px;
+        padding: 0 16px;
+
+        .app-balances-mobile--items {
+          display: flex;
+          flex-direction: column;
+
+          .app-balances-mobile--items--item {
+            text-align: right;
+            font-weight: 500;
+            font-family: var(--font-roboto);
+
+            .unit {
+              color: var(--tabs-color);
+              margin-left: 5px;
+              font-weight: 400;
+            }
+          }
+        }
+
+        img {
+          margin-left: 8px;
+        }
+      }
+
+      .account-selector-block {
+        .template--AccountSelector {
+          display: none;
+        }
+      }
+    }
+  }
+}

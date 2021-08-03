@@ -5,6 +5,7 @@ import BN from 'bn.js';
 import React, { memo, useCallback, useState } from 'react';
 import Popup from 'semantic-ui-react/dist/commonjs/modules/Popup';
 
+import menuArrow from '@polkadot/apps/images/menu-arrow.svg';
 import { WithdrawModal } from '@polkadot/react-components';
 import ArrowCircleUpRight from '@polkadot/react-components/ManageCollection/ArrowCircleUpRight.svg';
 import ArrowCircleUpRightGreen from '@polkadot/react-components/ManageCollection/ArrowCircleUpRightGreen.svg';
@@ -35,6 +36,10 @@ function BalancesHeader ({ account }: { account?: string }): React.ReactElement<
         <small>balance</small>
         {formatKsmBalance(freeKusamaBalance)} KSM
       </div>
+      <img
+        alt='menu-arrow'
+        src={menuArrow as string}
+      />
       <div className='app-balance--item'>
         <small>deposit</small>
         { +formatKsmBalance(deposited) > 0.000001 ? formatKsmBalance(deposited) : 0}  KSM

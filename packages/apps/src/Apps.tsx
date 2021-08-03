@@ -27,6 +27,9 @@ import Signer from '@polkadot/react-signer';
 import infoSvg from '../src/images/info.svg';
 import ConnectingOverlay from './overlays/Connecting';
 import BalancesHeader from './BalancesHeader';
+import MobileAccountSelector from './MobileAccountSelector';
+import MobileBalancesHeader from './MobileBalancesHeader';
+import MobileMenu from './MobileMenu';
 import ScrollToTop from './ScrollToTop';
 import WarmUp from './WarmUp';
 
@@ -70,6 +73,8 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
 
   const missingApis = findMissingApis(api, needsApi);
   const currentLocation = location.pathname.slice(1) === 'accounts';
+
+  console.log('account', account);
 
   return (
     <>
@@ -121,7 +126,11 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                         <>
                           <header className='app-header'>
                             <div className='app-container app-container--header'>
-                              <Menu tabular>
+                              <MobileMenu />
+                              <Menu
+                                className='header-menu'
+                                tabular
+                              >
                                 { theme.logo && (
                                   <Menu.Item
                                     active={location.pathname === '/'}
@@ -173,10 +182,14 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                               </Menu>
                               <div className='app-user'>
                                 { isApiReady && (
-                                  <BalancesHeader account={account} />
+                                  <>
+                                    <BalancesHeader account={account} />
+                                    <MobileBalancesHeader account={account} />
+                                  </>
                                 )}
                                 <div className='account-selector-block'>
                                   <AccountSelector onChange={setAccount} />
+                                  <MobileAccountSelector address={account} />
                                 </div>
                               </div>
                             </div>
