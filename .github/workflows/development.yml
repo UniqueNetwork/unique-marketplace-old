@@ -117,7 +117,7 @@ jobs:
     name: Deploy
     needs: test
     environment: development
-    if: ${{ contains(github.ref, 'refs/heads/dev') || ${{ contains(github.ref, 'refs/heads/develop') || contains(github.ref, 'refs/heads/feature/ci-cd') }}
+    if: ${{ contains(github.ref, 'refs/heads/dev') || contains(github.ref, 'refs/heads/develop') || contains(github.ref, 'refs/heads/feature/ci-cd') }}
     env:
       DOCKER_IMAGE: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ github.event.repository.name }}:dev
       DOCKER_PORT: ${{ secrets.DOCKER_PORT }}
