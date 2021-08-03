@@ -21893,9 +21893,9 @@ resolve@^2.0.0-next.3:
   languageName: node
   linkType: hard
 
-"unique-marketplace@workspace:.":
+"unique-network-marketplace@workspace:.":
   version: 0.0.0-use.local
-  resolution: "unique-marketplace@workspace:."
+  resolution: "unique-network-marketplace@workspace:."
   dependencies:
     "@babel/core": ^7.14.6
     "@babel/register": ^7.14.5
