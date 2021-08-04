@@ -88,7 +88,7 @@ jobs:
           context: .
           file: ./Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ github.event.repository.name }}:dev
+          tags: ${{ secrets.DOCKER_IMAGE }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
 
@@ -119,7 +119,8 @@ jobs:
     environment: development
     if: ${{ contains(github.ref, 'refs/heads/dev') || contains(github.ref, 'refs/heads/develop') || contains(github.ref, 'refs/heads/feature/ci-cd') }}
     env:
-      DOCKER_IMAGE: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ github.event.repository.name }}:dev
+      DOCKER_IMAGE: ${{ secrets.DOCKER_IMAGE }}
+      DOCKER_NAME: ${{ secrets.DOCKER_NAME }}
       DOCKER_PORT: ${{ secrets.DOCKER_PORT }}
     steps:
       - name: Checkout code
