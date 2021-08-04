@@ -13,7 +13,7 @@ import envConfig from '@polkadot/apps-config/envConfig';
 import { useApi, useCollection, useFetch } from '@polkadot/react-hooks';
 import { base64Decode, encodeAddress } from '@polkadot/util-crypto';
 
-const { canAddCollections, uniqueCollectionIds } = envConfig;
+const { canAddCollections, uniqueApi, uniqueCollectionIds } = envConfig;
 
 export type MetadataType = {
   metadata?: string;
@@ -106,7 +106,7 @@ export function useCollections () {
    */
   const getOffers = useCallback((page: number, pageSize: number, filters?: Filters) => {
     try {
-      let url = `/offers?page=${page}&pageSize=${pageSize}`;
+      let url = `${uniqueApi}/offers?page=${page}&pageSize=${pageSize}`;
 
       // reset offers before loading first page
       if (page === 1) {
@@ -173,7 +173,7 @@ export function useCollections () {
    */
   const getHoldByMe = useCallback((account: string, page: number, pageSize: number, collectionIds?: string[]) => {
     try {
-      let url = `/OnHold/${account}?page=${page}&pageSize=${pageSize}`;
+      let url = `${uniqueApi}/OnHold/${account}?page=${page}&pageSize=${pageSize}`;
 
       if (!canAddCollections && collectionIds && collectionIds.length) {
         url = `${url}${collectionIds.map((item: string) => `&collectionId=${item}`).join('')}`;
@@ -226,7 +226,7 @@ export function useCollections () {
     page,
     pageSize }: { account?: string, collectionIds?: string[], page: number, pageSize: number }) => {
     try {
-      let url = '/trades';
+      let url = `${uniqueApi}/trades`;
 
       if (account && account.length) {
         url = `${url}/${account}`;

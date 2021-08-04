@@ -9,7 +9,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@500&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script type="text/javascript" src="/env-config.js"></script>
     <link rel="stylesheet" href="theme.css">
   </head>
   <body>
@@ -22,11 +21,7 @@
         link.rel = 'icon';
         document.getElementsByTagName('head')[0].appendChild(link);
       }
-      if (window.processEnv.faviconPath) {
-        link.href = window.processEnv.faviconPath + '/favicon.ico';
-      } else {
-        link.href = 'favicon.ico';
-      }
+      link.href = 'favicon.ico';
     </script>
     <div id="root"></div>
     <div id="tooltips"></div>
