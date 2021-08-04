@@ -44,7 +44,7 @@ function getApiUrl (): string {
   const fallbackUrl = endpoints.find(({ info }) => info === 'unique');
 
   // via settings, or the default chain
-  return [stored.apiUrl, process.env.WS_URL].includes(settings.apiUrl) && settings.apiUrl === envConfig.wssUrl
+  return [stored.apiUrl, process.env.WS_URL].includes(settings.apiUrl) && settings.apiUrl === envConfig.uniqueSubstrateApi
     ? settings.apiUrl // keep as-is
     : fallbackUrl
       ? fallbackUrl.value as string // grab the fallback
