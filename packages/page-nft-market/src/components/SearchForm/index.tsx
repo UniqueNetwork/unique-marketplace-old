@@ -141,7 +141,7 @@ const SearchForm = (props: SearchFormProps) => {
             />
           }
           onChange={setSearchString}
-          placeholder='Find token by collection, name or attribute'
+          placeholder='Search for tokens or attributes'
           value={searchString}
           withLabel
         >
