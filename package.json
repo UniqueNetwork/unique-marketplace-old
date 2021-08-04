@@ -32,6 +32,8 @@
   },
   "scripts": {
     "analyze": "yarn clean && BUILD_ANALYZE=1 yarn run build:code && yarn source-map-explorer packages/apps/build/main.*.js",
+    "audit": "yarn npm audit --recursive --all",
+    "audit:ci": "yarn npm audit --recursive --all --severity high",
     "build": "yarn run build:i18n && yarn run build:code",
     "build:code": "NODE_ENV=production yarn polkadot-dev-build-ts",
     "build:i18n": "i18next-scanner --config i18next-scanner.config.js && node ./scripts/i18nSort.cjs",
