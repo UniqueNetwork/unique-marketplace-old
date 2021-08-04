@@ -117,7 +117,7 @@ jobs:
     name: Deploy
     needs: test
     environment: development
-    if: ${{ contains(github.ref, 'refs/heads/dev') || contains(github.ref, 'refs/heads/develop') || contains(github.ref, 'refs/heads/feature/ci-cd') }}
+    if: ${{ contains(github.ref, 'refs/heads/dev') || contains(github.ref, 'refs/heads/develop') || contains(github.ref, 'refs/heads/feature/env-file-support') }}
     env:
       DOCKER_IMAGE: ${{ secrets.DOCKER_IMAGE }}
       DOCKER_NAME: ${{ secrets.DOCKER_NAME }}
