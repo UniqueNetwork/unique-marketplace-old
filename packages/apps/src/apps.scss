@@ -316,11 +316,12 @@
 
 .manage-balances {
   background-color: var(--header-background);
+  overflow: hidden;
   padding: var(--gap);
   font-size: 14px;
   font-family: var(--font-roboto);
   font-weight: 500;
-  height: calc(100vh - 70px);
+  height: calc(100vh - 87px);
   line-height: 22px;
 
   .unit {
@@ -352,6 +353,17 @@
         margin-left: 3px;
       }
     }
+  }
+}
+
+.manage-accounts {
+  height: calc(100vh - 87px);
+  background-color: var(--header-background);
+  overflow: hidden;
+
+  .accounts-list {
+    overflow-y: scroll;
+    height: calc(100vh - 230px);
   }
 }
 

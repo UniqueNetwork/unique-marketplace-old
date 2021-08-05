@@ -213,20 +213,20 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                               account={account}
                             />
                           )}
-                          <main className='app-main'>
-                            <div className='app-container'>
-                              { isMobileMenu === 'none' && (
+                          { isMobileMenu === 'none' && (
+                            <main className='app-main'>
+                              <div className='app-container'>
                                 <Component
                                   account={account}
                                   basePath={`/${name}`}
                                   location={location}
                                   onStatusChange={queueAction}
                                 />
-                              )}
-                              <ConnectingOverlay />
-                              <div id={PORTAL_ID} />
-                            </div>
-                          </main>
+                                <ConnectingOverlay />
+                                <div id={PORTAL_ID} />
+                              </div>
+                            </main>
+                          )}
                         </>
                       )
                     }
