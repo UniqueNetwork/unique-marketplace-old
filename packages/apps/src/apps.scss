@@ -244,6 +244,9 @@
 
 @media (max-width: 1024px) {
   .app-header {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    z-index: 1000;
+
     .ui.tabular.header-menu.menu {
       display: none;
     }
@@ -253,6 +256,10 @@
     }
 
     .app-user {
+      display: grid;
+      grid-template-columns: 1fr 50px;
+      grid-column-gap: 16px;
+
       .app-balances {
         display: none;
       }
@@ -262,7 +269,7 @@
         grid-template-columns: 1fr 24px;
         align-items: center;
         min-width: 180px;
-        padding: 0 16px;
+        cursor: pointer;
 
         .app-balances-mobile--items {
           display: flex;
@@ -287,10 +294,88 @@
       }
 
       .account-selector-block {
+        cursor: pointer;
+        height: 100%;
+        width: auto;
+
         .template--AccountSelector {
           display: none;
         }
+
+        .mobile-account-selector {
+          display: grid;
+          grid-template-columns: 24px 1fr;
+          grid-column-gap: 8px;
+          align-items: center;
+          height: 100%;
+        }
       }
     }
+  }
+}
+
+.manage-balances {
+  background-color: var(--header-background);
+  padding: var(--gap);
+  font-size: 14px;
+  font-family: var(--font-roboto);
+  font-weight: 500;
+  height: calc(100vh - 70px);
+  line-height: 22px;
+
+  .unit {
+    font-weight: 400;
+    margin-left: 3px;
+  }
+
+  .main-balance {
+    padding-bottom: var(--gap);
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .other-balance {
+    margin-top: var(--gap);
+
+    .balance-line {
+      display: flex;
+      align-items: center;
+      margin-top: 3px;
+      grid-column-gap: 3px;
+
+      &:first-child {
+        margin-top: 0;
+      }
+
+      img {
+        width: 24px;
+        height: 24px;
+        margin-left: 3px;
+      }
+    }
+  }
+}
+
+.ui.popup.mobile.withdraw-popup {
+  background-color: var(--link-color) !important;
+  padding: var(--gap);
+  color: var(--input-background-color);
+  font-family: var(--font-roboto);
+  font-size: 14px;
+  text-align: center;
+
+  &:before {
+    background-color: var(--link-color) !important;
+  }
+
+  .withdraw-button.button {
+    margin-bottom: 6px;
+    font-family: var(--font-roboto);
+    border: 1px solid var(--input-background-color);
+  }
+
+  a {
+    text-decoration: underline;
+    color: var(--input-background-color);
+    margin: 0 3px;
   }
 }

@@ -1,17 +1,35 @@
 // Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import React, { memo } from 'react';
+import React, {memo, useCallback} from 'react';
 
 import menuArrow from '@polkadot/apps/images/menu-arrow.svg';
 import { useBalances } from '@polkadot/react-hooks';
 import { formatKsmBalance, formatStrBalance } from '@polkadot/react-hooks/useKusamaApi';
 
-function MobileBalancesHeader ({ account }: { account?: string }): React.ReactElement<{ account?: string }> {
+interface Props {
+  account?: string,
+  isMobileMenu: string;
+  setIsMobileMenu: (isOpen: string) => void;
+}
+
+function MobileBalancesHeader (props: Props): React.ReactElement<{ account?: string }> {
+  const { account, isMobileMenu, setIsMobileMenu } = props;
   const { freeBalance, freeKusamaBalance } = useBalances(account);
 
+  const onClick = useCallback(() => {
+    if (isMobileMenu !== 'balances') {
+      setIsMobileMenu('balances');
+    } else {
+      setIsMobileMenu('none');
+    }
+  }, [isMobileMenu, setIsMobileMenu]);
+
   return (
-    <div className='app-balances-mobile'>
+    <div
+      className='app-balances-mobile'
+      onClick={onClick}
+    >
       <div className='app-balances-mobile--items'>
         <div className='app-balances-mobile--items--item'>
           {formatStrBalance(15, freeBalance)}

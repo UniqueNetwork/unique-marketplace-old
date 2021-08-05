@@ -1,7 +1,7 @@
 // Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import React, { memo } from 'react';
+import React, {memo, useCallback} from 'react';
 
 import IdentityIcon from '@polkadot/react-components/IdentityIcon';
 
@@ -9,13 +9,26 @@ import menuArrow from './images/menu-arrow.svg';
 
 interface MobileAccountSelectorProps {
   address?: string;
+  isMobileMenu: string;
+  setIsMobileMenu: (isOpen: string) => void;
 }
 
 const MobileAccountSelector = (props: MobileAccountSelectorProps): React.ReactElement<MobileAccountSelectorProps> => {
-  const { address } = props;
+  const { address, isMobileMenu, setIsMobileMenu } = props;
+
+  const onClick = useCallback(() => {
+    if (isMobileMenu !== 'accounts') {
+      setIsMobileMenu('accounts');
+    } else {
+      setIsMobileMenu('none');
+    }
+  }, [isMobileMenu, setIsMobileMenu]);
 
   return (
-    <div className='mobile-account-selector'>
+    <div
+      className='mobile-account-selector'
+      onClick={onClick}
+    >
       { address && (
         <IdentityIcon
           className='icon'

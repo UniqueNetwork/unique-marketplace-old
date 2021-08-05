@@ -32,6 +32,8 @@ import MobileBalancesHeader from './MobileBalancesHeader';
 import MobileMenu from './MobileMenu';
 import ScrollToTop from './ScrollToTop';
 import WarmUp from './WarmUp';
+import ManageAccounts from './ManageAccounts';
+import ManageBalances from './ManageBalances';
 
 export const PORTAL_ID = 'portals';
 
@@ -56,6 +58,7 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
   const { api, isApiConnected, isApiReady, systemChain, systemName } = useApi();
   const { queueAction } = useContext(StatusContext);
   const [account, setAccount] = useState<string>();
+  const [isMobileMenu, setIsMobileMenu] = useState<string>('none');
 
   const uiHighlight = useMemo(
     () => getSystemChainColor(systemChain, systemName),
@@ -184,24 +187,42 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                                 { isApiReady && (
                                   <>
                                     <BalancesHeader account={account} />
-                                    <MobileBalancesHeader account={account} />
+                                    <MobileBalancesHeader
+                                      account={account}
+                                      isMobileMenu={isMobileMenu}
+                                      setIsMobileMenu={setIsMobileMenu}
+                                    />
                                   </>
                                 )}
                                 <div className='account-selector-block'>
                                   <AccountSelector onChange={setAccount} />
-                                  <MobileAccountSelector address={account} />
+                                  <MobileAccountSelector
+                                    address={account}
+                                    isMobileMenu={isMobileMenu}
+                                    setIsMobileMenu={setIsMobileMenu}
+                                  />
                                 </div>
                               </div>
                             </div>
                           </header>
+                          { isMobileMenu === 'accounts' && (
+                            <ManageAccounts />
+                          )}
+                          { isMobileMenu === 'balances' && (
+                            <ManageBalances
+                              account={account}
+                            />
+                          )}
                           <main className='app-main'>
                             <div className='app-container'>
-                              <Component
-                                account={account}
-                                basePath={`/${name}`}
-                                location={location}
-                                onStatusChange={queueAction}
-                              />
+                              { isMobileMenu === 'none' && (
+                                <Component
+                                  account={account}
+                                  basePath={`/${name}`}
+                                  location={location}
+                                  onStatusChange={queueAction}
+                                />
+                              )}
                               <ConnectingOverlay />
                               <div id={PORTAL_ID} />
                             </div>

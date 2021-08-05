@@ -12,7 +12,12 @@ import ArrowCircleUpRightGreen from '@polkadot/react-components/ManageCollection
 import { useBalances, useNftContract } from '@polkadot/react-hooks';
 import { formatKsmBalance, formatStrBalance } from '@polkadot/react-hooks/useKusamaApi';
 
-function BalancesHeader ({ account }: { account?: string }): React.ReactElement<{ account?: string }> {
+interface Props {
+  account?: string,
+}
+
+function BalancesHeader (props: Props): React.ReactElement<{ account?: string }> {
+  const { account } = props;
   const { contractInstance, deposited, getUserDeposit } = useNftContract(account || '');
   const { freeBalance, freeKusamaBalance } = useBalances(account, getUserDeposit);
   const [showWithdrawModal, toggleWithdrawModal] = useState<boolean>(false);
