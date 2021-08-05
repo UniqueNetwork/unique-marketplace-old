@@ -12,7 +12,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Filters } from '@polkadot/app-nft-market/containers/NftMarket';
 import envConfig from '@polkadot/apps-config/envConfig';
 import { useDecoder, useMetadata } from '@polkadot/react-hooks';
-import {sessionStorageKeys} from "@polkadot/app-nft-market/containers/marketFilters/constants";
+import {SESSION_STORAGE_KEYS} from "@polkadot/app-nft-market/containers/marketFilters/constants";
 
 const { commission, uniqueCollectionIds } = envConfig;
 
@@ -37,11 +37,11 @@ const getFromStorage = (storageKey:string)=>{
   return JSON.parse(sessionStorage.getItem(storageKey) as string);
 }
 
-const setInStorage = (storageKey:string,data: object)=>{
+const setInStorage = (storageKey:string, data: object|boolean)=>{
   return sessionStorage.setItem(storageKey, JSON.stringify(data));
 }
 
-const FilterContainer: React.FC<PropTypes> = ({ account, allowClearCollections, allowClearPricesAndSeller,collections, filters, setAllowClearCollections,setAllowClearPricesAndSeller,setFilters, setUniqueCollectionIds }) => {
+const FilterContainer: React.FC<PropTypes> = ({ account, allowClearCollections, allowClearPricesAndSeller,collections, filters, setAllowClearCollections, setAllowClearPricesAndSeller, setFilters, setUniqueCollectionIds }) => {
   const { collectionName16Decoder } = useDecoder();
   const { getTokenImageUrl } = useMetadata();
   const [images, setImages] = useState<string[]>([]);
@@ -51,8 +51,9 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearCollections, 
   const [isShowCollection, setIsShowCollection] = useState<boolean>(true);
   const [isShowPrice, setIsShowPrice] = useState<boolean>(true);
   // Data from local storage
-  const storagePrices = getFromStorage(sessionStorageKeys.PRICES);
-  const storageFilters = getFromStorage(sessionStorageKeys.FILTERS);
+  const storagePrices = getFromStorage(SESSION_STORAGE_KEYS.PRICES);
+  const storageFilters = getFromStorage(SESSION_STORAGE_KEYS.FILTERS);
+  const areAllCollectionsChecked = getFromStorage(SESSION_STORAGE_KEYS.ARE_ALL_COLLECTIONS_CHECKED);
 
 
   const changePrices = (minPrice: string | undefined, maxPrice: string | undefined) => {
@@ -71,7 +72,7 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearCollections, 
       const currentMaxPrice = new BN(Number(maxPrice) * 10000000000)
       filtersCopy.maxPrice = String(currentMaxPrice.mul(new BN(10)).div(new BN(1000 + commission * 10))) + '0000';
     }
-    setInStorage(sessionStorageKeys.PRICES, KSMPrices);
+    setInStorage(SESSION_STORAGE_KEYS.PRICES, KSMPrices);
     setFilters({ ...filtersCopy });
   };
 
@@ -90,7 +91,7 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearCollections, 
     const pricesDefaultValue = { maxPrice: '', minPrice: '' };
     setKSMPrices(pricesDefaultValue);
     changePrices('', '');
-    setInStorage(sessionStorageKeys.PRICES, pricesDefaultValue)
+    setInStorage(SESSION_STORAGE_KEYS.PRICES, pricesDefaultValue)
   };
 
   const setKSMPrice: React.ChangeEventHandler<HTMLInputElement> = (e) => {
@@ -112,7 +113,6 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearCollections, 
     setUniqueCollectionIds(newIds);
     setFilters({ ...filters, collectionIds: newIds });
   }, [filters, setUniqueCollectionIds, setFilters]);
-
   const filterCurrent = useCallback((id: string) => {
     if (inputChecked.includes(id)) {
       const filteredData = inputChecked.filter((item) => item !== id);
@@ -123,6 +123,7 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearCollections, 
       setInputChecked([...inputChecked, id]);
       changeUniqueCollectionIds([...inputChecked, id]);
     }
+
   }, [changeUniqueCollectionIds, inputChecked]);
 
   const clearCheckedValues = () => {
@@ -178,12 +179,15 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearCollections, 
     if(storageFilters){
       setFilters(storageFilters)
       setIsOnlyMyToken(!!storageFilters.seller)
-      setInputChecked([...storageFilters.collectionIds])
+      areAllCollectionsChecked && setInputChecked([...storageFilters.collectionIds])
     } ;
   }, []);
   useEffect(() => {
 
-    setInStorage(sessionStorageKeys.FILTERS, filters)
+    setInStorage(SESSION_STORAGE_KEYS.FILTERS, filters)
+    if(inputChecked.length>0){
+      setInStorage(SESSION_STORAGE_KEYS.ARE_ALL_COLLECTIONS_CHECKED, true)
+    }else setInStorage(SESSION_STORAGE_KEYS.ARE_ALL_COLLECTIONS_CHECKED, false)
   }, [filters]);
 
   useEffect(() => {

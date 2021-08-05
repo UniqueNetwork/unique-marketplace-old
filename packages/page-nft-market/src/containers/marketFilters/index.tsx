@@ -21,7 +21,7 @@ interface PropTypes {
   setUniqueCollectionIds: (collectionIds: string[]) => void;
 }
 
-const MarketFilters = ({ account, allowClearCollections,allowClearPricesAndSeller, collections, filters, setAllowClearCollections,setAllowClearPricesAndSeller, setFilters, setUniqueCollectionIds }: PropTypes): ReactElement => {
+const MarketFilters = ({ account, allowClearCollections, allowClearPricesAndSeller, collections, filters, setAllowClearCollections, setAllowClearPricesAndSeller, setFilters, setUniqueCollectionIds }: PropTypes): ReactElement => {
 
   return (
     <div className='filter-main'>

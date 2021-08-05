@@ -4,7 +4,7 @@
 import React, {memo, ReactElement, useCallback, useEffect, useState} from 'react';
 
 import { Filters } from '@polkadot/app-nft-market/containers/NftMarket';
-import {sessionStorageKeys} from "@polkadot/app-nft-market/containers/marketFilters/constants";
+import {SESSION_STORAGE_KEYS} from "@polkadot/app-nft-market/containers/marketFilters/constants";
 
 interface PropTypes {
   filters: Filters;
@@ -26,7 +26,7 @@ const traitsArray = [
 const TreatsFilter = ({ filters, setFilters }: PropTypes): ReactElement => {
   const [isShowTraitsFilter, setIsShowTraitsFilter] = useState<boolean>(true);
 
-  const storageFilters = JSON.parse(sessionStorage.getItem(sessionStorageKeys.FILTERS) as string);
+  const storageFilters = JSON.parse(sessionStorage.getItem(SESSION_STORAGE_KEYS.FILTERS) as string);
 
   const clearFilter = useCallback(() => {
     const newFilters = { ...filters };
