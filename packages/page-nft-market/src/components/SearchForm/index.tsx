@@ -13,6 +13,7 @@ import clearIcon from '@polkadot/app-nft-wallet/components/CollectionSearch/clea
 import searchIcon from '@polkadot/app-nft-wallet/components/CollectionSearch/searchIcon.svg';
 import envConfig from '@polkadot/apps-config/envConfig';
 import { Input } from '@polkadot/react-components';
+import {sessionStorageKeys} from "@polkadot/app-nft-market/containers/marketFilters/constants";
 
 const defaultFilters = {
   collectionIds: [...envConfig.uniqueCollectionIds],
@@ -26,10 +27,11 @@ export type SearchFormProps = {
   offersLoading: boolean;
   setFilters: (filters: Filters) => void | ((prevFilters: Filters) => Filters) ;
   setAllowClearCollections: (allow: boolean) => void;
+  setAllowClearPricesAndSeller: (allow: boolean) => void;
 }
 
 const SearchForm = (props: SearchFormProps) => {
-  const { filters, offersCount, offersLoading, setAllowClearCollections, setFilters } = props;
+  const { filters, offersCount, offersLoading, setAllowClearCollections, setAllowClearPricesAndSeller,setFilters } = props;
   const [searchString, setSearchString] = useState<string>('');
   const [sortValue, setSortValue] = useState<string>('creationDate-desc');
 
@@ -84,8 +86,12 @@ const SearchForm = (props: SearchFormProps) => {
 
   const clearAllFilters = useCallback(() => {
     setAllowClearCollections(true);
+    setAllowClearPricesAndSeller(true);
     setFilters(defaultFilters);
     setSearchString('');
+
+    sessionStorage.removeItem(sessionStorageKeys.FILTERS)
+    sessionStorage.removeItem(sessionStorageKeys.PRICES)
   }, [setAllowClearCollections, setFilters]);
 
   const setSortByFilter = useCallback(() => {
