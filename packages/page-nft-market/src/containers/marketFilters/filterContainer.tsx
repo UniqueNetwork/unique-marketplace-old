@@ -6,12 +6,12 @@ import './styles.scss';
 
 import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
 
+import BN from 'bn.js';
 import React, { useCallback, useEffect, useState } from 'react';
 
 import { Filters } from '@polkadot/app-nft-market/containers/NftMarket';
 import envConfig from '@polkadot/apps-config/envConfig';
 import { useDecoder, useMetadata } from '@polkadot/react-hooks';
-import BN from "bn.js";
 import {sessionStorageKeys} from "@polkadot/app-nft-market/containers/marketFilters/constants";
 
 const { commission, uniqueCollectionIds } = envConfig;
@@ -227,7 +227,7 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearCollections, 
               Clear
             </div>
             <div
-              className={`clear-icon ${isShowCollection ? 'rotate-icon' : ''}`}
+              className={`filter-arrow-icon ${isShowCollection ? 'rotate-icon' : ''}`}
               onClick={setIsShowCollection.bind(null, !isShowCollection)}
             />
           </div>
@@ -281,7 +281,7 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearCollections, 
               Clear
             </div>
             <div
-              className={`clear-icon ${isShowPrice ? 'rotate-icon' : ''}`}
+              className={`filter-arrow-icon ${isShowPrice ? 'rotate-icon' : ''}`}
               onClick={setIsShowPrice.bind(null, !isShowPrice)}
             />
           </div>
@@ -291,9 +291,9 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearCollections, 
             <div className='price-main' >
               <input className='min-input'
                 name='minPrice'
-                onKeyPress={(e) => e.charCode === 13 ? changePrices(KSMPrices.minPrice, KSMPrices.maxPrice) : null}
                 onChange= {setKSMPrice}
                 onKeyDown={(evt) => ['e', 'E', '+', '-'].includes(evt.key) && evt.preventDefault()}
+                onKeyPress={(e) => e.charCode === 13 ? changePrices(KSMPrices.minPrice, KSMPrices.maxPrice) : null}
                 placeholder='Min'
                 type='number'
                 value={KSMPrices.minPrice}
@@ -301,8 +301,8 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearCollections, 
               <p>to</p>
               <input name='maxPrice'
                 onChange= {setKSMPrice}
-                onKeyPress={(e) => e.charCode === 13 ? changePrices(KSMPrices.minPrice, KSMPrices.maxPrice) : null}
                 onKeyDown={(evt) => ['e', 'E', '+', '-'].includes(evt.key) && evt.preventDefault()}
+                onKeyPress={(e) => e.charCode === 13 ? changePrices(KSMPrices.minPrice, KSMPrices.maxPrice) : null}
                 placeholder='Max'
                 type='number'
                 value={KSMPrices.maxPrice}

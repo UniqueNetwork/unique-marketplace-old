@@ -7,7 +7,7 @@ import { Filters } from '@polkadot/app-nft-market/containers/NftMarket';
 import {sessionStorageKeys} from "@polkadot/app-nft-market/containers/marketFilters/constants";
 
 interface PropTypes {
-  filters: { [key: string]: any, traitsCount: string[] };
+  filters: Filters;
   setFilters: (filters: Filters) => void;
 }
 
@@ -37,12 +37,12 @@ const TreatsFilter = ({ filters, setFilters }: PropTypes): ReactElement => {
   }, [filters, setFilters]);
 
   const onClickCheckbox = useCallback((item: string) => {
-    let newState: { traitsCount: string[] };
+    let newState: Filters;
 
     if (filters.traitsCount.includes(item)) {
-      newState = { ...filters, traitsCount: filters.traitsCount.filter((traitsCount) => traitsCount !== item) };
+      newState = { ...filters, sort: 'desc(creationDate)', traitsCount: filters.traitsCount.filter((traitsCount) => traitsCount !== item) };
     } else {
-      newState = { ...filters, traitsCount: [...filters.traitsCount, item] };
+      newState = { ...filters, sort: 'desc(creationDate)', traitsCount: [...filters.traitsCount, item] };
     }
 
     setFilters(newState);
@@ -67,7 +67,7 @@ const TreatsFilter = ({ filters, setFilters }: PropTypes): ReactElement => {
             Clear
           </div>
           <div
-            className={`clear-icon ${isShowTraitsFilter ? 'rotate-icon' : ''}`}
+            className={`filter-arrow-icon ${isShowTraitsFilter ? 'rotate-icon' : ''}`}
             onClick={setIsShowTraitsFilter.bind(null, !isShowTraitsFilter)}
           />
         </div>
