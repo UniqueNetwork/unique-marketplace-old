@@ -27,8 +27,8 @@ interface BuyTokensProps {
 }
 
 export interface Filters {
-  /* collectionIds?: string[];
-  minPrice?: string;
+  collectionIds: string[];
+  /* minPrice?: string;
   maxPrice?: string;
   traitsCount: string[];
   seller?: string;
