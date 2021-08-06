@@ -46,6 +46,7 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
   const { getOffers, offers, offersCount, offersLoading, presetCollections } = useCollections();
   const [uniqueCollectionIds, setUniqueCollectionIds] = useState(envConfig.uniqueCollectionIds);
   const [allowClearCollections, setAllowClearCollections] = useState<boolean>(false);
+  const [allowClearPricesAndSeller, setAllowClearPricesAndSeller] = useState<boolean>(false);
 
   const [collections, setCollections] = useState<NftCollectionInterface[]>([]);
   const [filters, setFilters] = useState<Filters>({ collectionIds: uniqueCollectionIds, sort: 'desc(creationDate)', traitsCount: [] });
@@ -88,9 +89,11 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
         <MarketFilters
           account={account}
           allowClearCollections={allowClearCollections}
+          allowClearPricesAndSeller={allowClearPricesAndSeller}
           collections={collections}
           filters={filters}
           setAllowClearCollections={setAllowClearCollections}
+          setAllowClearPricesAndSeller={setAllowClearPricesAndSeller}
           setFilters={setFilters}
           setUniqueCollectionIds={setUniqueCollectionIds}
         />
@@ -101,6 +104,7 @@ const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTo
               offersCount={offersCount}
               offersLoading={offersLoading}
               setAllowClearCollections={setAllowClearCollections}
+              setAllowClearPricesAndSeller={setAllowClearPricesAndSeller}
               setFilters={setFilters}
             />
           </div>

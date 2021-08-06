@@ -119,7 +119,11 @@ export function useCollections () {
 
           if (Array.isArray(currentFilter)) {
             if (filterKey === 'collectionIds') {
-              url = `${url}${currentFilter.map((item: string) => `&collectionId=${item}`).join('')}`;
+              if (!currentFilter?.length) {
+                url = `${url}${envConfig.uniqueCollectionIds.map((item: string) => `&collectionId=${item}`).join('')}`;
+              } else {
+                url = `${url}${currentFilter.map((item: string) => `&collectionId=${item}`).join('')}`;
+              }
             } else if (filterKey === 'traitsCount') {
               url = `${url}${currentFilter.map((item: string) => `&traitsCount=${item}`).join('')}`;
             }

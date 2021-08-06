@@ -9,6 +9,7 @@ import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection
 import BN from 'bn.js';
 import React, { useCallback, useEffect, useState } from 'react';
 
+import { SESSION_STORAGE_KEYS } from '@polkadot/app-nft-market/containers/marketFilters/constants';
 import { Filters } from '@polkadot/app-nft-market/containers/NftMarket';
 import envConfig from '@polkadot/apps-config/envConfig';
 import { useDecoder, useMetadata } from '@polkadot/react-hooks';
@@ -18,9 +19,11 @@ const { commission, uniqueCollectionIds } = envConfig;
 interface PropTypes {
   account: string|undefined;
   allowClearCollections: boolean;
+  allowClearPricesAndSeller: boolean;
   collections: NftCollectionInterface[];
   filters: Filters;
   setAllowClearCollections: (allow: boolean) => void;
+  setAllowClearPricesAndSeller: (allow: boolean) => void;
   setFilters: (filters: Filters) => void;
   setUniqueCollectionIds: (collectionIds: string[]) => void;
 }
@@ -30,7 +33,15 @@ interface PricesTypes{
   maxPrice: string;
 }
 
-const FilterContainer: React.FC<PropTypes> = ({ account, allowClearCollections, collections, filters, setAllowClearCollections, setFilters, setUniqueCollectionIds }) => {
+const getFromStorage = (storageKey: string) => {
+  return JSON.parse(sessionStorage.getItem(storageKey) as string) as Filters | boolean | PricesTypes;
+};
+
+const setInStorage = (storageKey: string, data: Filters | boolean | PricesTypes) => {
+  return sessionStorage.setItem(storageKey, JSON.stringify(data));
+};
+
+const FilterContainer: React.FC<PropTypes> = ({ account, allowClearCollections, allowClearPricesAndSeller, collections, filters, setAllowClearCollections, setAllowClearPricesAndSeller, setFilters, setUniqueCollectionIds }) => {
   const { collectionName16Decoder } = useDecoder();
   const { getTokenImageUrl } = useMetadata();
   const [images, setImages] = useState<string[]>([]);
@@ -39,6 +50,10 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearCollections, 
   const [KSMPrices, setKSMPrices] = useState<PricesTypes>({ maxPrice: '', minPrice: '' });
   const [isShowCollection, setIsShowCollection] = useState<boolean>(true);
   const [isShowPrice, setIsShowPrice] = useState<boolean>(true);
+  // Data from local storage
+  const storagePrices = getFromStorage(SESSION_STORAGE_KEYS.PRICES) as PricesTypes;
+  const storageFilters = getFromStorage(SESSION_STORAGE_KEYS.FILTERS) as Filters;
+  const areAllCollectionsChecked = getFromStorage(SESSION_STORAGE_KEYS.ARE_ALL_COLLECTIONS_CHECKED) as boolean;
 
   const changePrices = (minPrice: string | undefined, maxPrice: string | undefined) => {
     const filtersCopy = { ...filters };
@@ -46,19 +61,20 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearCollections, 
     if (minPrice === '') {
       delete filtersCopy.minPrice;
     } else {
-      const currentMinPrice = new BN(Number(minPrice) * 100000000000000);
+      const currentMinPrice = new BN(Number(minPrice) * 10000000000);
 
-      filtersCopy.minPrice = String(currentMinPrice.mul(new BN(10)).div(new BN(1000 + commission * 10)));
+      filtersCopy.minPrice = String(currentMinPrice.mul(new BN(10)).div(new BN(1000 + commission * 10))) + '0000';
     }
 
     if (maxPrice === '') {
       delete filtersCopy.maxPrice;
     } else {
-      const currentMaxPrice = new BN(Number(maxPrice) * 100000000000000);
+      const currentMaxPrice = new BN(Number(maxPrice) * 10000000000);
 
-      filtersCopy.maxPrice = String(currentMaxPrice.mul(new BN(10)).div(new BN(1000 + commission * 10)));
+      filtersCopy.maxPrice = String(currentMaxPrice.mul(new BN(10)).div(new BN(1000 + commission * 10))) + '0000';
     }
 
+    setInStorage(SESSION_STORAGE_KEYS.PRICES, KSMPrices);
     setFilters({ ...filtersCopy });
   };
 
@@ -74,8 +90,11 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearCollections, 
   }, [account, filters, setFilters]);
 
   const clearPrices = () => {
-    setKSMPrices({ maxPrice: '', minPrice: '' });
+    const pricesDefaultValue = { maxPrice: '', minPrice: '' };
+
+    setKSMPrices(pricesDefaultValue);
     changePrices('', '');
+    setInStorage(SESSION_STORAGE_KEYS.PRICES, pricesDefaultValue);
   };
 
   const setKSMPrice: React.ChangeEventHandler<HTMLInputElement> = (e) => {
@@ -97,7 +116,6 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearCollections, 
     setUniqueCollectionIds(newIds);
     setFilters({ ...filters, collectionIds: newIds });
   }, [filters, setUniqueCollectionIds, setFilters]);
-
   const filterCurrent = useCallback((id: string) => {
     if (inputChecked.includes(id)) {
       const filteredData = inputChecked.filter((item) => item !== id);
@@ -153,8 +171,35 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearCollections, 
   }, [updateImageUrl]);
 
   useEffect(() => {
-    resetFromFilter();
+    if (storagePrices && !storagePrices.minPrice && !storagePrices.maxPrice) {
+      resetFromFilter();
+    }
   }, [resetFromFilter]);
+
+  useEffect(() => {
+    storagePrices && setKSMPrices(storagePrices);
+
+    if (storageFilters) {
+      setFilters(storageFilters);
+      setIsOnlyMyToken(!!storageFilters.seller);
+      areAllCollectionsChecked && setInputChecked([...storageFilters.collectionIds]);
+    }
+  }, []);
+
+  useEffect(() => {
+    setInStorage(SESSION_STORAGE_KEYS.FILTERS, filters);
+    if (inputChecked.length > 0) {
+      setInStorage(SESSION_STORAGE_KEYS.ARE_ALL_COLLECTIONS_CHECKED, true);
+    } else setInStorage(SESSION_STORAGE_KEYS.ARE_ALL_COLLECTIONS_CHECKED, false);
+  }, [filters]);
+
+  useEffect(() => {
+    if (allowClearPricesAndSeller) {
+      setKSMPrices({ maxPrice: '', minPrice: '' });
+      setIsOnlyMyToken(false);
+      setAllowClearPricesAndSeller(false);
+    }
+  }, [allowClearPricesAndSeller, setAllowClearPricesAndSeller]);
 
   useEffect(() => {
     if (allowClearCollections) {
