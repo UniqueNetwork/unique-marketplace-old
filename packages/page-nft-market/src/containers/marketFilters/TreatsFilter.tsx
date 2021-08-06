@@ -1,8 +1,9 @@
 // Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import React, { memo, ReactElement, useCallback, useState } from 'react';
+import React, { memo, ReactElement, useCallback, useEffect, useState } from 'react';
 
+import { SESSION_STORAGE_KEYS } from '@polkadot/app-nft-market/containers/marketFilters/constants';
 import { Filters } from '@polkadot/app-nft-market/containers/NftMarket';
 
 interface PropTypes {
@@ -25,6 +26,8 @@ const traitsArray = [
 const TreatsFilter = ({ filters, setFilters }: PropTypes): ReactElement => {
   const [isShowTraitsFilter, setIsShowTraitsFilter] = useState<boolean>(true);
 
+  const storageFilters = JSON.parse(sessionStorage.getItem(SESSION_STORAGE_KEYS.FILTERS) as string) as Filters;
+
   const clearFilter = useCallback(() => {
     const newFilters = { ...filters };
 
@@ -44,6 +47,12 @@ const TreatsFilter = ({ filters, setFilters }: PropTypes): ReactElement => {
 
     setFilters(newState);
   }, [filters, setFilters]);
+
+  useEffect(() => {
+    if (storageFilters && storageFilters.traitsCount) {
+      setFilters(storageFilters);
+    }
+  }, []);
 
   return (
     <div className='filter'>

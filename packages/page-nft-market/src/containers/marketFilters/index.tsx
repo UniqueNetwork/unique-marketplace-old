@@ -12,23 +12,26 @@ import TreatsFilter from './TreatsFilter';
 interface PropTypes {
   account: string | undefined;
   allowClearCollections: boolean;
+  allowClearPricesAndSeller: boolean;
   filters: Filters;
   collections: NftCollectionInterface[];
   setAllowClearCollections: (allow: boolean) => void;
+  setAllowClearPricesAndSeller: (allow: boolean) => void;
   setFilters: (filters: Filters) => void;
   setUniqueCollectionIds: (collectionIds: string[]) => void;
 }
 
-const MarketFilters = ({ account, allowClearCollections, collections, filters, setAllowClearCollections, setFilters, setUniqueCollectionIds }: PropTypes): ReactElement => {
-
+const MarketFilters = ({ account, allowClearCollections, allowClearPricesAndSeller, collections, filters, setAllowClearCollections, setAllowClearPricesAndSeller, setFilters, setUniqueCollectionIds }: PropTypes): ReactElement => {
   return (
     <div className='filter-main'>
       <FilterContainer
         account={account}
         allowClearCollections={allowClearCollections}
+        allowClearPricesAndSeller={allowClearPricesAndSeller}
         collections={collections}
         filters={filters}
         setAllowClearCollections={setAllowClearCollections}
+        setAllowClearPricesAndSeller={setAllowClearPricesAndSeller}
         setFilters={setFilters}
         setUniqueCollectionIds={setUniqueCollectionIds}
       />
