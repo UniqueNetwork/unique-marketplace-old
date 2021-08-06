@@ -11,6 +11,7 @@ import Image from 'semantic-ui-react/dist/commonjs/elements/Image';
 import Card from 'semantic-ui-react/dist/commonjs/views/Card';
 
 import envConfig from '@polkadot/apps-config/envConfig';
+import formatPrice from '@polkadot/react-components/util/formatPrice';
 import { useDecoder, useSchema } from '@polkadot/react-hooks';
 import { formatKsmBalance } from '@polkadot/react-hooks/useKusamaApi';
 
@@ -32,13 +33,7 @@ const NftTokenCard = ({ account, collectionId, openDetailedInformationModal, tok
   }, []);
 
   const getMarketPrice = useCallback((price: BN) => {
-    let newPrice = formatKsmBalance(new BN(price).add(getFee(price)));
-
-    while (newPrice.includes('.') && (newPrice[newPrice.length - 1] === '0' || newPrice[newPrice.length - 1] === '.')) {
-      newPrice = newPrice.slice(0, -1);
-    }
-
-    return newPrice;
+    return formatPrice(formatKsmBalance(new BN(price).add(getFee(price))));
   }, [getFee]);
 
   return (

@@ -15,6 +15,7 @@ import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
 import envConfig from '@polkadot/apps-config/envConfig';
 import { TransferModal } from '@polkadot/react-components';
+import formatPrice from '@polkadot/react-components/util/formatPrice';
 import { useBalance, useDecoder, useMarketplaceStages, useSchema } from '@polkadot/react-hooks';
 
 import BuySteps from './BuySteps';
@@ -91,14 +92,9 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
       }
     }
   }, [deposited, escrowAddress, getFee, getKusamaTransferFee, kusamaBalance, tokenAsk]);
+
   const getMarketPrice = useCallback((price: BN) => {
-    let newPrice = formatKsmBalance(new BN(price).add(getFee(price)));
-
-    while (newPrice.includes('.') && (newPrice[newPrice.length - 1] === '0' || newPrice[newPrice.length - 1] === '.')) {
-      newPrice = newPrice.slice(0, -1);
-    }
-
-    return newPrice;
+    return formatPrice(formatKsmBalance(new BN(price).add(getFee(price))));
   }, [formatKsmBalance, getFee]);
 
   useEffect(() => {

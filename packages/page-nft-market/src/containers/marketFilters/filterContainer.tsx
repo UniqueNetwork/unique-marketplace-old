@@ -153,7 +153,7 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearCollections, 
       setIsOnlyMyToken(false);
     }
 
-    const filteredCollections = filters.collectionIds as string[];
+    const filteredCollections = filters.collectionIds;
 
     if (filteredCollections.length === uniqueCollectionIds.length) {
       setInputChecked((prevState) => {
@@ -174,6 +174,7 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearCollections, 
     if (storagePrices && !storagePrices.minPrice && !storagePrices.maxPrice) {
       resetFromFilter();
     }
+    // eslint-disable-next-line
   }, [resetFromFilter]);
 
   useEffect(() => {
@@ -182,8 +183,9 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearCollections, 
     if (storageFilters) {
       setFilters(storageFilters);
       setIsOnlyMyToken(!!storageFilters.seller);
-      areAllCollectionsChecked && setInputChecked([...storageFilters.collectionIds]);
+      areAllCollectionsChecked && setInputChecked(storageFilters.collectionIds);
     }
+    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
@@ -191,6 +193,7 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearCollections, 
     if (inputChecked.length > 0) {
       setInStorage(SESSION_STORAGE_KEYS.ARE_ALL_COLLECTIONS_CHECKED, true);
     } else setInStorage(SESSION_STORAGE_KEYS.ARE_ALL_COLLECTIONS_CHECKED, false);
+    // eslint-disable-next-line
   }, [filters]);
 
   useEffect(() => {
