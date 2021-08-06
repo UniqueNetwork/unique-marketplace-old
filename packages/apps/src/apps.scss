@@ -361,9 +361,66 @@
   background-color: var(--header-background);
   overflow: hidden;
 
+  &--link {
+    font-size: 16px;
+    font-weight: 500;
+    font-family: var(--font-roboto);
+    display: block;
+    width: 100%;
+    margin: 0 var(--gap);
+    padding: var(--gap) 0;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--link-color);
+  }
+
+  header {
+    display: block;
+    width: 100%;
+    margin: 0 var(--gap);
+    padding: var(--gap) 0;
+  }
+
   .accounts-list {
     overflow-y: scroll;
-    height: calc(100vh - 230px);
+    height: calc(100vh - 250px);
+    padding: 0 var(--gap);
+
+    .account-item {
+      display: grid;
+      grid-template-columns: 24px 1fr;
+      grid-column-gap: 8px;
+      margin: var(--gap) 0;
+      align-items: center;
+      cursor: pointer;
+
+      &:first-child {
+        margin-top: 0;
+      }
+
+      &--name {
+        .name {
+          font-family: var(--font-roboto);
+          font-weight: 500;
+        }
+        .address {
+          font-size: 12px;
+          word-break: break-all;
+        }
+      }
+    }
+  }
+
+  .accounts-footer {
+    padding: var(--gap);
+
+    .info-panel {
+      background-color: var(--link-light-color);
+      padding: 2px 6px;
+      display: grid;
+      grid-template-columns: 24px 1fr;
+      grid-column-gap: 6px;
+      align-items: center;
+    }
   }
 }
 

@@ -206,7 +206,11 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                             </div>
                           </header>
                           { isMobileMenu === 'accounts' && (
-                            <ManageAccounts />
+                            <ManageAccounts
+                              account={account}
+                              setAccount={setAccount}
+                              setIsMobileMenu={setIsMobileMenu}
+                            />
                           )}
                           { isMobileMenu === 'balances' && (
                             <ManageBalances
