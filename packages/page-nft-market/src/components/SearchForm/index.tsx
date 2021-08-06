@@ -8,12 +8,12 @@ import Dropdown, { DropdownProps } from 'semantic-ui-react/dist/commonjs/modules
 
 import ArrowDown from '@polkadot/app-nft-market/components/arrowDown';
 import ArrowUp from '@polkadot/app-nft-market/components/arrowUp';
+import { SESSION_STORAGE_KEYS } from '@polkadot/app-nft-market/containers/marketFilters/constants';
 import { Filters } from '@polkadot/app-nft-market/containers/NftMarket';
 import clearIcon from '@polkadot/app-nft-wallet/components/CollectionSearch/clearIcon.svg';
 import searchIcon from '@polkadot/app-nft-wallet/components/CollectionSearch/searchIcon.svg';
 import envConfig from '@polkadot/apps-config/envConfig';
 import { Input } from '@polkadot/react-components';
-import { SESSION_STORAGE_KEYS } from "@polkadot/app-nft-market/containers/marketFilters/constants";
 
 const defaultFilters = {
   collectionIds: [...envConfig.uniqueCollectionIds],
@@ -90,9 +90,9 @@ const SearchForm = (props: SearchFormProps) => {
     setFilters(defaultFilters);
     setSearchString('');
 
-    sessionStorage.removeItem(SESSION_STORAGE_KEYS.FILTERS)
-    sessionStorage.removeItem(SESSION_STORAGE_KEYS.PRICES)
-    sessionStorage.removeItem(SESSION_STORAGE_KEYS.ARE_ALL_COLLECTIONS_CHECKED)
+    sessionStorage.removeItem(SESSION_STORAGE_KEYS.FILTERS);
+    sessionStorage.removeItem(SESSION_STORAGE_KEYS.PRICES);
+    sessionStorage.removeItem(SESSION_STORAGE_KEYS.ARE_ALL_COLLECTIONS_CHECKED);
   }, [setAllowClearCollections, setFilters]);
 
   const setSortByFilter = useCallback(() => {

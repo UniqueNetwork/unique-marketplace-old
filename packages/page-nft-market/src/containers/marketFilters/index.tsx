@@ -22,7 +22,6 @@ interface PropTypes {
 }
 
 const MarketFilters = ({ account, allowClearCollections, allowClearPricesAndSeller, collections, filters, setAllowClearCollections, setAllowClearPricesAndSeller, setFilters, setUniqueCollectionIds }: PropTypes): ReactElement => {
-
   return (
     <div className='filter-main'>
       <FilterContainer

@@ -174,7 +174,7 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearCollections, 
     if (storagePrices && !storagePrices.minPrice && !storagePrices.maxPrice) {
       resetFromFilter();
     }
-  }, [resetFromFilter, storagePrices]);
+  }, [resetFromFilter]);
 
   useEffect(() => {
     storagePrices && setKSMPrices(storagePrices);
