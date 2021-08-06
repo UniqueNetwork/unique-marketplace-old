@@ -3,7 +3,7 @@
 
 import './styles.scss';
 
-import React, { useCallback } from 'react';
+import React, { SyntheticEvent, useCallback } from 'react';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form/Form';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button';
 import Modal from 'semantic-ui-react/dist/commonjs/modules/Modal/Modal';
@@ -18,6 +18,10 @@ interface Props {
   onSavePrice: () => void;
   setTokenPriceForSale: (price: string) => void;
   tokenPriceForSale: string;
+}
+
+interface CustomSyntheticEvent extends SyntheticEvent{
+  key: string;
 }
 
 function SetPriceModal (props: Props): React.ReactElement<Props> {
@@ -42,6 +46,11 @@ function SetPriceModal (props: Props): React.ReactElement<Props> {
     setTokenPriceForSale(price);
   }, [setTokenPriceForSale]);
 
+  const onPriceKeyDown = (event: CustomSyntheticEvent) => {
+    ((event.key === ',' || event.key === '.') && !tokenPriceForSale.length) && event.preventDefault();
+    ['e', 'E', '+', '-'].includes(event.key) && event.preventDefault();
+  };
+
   return (
     <Modal
       className='unique-modal set-price'
@@ -59,7 +68,7 @@ function SetPriceModal (props: Props): React.ReactElement<Props> {
               autoFocus
               label={'in KSM'}
               onChange={onSetPrice}
-              onKeyDown={(evt) => ['e', 'E', '+', '-'].includes(evt.key) && evt.preventDefault()}
+              onKeyDown={onPriceKeyDown}
               type='number'
               value={tokenPriceForSale}
             />
