@@ -31,6 +31,16 @@ const NftTokenCard = ({ account, collectionId, openDetailedInformationModal, tok
     return new BN(price).mul(new BN(commission)).div(new BN(100));
   }, []);
 
+  const getMarketPrice = useCallback((price: BN) => {
+    let newPrice = formatKsmBalance(new BN(price).add(getFee(price)));
+
+    while (newPrice.includes('.') && (newPrice[newPrice.length - 1] === '0' || newPrice[newPrice.length - 1] === '.')) {
+      newPrice = newPrice.slice(0, -1);
+    }
+
+    return newPrice;
+  }, [getFee]);
+
   return (
     <Card
       className='token-card'
@@ -53,7 +63,7 @@ const NftTokenCard = ({ account, collectionId, openDetailedInformationModal, tok
             </div>
             { token.price && (
               <div className='card-price'>
-                <div className='card-price__title'> {formatKsmBalance(new BN(token.price).add(getFee(token.price)))} KSM</div>
+                <div className='card-price__title'> {getMarketPrice(token.price)} KSM</div>
               </div>
             )}
           </Card.Description>

@@ -91,6 +91,15 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
       }
     }
   }, [deposited, escrowAddress, getFee, getKusamaTransferFee, kusamaBalance, tokenAsk]);
+  const getMarketPrice = useCallback((price: BN) => {
+    let newPrice = formatKsmBalance(new BN(price).add(getFee(price)));
+
+    while (newPrice.includes('.') && (newPrice[newPrice.length - 1] === '0' || newPrice[newPrice.length - 1] === '.')) {
+      newPrice = newPrice.slice(0, -1);
+    }
+
+    return newPrice;
+  }, [formatKsmBalance, getFee]);
 
   useEffect(() => {
     void ksmFeesCheck();
@@ -157,7 +166,7 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
             { (tokenAsk && tokenAsk.price) && (
               <>
                 <Header as={'h2'}>
-                  {formatKsmBalance(tokenAsk.price.add(getFee(tokenAsk.price)))} KSM
+                  {getMarketPrice(tokenAsk.price)} KSM
                 </Header>
                 <p>Fee: {formatKsmBalance(getFee(tokenAsk.price))} KSM, Price: {formatKsmBalance(tokenAsk.price)} KSM</p>
                 {/* { (!uOwnIt && !transferStep && tokenAsk) && lowBalanceToBuy && (
