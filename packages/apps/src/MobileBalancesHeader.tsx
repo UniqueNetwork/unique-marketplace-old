@@ -1,7 +1,7 @@
 // Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import React, {memo, useCallback} from 'react';
+import React, { memo, useCallback } from 'react';
 
 import menuArrow from '@polkadot/apps/images/menu-arrow.svg';
 import { useBalances } from '@polkadot/react-hooks';

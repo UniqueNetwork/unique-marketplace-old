@@ -212,7 +212,7 @@
   text-transform: uppercase;
 }
 
-.menu-mobile {
+.menu-mobile-header {
   .menu-icon {
     cursor: pointer;
   }
@@ -220,7 +220,7 @@
 
 @media (min-width: 1024px) {
   .app-header {
-    .menu-mobile {
+    .menu-mobile-header {
       display: none;
     }
 
@@ -251,7 +251,7 @@
       display: none;
     }
 
-    .menu-mobile {
+    .menu-mobile-header {
       display: block;
     }
 
@@ -309,6 +309,38 @@
           align-items: center;
           height: 100%;
         }
+      }
+    }
+  }
+
+  .deposit-flex .ksm-text {
+    width: 25%;
+  }
+
+  .menu-mobile {
+    padding: var(--gap);
+    display: flex;
+    flex-direction: column;
+
+    &--logo {
+      text-align: center;
+      margin-bottom: var(--gap);
+    }
+
+    &--link {
+      display: block;
+      width: 100%;
+      font-family: var(--font-roboto);
+      font-weight: 500;
+      font-size: 16px;
+      margin: 4px 0;
+      padding: 8px 16px;
+      color: var(--header-text-color);
+
+      &.active {
+        background-color: var(--link-color);
+        border-radius: 4px;
+        color: var(--card-background);
       }
     }
   }

@@ -30,10 +30,12 @@ import BalancesHeader from './BalancesHeader';
 import MobileAccountSelector from './MobileAccountSelector';
 import MobileBalancesHeader from './MobileBalancesHeader';
 import MobileMenu from './MobileMenu';
+import MobileMenuHeader from './MobileMenuHeader';
 import ScrollToTop from './ScrollToTop';
 import WarmUp from './WarmUp';
-import ManageAccounts from './ManageAccounts';
-import ManageBalances from './ManageBalances';
+
+const ManageAccounts = React.lazy(() => import('./ManageAccounts'));
+const ManageBalances = React.lazy(() => import('./ManageBalances'));
 
 export const PORTAL_ID = 'portals';
 
@@ -76,8 +78,6 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
 
   const missingApis = findMissingApis(api, needsApi);
   const currentLocation = location.pathname.slice(1) === 'accounts';
-
-  console.log('account', account);
 
   return (
     <>
@@ -129,7 +129,10 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                         <>
                           <header className='app-header'>
                             <div className='app-container app-container--header'>
-                              <MobileMenu />
+                              <MobileMenuHeader
+                                isMobileMenu={isMobileMenu}
+                                setIsMobileMenu={setIsMobileMenu}
+                              />
                               <Menu
                                 className='header-menu'
                                 tabular
@@ -157,7 +160,7 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                                       to='/market'
                                     />
                                     <Menu.Item
-                                      active={location.pathname === '/my-tokens'}
+                                      active={location.pathname === '/wallet'}
                                       as={NavLink}
                                       name='myTokens'
                                       to='/wallet'
@@ -205,31 +208,43 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                               </div>
                             </div>
                           </header>
-                          { isMobileMenu === 'accounts' && (
-                            <ManageAccounts
+                          { isMobileMenu === 'menu' && (
+                            <MobileMenu
                               account={account}
-                              setAccount={setAccount}
-                              setIsMobileMenu={setIsMobileMenu}
+                              theme={theme}
                             />
+                          )}
+                          { isMobileMenu === 'accounts' && (
+                            <Suspense fallback='Loading accounts...'>
+                              <ManageAccounts
+                                account={account}
+                                setAccount={setAccount}
+                                setIsMobileMenu={setIsMobileMenu}
+                              />
+                            </Suspense>
                           )}
                           { isMobileMenu === 'balances' && (
-                            <ManageBalances
-                              account={account}
-                            />
+                            <Suspense fallback='Loading balances...'>
+                              <ManageBalances
+                                account={account}
+                              />
+                            </Suspense>
                           )}
                           { isMobileMenu === 'none' && (
-                            <main className='app-main'>
-                              <div className='app-container'>
-                                <Component
-                                  account={account}
-                                  basePath={`/${name}`}
-                                  location={location}
-                                  onStatusChange={queueAction}
-                                />
-                                <ConnectingOverlay />
-                                <div id={PORTAL_ID} />
-                              </div>
-                            </main>
+                            <Suspense fallback='...'>
+                              <main className='app-main'>
+                                <div className='app-container'>
+                                  <Component
+                                    account={account}
+                                    basePath={`/${name}`}
+                                    location={location}
+                                    onStatusChange={queueAction}
+                                  />
+                                  <ConnectingOverlay />
+                                  <div id={PORTAL_ID} />
+                                </div>
+                              </main>
+                            </Suspense>
                           )}
                         </>
                       )

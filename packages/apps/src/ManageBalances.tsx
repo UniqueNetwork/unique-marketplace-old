@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import BN from 'bn.js';
-import React, { memo, useCallback, useState, useMemo } from 'react';
+import React, { memo, useCallback, useMemo, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 import Popup from 'semantic-ui-react/dist/commonjs/modules/Popup';
@@ -27,9 +27,10 @@ const ManageBalances = (props: Props) => {
     toggleWithdrawModal(false);
   }, []);
 
+  // deposited && deposited.div(new BN(1000000)).gt(new BN(1))
   const openModal = useCallback(() => {
-    deposited && deposited.div(new BN(1000000)).gt(new BN(1)) && toggleWithdrawModal(true);
-  }, [deposited]);
+    toggleWithdrawModal(true);
+  }, []);
 
   const withdrawPopup = useMemo(() => {
     return (
@@ -64,16 +65,17 @@ const ManageBalances = (props: Props) => {
         <div className='balance-line'>
           { +formatKsmBalance(deposited) > 0.000001 ? formatKsmBalance(deposited) : 0}
           <span className='unit'>KSM deposit</span>
-          <Popup
-            className='mobile withdraw-popup'
-            content={withdrawPopup}
-            position='bottom left'
-            trigger={<img
-              alt='withdraw'
-              onClick={openModal}
-              src={question as string}
-            />}
-          />
+          { !!(deposited && deposited.div(new BN(1000000)).gt(new BN(1))) && (
+            <Popup
+              className='mobile withdraw-popup'
+              content={withdrawPopup}
+              position='bottom left'
+              trigger={<img
+                alt='withdraw'
+                src={question as string}
+              />}
+            />
+          )}
         </div>
         {/* <div className='footer-balance'>
           <a onClick={}>
