@@ -115,7 +115,7 @@ jobs:
         run: echo 'yarn test:jest'
 
   deploy:
-    runs-on: ["self-hosted", "deploy", "development"]
+    runs-on: ["self-hosted", "deploy", "unqnft.io"]
     name: Deploy
     needs: test
     environment: unqnft.io
