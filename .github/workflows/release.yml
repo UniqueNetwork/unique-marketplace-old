@@ -1,17 +1,16 @@
-name: Development
+name: Release
 
 on:
   push:
     branches:
-      - develop
-      - feature/ci-cd
+      - v[0-9]+.[0-9]+.[0-9]+
   workflow_dispatch:
 
 jobs:
   analyze:
     runs-on: ubuntu-latest
     name: Analyze
-    environment: development
+    environment: unqnft.io
     permissions:
       actions: read
       contents: read
@@ -42,7 +41,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Build & Publish
     needs: analyze
-    environment: development
+    environment: unqnft.io
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -98,7 +97,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Test
     needs: build-and-publish
-    environment: development
+    environment: unqnft.io
     steps:
       - name: Checkout code
         uses: actions/checkout@v1
@@ -119,7 +118,7 @@ jobs:
     runs-on: ["self-hosted", "deploy", "development"]
     name: Deploy
     needs: test
-    environment: development
+    environment: unqnft.io
     steps:
       - name: Checkout code
         uses: actions/checkout@v1
