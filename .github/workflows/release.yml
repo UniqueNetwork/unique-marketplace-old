@@ -70,7 +70,7 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
 
       - name: Create .env file
-        run: echo '${{ env.UNIQUE_NETWORK_ENV }}' > ./packages/apps/.env
+        run: echo '${{ secrets.UNIQUE_NETWORK_ENV }}' > ./packages/apps/.env
 
       - name: Create shorted branch name
         run: echo "GITHUB_BRANCH=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
