@@ -89,7 +89,7 @@ jobs:
           context: .
           file: ./Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
-          tags: ${{ secrets.DOCKER_IMAGE }}:${{ env.GITHUB_BRANCH }}
+          tags: ${{ secrets.DOCKER_IMAGE }}:${{ secrets.DOCKER_TAG || env.GITHUB_BRANCH }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
 
@@ -134,7 +134,7 @@ jobs:
 
       - name: Run Docker Compose
         env:
-          DOCKER_IMAGE: ${{ secrets.DOCKER_IMAGE }}:${{ env.GITHUB_BRANCH }}
+          DOCKER_IMAGE: ${{ secrets.DOCKER_IMAGE }}:${{ secrets.DOCKER_TAG || env.GITHUB_BRANCH }}
           DOCKER_NAME: ${{ secrets.DOCKER_NAME }}.${{ env.GITHUB_BRANCH }}
           DOCKER_PORT: ${{ secrets.DOCKER_PORT }}
           DOCKER_NETWORK: ${{ secrets.DOCKER_NETWORK }}
