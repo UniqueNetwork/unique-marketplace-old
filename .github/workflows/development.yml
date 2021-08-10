@@ -136,7 +136,7 @@ jobs:
       - name: Run Docker Compose
         env:
           DOCKER_IMAGE: ${{ secrets.DOCKER_IMAGE }}:${{ secrets.DOCKER_TAG || env.GITHUB_BRANCH }}
-          DOCKER_NAME: ${{ secrets.DOCKER_NAME }}.${{ env.GITHUB_BRANCH }}
+          DOCKER_NAME: ${{ secrets.DOCKER_NAME }}.${{ secrets.DOCKER_TAG || env.GITHUB_BRANCH }}
           DOCKER_PORT: ${{ secrets.DOCKER_PORT }}
           DOCKER_NETWORK: ${{ secrets.DOCKER_NETWORK }}
           DOCKER_CPU_LIMITS: ${{ secrets.DOCKER_CPU_LIMITS }}
