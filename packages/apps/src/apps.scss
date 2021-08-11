@@ -218,7 +218,7 @@
   }
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 1025px) {
   .app-header {
     .menu-mobile-header {
       display: none;
@@ -243,6 +243,19 @@
 }
 
 @media (max-width: 1024px) {
+  .app-wrapper {
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .app-main {
+    padding: 0;
+
+    .app-container {
+      padding: 0;
+    }
+  }
+
   .app-header {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
     z-index: 1000;

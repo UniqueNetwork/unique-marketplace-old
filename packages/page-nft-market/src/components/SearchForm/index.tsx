@@ -8,30 +8,21 @@ import Dropdown, { DropdownProps } from 'semantic-ui-react/dist/commonjs/modules
 
 import ArrowDown from '@polkadot/app-nft-market/components/arrowDown';
 import ArrowUp from '@polkadot/app-nft-market/components/arrowUp';
-import { SESSION_STORAGE_KEYS } from '@polkadot/app-nft-market/containers/marketFilters/constants';
 import { Filters } from '@polkadot/app-nft-market/containers/NftMarket';
 import clearIcon from '@polkadot/app-nft-wallet/components/CollectionSearch/clearIcon.svg';
 import searchIcon from '@polkadot/app-nft-wallet/components/CollectionSearch/searchIcon.svg';
-import envConfig from '@polkadot/apps-config/envConfig';
 import { Input } from '@polkadot/react-components';
 
-const defaultFilters = {
-  collectionIds: [...envConfig.uniqueCollectionIds],
-  sort: 'desc(creationDate)',
-  traitsCount: []
-};
-
 export type SearchFormProps = {
+  clearAllFilters: () => void;
   filters: Filters;
   offersCount?: number;
   offersLoading: boolean;
   setFilters: (filters: Filters) => void | ((prevFilters: Filters) => Filters) ;
-  setAllowClearCollections: (allow: boolean) => void;
-  setAllowClearPricesAndSeller: (allow: boolean) => void;
 }
 
 const SearchForm = (props: SearchFormProps) => {
-  const { filters, offersCount, offersLoading, setAllowClearCollections, setAllowClearPricesAndSeller, setFilters } = props;
+  const { clearAllFilters, filters, offersCount, offersLoading, setFilters } = props;
   const [searchString, setSearchString] = useState<string>('');
   const [sortValue, setSortValue] = useState<string>('creationDate-desc');
 
@@ -84,16 +75,10 @@ const SearchForm = (props: SearchFormProps) => {
     return optionNode(false, 'none', 'Sort by');
   }, [optionNode, sortOptions, sortValue]);
 
-  const clearAllFilters = useCallback(() => {
-    setAllowClearCollections(true);
-    setAllowClearPricesAndSeller(true);
-    setFilters(defaultFilters);
+  const clearFilters = useCallback(() => {
+    clearAllFilters();
     setSearchString('');
-
-    sessionStorage.removeItem(SESSION_STORAGE_KEYS.FILTERS);
-    sessionStorage.removeItem(SESSION_STORAGE_KEYS.PRICES);
-    sessionStorage.removeItem(SESSION_STORAGE_KEYS.ARE_ALL_COLLECTIONS_CHECKED);
-  }, [setAllowClearCollections, setFilters]);
+  }, [clearAllFilters]);
 
   const setSortByFilter = useCallback(() => {
     const sort = filters.sort;
@@ -180,7 +165,7 @@ const SearchForm = (props: SearchFormProps) => {
         <span>
           {offersCount} items
         </span>
-        <a onClick={clearAllFilters}>Clear all filters</a>
+        <a onClick={clearFilters}>Clear all filters</a>
       </Form.Field>
     </Form>
   );

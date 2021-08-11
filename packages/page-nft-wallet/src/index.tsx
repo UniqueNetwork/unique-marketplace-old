@@ -20,7 +20,7 @@ import NftWallet from './containers/NftWallet';
 
 const { canAddCollections, canCreateCollection } = envConfig;
 
-function App ({ account, basePath }: Props): React.ReactElement<Props> {
+function PageNftWallet ({ account, basePath }: Props): React.ReactElement<Props> {
   const location = useLocation();
   const history = useHistory();
   const [shouldUpdateTokens, setShouldUpdateTokens] = useState<string>();
@@ -121,4 +121,4 @@ function App ({ account, basePath }: Props): React.ReactElement<Props> {
   );
 }
 
-export default React.memo(App);
+export default React.memo(PageNftWallet);

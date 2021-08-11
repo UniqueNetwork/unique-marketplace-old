@@ -1,6 +1,8 @@
 // Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import type { OpenPanelType } from '@polkadot/apps-routing/types';
+
 import React, { memo, useCallback } from 'react';
 
 import IdentityIcon from '@polkadot/react-components/IdentityIcon';
@@ -9,8 +11,8 @@ import menuArrow from './images/menu-arrow.svg';
 
 interface MobileAccountSelectorProps {
   address?: string;
-  isMobileMenu: string;
-  setIsMobileMenu: (isOpen: string) => void;
+  isMobileMenu: OpenPanelType;
+  setIsMobileMenu: (isOpen: OpenPanelType) => void;
 }
 
 const MobileAccountSelector = (props: MobileAccountSelectorProps): React.ReactElement<MobileAccountSelectorProps> => {
@@ -20,7 +22,7 @@ const MobileAccountSelector = (props: MobileAccountSelectorProps): React.ReactEl
     if (isMobileMenu !== 'accounts') {
       setIsMobileMenu('accounts');
     } else {
-      setIsMobileMenu('none');
+      setIsMobileMenu('tokens');
     }
   }, [isMobileMenu, setIsMobileMenu]);
 

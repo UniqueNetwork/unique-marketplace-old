@@ -2,8 +2,6 @@
 // [object Object]
 // SPDX-License-Identifier: Apache-2.0
 
-import './styles.scss';
-
 import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
 
 import BN from 'bn.js';
@@ -116,6 +114,7 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearCollections, 
     setUniqueCollectionIds(newIds);
     setFilters({ ...filters, collectionIds: newIds });
   }, [filters, setUniqueCollectionIds, setFilters]);
+
   const filterCurrent = useCallback((id: string) => {
     if (inputChecked.includes(id)) {
       const filteredData = inputChecked.filter((item) => item !== id);
@@ -174,6 +173,7 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearCollections, 
     if (storagePrices && !storagePrices.minPrice && !storagePrices.maxPrice) {
       resetFromFilter();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resetFromFilter]);
 
   useEffect(() => {
@@ -182,8 +182,9 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearCollections, 
     if (storageFilters) {
       setFilters(storageFilters);
       setIsOnlyMyToken(!!storageFilters.seller);
-      areAllCollectionsChecked && setInputChecked([...storageFilters.collectionIds]);
+      areAllCollectionsChecked && setInputChecked(storageFilters.collectionIds as string[]);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -191,6 +192,7 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearCollections, 
     if (inputChecked.length > 0) {
       setInStorage(SESSION_STORAGE_KEYS.ARE_ALL_COLLECTIONS_CHECKED, true);
     } else setInStorage(SESSION_STORAGE_KEYS.ARE_ALL_COLLECTIONS_CHECKED, false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters]);
 
   useEffect(() => {

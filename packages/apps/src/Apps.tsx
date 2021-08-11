@@ -3,6 +3,7 @@
 
 import './apps.scss';
 
+import type { OpenPanelType, Route } from '@polkadot/apps-routing/types';
 import type { BareProps as Props, ThemeDef } from '@polkadot/react-components/types';
 
 import React, { Suspense, useContext, useMemo, useState } from 'react';
@@ -18,7 +19,6 @@ import { useTranslation } from '@polkadot/apps/translate';
 import { getSystemChainColor } from '@polkadot/apps-config';
 import envConfig from '@polkadot/apps-config/envConfig';
 import createRoutes from '@polkadot/apps-routing';
-import { Route } from '@polkadot/apps-routing/types';
 import { AccountSelector, ErrorBoundary, StatusContext } from '@polkadot/react-components';
 import GlobalStyle from '@polkadot/react-components/styles';
 import { useApi } from '@polkadot/react-hooks';
@@ -60,7 +60,7 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
   const { api, isApiConnected, isApiReady, systemChain, systemName } = useApi();
   const { queueAction } = useContext(StatusContext);
   const [account, setAccount] = useState<string>();
-  const [isMobileMenu, setIsMobileMenu] = useState<string>('none');
+  const [openPanel, setOpenPanel] = useState<OpenPanelType>('tokens');
 
   const uiHighlight = useMemo(
     () => getSystemChainColor(systemChain, systemName),
@@ -130,8 +130,8 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                           <header className='app-header'>
                             <div className='app-container app-container--header'>
                               <MobileMenuHeader
-                                isMobileMenu={isMobileMenu}
-                                setIsMobileMenu={setIsMobileMenu}
+                                isMobileMenu={openPanel}
+                                setIsMobileMenu={setOpenPanel}
                               />
                               <Menu
                                 className='header-menu'
@@ -192,8 +192,8 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                                     <BalancesHeader account={account} />
                                     <MobileBalancesHeader
                                       account={account}
-                                      isMobileMenu={isMobileMenu}
-                                      setIsMobileMenu={setIsMobileMenu}
+                                      isMobileMenu={openPanel}
+                                      setIsMobileMenu={setOpenPanel}
                                     />
                                   </>
                                 )}
@@ -201,51 +201,51 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                                   <AccountSelector onChange={setAccount} />
                                   <MobileAccountSelector
                                     address={account}
-                                    isMobileMenu={isMobileMenu}
-                                    setIsMobileMenu={setIsMobileMenu}
+                                    isMobileMenu={openPanel}
+                                    setIsMobileMenu={setOpenPanel}
                                   />
                                 </div>
                               </div>
                             </div>
                           </header>
-                          { isMobileMenu === 'menu' && (
+                          { openPanel === 'menu' && (
                             <MobileMenu
                               account={account}
                               theme={theme}
                             />
                           )}
-                          { isMobileMenu === 'accounts' && (
+                          { openPanel === 'accounts' && (
                             <Suspense fallback='Loading accounts...'>
                               <ManageAccounts
                                 account={account}
                                 setAccount={setAccount}
-                                setIsMobileMenu={setIsMobileMenu}
+                                setIsMobileMenu={setOpenPanel}
                               />
                             </Suspense>
                           )}
-                          { isMobileMenu === 'balances' && (
+                          { openPanel === 'balances' && (
                             <Suspense fallback='Loading balances...'>
                               <ManageBalances
                                 account={account}
                               />
                             </Suspense>
                           )}
-                          { isMobileMenu === 'none' && (
-                            <Suspense fallback='...'>
-                              <main className='app-main'>
-                                <div className='app-container'>
-                                  <Component
-                                    account={account}
-                                    basePath={`/${name}`}
-                                    location={location}
-                                    onStatusChange={queueAction}
-                                  />
-                                  <ConnectingOverlay />
-                                  <div id={PORTAL_ID} />
-                                </div>
-                              </main>
-                            </Suspense>
-                          )}
+                          <Suspense fallback='...'>
+                            <main className='app-main'>
+                              <div className='app-container'>
+                                <Component
+                                  account={account}
+                                  basePath={`/${name}`}
+                                  location={location}
+                                  onStatusChange={queueAction}
+                                  openPanel={openPanel}
+                                  setOpenPanel={setOpenPanel}
+                                />
+                                <ConnectingOverlay />
+                                <div id={PORTAL_ID} />
+                              </div>
+                            </main>
+                          </Suspense>
                         </>
                       )
                     }

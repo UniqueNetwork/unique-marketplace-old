@@ -13,7 +13,7 @@ import { AppProps as Props } from '@polkadot/react-components/types';
 
 import NftMarket from './containers/NftMarket';
 
-function App ({ account, basePath }: Props): React.ReactElement<Props> {
+function PageNftMarketplace ({ account, basePath, openPanel, setOpenPanel }: Props): React.ReactElement<Props> {
   const [shouldUpdateTokens, setShouldUpdateTokens] = useState<string>();
 
   return (
@@ -27,6 +27,8 @@ function App ({ account, basePath }: Props): React.ReactElement<Props> {
       <Route path={basePath}>
         <NftMarket
           account={account}
+          openPanel={openPanel}
+          setOpenPanel={setOpenPanel}
           setShouldUpdateTokens={setShouldUpdateTokens}
           shouldUpdateTokens={shouldUpdateTokens}
         />
@@ -35,4 +37,4 @@ function App ({ account, basePath }: Props): React.ReactElement<Props> {
   );
 }
 
-export default React.memo(App);
+export default React.memo(PageNftMarketplace);

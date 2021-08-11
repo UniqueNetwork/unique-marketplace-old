@@ -1,6 +1,8 @@
 // Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import type { OpenPanelType } from '@polkadot/apps-routing/types';
+
 import React, { memo, useCallback } from 'react';
 import { NavLink } from 'react-router-dom';
 
@@ -13,7 +15,7 @@ import infoBlue from './images/infoBlue.svg';
 interface Props {
   account?: string;
   setAccount: (account?: string) => void;
-  setIsMobileMenu: (menu: string) => void;
+  setIsMobileMenu: (menu: OpenPanelType) => void;
 }
 
 const ManageAccounts = (props: Props): React.ReactElement<Props> => {
@@ -22,7 +24,7 @@ const ManageAccounts = (props: Props): React.ReactElement<Props> => {
 
   const onSelectAccount = useCallback((address: string) => {
     setAccount(address);
-    setIsMobileMenu('none');
+    setIsMobileMenu('tokens');
   }, [setAccount, setIsMobileMenu]);
 
   return (

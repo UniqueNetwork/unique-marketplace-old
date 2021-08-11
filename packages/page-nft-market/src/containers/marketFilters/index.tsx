@@ -1,5 +1,6 @@
 // Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
+import './styles.scss';
 
 import React, { memo, ReactElement } from 'react';
 
@@ -15,15 +16,16 @@ interface PropTypes {
   allowClearPricesAndSeller: boolean;
   filters: Filters;
   collections: NftCollectionInterface[];
+  openFilters: boolean;
   setAllowClearCollections: (allow: boolean) => void;
   setAllowClearPricesAndSeller: (allow: boolean) => void;
   setFilters: (filters: Filters) => void;
   setUniqueCollectionIds: (collectionIds: string[]) => void;
 }
 
-const MarketFilters = ({ account, allowClearCollections, allowClearPricesAndSeller, collections, filters, setAllowClearCollections, setAllowClearPricesAndSeller, setFilters, setUniqueCollectionIds }: PropTypes): ReactElement => {
+const MarketFilters = ({ account, allowClearCollections, allowClearPricesAndSeller, collections, filters, openFilters, setAllowClearCollections, setAllowClearPricesAndSeller, setFilters, setUniqueCollectionIds }: PropTypes): ReactElement => {
   return (
-    <div className='filter-main'>
+    <div className={`filter-main ${openFilters ? 'open' : ''}`}>
       <FilterContainer
         account={account}
         allowClearCollections={allowClearCollections}

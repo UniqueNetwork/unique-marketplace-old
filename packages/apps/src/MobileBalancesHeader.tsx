@@ -1,6 +1,8 @@
 // Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import type { OpenPanelType } from '@polkadot/apps-routing/types';
+
 import React, { memo, useCallback } from 'react';
 
 import menuArrow from '@polkadot/apps/images/menu-arrow.svg';
@@ -9,8 +11,8 @@ import { formatKsmBalance, formatStrBalance } from '@polkadot/react-hooks/useKus
 
 interface Props {
   account?: string,
-  isMobileMenu: string;
-  setIsMobileMenu: (isOpen: string) => void;
+  isMobileMenu: OpenPanelType;
+  setIsMobileMenu: (isOpen: OpenPanelType) => void;
 }
 
 function MobileBalancesHeader (props: Props): React.ReactElement<{ account?: string }> {
@@ -21,7 +23,7 @@ function MobileBalancesHeader (props: Props): React.ReactElement<{ account?: str
     if (isMobileMenu !== 'balances') {
       setIsMobileMenu('balances');
     } else {
-      setIsMobileMenu('none');
+      setIsMobileMenu('tokens');
     }
   }, [isMobileMenu, setIsMobileMenu]);
 

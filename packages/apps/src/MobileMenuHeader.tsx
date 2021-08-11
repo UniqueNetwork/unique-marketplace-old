@@ -1,19 +1,23 @@
 // Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import type { OpenPanelType } from '@polkadot/apps-routing/types';
+
 import React, { memo } from 'react';
 
 interface Props {
-  isMobileMenu: string;
-  setIsMobileMenu: (isOpen: string) => void;
+  isMobileMenu: OpenPanelType;
+  setIsMobileMenu: (isOpen: OpenPanelType) => void;
 }
 
 const MobileMenuHeader = (props: Props): React.ReactElement<Props> => {
   const { isMobileMenu, setIsMobileMenu } = props;
 
+  console.log('isMobileMenu', isMobileMenu);
+
   return (
     <div className='menu-mobile-header'>
-      { isMobileMenu !== 'menu' && (
+      { isMobileMenu === 'tokens' && (
         <div
           className='menu-icon'
           onClick={setIsMobileMenu.bind(null, 'menu')}
@@ -41,10 +45,10 @@ const MobileMenuHeader = (props: Props): React.ReactElement<Props> => {
           </svg>
         </div>
       )}
-      { isMobileMenu === 'menu' && (
+      { isMobileMenu !== 'tokens' && (
         <div
           className='menu-icon active'
-          onClick={setIsMobileMenu.bind(null, 'none')}
+          onClick={setIsMobileMenu.bind(null, 'tokens')}
         >
           <svg fill='none'
             height='32'
