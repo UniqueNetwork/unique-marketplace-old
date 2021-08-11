@@ -70,7 +70,7 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
 
       - name: Create .env file
-        run: echo '${{ secrets.UNIQUE_NETWORK_ENV }}' > ./packages/apps/.env
+        run: echo "${{ secrets.UNIQUE_NETWORK_ENV }}" > ./packages/apps/.env
 
       - name: Create shorted branch name
         run: echo "GITHUB_BRANCH=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
@@ -89,7 +89,7 @@ jobs:
           context: .
           file: ./Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
-          tags: ${{ secrets.DOCKER_IMAGE }}:${{ secrets.DOCKER_TAG || env.GITHUB_BRANCH }}
+          tags: ${{ secrets.DOCKER_IMAGE }}:${{ env.GITHUB_BRANCH }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
 
@@ -109,10 +109,10 @@ jobs:
           cache: yarn
 
       - name: Karma tests
-        run: echo 'yarn test:karma'
+        run: echo "yarn test:karma"
 
       - name: Jest tests
-        run: echo 'yarn test:jest'
+        run: echo "yarn test:jest"
 
   deploy:
     runs-on: ["self-hosted", "deploy", "unqnft.io"]
@@ -134,8 +134,8 @@ jobs:
 
       - name: Run Docker Compose
         env:
-          DOCKER_IMAGE: ${{ secrets.DOCKER_IMAGE }}:${{ secrets.DOCKER_TAG || env.GITHUB_BRANCH }}
-          DOCKER_NAME: ${{ secrets.DOCKER_NAME }}.${{ secrets.DOCKER_TAG || env.GITHUB_BRANCH }}
+          DOCKER_IMAGE: ${{ secrets.DOCKER_IMAGE }}:${{ env.GITHUB_BRANCH }}
+          DOCKER_NAME: ${{ secrets.DOCKER_NAME }}.${{ env.GITHUB_BRANCH }}
           DOCKER_PORT: ${{ secrets.DOCKER_PORT }}
           DOCKER_NETWORK: ${{ secrets.DOCKER_NETWORK }}
           DOCKER_CPU_LIMITS: ${{ secrets.DOCKER_CPU_LIMITS }}
