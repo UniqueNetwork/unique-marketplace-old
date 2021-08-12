@@ -334,6 +334,7 @@
     padding: var(--gap);
     display: flex;
     flex-direction: column;
+    background-color: var(--card-background);
 
     &--logo {
       text-align: center;

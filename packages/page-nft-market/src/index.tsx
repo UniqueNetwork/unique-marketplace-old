@@ -4,7 +4,7 @@
 import './styles.scss';
 
 // external imports
-import React, { useState } from 'react';
+import React from 'react';
 import { Route, Switch } from 'react-router';
 
 import { NftDetails } from '@polkadot/react-components';
@@ -14,14 +14,12 @@ import { AppProps as Props } from '@polkadot/react-components/types';
 import NftMarket from './containers/NftMarket';
 
 function PageNftMarketplace ({ account, basePath, openPanel, setOpenPanel }: Props): React.ReactElement<Props> {
-  const [shouldUpdateTokens, setShouldUpdateTokens] = useState<string>();
 
   return (
     <Switch>
       <Route path={`${basePath}/token-details`}>
         <NftDetails
           account={account || ''}
-          setShouldUpdateTokens={setShouldUpdateTokens}
         />
       </Route>
       <Route path={basePath}>
@@ -29,8 +27,6 @@ function PageNftMarketplace ({ account, basePath, openPanel, setOpenPanel }: Pro
           account={account}
           openPanel={openPanel}
           setOpenPanel={setOpenPanel}
-          setShouldUpdateTokens={setShouldUpdateTokens}
-          shouldUpdateTokens={shouldUpdateTokens}
         />
       </Route>
     </Switch>

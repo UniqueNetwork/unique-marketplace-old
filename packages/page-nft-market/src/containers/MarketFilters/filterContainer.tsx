@@ -180,7 +180,6 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearCollections, 
     storagePrices && setKSMPrices(storagePrices);
 
     if (storageFilters) {
-      setFilters(storageFilters);
       setIsOnlyMyToken(!!storageFilters.seller);
       areAllCollectionsChecked && setInputChecked(storageFilters.collectionIds as string[]);
     }
@@ -189,6 +188,7 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearCollections, 
 
   useEffect(() => {
     setInStorage(SESSION_STORAGE_KEYS.FILTERS, filters);
+
     if (inputChecked.length > 0) {
       setInStorage(SESSION_STORAGE_KEYS.ARE_ALL_COLLECTIONS_CHECKED, true);
     } else setInStorage(SESSION_STORAGE_KEYS.ARE_ALL_COLLECTIONS_CHECKED, false);

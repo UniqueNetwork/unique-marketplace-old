@@ -5,6 +5,9 @@ import './styles.scss';
 
 import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import equal from 'deep-equal';
 // external imports
 import React, { memo, ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
@@ -21,14 +24,13 @@ import { useCollections } from '@polkadot/react-hooks';
 // local imports and components
 import NftTokenCard from '../../components/NftTokenCard';
 import SearchForm from '../../components/SearchForm';
-import MarketFilters from '../marketFilters';
+import MarketFilters from '../MarketFilters';
+import MarketSort from '../MarketSort';
 
 interface BuyTokensProps {
   account?: string | undefined;
   openPanel?: OpenPanelType;
   setOpenPanel?: (openPanel: OpenPanelType) => void;
-  setShouldUpdateTokens: (value?: string) => void;
-  shouldUpdateTokens?: string;
 }
 
 export interface Filters {
@@ -50,7 +52,7 @@ const defaultFilters = {
   traitsCount: []
 };
 
-const NftMarket = ({ account, openPanel, setOpenPanel, setShouldUpdateTokens, shouldUpdateTokens }: BuyTokensProps): ReactElement => {
+const NftMarket = ({ account, openPanel, setOpenPanel }: BuyTokensProps): ReactElement => {
   const history = useHistory();
 
   const { getOffers, offers, offersCount, offersLoading, presetCollections } = useCollections();
@@ -99,27 +101,30 @@ const NftMarket = ({ account, openPanel, setOpenPanel, setShouldUpdateTokens, sh
   }, [setAllowClearCollections, setFilters, setOpenPanel]);
 
   useEffect(() => {
-    if (shouldUpdateTokens) {
-      setShouldUpdateTokens(undefined);
-      void getOffers(1, perPage, filters);
-    }
-  }, [getOffers, shouldUpdateTokens, setShouldUpdateTokens, filters]);
-
-  useEffect(() => {
     void addMintCollectionToList();
   }, [addMintCollectionToList]);
 
   useEffect(() => {
-    setShouldUpdateTokens('all');
-  }, [setShouldUpdateTokens]);
+    console.log('filters changed', filters);
+    void getOffers(1, perPage, filters);
+  }, [filters, getOffers]);
 
-  console.log('openPanel', openPanel);
+  useEffect(() => {
+    const storageFilters = JSON.parse(sessionStorage.getItem(SESSION_STORAGE_KEYS.FILTERS) as string) as Filters;
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    if (storageFilters && !equal(storageFilters, filters)) {
+      console.log('setFilters MarketFilter', storageFilters);
+      setFilters(storageFilters);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className='nft-market'>
       <Header as='h1'>Market</Header>
       <div
-        className='nft-market--panel'
+        className={`nft-market--panel ${openPanel === 'sort' ? 'long' : ''}`}
         ref={nftMarketPanel}
       >
         { openPanel === 'tokens' && (
@@ -157,6 +162,11 @@ const NftMarket = ({ account, openPanel, setOpenPanel, setShouldUpdateTokens, sh
           setAllowClearPricesAndSeller={setAllowClearPricesAndSeller}
           setFilters={setFilters}
           setUniqueCollectionIds={setUniqueCollectionIds}
+        />
+        <MarketSort
+          filters={filters}
+          openSort={openPanel === 'sort'}
+          setFilters={setFilters}
         />
         <div className={`marketplace-body ${openPanel === 'tokens' ? 'open' : ''}`}>
           <div className='collection-search-form'>
@@ -201,7 +211,7 @@ const NftMarket = ({ account, openPanel, setOpenPanel, setShouldUpdateTokens, sh
           )}
         </div>
       </div>
-      <div className={'nft-market--footer'}>
+      <div className={`nft-market--footer ${openPanel === 'sort' ? 'hide' : ''}`}>
         { openPanel === 'tokens' && (
           <>
             <Button

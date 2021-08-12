@@ -1,7 +1,7 @@
 // Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
 import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 import Dropdown, { DropdownProps } from 'semantic-ui-react/dist/commonjs/modules/Dropdown';
@@ -25,10 +25,7 @@ const SearchForm = (props: SearchFormProps) => {
   const { clearAllFilters, filters, offersCount, offersLoading, setFilters } = props;
   const [searchString, setSearchString] = useState<string>('');
   const [sortValue, setSortValue] = useState<string>('creationDate-desc');
-
-  const clearSearch = useCallback(() => {
-    setSearchString('');
-  }, []);
+  const searchRef = useRef<string | null>(null);
 
   const optionNode = useCallback((active: boolean, order: string, text: string) => {
     return (
@@ -75,11 +72,6 @@ const SearchForm = (props: SearchFormProps) => {
     return optionNode(false, 'none', 'Sort by');
   }, [optionNode, sortOptions, sortValue]);
 
-  const clearFilters = useCallback(() => {
-    clearAllFilters();
-    setSearchString('');
-  }, [clearAllFilters]);
-
   const setSortByFilter = useCallback(() => {
     const sort = filters.sort;
 
@@ -95,30 +87,49 @@ const SearchForm = (props: SearchFormProps) => {
     }
   }, [filters]);
 
+  const updateFilterFromSearchString = useCallback((searchStr: string) => {
+    if (searchRef.current === null) {
+      return;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    setFilters((prevFilters: Filters) => {
+      if (searchStr) {
+        return { ...prevFilters, searchLocale: 'en', searchText: searchStr };
+      } else {
+        const newFilters: Filters = { ...prevFilters };
+
+        delete newFilters.searchLocale;
+        delete newFilters.searchText;
+
+        return newFilters;
+      }
+    });
+  }, [setFilters]);
+
+  const clearFilters = useCallback(() => {
+    clearAllFilters();
+    setSearchString('');
+  }, [clearAllFilters]);
+
+  const clearSearch = useCallback(() => {
+    setSearchString('');
+  }, []);
+
   useEffect(() => {
     setSortByFilter();
   }, [setSortByFilter]);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      setFilters((prevFilters: Filters) => {
-        if (searchString) {
-          return { ...prevFilters, searchLocale: 'en', searchText: searchString };
-        } else {
-          const newFilters: Filters = { ...prevFilters };
+      updateFilterFromSearchString(searchString);
 
-          delete newFilters.searchLocale;
-          delete newFilters.searchText;
-
-          return newFilters;
-        }
-      });
+      searchRef.current = searchString;
     }, 1000);
 
     return () => clearTimeout(timeout);
-  }, [searchString, setFilters]);
+  }, [searchString, updateFilterFromSearchString]);
 
   return (
     <Form>

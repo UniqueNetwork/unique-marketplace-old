@@ -81,7 +81,6 @@ function PageNftWallet ({ account, basePath }: Props): React.ReactElement<Props>
         <Route path={`${basePath}/token-details`}>
           <NftDetails
             account={account || ''}
-            setShouldUpdateTokens={setShouldUpdateTokens}
           />
         </Route>
         <Route path={`${basePath}/manage-collection`}>
