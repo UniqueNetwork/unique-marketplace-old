@@ -21,18 +21,15 @@ interface NftWalletProps {
   collections: NftCollectionInterface[];
   removeCollectionFromList: (collectionToRemove: string) => void;
   setCollections: (collections: NftCollectionInterface[]) => void;
-  setShouldUpdateTokens: (value: string) => void;
-  shouldUpdateTokens?: string;
 }
 
 const { canAddCollections } = envConfig;
 
-function NftWallet ({ account, addCollection, collections, removeCollectionFromList, setCollections, setShouldUpdateTokens, shouldUpdateTokens }: NftWalletProps): React.ReactElement {
+function NftWallet ({ account, addCollection, collections, removeCollectionFromList, setCollections }: NftWalletProps): React.ReactElement {
   const [openTransfer, setOpenTransfer] = useState<{ collection: NftCollectionInterface, tokenId: string, balance: number } | null>(null);
   const [selectedCollection, setSelectedCollection] = useState<NftCollectionInterface>();
   const [canTransferTokens] = useState<boolean>(true);
   const [tokensSelling, setTokensSelling] = useState<{ [collectionId: string]: string[] }>({});
-  const currentAccount = useRef<string | null | undefined>();
   const { getHoldByMe, getOffers, myHold, offers, presetCollections } = useCollections();
   const cleanup = useRef<boolean>(false);
   // prevent component update initialized by parent
@@ -42,7 +39,7 @@ function NftWallet ({ account, addCollection, collections, removeCollectionFromL
     // return usable array form to collections array
     const collectionsArray = JSON.parse(collectionsString) as NftCollectionInterface[];
 
-    if (account && collectionsArray?.length && shouldUpdateTokens) {
+    if (account && collectionsArray?.length) {
       // collect collections data for expander component and set filters
       const targetCollectionIds = collectionsArray.map((collection) => collection.id);
       const filters = { collectionIds: targetCollectionIds, sort: '', traitsCount: [] };
@@ -50,7 +47,7 @@ function NftWallet ({ account, addCollection, collections, removeCollectionFromL
       getOffers(1, 20000, filters);
       getHoldByMe(account, 1, 20000, targetCollectionIds);
     }
-  }, [account, collectionsString, getHoldByMe, getOffers, shouldUpdateTokens]);
+  }, [account, collectionsString, getHoldByMe, getOffers]);
 
   const filterTokensFromOffers = useCallback(() => {
     if (Object.keys(offers).length) {
@@ -92,15 +89,6 @@ function NftWallet ({ account, addCollection, collections, removeCollectionFromL
     setOpenTransfer({ balance, collection, tokenId });
   }, []);
 
-  const updateTokens = useCallback((collectionId) => {
-    setShouldUpdateTokens(collectionId);
-  }, [setShouldUpdateTokens]);
-
-  useEffect(() => {
-    currentAccount.current = account;
-    setShouldUpdateTokens('all');
-  }, [account, setShouldUpdateTokens]);
-
   useEffect(() => {
     void addMintCollectionToList();
   }, [addMintCollectionToList]);
@@ -121,7 +109,7 @@ function NftWallet ({ account, addCollection, collections, removeCollectionFromL
 
   return (
     <div className='nft-wallet unique-card'>
-      { canAddCollections && shouldUpdateTokens && (
+      { canAddCollections && (
         <>
           <CollectionSearch
             account={account}
@@ -153,7 +141,6 @@ function NftWallet ({ account, addCollection, collections, removeCollectionFromL
                   onHold={myHold[collection.id] || []}
                   openTransferModal={openTransferModal}
                   removeCollection={removeCollection}
-                  shouldUpdateTokens={shouldUpdateTokens}
                   tokensSelling={tokensSelling[collection.id] || []}
                 />
               </td>
@@ -168,7 +155,6 @@ function NftWallet ({ account, addCollection, collections, removeCollectionFromL
           collection={openTransfer.collection}
           reFungibleBalance={openTransfer.balance}
           tokenId={openTransfer.tokenId}
-          updateTokens={updateTokens}
         />
       )}
     </div>

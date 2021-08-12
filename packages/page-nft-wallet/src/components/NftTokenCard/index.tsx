@@ -24,7 +24,6 @@ interface Props {
   collection: NftCollectionInterface;
   onHold: HoldType[];
   openTransferModal: (collection: NftCollectionInterface, tokenId: string, balance: number) => void;
-  shouldUpdateTokens: string | undefined;
   token: string;
   tokensSelling: string[];
 }

@@ -26,10 +26,9 @@ const { kusamaDecimals, showMarketActions } = envConfig;
 
 interface NftDetailsProps {
   account: string;
-  setShouldUpdateTokens?: (collectionId: string) => void;
 }
 
-function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React.ReactElement<NftDetailsProps> {
+function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetailsProps> {
   const query = new URLSearchParams(useLocation().search);
   const tokenId = query.get('tokenId') || '';
   const collectionId = query.get('collectionId') || '';
@@ -51,9 +50,8 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
 
   const goBack = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-    setShouldUpdateTokens && setShouldUpdateTokens('all');
     history.back();
-  }, [setShouldUpdateTokens]);
+  }, []);
 
   const onSavePrice = useCallback(() => {
     const parts = tokenPriceForSale.split('.');
@@ -63,12 +61,6 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
 
     setPrice(price.toString());
   }, [setPrice, tokenPriceForSale]);
-
-  const onTransferSuccess = useCallback(() => {
-    setShowTransferForm(false);
-    sendCurrentUserAction('UPDATE_TOKEN_STATE');
-    setShouldUpdateTokens && setShouldUpdateTokens(collectionId);
-  }, [collectionId, sendCurrentUserAction, setShouldUpdateTokens]);
 
   const closeAskModal = useCallback(() => {
     setReadyToAskPrice(false);
@@ -259,7 +251,6 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
                 collection={collectionInfo}
                 reFungibleBalance={reFungibleBalance}
                 tokenId={tokenId}
-                updateTokens={onTransferSuccess}
               />
             )}
             { !!(transferStep && transferStep <= 3) && (

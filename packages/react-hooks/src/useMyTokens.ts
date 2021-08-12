@@ -18,8 +18,7 @@ export const useMyTokens = (
   collection: NftCollectionInterface,
   onHold: HoldType[],
   tokensSelling: string[],
-  perPage: number,
-  shouldUpdateTokens: string | undefined
+  perPage: number
 ): useMyTokensInterface => {
   const [allTokensCount, setAllTokensCount] = useState<number>(0);
   const [ownTokensCount, setOwnTokensCount] = useState<number>(0);
@@ -29,7 +28,6 @@ export const useMyTokens = (
   const { getTokensOfCollection } = useCollections();
   const { getCollectionTokensCount } = useCollection();
   const cleanup = useRef<boolean>(false);
-  const requiredUpdateTokensOnCollectionId = shouldUpdateTokens && shouldUpdateTokens === collection.id;
 
   const getTokensCount = useCallback(async () => {
     if (!collection) {
@@ -58,13 +56,6 @@ export const useMyTokens = (
     setAllMyTokens(allTokens);
     setTokensOnPage(allTokens.slice(0, perPage));
   }, [account, collection.id, getTokensOfCollection, holdingTokens, perPage, tokensSelling]);
-
-  useEffect(() => {
-    if (requiredUpdateTokensOnCollectionId) {
-      console.log('update');
-      void updateTokens();
-    }
-  }, [requiredUpdateTokensOnCollectionId, updateTokens]);
 
   useEffect(() => {
     if (collection && allTokensCount === undefined) {

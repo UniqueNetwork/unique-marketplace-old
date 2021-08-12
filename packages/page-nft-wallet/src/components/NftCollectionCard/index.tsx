@@ -32,13 +32,12 @@ interface Props {
   removeCollection: (collection: string) => void;
   onHold: HoldType[];
   openTransferModal: (collection: NftCollectionInterface, tokenId: string, balance: number) => void;
-  shouldUpdateTokens: string | undefined;
   tokensSelling: string[];
 }
 
 const perPage = 5;
 
-function NftCollectionCard ({ account, canTransferTokens, collection, onHold, openTransferModal, removeCollection, shouldUpdateTokens, tokensSelling }: Props): React.ReactElement<Props> {
+function NftCollectionCard ({ account, canTransferTokens, collection, onHold, openTransferModal, removeCollection, tokensSelling }: Props): React.ReactElement<Props> {
   const [opened, setOpened] = useState(true);
   const [currentPerPage, setCurrentPerPage] = useState(5);
   const [collectionImageUrl, setCollectionImageUrl] = useState<string>();
@@ -48,7 +47,7 @@ function NftCollectionCard ({ account, canTransferTokens, collection, onHold, op
   const history = useHistory();
   const { getTokenImageUrl } = useMetadata();
 
-  const { allMyTokens, allTokensCount, ownTokensCount, tokensOnPage } = useMyTokens(account, collection, onHold, tokensSelling, currentPerPage, shouldUpdateTokens);
+  const { allMyTokens, allTokensCount, ownTokensCount, tokensOnPage } = useMyTokens(account, collection, onHold, tokensSelling, currentPerPage);
 
   const hasMore = tokensOnPage.length < allMyTokens.length;
 
@@ -211,7 +210,6 @@ function NftCollectionCard ({ account, canTransferTokens, collection, onHold, op
                 key={`${token}-${index}`}
                 onHold={onHold}
                 openTransferModal={openTransferModal}
-                shouldUpdateTokens={shouldUpdateTokens}
                 token={token}
                 tokensSelling={tokensSelling}
               />
