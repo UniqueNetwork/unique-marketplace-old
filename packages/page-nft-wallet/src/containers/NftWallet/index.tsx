@@ -35,16 +35,22 @@ function NftWallet ({ account, addCollection, collections, removeCollectionFromL
   const currentAccount = useRef<string | null | undefined>();
   const { getHoldByMe, getOffers, myHold, offers, presetCollections } = useCollections();
   const cleanup = useRef<boolean>(false);
+  // prevent component update initialized by parent
+  const collectionsString = JSON.stringify(collections);
 
   const fetchOffersForCollections = useCallback(() => {
-    if (account && collections?.length) {
-      const targetCollectionIds = collections.map((collection) => collection.id);
-      const filters = { collectionIds: targetCollectionIds };
+    // return usable array form to collections array
+    const collectionsArray = JSON.parse(collectionsString) as NftCollectionInterface[];
+
+    if (account && collectionsArray?.length && shouldUpdateTokens) {
+      // collect collections data for expander component and set filters
+      const targetCollectionIds = collectionsArray.map((collection) => collection.id);
+      const filters = { collectionIds: targetCollectionIds, sort: '', traitsCount: [] };
 
       getOffers(1, 20000, filters);
       getHoldByMe(account, 1, 20000, targetCollectionIds);
     }
-  }, [account, collections, getHoldByMe, getOffers]);
+  }, [account, collectionsString, getHoldByMe, getOffers, shouldUpdateTokens]);
 
   const filterTokensFromOffers = useCallback(() => {
     if (Object.keys(offers).length) {
@@ -115,7 +121,7 @@ function NftWallet ({ account, addCollection, collections, removeCollectionFromL
 
   return (
     <div className='nft-wallet unique-card'>
-      { canAddCollections && (
+      { canAddCollections && shouldUpdateTokens && (
         <>
           <CollectionSearch
             account={account}

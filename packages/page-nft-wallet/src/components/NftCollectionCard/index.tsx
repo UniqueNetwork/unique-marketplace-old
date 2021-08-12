@@ -19,8 +19,7 @@ import { Expander } from '@polkadot/react-components';
 import pencil from '@polkadot/react-components/ManageCollection/pencil.svg';
 import trash from '@polkadot/react-components/ManageCollection/trash.svg';
 import Tooltip from '@polkadot/react-components/Tooltip';
-import { useCollections, useDecoder, useMetadata } from '@polkadot/react-hooks';
-import { useCollection } from '@polkadot/react-hooks/useCollection';
+import { useDecoder, useMetadata, useMyTokens } from '@polkadot/react-hooks';
 
 import NftTokenCard from '../NftTokenCard';
 
@@ -41,18 +40,16 @@ const perPage = 5;
 
 function NftCollectionCard ({ account, canTransferTokens, collection, onHold, openTransferModal, removeCollection, shouldUpdateTokens, tokensSelling }: Props): React.ReactElement<Props> {
   const [opened, setOpened] = useState(true);
+  const [currentPerPage, setCurrentPerPage] = useState(5);
   const [collectionImageUrl, setCollectionImageUrl] = useState<string>();
-  const [ownTokensCount, setOwnTokensCount] = useState<number>();
-  const [allTokensCount, setAllTokensCount] = useState<number>();
   const [confirmDeleteCollection, setConfirmDeleteCollection] = useState<boolean>(false);
-  const [tokensOnPage, setTokensOnPage] = useState<string[]>([]);
-  const [allMyTokens, setAllMyTokens] = useState<string[]>([]);
-  const { getTokensOfCollection } = useCollections();
-  const { getCollectionTokensCount } = useCollection();
   const { collectionName16Decoder } = useDecoder();
   const cleanup = useRef<boolean>(false);
   const history = useHistory();
   const { getTokenImageUrl } = useMetadata();
+
+  const { allMyTokens, allTokensCount, ownTokensCount, tokensOnPage } = useMyTokens(account, collection, onHold, tokensSelling, currentPerPage, shouldUpdateTokens);
+
   const hasMore = tokensOnPage.length < allMyTokens.length;
 
   const openCollection = useCallback((isOpen) => {
@@ -77,38 +74,6 @@ function NftCollectionCard ({ account, canTransferTokens, collection, onHold, op
     history.push(`/wallet/manage-token?collectionId=${collectionId}`);
   }, [history]);
 
-  const getTokensCount = useCallback(async () => {
-    if (!collection) {
-      return;
-    }
-
-    const tokensCount: number = await getCollectionTokensCount(collection.id) as number;
-
-    if (cleanup.current) {
-      return;
-    }
-
-    setAllTokensCount(parseFloat(tokensCount.toString()));
-  }, [collection, getCollectionTokensCount]);
-
-  const updateTokens = useCallback(async () => {
-    if (!account) {
-      return;
-    }
-
-    const tokens = (await getTokensOfCollection(collection.id, account)) as string[];
-
-    if (cleanup.current) {
-      return;
-    }
-
-    setOwnTokensCount(tokens.length);
-    const holdingTokens = onHold.map((item) => item.tokenId);
-
-    setAllMyTokens([...tokensSelling, ...tokens, ...holdingTokens]);
-    setTokensOnPage([...tokensSelling, ...tokens, ...holdingTokens].slice(0, perPage));
-  }, [account, collection, getTokensOfCollection, onHold, tokensSelling]);
-
   const toggleConfirmation = useCallback((status, e: React.MouseEvent<any>) => {
     e.stopPropagation();
 
@@ -116,30 +81,16 @@ function NftCollectionCard ({ account, canTransferTokens, collection, onHold, op
   }, []);
 
   const loadMore = useCallback((page: number) => {
-    setTokensOnPage(allMyTokens.slice(0, perPage * page));
-  }, [allMyTokens]);
+  // handle load more on scroll action
 
-  useEffect(() => {
-    if (shouldUpdateTokens && shouldUpdateTokens === collection.id) {
-      void updateTokens();
-    }
-  }, [collection.id, shouldUpdateTokens, updateTokens]);
-
-  useEffect(() => {
-    void updateTokens();
-  }, [account, updateTokens]);
+    setCurrentPerPage(page * perPage);
+  }, []);
 
   useEffect(() => {
     if (!collectionImageUrl && collection) {
       void defineCollectionImage();
     }
   }, [collection, collectionImageUrl, defineCollectionImage]);
-
-  useEffect(() => {
-    if (collection && allTokensCount === undefined) {
-      void getTokensCount();
-    }
-  }, [allTokensCount, collection, getTokensCount]);
 
   useEffect(() => {
     return () => {
@@ -252,12 +203,12 @@ function NftCollectionCard ({ account, canTransferTokens, collection, onHold, op
           useWindow={false}
         >
           <div className='token-table'>
-            { account && tokensOnPage.map((token) => (
+            { account && tokensOnPage.map((token: string, index: number) => (
               <NftTokenCard
                 account={account}
                 canTransferTokens={canTransferTokens}
                 collection={collection}
-                key={`${collection.id}-${token}-${Math.random() * 100}  `}
+                key={`${token}-${index}`}
                 onHold={onHold}
                 openTransferModal={openTransferModal}
                 shouldUpdateTokens={shouldUpdateTokens}
