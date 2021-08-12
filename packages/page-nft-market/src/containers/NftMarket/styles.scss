@@ -202,8 +202,19 @@
       overflow-y: auto;
 
       .ui.buttons {
-        .button {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        margin: calc((var(--gap) / 2) * 3) var(--gap) 0 var(--gap);
 
+        .button {
+          &:first-child {
+            border-top-right-radius: 0 !important;
+            border-bottom-right-radius: 0 !important;
+          }
+          &:last-child {
+            border-top-left-radius: 0 !important;
+            border-bottom-left-radius: 0 !important;
+          }
         }
       }
     }
