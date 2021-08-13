@@ -121,7 +121,7 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: BuyTokensProps): ReactE
   }, []);
 
   return (
-    <div className='nft-market'>
+    <div className={`nft-market ${openPanel || ''}`}>
       <Header as='h1'>Market</Header>
       <div
         className={`nft-market--panel ${openPanel === 'sort' ? 'long' : ''}`}

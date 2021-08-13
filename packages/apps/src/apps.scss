@@ -178,7 +178,9 @@
   font-style: normal;
   font-weight: 500;
   font-size: 14px;
-  line-height: 22px span {
+  line-height: 22px;
+
+  span {
     color: #1db0ff;
   }
   .error-message-info {
@@ -218,44 +220,7 @@
   }
 }
 
-@media (min-width: 1025px) {
-  .app-header {
-    .menu-mobile-header {
-      display: none;
-    }
-
-    .ui.tabular.header-menu.menu {
-      display: inline-flex;
-    }
-
-    .app-user {
-      .app-balances-mobile {
-        display: none;
-      }
-
-      .account-selector-block {
-        .mobile-account-selector {
-          display: none;
-        }
-      }
-    }
-  }
-}
-
-@media (max-width: 1024px) {
-  .app-wrapper {
-    height: 100vh;
-    overflow: hidden;
-  }
-
-  .app-main {
-    padding: 0;
-
-    .app-container {
-      padding: 0;
-    }
-  }
-
+@media screen and (max-device-width: 1280px) {
   .app-header {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
     z-index: 1000;
@@ -326,15 +291,12 @@
     }
   }
 
-  .deposit-flex .ksm-text {
-    width: 25%;
-  }
-
   .menu-mobile {
     padding: var(--gap);
     display: flex;
     flex-direction: column;
     background-color: var(--card-background);
+    min-height: calc(100vh - 70px);
 
     &--logo {
       text-align: center;
@@ -357,6 +319,55 @@
         color: var(--card-background);
       }
     }
+  }
+
+  .app-main  {
+    &.menu {
+      display: none;
+    }
+  }
+}
+
+@media (min-width: 1280px) {
+  .app-header {
+    .menu-mobile-header {
+      display: none;
+    }
+
+    .ui.tabular.header-menu.menu {
+      display: inline-flex;
+    }
+
+    .app-user {
+      .app-balances-mobile {
+        display: none;
+      }
+
+      .account-selector-block {
+        .mobile-account-selector {
+          display: none;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 1024px) {
+  .app-wrapper {
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .app-main {
+    padding: 0;
+
+    .app-container {
+      padding: 0;
+    }
+  }
+
+  .deposit-flex .ksm-text {
+    width: 25%;
   }
 }
 

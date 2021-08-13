@@ -231,7 +231,7 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                             </Suspense>
                           )}
                           <Suspense fallback='...'>
-                            <main className='app-main'>
+                            <main className={`app-main ${openPanel || ''}`}>
                               <div className='app-container'>
                                 <Component
                                   account={account}

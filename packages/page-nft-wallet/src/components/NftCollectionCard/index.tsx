@@ -147,8 +147,6 @@ function NftCollectionCard ({ account, canTransferTokens, collection, onHold, op
     };
   }, []);
 
-  console.log('my tokens', allMyTokens);
-
   return (
     <Expander
       className='nft-collection-item'

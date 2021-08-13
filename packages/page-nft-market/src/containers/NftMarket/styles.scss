@@ -134,6 +134,28 @@
   }
 }
 
+@media screen and (min-device-width: 1025px) and (max-device-width: 1280px) {
+  .nft-market {
+    &--panel {
+      .marketplace-body {
+        .market-pallet {
+          .market-pallet__item {
+            grid-template-columns: 1fr 1fr 1fr;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 1024px) {
+  .nft-market {
+    &--panel {
+
+    }
+  }
+}
+
 @media (min-width: 1025px) {
   .nft-market {
     h1.ui.header {
