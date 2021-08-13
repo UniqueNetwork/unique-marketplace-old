@@ -22,6 +22,7 @@ import MarketFilters from '../marketFilters';
 
 interface BuyTokensProps {
   account?: string | undefined;
+  setShouldUpdateTokens: (value?: string) => void;
   shouldUpdateTokens?: string;
 }
 
@@ -39,7 +40,7 @@ export interface Filters {
 
 const perPage = 20;
 
-const BuyTokens = ({ account, shouldUpdateTokens }: BuyTokensProps): ReactElement => {
+const BuyTokens = ({ account, setShouldUpdateTokens, shouldUpdateTokens }: BuyTokensProps): ReactElement => {
   const history = useHistory();
 
   const { getOffers, offers, offersCount, offersLoading, presetCollections } = useCollections();
@@ -66,12 +67,20 @@ const BuyTokens = ({ account, shouldUpdateTokens }: BuyTokensProps): ReactElemen
   }, [filters, getOffers]);
 
   useEffect(() => {
+    if (shouldUpdateTokens) {
+      setShouldUpdateTokens(undefined);
+    }
+
     void getOffers(1, perPage, filters);
-  }, [getOffers, shouldUpdateTokens, filters]);
+  }, [getOffers, shouldUpdateTokens, setShouldUpdateTokens, filters]);
 
   useEffect(() => {
     void addMintCollectionToList();
   }, [addMintCollectionToList]);
+
+  useEffect(() => {
+    setShouldUpdateTokens('all');
+  }, [setShouldUpdateTokens]);
 
   return (
     <div className='nft-market'>
