@@ -23,6 +23,7 @@ const { canAddCollections, canCreateCollection } = envConfig;
 function App ({ account, basePath }: Props): React.ReactElement<Props> {
   const location = useLocation();
   const history = useHistory();
+  const [shouldUpdateTokens, setShouldUpdateTokens] = useState<string>();
   const collectionsStorage: NftCollectionInterface[] = JSON.parse(localStorage.getItem('tokenCollections') || '[]') as NftCollectionInterface[];
   const [collections, setCollections] = useState<NftCollectionInterface[]>(collectionsStorage);
 
@@ -48,7 +49,6 @@ function App ({ account, basePath }: Props): React.ReactElement<Props> {
     const newCollectionList = collections.filter((item: NftCollectionInterface) => item.id !== collectionToRemove);
 
     setCollections(newCollectionList);
-
     localStorage.setItem('tokenCollections', JSON.stringify(newCollectionList));
   }, [collections]);
 
@@ -80,6 +80,7 @@ function App ({ account, basePath }: Props): React.ReactElement<Props> {
         <Route path={`${basePath}/token-details`}>
           <NftDetails
             account={account || ''}
+            setShouldUpdateTokens={setShouldUpdateTokens}
           />
         </Route>
         <Route path={`${basePath}/manage-collection`}>
@@ -87,16 +88,19 @@ function App ({ account, basePath }: Props): React.ReactElement<Props> {
             account={account}
             addCollection={addCollection}
             basePath={`${basePath}/manage-collection`}
+            setShouldUpdateTokens={setShouldUpdateTokens}
           />
         </Route>
         <Route path={`${basePath}/manage-token`}>
           <ManageTokenAttributes
             account={account}
+            setShouldUpdateTokens={setShouldUpdateTokens}
           />
         </Route>
         {/* <Route path={`${basePath}/tokens-for-sale`}>
           <TokensForSale
             account={account}
+            setShouldUpdateTokens={setShouldUpdateTokens}
             shouldUpdateTokens={shouldUpdateTokens}
           />
         </Route> */}
@@ -107,6 +111,8 @@ function App ({ account, basePath }: Props): React.ReactElement<Props> {
             collections={collections}
             removeCollectionFromList={removeCollectionFromList}
             setCollections={setCollections}
+            setShouldUpdateTokens={setShouldUpdateTokens}
+            shouldUpdateTokens={shouldUpdateTokens}
           />
         </Route>
       </Switch>

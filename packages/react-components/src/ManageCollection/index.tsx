@@ -27,6 +27,7 @@ interface Props {
   account?: string;
   addCollection: (collection: NftCollectionInterface) => void;
   basePath: string;
+  setShouldUpdateTokens?: (collectionId: string) => void;
 }
 
 type SchemaOption = {
@@ -46,7 +47,7 @@ const SchemaOptions: SchemaOption[] = [
 ];
 
 function ManageCollection (props: Props): React.ReactElement<Props> {
-  const { account, addCollection, basePath } = props;
+  const { account, addCollection, basePath, setShouldUpdateTokens } = props;
   const history = useHistory();
   const query = new URLSearchParams(useLocation().search);
   const collectionId = query.get('collectionId') || '';
@@ -281,8 +282,9 @@ function ManageCollection (props: Props): React.ReactElement<Props> {
 
   const goBack = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
+    setShouldUpdateTokens && setShouldUpdateTokens('all');
     history.push('/wallet/');
-  }, [history]);
+  }, [history, setShouldUpdateTokens]);
 
   const presetOnChainData = useCallback(() => {
     if (collectionInfo) {

@@ -23,9 +23,10 @@ interface Props {
   closeModal: () => void;
   reFungibleBalance: number;
   tokenId: string;
+  updateTokens: (collectionId: string) => void;
 }
 
-function TransferModal ({ account, closeModal, collection, reFungibleBalance, tokenId }: Props): React.ReactElement<Props> {
+function TransferModal ({ account, closeModal, collection, reFungibleBalance, tokenId, updateTokens }: Props): React.ReactElement<Props> {
   const { api } = useApi();
   const [recipient, setRecipient] = useState<string>();
   // const { balance } = useBalance(account);
@@ -41,9 +42,10 @@ function TransferModal ({ account, closeModal, collection, reFungibleBalance, to
       accountId: account && account.toString(),
       extrinsic: api.tx.nft.transfer(recipient, collection.id, tokenId, (tokenPart * Math.pow(10, decimalPoints))),
       isUnsigned: false,
-      txStartCb: () => { closeModal(); }
+      txStartCb: () => { closeModal(); },
+      txSuccessCb: () => { updateTokens(collection.id); }
     });
-  }, [account, api, closeModal, collection, decimalPoints, recipient, tokenId, tokenPart, queueExtrinsic]);
+  }, [account, api, closeModal, collection, decimalPoints, recipient, tokenId, tokenPart, updateTokens, queueExtrinsic]);
 
   const setRecipientAddress = useCallback((value: string) => {
     try {

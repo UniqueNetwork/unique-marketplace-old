@@ -40,7 +40,7 @@ export const useMyTokens = (
       return;
     }
 
-    setAllTokensCount(parseFloat(tokensCount.toString()));
+    setAllTokensCount(tokensCount);
   }, [collection, getCollectionTokensCount]);
 
   const updateTokens = useCallback(async () => {
@@ -58,7 +58,7 @@ export const useMyTokens = (
   }, [account, collection.id, getTokensOfCollection, holdingTokens, perPage, tokensSelling]);
 
   useEffect(() => {
-    if (collection && allTokensCount === undefined) {
+    if (collection && allTokensCount === 0) {
       void getTokensCount();
     }
   }, [allTokensCount, collection, getTokensCount]);

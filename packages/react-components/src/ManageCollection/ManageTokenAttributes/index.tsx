@@ -29,9 +29,10 @@ export type TokenAttribute = {
 
 interface Props {
   account?: string;
+  setShouldUpdateTokens?: (collectionId: string) => void;
 }
 
-function ManageTokenAttributes ({ account }: Props): React.ReactElement<Props> {
+function ManageTokenAttributes ({ account, setShouldUpdateTokens }: Props): React.ReactElement<Props> {
   const query = new URLSearchParams(useLocation().search);
   const tokenId = query.get('tokenId') || '';
   const collectionId = query.get('collectionId') || '';
@@ -241,8 +242,9 @@ function ManageTokenAttributes ({ account }: Props): React.ReactElement<Props> {
 
   const goBack = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
+    setShouldUpdateTokens && setShouldUpdateTokens('all');
     history.push('/wallet/');
-  }, [history]);
+  }, [history, setShouldUpdateTokens]);
 
   useEffect(() => {
     if (constAttributes && constAttributes.length) {
