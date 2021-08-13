@@ -49,7 +49,6 @@ function App ({ account, basePath }: Props): React.ReactElement<Props> {
     const newCollectionList = collections.filter((item: NftCollectionInterface) => item.id !== collectionToRemove);
 
     setCollections(newCollectionList);
-
     localStorage.setItem('tokenCollections', JSON.stringify(newCollectionList));
   }, [collections]);
 

@@ -20,7 +20,7 @@ interface NftWalletProps {
   addCollection: (collection: NftCollectionInterface) => void;
   collections: NftCollectionInterface[];
   removeCollectionFromList: (collectionToRemove: string) => void;
-  setCollections: (collections: NftCollectionInterface[]) => void;
+  setCollections: (collections: (prevCollections: NftCollectionInterface[]) => (NftCollectionInterface[])) => void;
   setShouldUpdateTokens: (value: string) => void;
   shouldUpdateTokens?: string;
 }
@@ -38,8 +38,9 @@ function NftWallet ({ account, addCollection, collections, removeCollectionFromL
 
   const fetchOffersForCollections = useCallback(() => {
     if (account && collections?.length) {
+      // collect collections data for expander component and set filters
       const targetCollectionIds = collections.map((collection) => collection.id);
-      const filters = { collectionIds: targetCollectionIds };
+      const filters = { collectionIds: targetCollectionIds, sort: '', traitsCount: [] };
 
       getOffers(1, 20000, filters);
       getHoldByMe(account, 1, 20000, targetCollectionIds);
@@ -71,7 +72,13 @@ function NftWallet ({ account, addCollection, collections, removeCollectionFromL
       return;
     }
 
-    setCollections([...firstCollections]);
+    setCollections((prevCollections: NftCollectionInterface[]) => {
+      if (JSON.stringify(firstCollections) !== JSON.stringify(prevCollections)) {
+        return [...firstCollections];
+      } else {
+        return prevCollections;
+      }
+    });
   }, [setCollections, presetCollections]);
 
   const removeCollection = useCallback((collectionToRemove: string) => {
@@ -147,7 +154,6 @@ function NftWallet ({ account, addCollection, collections, removeCollectionFromL
                   onHold={myHold[collection.id] || []}
                   openTransferModal={openTransferModal}
                   removeCollection={removeCollection}
-                  shouldUpdateTokens={shouldUpdateTokens}
                   tokensSelling={tokensSelling[collection.id] || []}
                 />
               </td>
