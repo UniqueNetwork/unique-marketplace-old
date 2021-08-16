@@ -9,6 +9,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header/Header';
 
 import envConfig from '@polkadot/apps-config/envConfig';
+import { OpenPanelType } from '@polkadot/apps-routing/types';
 import { Table, TransferModal } from '@polkadot/react-components';
 import { useCollections } from '@polkadot/react-hooks';
 
@@ -19,15 +20,17 @@ interface NftWalletProps {
   account?: string;
   addCollection: (collection: NftCollectionInterface) => void;
   collections: NftCollectionInterface[];
+  openPanel?: OpenPanelType;
   removeCollectionFromList: (collectionToRemove: string) => void;
   setCollections: (collections: NftCollectionInterface[]) => void;
+  setOpenPanel?: (openPanel: OpenPanelType) => void;
   setShouldUpdateTokens: (value: string) => void;
   shouldUpdateTokens?: string;
 }
 
 const { canAddCollections } = envConfig;
 
-function NftWallet ({ account, addCollection, collections, removeCollectionFromList, setCollections, setShouldUpdateTokens, shouldUpdateTokens }: NftWalletProps): React.ReactElement {
+function NftWallet ({ account, addCollection, collections, openPanel, removeCollectionFromList, setCollections, setOpenPanel, setShouldUpdateTokens, shouldUpdateTokens }: NftWalletProps): React.ReactElement {
   const [openTransfer, setOpenTransfer] = useState<{ collection: NftCollectionInterface, tokenId: string, balance: number } | null>(null);
   const [selectedCollection, setSelectedCollection] = useState<NftCollectionInterface>();
   const [canTransferTokens] = useState<boolean>(true);

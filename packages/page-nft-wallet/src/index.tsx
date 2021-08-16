@@ -5,9 +5,8 @@ import './styles.scss';
 
 // external imports
 import React, { useCallback, useEffect, useState } from 'react';
-import { Route, Switch, useHistory } from 'react-router';
+import { Route, Switch } from 'react-router';
 import { useLocation } from 'react-router-dom';
-import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header/Header';
 
 import envConfig from '@polkadot/apps-config/envConfig';
@@ -18,18 +17,13 @@ import { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
 
 import NftWallet from './containers/NftWallet';
 
-const { canAddCollections, canCreateCollection } = envConfig;
+const { canAddCollections } = envConfig;
 
-function PageNftWallet ({ account, basePath }: Props): React.ReactElement<Props> {
+function PageNftWallet ({ account, basePath, openPanel, setOpenPanel }: Props): React.ReactElement<Props> {
   const location = useLocation();
-  const history = useHistory();
   const [shouldUpdateTokens, setShouldUpdateTokens] = useState<string>();
   const collectionsStorage: NftCollectionInterface[] = JSON.parse(localStorage.getItem('tokenCollections') || '[]') as NftCollectionInterface[];
   const [collections, setCollections] = useState<NftCollectionInterface[]>(collectionsStorage);
-
-  const createCollection = useCallback(() => {
-    history.push('/wallet/manage-collection');
-  }, [history]);
 
   const addCollection = useCallback((collection: NftCollectionInterface) => {
     setCollections((prevCollections: NftCollectionInterface[]) => {
@@ -66,15 +60,6 @@ function PageNftWallet ({ account, basePath }: Props): React.ReactElement<Props>
         <>
           <Header as='h1'>My Tokens</Header>
           <Header as='h4'>NFTs owned by me</Header>
-          { canCreateCollection && (
-            <Button
-              className='create-button'
-              onClick={createCollection}
-              primary
-            >
-              Create collection
-            </Button>
-          )}
         </>
       )}
       <Switch>
@@ -109,8 +94,10 @@ function PageNftWallet ({ account, basePath }: Props): React.ReactElement<Props>
             account={account}
             addCollection={addCollection}
             collections={collections}
+            openPanel={openPanel}
             removeCollectionFromList={removeCollectionFromList}
             setCollections={setCollections}
+            setOpenPanel={setOpenPanel}
             setShouldUpdateTokens={setShouldUpdateTokens}
             shouldUpdateTokens={shouldUpdateTokens}
           />
