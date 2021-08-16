@@ -29,3 +29,44 @@
     }
   }
 }
+
+@media screen and (min-device-width: 1025px) and (max-device-width: 1280px) {
+
+}
+
+@media (min-width: 1025px) {
+  .my-tokens {
+    h1.ui.header, h4.ui.header {
+      display: block;
+
+      &.mobile-header {
+        display: none;
+      }
+    }
+  }
+}
+
+@media (max-width: 1024px) {
+  .my-tokens {
+    overflow: hidden;
+    background-color: var(--card-background);
+
+    h1.ui.header, h4.ui.header {
+      display: none;
+
+      &.mobile-header {
+        display: block;
+        margin: calc((var(--gap) / 2) * 3) 0 0 0;
+      }
+    }
+
+    .ui.header {
+      padding: 0 var(--gap);
+    }
+  }
+}
+
+@media (max-width: 768px) {
+
+}
+

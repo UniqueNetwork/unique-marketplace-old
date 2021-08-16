@@ -56,3 +56,4 @@ export { useToggle } from './useToggle';
 export { useTreasury } from './useTreasury';
 export { useVotingStatus } from './useVotingStatus';
 export { useWeight } from './useWeight';
+export { useMyTokens } from './useMyTokens';

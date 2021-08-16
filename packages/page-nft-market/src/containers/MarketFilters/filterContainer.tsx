@@ -2,6 +2,8 @@
 // [object Object]
 // SPDX-License-Identifier: Apache-2.0
 
+import './styles.scss';
+
 import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
 
 import BN from 'bn.js';

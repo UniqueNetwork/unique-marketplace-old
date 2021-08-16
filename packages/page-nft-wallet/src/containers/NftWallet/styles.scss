@@ -20,3 +20,68 @@
     }
   }
 }
+
+@media screen and (min-device-width: 1025px) and (max-device-width: 1280px) {
+
+}
+
+@media (min-width: 1025px) {
+  .nft-wallet {
+    h1.ui.header {
+      display: block;
+
+      &.mobile-header {
+        display: none;
+      }
+    }
+  }
+}
+
+@media (max-width: 1024px) {
+  .nft-wallet {
+    padding: 0;
+    height: calc(100vh - 70px);
+    overflow-x: hidden;
+    overflow-y: auto;
+
+    h1.ui.header {
+      display: none;
+
+      &.mobile-header {
+        display: block;
+      }
+    }
+
+    .ui--Table {
+      padding: 0 var(--gap);
+
+      .nft-collection-item {
+        .ui--Expander-summary {
+          padding: calc(var(--gap) / 4);
+
+          .ui--Expander-summary-header {
+            margin-left: calc(var(--gap) * 2);
+          }
+
+          .expander-content {
+            display: block;
+          }
+        }
+
+        .ui--Expander-content {
+          .expander-inner {
+            max-height: none;
+
+            &::-webkit-scrollbar {
+             display: none;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+
+}
