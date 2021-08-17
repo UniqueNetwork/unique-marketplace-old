@@ -1,0 +1,52 @@
+.accounts--App {
+
+}
+
+@media (max-width: 1280px) {
+  .accounts--App {
+    .page-accounts {
+      .ui--Table {
+        table {
+          width: 100%;
+          height: 400px;
+          overflow: auto;
+        }
+      }
+    }
+  }
+}
+
+@media screen and (min-device-width: 1025px) and (max-device-width: 1280px) {
+  .accounts--App {
+
+  }
+}
+
+@media (min-width: 1025px) {
+  .accounts--App {
+
+  }
+}
+
+@media (max-width: 1024px) {
+  .accounts--App {
+    background-color: var(--card-background);
+
+    .page-accounts {
+      height: calc(100vh - 70px);
+      overflow: auto;
+      padding-top: calc((var(--gap) / 2) * 3);
+
+      .ui.buttons.account-actions {
+        flex-direction: column;
+        float: left;
+        padding: 0 var(--gap);
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+
+}
+

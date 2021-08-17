@@ -15,7 +15,13 @@
 }
 
 @media screen and (min-device-width: 1025px) and (max-device-width: 1280px) {
-
+  .app-trades {
+    table {
+      td.tradeList {
+        max-width: 250px;
+      }
+    }
+  }
 }
 
 @media (min-width: 1025px) {
