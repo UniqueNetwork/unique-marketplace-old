@@ -8,22 +8,19 @@ import type { HoldType } from '@polkadot/react-hooks/useCollections';
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
-import { useHistory } from 'react-router';
 import Confirm from 'semantic-ui-react/dist/commonjs/addons/Confirm';
-import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 import Item from 'semantic-ui-react/dist/commonjs/views/Item';
 
 import envConfig from '@polkadot/apps-config/envConfig';
 import { Expander } from '@polkadot/react-components';
-import pencil from '@polkadot/react-components/ManageCollection/pencil.svg';
 import trash from '@polkadot/react-components/ManageCollection/trash.svg';
 import Tooltip from '@polkadot/react-components/Tooltip';
 import { useDecoder, useMetadata, useMyTokens } from '@polkadot/react-hooks';
 
 import NftTokenCard from '../NftTokenCard';
 
-const { canCreateToken, canEditCollection, uniqueCollectionIds } = envConfig;
+const { uniqueCollectionIds } = envConfig;
 
 interface Props {
   account?: string;
@@ -44,7 +41,6 @@ function NftCollectionCard ({ account, canTransferTokens, collection, onHold, op
   const [confirmDeleteCollection, setConfirmDeleteCollection] = useState<boolean>(false);
   const { collectionName16Decoder } = useDecoder();
   const cleanup = useRef<boolean>(false);
-  const history = useHistory();
   const { getTokenImageUrl } = useMetadata();
   const { allMyTokens, allTokensCount, ownTokensCount, tokensOnPage } = useMyTokens(account, collection, onHold, tokensSelling, currentPerPage);
   const nftWalletPanel = useRef<HTMLDivElement>(null);
@@ -65,14 +61,6 @@ function NftCollectionCard ({ account, canTransferTokens, collection, onHold, op
     setCollectionImageUrl(collectionImage);
   }, [collection, getTokenImageUrl]);
 
-  const editCollection = useCallback((collectionId: string) => {
-    history.push(`/wallet/manage-collection?collectionId=${collectionId}`);
-  }, [history]);
-
-  const createToken = useCallback((collectionId: string) => {
-    history.push(`/wallet/manage-token?collectionId=${collectionId}`);
-  }, [history]);
-
   const toggleConfirmation = useCallback((status, e: React.MouseEvent<any>) => {
     e.stopPropagation();
 
@@ -80,7 +68,6 @@ function NftCollectionCard ({ account, canTransferTokens, collection, onHold, op
   }, []);
 
   const loadMore = useCallback((page: number) => {
-    console.log('loadMore', collection.id);
     // handle load more on scroll action
     setCurrentPerPage(page * perPage);
   }, []);
@@ -132,39 +119,11 @@ function NftCollectionCard ({ account, canTransferTokens, collection, onHold, op
                 <div className='collection-description'>{collectionName16Decoder(collection.Description)}</div>
               )}
             </div>
-            { canCreateToken && (
-              <Button
-                className='create-button'
-                onClick={createToken.bind(null, collection.id)}
-                primary
-              >
-                Create token
-              </Button>
-            )}
           </div>
           <div className='tokens-count'>
             <span>Total: {allTokensCount} {!allTokensCount || allTokensCount > 1 ? 'items' : 'item'} (own: {ownTokensCount || 0}, selling: {tokensSelling.length}, on hold: {onHold.length})</span>
           </div>
           <div className='link-button'>
-            { canEditCollection && (
-              <div className='link-button-with-tooltip'>
-                <img
-                  alt='edit'
-                  data-for='Edit collection'
-                  data-tip='Edit collection'
-                  onClick={editCollection.bind(null, collection.id)}
-                  src={pencil as string}
-                />
-                <Tooltip
-                  arrowColor={'transparent'}
-                  backgroundColor={'var(--border-color)'}
-                  place='bottom'
-                  text={'Edit collection'}
-                  textColor={'var(--sub-header-text-transform)'}
-                  trigger={'Edit collection'}
-                />
-              </div>
-            )}
             { !uniqueCollectionIds.includes(collection.id) && (
               <div className='link-button-with-tooltip'>
                 <img

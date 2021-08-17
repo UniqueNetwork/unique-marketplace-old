@@ -10,7 +10,7 @@ import { useLocation } from 'react-router-dom';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header/Header';
 
 import envConfig from '@polkadot/apps-config/envConfig';
-import { ManageCollection, ManageTokenAttributes, NftDetails } from '@polkadot/react-components';
+import { NftDetails } from '@polkadot/react-components';
 // local imports and components
 import { AppProps as Props } from '@polkadot/react-components/types';
 import { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
@@ -67,27 +67,6 @@ function PageNftWallet ({ account, basePath, openPanel, setOpenPanel }: Props): 
             account={account || ''}
           />
         </Route>
-        <Route path={`${basePath}/manage-collection`}>
-          <ManageCollection
-            account={account}
-            addCollection={addCollection}
-            basePath={`${basePath}/manage-collection`}
-            setShouldUpdateTokens={setShouldUpdateTokens}
-          />
-        </Route>
-        <Route path={`${basePath}/manage-token`}>
-          <ManageTokenAttributes
-            account={account}
-            setShouldUpdateTokens={setShouldUpdateTokens}
-          />
-        </Route>
-        {/* <Route path={`${basePath}/tokens-for-sale`}>
-          <TokensForSale
-            account={account}
-            setShouldUpdateTokens={setShouldUpdateTokens}
-            shouldUpdateTokens={shouldUpdateTokens}
-          />
-        </Route> */}
         <Route path={basePath}>
           <NftWallet
             account={account}

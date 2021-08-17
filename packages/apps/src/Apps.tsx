@@ -211,6 +211,7 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                           { openPanel === 'menu' && (
                             <MobileMenu
                               account={account}
+                              setOpenPanel={setOpenPanel}
                               theme={theme}
                             />
                           )}

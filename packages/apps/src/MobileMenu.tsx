@@ -1,17 +1,29 @@
 // Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import React, { memo } from 'react';
+import React, { memo, useEffect, useRef } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
+
+import { OpenPanelType } from '@polkadot/apps-routing/types';
 
 interface Props {
   account?: string;
+  setOpenPanel: (openPanel: OpenPanelType) => void;
   theme: { theme: string, logo?: string; };
 }
 
 const MobileMenuHeader = (props: Props): React.ReactElement<Props> => {
-  const { theme } = props;
+  const { setOpenPanel, theme } = props;
   const location = useLocation();
+  const currentLocation = useRef<string>();
+
+  useEffect(() => {
+    if (currentLocation.current && currentLocation.current !== location.pathname) {
+      setOpenPanel('tokens');
+    }
+
+    currentLocation.current = location.pathname;
+  }, [location, setOpenPanel]);
 
   return (
     <div className='menu-mobile'>
