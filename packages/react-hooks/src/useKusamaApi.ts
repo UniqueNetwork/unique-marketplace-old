@@ -78,6 +78,10 @@ export const useKusamaApi = (account?: string): UseKusamaApiInterface => {
       setKusamaApi(api);
     });
 
+    api.on('disconnected', (): void => {
+      window.location.reload();
+    });
+
     api.on('error', (): void => {
       console.log('kusama api error');
 
