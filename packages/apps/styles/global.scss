@@ -711,6 +711,35 @@ button.ui.button,
     }
   }
 }
+
+@media (max-width: 1024px) {
+  .ui.page.modals {
+
+    .ui--Modal.modal {
+      .ui--Row-address {
+        font-size: 14px !important;
+        word-break: break-all;
+      }
+
+      .content {
+
+        .TextAreaWithDropdown {
+          flex-direction: column;
+
+          .ui--CopyButton.copyMoved {
+            right: 13px;
+            top: 13px
+          }
+
+          .ui.buttons {
+            width: 100%;
+          }
+        }
+      }
+    }
+  }
+}
+
 @media (max-width: 768px) {
   .ui.grid > .row {
     display: grid;

@@ -41,6 +41,7 @@
         flex-direction: column;
         float: left;
         padding: 0 var(--gap);
+        grid-row-gap: calc(var(--gap) / 2);
       }
     }
   }
