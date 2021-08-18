@@ -1,7 +1,7 @@
 // Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import type { Observable } from '@polkadot/x-rxjs';
+import type { Observable } from 'rxjs';
 
 import { useCallback } from 'react';
 import { of } from 'rxjs';

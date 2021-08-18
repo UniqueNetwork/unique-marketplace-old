@@ -24,8 +24,6 @@ export { default as CallExpander } from './CallExpander';
 export { default as Card } from './Card';
 export { default as CardSummary } from './CardSummary';
 export { default as ChainImg } from './ChainImg';
-export { default as ChainLock } from './ChainLock';
-export { default as Chart } from './Chart';
 export { default as Checkbox } from './Checkbox';
 export { default as Columar } from './Columar';
 export { default as ConvictionDropdown } from './ConvictionDropdown';

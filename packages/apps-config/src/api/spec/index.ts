@@ -27,7 +27,6 @@ import edgeware from './edgeware';
 import encointerNodeNotee from './encointer-node-notee';
 import encointerNodeTeeproxy from './encointer-node-teeproxy';
 import encointerPara from './encointer-para';
-import equilibrium from './equilibrium';
 import hanonycash from './hanonycash';
 import hydrate from './hydrate';
 import idavoll from './idavoll';
@@ -65,7 +64,6 @@ import zero from './zero';
 const spec: Record<string, OverrideBundleDefinition> = {
   Crab: crab,
   Darwinia: darwinia,
-  Equilibrium: equilibrium,
   acala,
   'ares-parachain': aresParachain,
   bifrost: bifrost,

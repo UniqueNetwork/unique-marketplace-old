@@ -45,7 +45,6 @@ export { useOwnStashInfos } from './useOwnStashInfos';
 export { useParaApi } from './useParaApi';
 export { useParaEndpoints } from './useParaEndpoints';
 export { usePassword } from './usePassword';
-export { useRegistry } from './useRegistry';
 export { useRegistrars } from './useRegistrars';
 export { useSavedFlags } from './useSavedFlags';
 export { useSchema } from './useSchema';

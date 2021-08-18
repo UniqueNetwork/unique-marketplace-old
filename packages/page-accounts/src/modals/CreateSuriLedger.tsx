@@ -3,7 +3,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 
-import networks from '@polkadot/networks';
+import { selectableNetworks } from '@polkadot/networks';
 import { Dropdown, MarkError, Modal } from '@polkadot/react-components';
 
 import { useTranslation } from '../translate';
@@ -15,7 +15,7 @@ interface Props {
   seedType: string;
 }
 
-const ledgerNets = networks.filter(({ hasLedgerSupport }) => hasLedgerSupport);
+const ledgerNets = selectableNetworks.filter(({ hasLedgerSupport }) => hasLedgerSupport);
 
 function CreateSuriLedger ({ className, onChange, seedType }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
@@ -45,40 +45,38 @@ function CreateSuriLedger ({ className, onChange, seedType }: Props): React.Reac
   }, [accIndex, addIndex, chainType, onChange]);
 
   return (
-    <Modal.Columns className={className}>
-      <Modal.Column>
-        {seedType === 'bip'
-          ? (
-            <>
-              <Dropdown
-                help={t('The network to derive on')}
-                label={t('Ledger app type (originated from)')}
-                onChange={setChainType}
-                options={netOpts.current}
-                value={chainType}
-              />
-              <Dropdown
-                help={t('The account type (derivation) to use')}
-                label={t('account type')}
-                onChange={setAccIndex}
-                options={accOps.current}
-                value={accIndex}
-              />
-              <Dropdown
-                help={t('The address index (derivation on account) to use')}
-                label={t('address index')}
-                onChange={setAddIndex}
-                options={addOps.current}
-                value={addIndex}
-              />
-            </>
-          )
-          : <MarkError content={t<string>('Derivation for Ledger-type accounts are only available on mnemonic seeds.')} />
-        }
-      </Modal.Column>
-      <Modal.Column>
-        <p>{t<string>('The derivation will be constructed from the values you specify.')}</p>
-      </Modal.Column>
+    <Modal.Columns
+      className={className}
+      hint={t<string>('The derivation will be constructed from the values you specify.')}
+    >
+      {seedType === 'bip'
+        ? (
+          <>
+            <Dropdown
+              help={t('The network to derive on')}
+              label={t('Ledger app type (originated from)')}
+              onChange={setChainType}
+              options={netOpts.current}
+              value={chainType}
+            />
+            <Dropdown
+              help={t('The account type (derivation) to use')}
+              label={t('account type')}
+              onChange={setAccIndex}
+              options={accOps.current}
+              value={accIndex}
+            />
+            <Dropdown
+              help={t('The address index (derivation on account) to use')}
+              label={t('address index')}
+              onChange={setAddIndex}
+              options={addOps.current}
+              value={addIndex}
+            />
+          </>
+        )
+        : <MarkError content={t<string>('Derivation for Ledger-type accounts are only available on mnemonic seeds.')} />
+      }
     </Modal.Columns>
   );
 }

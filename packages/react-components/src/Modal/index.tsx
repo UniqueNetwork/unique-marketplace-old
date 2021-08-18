@@ -4,7 +4,7 @@
 import './styles.scss';
 
 import type { ThemeDef } from '@polkadot/react-components/types';
-import type { ActionsProps, ColumnProps, ModalProps } from './types';
+import type { ActionsProps, ColumnsProps, ModalProps } from './types';
 
 import React, { useContext } from 'react';
 import { Modal as SUIModal } from 'semantic-ui-react';
@@ -16,8 +16,8 @@ import Columns from './Columns';
 
 type ModalType = React.FC<ModalProps> & {
   Actions: React.FC<ActionsProps>;
-  Column: React.FC<ColumnProps>;
-  Columns: React.FC<ColumnProps>;
+  Column: React.FC<ColumnsProps>;
+  Columns: React.FC<ColumnsProps>;
   Content: typeof SUIModal.Content;
   Header: typeof SUIModal.Header;
   Description: typeof SUIModal.Description;
