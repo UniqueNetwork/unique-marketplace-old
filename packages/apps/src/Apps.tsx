@@ -201,8 +201,8 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                                   <AccountSelector onChange={setAccount} />
                                   <MobileAccountSelector
                                     address={account}
-                                    isMobileMenu={openPanel}
-                                    setIsMobileMenu={setOpenPanel}
+                                    openPanel={openPanel}
+                                    setOpenPanel={setOpenPanel}
                                   />
                                 </div>
                               </div>
@@ -231,22 +231,24 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                               />
                             </Suspense>
                           )}
-                          <Suspense fallback='...'>
-                            <main className={`app-main ${openPanel || ''}`}>
-                              <div className='app-container'>
-                                <Component
-                                  account={account}
-                                  basePath={`/${name}`}
-                                  location={location}
-                                  onStatusChange={queueAction}
-                                  openPanel={openPanel}
-                                  setOpenPanel={setOpenPanel}
-                                />
-                                <ConnectingOverlay />
-                                <div id={PORTAL_ID} />
-                              </div>
-                            </main>
-                          </Suspense>
+                          { (openPanel !== 'balances' && openPanel !== 'accounts') && (
+                            <Suspense fallback='...'>
+                              <main className={`app-main ${openPanel || ''}`}>
+                                <div className='app-container'>
+                                  <Component
+                                    account={account}
+                                    basePath={`/${name}`}
+                                    location={location}
+                                    onStatusChange={queueAction}
+                                    openPanel={openPanel}
+                                    setOpenPanel={setOpenPanel}
+                                  />
+                                  <ConnectingOverlay />
+                                  <div id={PORTAL_ID} />
+                                </div>
+                              </main>
+                            </Suspense>
+                          )}
                         </>
                       )
                     }

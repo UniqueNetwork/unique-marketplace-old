@@ -14,7 +14,7 @@
   }
 }
 
-@media screen and (min-device-width: 1025px) and (max-device-width: 1280px) {
+@media screen and (min-device-width: 1024px) and (max-device-width: 1280px) {
   .app-trades {
     table {
       td.tradeList {
@@ -24,13 +24,13 @@
   }
 }
 
-@media (min-width: 1025px) {
+@media (min-width: 1024px) {
   .app-trades {
 
   }
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1023px) {
   .app-trades {
     background-color: var(--card-background);
     height: calc(100vh - 70px);

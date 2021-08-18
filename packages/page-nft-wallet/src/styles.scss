@@ -30,11 +30,11 @@
   }
 }
 
-@media screen and (min-device-width: 1025px) and (max-device-width: 1280px) {
+@media screen and (min-device-width: 1024px) and (max-device-width: 1280px) {
 
 }
 
-@media (min-width: 1025px) {
+@media (min-width: 1024px) {
   .my-tokens {
     h1.ui.header, h4.ui.header {
       display: block;
@@ -46,7 +46,7 @@
   }
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1023px) {
   .my-tokens {
     overflow: hidden;
     background-color: var(--card-background);

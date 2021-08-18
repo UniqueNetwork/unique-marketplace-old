@@ -78,7 +78,7 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: BuyTokensProps): ReactE
 
   // set scroll parent to initialize scroll container in mobile or desktop
   const getScrollParent = useCallback(() => {
-    if (nftMarketPanel.current && nftMarketPanel.current.offsetWidth <= 1024) {
+    if (nftMarketPanel.current && nftMarketPanel.current.offsetWidth <= 1023) {
       return nftMarketPanel.current;
     }
 

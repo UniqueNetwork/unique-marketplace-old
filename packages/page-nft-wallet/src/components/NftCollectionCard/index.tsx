@@ -74,7 +74,7 @@ function NftCollectionCard ({ account, canTransferTokens, collection, onHold, op
 
   // set scroll parent to initialize scroll container in mobile or desktop
   const getScrollParent = useCallback(() => {
-    if (nftWalletPanel.current && nftWalletPanel.current.offsetWidth <= 1024) {
+    if (nftWalletPanel.current && nftWalletPanel.current.offsetWidth <= 1023) {
       return nftWalletPanel.current;
     }
 

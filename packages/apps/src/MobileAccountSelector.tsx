@@ -11,20 +11,20 @@ import menuArrow from './images/menu-arrow.svg';
 
 interface MobileAccountSelectorProps {
   address?: string;
-  isMobileMenu: OpenPanelType;
-  setIsMobileMenu: (isOpen: OpenPanelType) => void;
+  openPanel: OpenPanelType;
+  setOpenPanel: (openPanel: OpenPanelType) => void;
 }
 
 const MobileAccountSelector = (props: MobileAccountSelectorProps): React.ReactElement<MobileAccountSelectorProps> => {
-  const { address, isMobileMenu, setIsMobileMenu } = props;
+  const { address, openPanel, setOpenPanel } = props;
 
   const onClick = useCallback(() => {
-    if (isMobileMenu !== 'accounts') {
-      setIsMobileMenu('accounts');
+    if (openPanel !== 'accounts') {
+      setOpenPanel('accounts');
     } else {
-      setIsMobileMenu('tokens');
+      setOpenPanel('tokens');
     }
-  }, [isMobileMenu, setIsMobileMenu]);
+  }, [openPanel, setOpenPanel]);
 
   return (
     <div

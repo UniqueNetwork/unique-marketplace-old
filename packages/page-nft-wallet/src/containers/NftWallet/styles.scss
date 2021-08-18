@@ -21,11 +21,11 @@
   }
 }
 
-@media screen and (min-device-width: 1025px) and (max-device-width: 1280px) {
+@media screen and (min-device-width: 1024px) and (max-device-width: 1280px) {
 
 }
 
-@media (min-width: 1025px) {
+@media (min-width: 1024px) {
 
   .nft-wallet {
     h1.ui.header {
@@ -38,7 +38,7 @@
   }
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1023px) {
   .nft-wallet {
     padding: 0;
     height: calc(100vh - 70px);

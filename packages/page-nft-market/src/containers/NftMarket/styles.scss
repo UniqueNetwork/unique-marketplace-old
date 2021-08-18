@@ -134,7 +134,7 @@
   }
 }
 
-@media screen and (min-device-width: 1025px) and (max-device-width: 1280px) {
+@media screen and (min-device-width: 1024px) and (max-device-width: 1280px) {
   .nft-market {
     &--panel {
       .marketplace-body {
@@ -148,7 +148,7 @@
   }
 }
 
-@media (min-width: 1025px) {
+@media (min-width: 1024px) {
   .nft-market {
     h1.ui.header {
       display: block;
@@ -189,7 +189,7 @@
   }
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1023px) {
   .market-pallet {
     margin-left: 90px;
     width: 85%;

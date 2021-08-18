@@ -41,7 +41,7 @@ const ColumarStyled = React.memo(styled(Columar)`
 
   &.is50 {
     .ui--Column {
-      @media (min-width: 1025px) {
+      @media (min-width: 1024px) {
         max-width: 50%;
         min-width: 50%;
       }
@@ -50,14 +50,14 @@ const ColumarStyled = React.memo(styled(Columar)`
 
   &.is60 {
     .ui--Column:first-child {
-      @media (min-width: 1025px) {
+      @media (min-width: 1024px) {
         max-width: 60%;
         min-width: 60%;
       }
     }
 
     .ui--Column:last-child {
-      @media (min-width: 1025px) {
+      @media (min-width: 1024px) {
         max-width: 40%;
         min-width: 40%;
       }
@@ -80,7 +80,7 @@ ColumarStyled.Column = React.memo(styled(Column)`
     padding-right: 0;
   }
 
-  @media (min-width: 1025px) {
+  @media (min-width: 1024px) {
     max-width: 50%;
     min-width: 50%;
   }
