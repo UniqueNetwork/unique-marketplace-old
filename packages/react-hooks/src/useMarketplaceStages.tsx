@@ -13,6 +13,7 @@ import envConfig from '@polkadot/apps-config/envConfig';
 import { StatusContext } from '@polkadot/react-components/Status';
 import { useApi, useKusamaApi, useNftContract, useToken } from '@polkadot/react-hooks';
 import { BalanceInterface } from '@polkadot/react-hooks/useBalance';
+import { useKusamaAvailableBalance } from '@polkadot/react-hooks/useKusamaAvailableBalance';
 
 import marketplaceStateMachine from './stateMachine';
 
@@ -61,6 +62,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
   const [readyToAskPrice, setReadyToAskPrice] = useState<boolean>(false);
   const [tokenPriceForSale, setTokenPriceForSale] = useState<number>();
   const { formatKsmBalance, getKusamaTransferFee, kusamaBalance, kusamaTransfer } = useKusamaApi(account);
+  const freeKusamaBalance = useKusamaAvailableBalance(account);
 
   const sendCurrentUserAction = useCallback((userAction: UserActionType) => {
     send(userAction);
@@ -219,8 +221,8 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
     if (!isDepositEnough(userDeposit, tokenAsk.price)) {
       const needed = depositNeeded(userDeposit, tokenAsk.price);
 
-      if (kusamaBalance?.free.lt(needed)) {
-        const err = `Your KSM balance is too low: ${formatKsmBalance(kusamaBalance?.free)} KSM. You need at least: ${formatKsmBalance(needed)} KSM`;
+      if (freeKusamaBalance?.lt(needed)) {
+        const err = `Your KSM balance is too low: ${formatKsmBalance(freeKusamaBalance)} KSM. You need at least: ${formatKsmBalance(needed)} KSM`;
 
         setError(err);
 
@@ -233,7 +235,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
       send('WAIT_FOR_DEPOSIT');
     }
     // buyStep3
-  }, [depositNeeded, getUserDeposit, isDepositEnough, formatKsmBalance, kusamaBalance, kusamaTransfer, send, tokenAsk]);
+  }, [getUserDeposit, tokenAsk, isDepositEnough, send, depositNeeded, freeKusamaBalance, kusamaTransfer, formatKsmBalance]);
 
   const checkDepositReady = useCallback(async () => {
     const userDeposit = await getUserDeposit();
