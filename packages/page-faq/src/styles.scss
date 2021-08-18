@@ -10,15 +10,15 @@
     background: #FFFFFF;
     box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.08);
     border-radius: 4px 4px 0px 0px;
-    padding: 36px;
-    margin-top: 48px;
+    padding: calc(var(--gap) * 2);
+    margin-top: calc(var(--gap) * 2);
 
     h4.ui.header {
       font-family: var(--font-inter);
       font-weight: bold;
       font-size: 18px;
       line-height: 26px;
-      margin-top: 48px;
+      margin-top: calc(var(--gap) * 2);
       margin-bottom: 12px;
       min-height: 0;
       letter-spacing: normal;
@@ -43,6 +43,25 @@
 
     ol {
       padding-left: 17px;
+    }
+  }
+}
+
+@media screen and (max-device-width: 1280px) {
+  .faq-page {
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: calc(100vh - 70px);
+
+    background-color: var(--card-background);
+
+    h1.ui.header {
+      margin-top: calc(var(--gap) * 2);
+      padding: 0 calc(var(--gap) * 2);
+    }
+
+    .faq {
+      margin-top: 0;
     }
   }
 }

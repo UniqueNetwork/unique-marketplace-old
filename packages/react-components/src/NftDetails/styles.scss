@@ -29,6 +29,12 @@
     padding: 24px;
     background-color: var(--card-background);
 
+    &--row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-column-gap: calc(var(--gap) * 2);
+    }
+
     h2 {
       color: var(--card-text-color);
 
@@ -184,6 +190,37 @@
         font-style: normal;
         font-weight: 500;
         font-size: 14px;
+      }
+    }
+  }
+}
+
+@media (min-width: 1280px) {
+
+}
+
+@media (max-width: 1023px) {
+  .toke-details {
+    background-color: var(--card-background);
+    padding-top: calc((var(--gap) / 2) * 3);
+    height: calc(100vh - 75px);
+    overflow-x: hidden;
+    overflow-y: auto;
+
+    .go-back {
+      padding: 0 var(--gap);
+    }
+
+    .ui.header {
+      word-break: break-all;
+    }
+
+    .token-info {
+      margin: 0;
+      padding: calc((var(--gap) / 2) * 3) var(--gap);
+
+      &--row {
+        display: block;
       }
     }
   }

@@ -9,6 +9,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header/Header';
 
 import envConfig from '@polkadot/apps-config/envConfig';
+import { OpenPanelType } from '@polkadot/apps-routing/types';
 import { Table, TransferModal } from '@polkadot/react-components';
 import { useCollections } from '@polkadot/react-hooks';
 
@@ -19,7 +20,9 @@ interface NftWalletProps {
   account?: string;
   addCollection: (collection: NftCollectionInterface) => void;
   collections: NftCollectionInterface[];
+  openPanel?: OpenPanelType;
   removeCollectionFromList: (collectionToRemove: string) => void;
+  setOpenPanel?: (openPanel: OpenPanelType) => void;
   setCollections: (collections: (prevCollections: NftCollectionInterface[]) => (NftCollectionInterface[])) => void;
   setShouldUpdateTokens: (value: string) => void;
   shouldUpdateTokens?: string;
@@ -27,7 +30,7 @@ interface NftWalletProps {
 
 const { canAddCollections } = envConfig;
 
-function NftWallet ({ account, addCollection, collections, removeCollectionFromList, setCollections, setShouldUpdateTokens, shouldUpdateTokens }: NftWalletProps): React.ReactElement {
+function NftWallet ({ account, addCollection, collections, openPanel, removeCollectionFromList, setCollections, setOpenPanel, setShouldUpdateTokens, shouldUpdateTokens }: NftWalletProps): React.ReactElement {
   const [openTransfer, setOpenTransfer] = useState<{ collection: NftCollectionInterface, tokenId: string, balance: number } | null>(null);
   const [selectedCollection, setSelectedCollection] = useState<NftCollectionInterface>();
   const [canTransferTokens] = useState<boolean>(true);
@@ -121,7 +124,15 @@ function NftWallet ({ account, addCollection, collections, removeCollectionFromL
   }, []);
 
   return (
-    <div className='nft-wallet unique-card'>
+    <div className={`nft-wallet unique-card ${openPanel || ''}`}>
+      { openPanel === 'tokens' && (
+        <Header
+          as='h1'
+          className='mobile-header'
+        >
+          My tokens
+        </Header>
+      )}
       { canAddCollections && (
         <>
           <CollectionSearch

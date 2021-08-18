@@ -30,6 +30,7 @@ export function useBalance (accountId?: string): UseBalanceInterface {
 
   const getAccountBalance = useCallback(() => {
     if (accountInfo) {
+      console.log('accountInfo', accountInfo);
       setBalance(accountInfo.data);
 
       setBalanceError(false);

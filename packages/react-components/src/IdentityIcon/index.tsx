@@ -66,7 +66,6 @@ function IdentityIcon ({ className = '', prefix, size = 24, theme, value }: Prop
 }
 
 export default React.memo(styled(IdentityIcon)(({ theme }: ThemeProps) => `
-  border: 1px solid #ddd;
   border-radius: 50%;
   display: inline-block;
   overflow: hidden;

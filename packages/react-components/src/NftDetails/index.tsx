@@ -7,7 +7,6 @@ import BN from 'bn.js';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 // import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
-import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import Image from 'semantic-ui-react/dist/commonjs/elements/Image';
@@ -27,10 +26,9 @@ const { kusamaDecimals, showMarketActions } = envConfig;
 
 interface NftDetailsProps {
   account: string;
-  setShouldUpdateTokens?: (collectionId: string) => void;
 }
 
-function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React.ReactElement<NftDetailsProps> {
+function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetailsProps> {
   const query = new URLSearchParams(useLocation().search);
   const tokenId = query.get('tokenId') || '';
   const collectionId = query.get('collectionId') || '';
@@ -53,9 +51,8 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
 
   const goBack = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-    setShouldUpdateTokens && setShouldUpdateTokens('all');
     history.back();
-  }, [setShouldUpdateTokens]);
+  }, []);
 
   const onSavePrice = useCallback(() => {
     const parts = tokenPriceForSale.split('.');
@@ -69,8 +66,7 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
   const onTransferSuccess = useCallback(() => {
     setShowTransferForm(false);
     sendCurrentUserAction('UPDATE_TOKEN_STATE');
-    setShouldUpdateTokens && setShouldUpdateTokens(collectionId);
-  }, [collectionId, sendCurrentUserAction, setShouldUpdateTokens]);
+  }, [sendCurrentUserAction]);
 
   const closeAskModal = useCallback(() => {
     setReadyToAskPrice(false);
@@ -126,7 +122,7 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
         </svg>
         back
       </a>
-      <Grid className='token-info'>
+      <div className='token-info'>
         { (!collectionInfo || (account && (!kusamaBalance || !balance))) && (
           <Loader
             active
@@ -134,16 +130,16 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
             inline='centered'
           />
         )}
-        <Grid.Row>
-          <Grid.Column width={8}>
+        <div className='token-info--row'>
+          <div className='token-info--row--image'>
             { collectionInfo && (
               <Image
                 className='token-image-big'
                 src={tokenUrl}
               />
             )}
-          </Grid.Column>
-          <Grid.Column width={8}>
+          </div>
+          <div className='token-info--row--attributes'>
             <Header as='h3'>
               {collectionInfo && <span>{hex2a(collectionInfo.TokenPrefix)}</span>} #{tokenId}
             </Header>
@@ -271,9 +267,9 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
               <BuySteps step={transferStep - 3} />
             )}
 
-          </Grid.Column>
-        </Grid.Row>
-      </Grid>
+          </div>
+        </div>
+      </div>
       { readyToAskPrice && (
         <SetPriceModal
           closeModal={closeAskModal}
