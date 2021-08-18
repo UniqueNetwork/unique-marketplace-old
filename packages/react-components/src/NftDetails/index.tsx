@@ -17,6 +17,7 @@ import envConfig from '@polkadot/apps-config/envConfig';
 import { TransferModal } from '@polkadot/react-components';
 import formatPrice from '@polkadot/react-components/util/formatPrice';
 import { useBalance, useDecoder, useMarketplaceStages, useSchema } from '@polkadot/react-hooks';
+import { useKusamaAvailableBalance } from '@polkadot/react-hooks/useKusamaAvailableBalance';
 
 import BuySteps from './BuySteps';
 import SaleSteps from './SaleSteps';
@@ -45,6 +46,7 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
   const uOwnIt = tokenInfo?.Owner?.toString() === account || (tokenAsk && tokenAsk.owner === account);
   const uSellIt = tokenAsk && tokenAsk.owner === account;
   const isOwnerEscrow = !!(!uOwnIt && tokenInfo && tokenInfo.Owner && tokenInfo.Owner.toString() === escrowAddress && tokenDepositor && (tokenAsk && tokenAsk.owner !== account));
+  const freeKusamaBalance = useKusamaAvailableBalance(account);
   // const lowBalanceToBuy = !!(buyFee && !balance?.free.gte(buyFee));
   // sponsoring is enabled
   // const lowBalanceToSell = !!(saleFee && !balance?.free.gte(saleFee));
@@ -86,12 +88,12 @@ function NftDetails ({ account, setShouldUpdateTokens }: NftDetailsProps): React
       if (kusamaFees) {
         setKusamaFees(kusamaFees);
         const balanceNeeded = tokenAsk.price.add(getFee(tokenAsk.price)).add(kusamaFees.muln(2));
-        const low = !!kusamaBalance?.free.add(deposited || new BN(0)).lte(balanceNeeded);
+        const isLow = !!freeKusamaBalance?.add(deposited || new BN(0)).lte(balanceNeeded);
 
-        setLowKsmBalanceToBuy(low);
+        setLowKsmBalanceToBuy(isLow);
       }
     }
-  }, [deposited, escrowAddress, getFee, getKusamaTransferFee, kusamaBalance, tokenAsk]);
+  }, [deposited, escrowAddress, freeKusamaBalance, getFee, getKusamaTransferFee, tokenAsk]);
 
   const getMarketPrice = useCallback((price: BN) => {
     return formatPrice(formatKsmBalance(new BN(price).add(getFee(price))));
