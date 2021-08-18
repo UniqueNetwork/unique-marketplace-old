@@ -15,8 +15,7 @@ import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 import envConfig from '@polkadot/apps-config/envConfig';
 import { TransferModal } from '@polkadot/react-components';
 import formatPrice from '@polkadot/react-components/util/formatPrice';
-import { useBalance, useDecoder, useMarketplaceStages, useSchema } from '@polkadot/react-hooks';
-import { useKusamaAvailableBalance } from '@polkadot/react-hooks/useKusamaAvailableBalance';
+import { useBalance, useDecoder, useKusamaApi, useMarketplaceStages, useSchema } from '@polkadot/react-hooks';
 
 import BuySteps from './BuySteps';
 import SaleSteps from './SaleSteps';
@@ -44,7 +43,7 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
   const uOwnIt = tokenInfo?.Owner?.toString() === account || (tokenAsk && tokenAsk.owner === account);
   const uSellIt = tokenAsk && tokenAsk.owner === account;
   const isOwnerEscrow = !!(!uOwnIt && tokenInfo && tokenInfo.Owner && tokenInfo.Owner.toString() === escrowAddress && tokenDepositor && (tokenAsk && tokenAsk.owner !== account));
-  const freeKusamaBalance = useKusamaAvailableBalance(account);
+  const { freeKusamaBalance } = useKusamaApi(account);
   // const lowBalanceToBuy = !!(buyFee && !balance?.free.gte(buyFee));
   // sponsoring is enabled
   // const lowBalanceToSell = !!(saleFee && !balance?.free.gte(saleFee));

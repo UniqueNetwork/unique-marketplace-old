@@ -13,7 +13,6 @@ import envConfig from '@polkadot/apps-config/envConfig';
 import { StatusContext } from '@polkadot/react-components/Status';
 import { useApi, useKusamaApi, useNftContract, useToken } from '@polkadot/react-hooks';
 import { BalanceInterface } from '@polkadot/react-hooks/useBalance';
-import { useKusamaAvailableBalance } from '@polkadot/react-hooks/useKusamaAvailableBalance';
 
 import marketplaceStateMachine from './stateMachine';
 
@@ -62,7 +61,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
   const [readyToAskPrice, setReadyToAskPrice] = useState<boolean>(false);
   const [tokenPriceForSale, setTokenPriceForSale] = useState<number>();
   const { formatKsmBalance, getKusamaTransferFee, kusamaBalance, kusamaTransfer } = useKusamaApi(account);
-  const freeKusamaBalance = useKusamaAvailableBalance(account);
+  const { freeKusamaBalance } = useKusamaApi(account);
 
   const sendCurrentUserAction = useCallback((userAction: UserActionType) => {
     send(userAction);

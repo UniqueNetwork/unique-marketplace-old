@@ -5,10 +5,12 @@ import BN from 'bn.js';
 import { useCallback, useContext, useEffect, useState } from 'react';
 
 import { ApiPromise } from '@polkadot/api/promise';
+import { DeriveBalancesAll } from '@polkadot/api-derive/types';
 import { typesBundle, typesChain } from '@polkadot/apps-config';
 import envConfig from '@polkadot/apps-config/envConfig';
 import { StatusContext } from '@polkadot/react-components';
 import { BalanceInterface } from '@polkadot/react-hooks/useBalance';
+import { useCall } from '@polkadot/react-hooks/useCall';
 import ApiSigner from '@polkadot/react-signer/signers/ApiSigner';
 import { WsProvider } from '@polkadot/rpc-provider';
 import { TypeRegistry } from '@polkadot/types/create';
@@ -23,6 +25,7 @@ interface UseKusamaApiInterface {
   kusamaApi: ApiPromise | undefined;
   kusamaBalance: BalanceInterface | undefined;
   kusamaTransfer: (recipient: string, value: BN, onSuccess: (status: string) => void, onFail: (status: string) => void) => void;
+  freeKusamaBalance: BN | undefined
 }
 
 export function formatKsmBalance (value: BN | undefined = new BN(0)): string {
@@ -52,6 +55,8 @@ export const useKusamaApi = (account?: string): UseKusamaApiInterface => {
   const { queueExtrinsic } = useContext(StatusContext);
   const kusamaParity = 'wss://kusama-rpc.polkadot.io';
   const kusamaFinality = 'wss://polkadot.api.onfinality.io/public-ws';
+  const kusamaBalancesAll = useCall<DeriveBalancesAll>(kusamaApi?.derive.balances?.all, [account]);
+  const [freeKusamaBalance, setFreeKusamaBalance] = useState<BN>();
 
   const getKusamaBalance = useCallback(async () => {
     try {
@@ -129,8 +134,15 @@ export const useKusamaApi = (account?: string): UseKusamaApiInterface => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    if (kusamaBalancesAll) {
+      setFreeKusamaBalance(kusamaBalancesAll.availableBalance);
+    }
+  }, [kusamaBalancesAll]);
+
   return {
     formatKsmBalance,
+    freeKusamaBalance,
     getKusamaBalance,
     getKusamaTransferFee,
     kusamaApi,
