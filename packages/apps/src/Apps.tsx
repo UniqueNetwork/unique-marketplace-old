@@ -3,6 +3,7 @@
 
 import './apps.scss';
 
+import type { OpenPanelType, Route } from '@polkadot/apps-routing/types';
 import type { BareProps as Props, ThemeDef } from '@polkadot/react-components/types';
 
 import React, { Suspense, useContext, useMemo, useState } from 'react';
@@ -18,7 +19,6 @@ import { useTranslation } from '@polkadot/apps/translate';
 import { getSystemChainColor } from '@polkadot/apps-config';
 import envConfig from '@polkadot/apps-config/envConfig';
 import createRoutes from '@polkadot/apps-routing';
-import { Route } from '@polkadot/apps-routing/types';
 import { AccountSelector, ErrorBoundary, StatusContext } from '@polkadot/react-components';
 import GlobalStyle from '@polkadot/react-components/styles';
 import { useApi } from '@polkadot/react-hooks';
@@ -27,8 +27,15 @@ import Signer from '@polkadot/react-signer';
 import infoSvg from '../src/images/info.svg';
 import ConnectingOverlay from './overlays/Connecting';
 import BalancesHeader from './BalancesHeader';
+import MobileAccountSelector from './MobileAccountSelector';
+import MobileBalancesHeader from './MobileBalancesHeader';
+import MobileMenu from './MobileMenu';
+import MobileMenuHeader from './MobileMenuHeader';
 import ScrollToTop from './ScrollToTop';
 import WarmUp from './WarmUp';
+
+const ManageAccounts = React.lazy(() => import('./ManageAccounts'));
+const ManageBalances = React.lazy(() => import('./ManageBalances'));
 
 export const PORTAL_ID = 'portals';
 
@@ -53,6 +60,7 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
   const { api, isApiConnected, isApiReady, systemChain, systemName } = useApi();
   const { queueAction } = useContext(StatusContext);
   const [account, setAccount] = useState<string>();
+  const [openPanel, setOpenPanel] = useState<OpenPanelType>('tokens');
 
   const uiHighlight = useMemo(
     () => getSystemChainColor(systemChain, systemName),
@@ -121,7 +129,14 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                         <>
                           <header className='app-header'>
                             <div className='app-container app-container--header'>
-                              <Menu tabular>
+                              <MobileMenuHeader
+                                isMobileMenu={openPanel}
+                                setIsMobileMenu={setOpenPanel}
+                              />
+                              <Menu
+                                className='header-menu'
+                                tabular
+                              >
                                 { theme.logo && (
                                   <Menu.Item
                                     active={location.pathname === '/'}
@@ -145,7 +160,7 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                                       to='/market'
                                     />
                                     <Menu.Item
-                                      active={location.pathname === '/my-tokens'}
+                                      active={location.pathname === '/wallet'}
                                       as={NavLink}
                                       name='myTokens'
                                       to='/wallet'
@@ -173,26 +188,67 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                               </Menu>
                               <div className='app-user'>
                                 { isApiReady && (
-                                  <BalancesHeader account={account} />
+                                  <>
+                                    <BalancesHeader account={account} />
+                                    <MobileBalancesHeader
+                                      account={account}
+                                      isMobileMenu={openPanel}
+                                      setIsMobileMenu={setOpenPanel}
+                                    />
+                                  </>
                                 )}
                                 <div className='account-selector-block'>
                                   <AccountSelector onChange={setAccount} />
+                                  <MobileAccountSelector
+                                    address={account}
+                                    openPanel={openPanel}
+                                    setOpenPanel={setOpenPanel}
+                                  />
                                 </div>
                               </div>
                             </div>
                           </header>
-                          <main className='app-main'>
-                            <div className='app-container'>
-                              <Component
+                          { openPanel === 'menu' && (
+                            <MobileMenu
+                              account={account}
+                              setOpenPanel={setOpenPanel}
+                              theme={theme}
+                            />
+                          )}
+                          { openPanel === 'accounts' && (
+                            <Suspense fallback='Loading accounts...'>
+                              <ManageAccounts
                                 account={account}
-                                basePath={`/${name}`}
-                                location={location}
-                                onStatusChange={queueAction}
+                                setAccount={setAccount}
+                                setIsMobileMenu={setOpenPanel}
                               />
-                              <ConnectingOverlay />
-                              <div id={PORTAL_ID} />
-                            </div>
-                          </main>
+                            </Suspense>
+                          )}
+                          { openPanel === 'balances' && (
+                            <Suspense fallback='Loading balances...'>
+                              <ManageBalances
+                                account={account}
+                              />
+                            </Suspense>
+                          )}
+                          { (openPanel !== 'balances' && openPanel !== 'accounts') && (
+                            <Suspense fallback='...'>
+                              <main className={`app-main ${openPanel || ''}`}>
+                                <div className='app-container'>
+                                  <Component
+                                    account={account}
+                                    basePath={`/${name}`}
+                                    location={location}
+                                    onStatusChange={queueAction}
+                                    openPanel={openPanel}
+                                    setOpenPanel={setOpenPanel}
+                                  />
+                                  <ConnectingOverlay />
+                                  <div id={PORTAL_ID} />
+                                </div>
+                              </main>
+                            </Suspense>
+                          )}
                         </>
                       )
                     }

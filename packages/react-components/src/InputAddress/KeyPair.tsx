@@ -1,7 +1,7 @@
 // Copyright 2017-2021 @polkadot/react-components authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import styled from 'styled-components';
 
 import AccountName from '../AccountName';
@@ -16,8 +16,23 @@ interface Props {
 }
 
 function KeyPair ({ address, className = '' }: Props): React.ReactElement<Props> {
+  const onIconClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    console.log('onIconClick', e.target);
+    const target = e.target as HTMLElement;
+
+    if (target.classList.contains('ui--AccountName') || target.classList.contains('address') || target.classList.contains('name')) {
+      return;
+    }
+
+    e.preventDefault();
+    e.stopPropagation();
+  }, []);
+
   return (
-    <div className={`ui--KeyPair ${className}`}>
+    <div
+      className={`ui--KeyPair ${className}`}
+      onClick={onIconClick}
+    >
       <IdentityIcon
         className='icon'
         value={address}

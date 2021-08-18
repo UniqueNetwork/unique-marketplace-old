@@ -40,7 +40,7 @@ function App ({ account, basePath }: Props): React.ReactElement<Props> {
   }, [account]);
 
   return (
-    <main className='nft--App'>
+    <main className='app-trades'>
       <Header as='h1'>Trades</Header>
       <Header as='h4'>See the most recent successful trades</Header>
       <header>

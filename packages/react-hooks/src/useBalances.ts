@@ -13,7 +13,7 @@ interface UseBalancesInterface {
   freeKusamaBalance: BN | undefined;
 }
 
-export const useBalances = (account: string | undefined, getUserDeposit: () => Promise<BN | null>): UseBalancesInterface => {
+export const useBalances = (account: string | undefined, getUserDeposit?: () => Promise<BN | null>): UseBalancesInterface => {
   const { api } = useApi();
   const { kusamaApi } = useKusamaApi(account || '');
   const balancesAll = useCall<DeriveBalancesAll>(api.derive.balances?.all, [account]);
@@ -36,7 +36,7 @@ export const useBalances = (account: string | undefined, getUserDeposit: () => P
   }, [kusamaBalancesAll]);
 
   useEffect(() => {
-    void getUserDeposit();
+    getUserDeposit && getUserDeposit();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [freeBalance, freeKusamaBalance]);
 

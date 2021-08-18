@@ -27,7 +27,7 @@ export default React.memo(styled(Column)`
     flex: 0%;
   }
 
-  @media only screen and (min-width: 1024px) {
+  @media only screen and (min-width: 1023px) {
     &:nth-child(1),
     &:only-child {
       flex: 0 65%;

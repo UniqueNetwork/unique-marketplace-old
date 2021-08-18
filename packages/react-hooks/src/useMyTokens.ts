@@ -6,7 +6,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { NftCollectionInterface, useCollection } from '@polkadot/react-hooks/useCollection';
 import { HoldType, useCollections } from '@polkadot/react-hooks/useCollections';
 
-interface useMyTokensInterface {
+interface UseMyTokensInterface {
   allMyTokens: string[];
   allTokensCount: number;
   ownTokensCount: number;
@@ -19,7 +19,7 @@ export const useMyTokens = (
   onHold: HoldType[],
   tokensSelling: string[],
   perPage: number
-): useMyTokensInterface => {
+): UseMyTokensInterface => {
   const [allTokensCount, setAllTokensCount] = useState<number>(0);
   const [ownTokensCount, setOwnTokensCount] = useState<number>(0);
   const [allMyTokens, setAllMyTokens] = useState<string[]>([]);

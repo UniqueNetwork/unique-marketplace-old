@@ -1,43 +1,31 @@
 // Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
 import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 import Dropdown, { DropdownProps } from 'semantic-ui-react/dist/commonjs/modules/Dropdown';
 
 import ArrowDown from '@polkadot/app-nft-market/components/arrowDown';
 import ArrowUp from '@polkadot/app-nft-market/components/arrowUp';
-import { SESSION_STORAGE_KEYS } from '@polkadot/app-nft-market/containers/marketFilters/constants';
 import { Filters } from '@polkadot/app-nft-market/containers/NftMarket';
 import clearIcon from '@polkadot/app-nft-wallet/components/CollectionSearch/clearIcon.svg';
 import searchIcon from '@polkadot/app-nft-wallet/components/CollectionSearch/searchIcon.svg';
-import envConfig from '@polkadot/apps-config/envConfig';
 import { Input } from '@polkadot/react-components';
 
-const defaultFilters = {
-  collectionIds: [...envConfig.uniqueCollectionIds],
-  sort: 'desc(creationDate)',
-  traitsCount: []
-};
-
 export type SearchFormProps = {
+  clearAllFilters: () => void;
   filters: Filters;
   offersCount?: number;
   offersLoading: boolean;
   setFilters: (filters: Filters) => void | ((prevFilters: Filters) => Filters) ;
-  setAllowClearCollections: (allow: boolean) => void;
-  setAllowClearPricesAndSeller: (allow: boolean) => void;
 }
 
 const SearchForm = (props: SearchFormProps) => {
-  const { filters, offersCount, offersLoading, setAllowClearCollections, setAllowClearPricesAndSeller, setFilters } = props;
+  const { clearAllFilters, filters, offersCount, offersLoading, setFilters } = props;
   const [searchString, setSearchString] = useState<string>('');
   const [sortValue, setSortValue] = useState<string>('creationDate-desc');
-
-  const clearSearch = useCallback(() => {
-    setSearchString('');
-  }, []);
+  const searchRef = useRef<string | null>(null);
 
   const optionNode = useCallback((active: boolean, order: string, text: string) => {
     return (
@@ -84,17 +72,6 @@ const SearchForm = (props: SearchFormProps) => {
     return optionNode(false, 'none', 'Sort by');
   }, [optionNode, sortOptions, sortValue]);
 
-  const clearAllFilters = useCallback(() => {
-    setAllowClearCollections(true);
-    setAllowClearPricesAndSeller(true);
-    setFilters(defaultFilters);
-    setSearchString('');
-
-    sessionStorage.removeItem(SESSION_STORAGE_KEYS.FILTERS);
-    sessionStorage.removeItem(SESSION_STORAGE_KEYS.PRICES);
-    sessionStorage.removeItem(SESSION_STORAGE_KEYS.ARE_ALL_COLLECTIONS_CHECKED);
-  }, [setAllowClearCollections, setFilters]);
-
   const setSortByFilter = useCallback(() => {
     const sort = filters.sort;
 
@@ -110,30 +87,49 @@ const SearchForm = (props: SearchFormProps) => {
     }
   }, [filters]);
 
+  const updateFilterFromSearchString = useCallback((searchStr: string) => {
+    if (searchRef.current === null) {
+      return;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    setFilters((prevFilters: Filters) => {
+      if (searchStr) {
+        return { ...prevFilters, searchLocale: 'en', searchText: searchStr };
+      } else {
+        const newFilters: Filters = { ...prevFilters };
+
+        delete newFilters.searchLocale;
+        delete newFilters.searchText;
+
+        return newFilters;
+      }
+    });
+  }, [setFilters]);
+
+  const clearFilters = useCallback(() => {
+    clearAllFilters();
+    setSearchString('');
+  }, [clearAllFilters]);
+
+  const clearSearch = useCallback(() => {
+    setSearchString('');
+  }, []);
+
   useEffect(() => {
     setSortByFilter();
   }, [setSortByFilter]);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      setFilters((prevFilters: Filters) => {
-        if (searchString) {
-          return { ...prevFilters, searchLocale: 'en', searchText: searchString };
-        } else {
-          const newFilters: Filters = { ...prevFilters };
+      updateFilterFromSearchString(searchString);
 
-          delete newFilters.searchLocale;
-          delete newFilters.searchText;
-
-          return newFilters;
-        }
-      });
+      searchRef.current = searchString;
     }, 1000);
 
     return () => clearTimeout(timeout);
-  }, [searchString, setFilters]);
+  }, [searchString, updateFilterFromSearchString]);
 
   return (
     <Form>
@@ -180,7 +176,7 @@ const SearchForm = (props: SearchFormProps) => {
         <span>
           {offersCount} items
         </span>
-        <a onClick={clearAllFilters}>Clear all filters</a>
+        <a onClick={clearFilters}>Clear all filters</a>
       </Form.Field>
     </Form>
   );

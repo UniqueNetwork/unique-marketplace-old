@@ -1,6 +1,8 @@
 // Copyright 2017-2021 @polkadot/app-accounts authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import './styles.scss';
+
 import type { AppProps as Props } from '@polkadot/react-components/types';
 
 import React from 'react';

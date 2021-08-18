@@ -116,6 +116,7 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearCollections, 
     setUniqueCollectionIds(newIds);
     setFilters({ ...filters, collectionIds: newIds });
   }, [filters, setUniqueCollectionIds, setFilters]);
+
   const filterCurrent = useCallback((id: string) => {
     if (inputChecked.includes(id)) {
       const filteredData = inputChecked.filter((item) => item !== id);
@@ -153,7 +154,7 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearCollections, 
       setIsOnlyMyToken(false);
     }
 
-    const filteredCollections = filters.collectionIds;
+    const filteredCollections = filters.collectionIds as string[];
 
     if (filteredCollections.length === uniqueCollectionIds.length) {
       setInputChecked((prevState) => {
@@ -174,26 +175,26 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearCollections, 
     if (storagePrices && !storagePrices.minPrice && !storagePrices.maxPrice) {
       resetFromFilter();
     }
-    // eslint-disable-next-line
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resetFromFilter]);
 
   useEffect(() => {
     storagePrices && setKSMPrices(storagePrices);
 
     if (storageFilters) {
-      setFilters(storageFilters);
       setIsOnlyMyToken(!!storageFilters.seller);
-      areAllCollectionsChecked && setInputChecked(storageFilters.collectionIds);
+      areAllCollectionsChecked && setInputChecked(storageFilters.collectionIds as string[]);
     }
-    // eslint-disable-next-line
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     setInStorage(SESSION_STORAGE_KEYS.FILTERS, filters);
+
     if (inputChecked.length > 0) {
       setInStorage(SESSION_STORAGE_KEYS.ARE_ALL_COLLECTIONS_CHECKED, true);
     } else setInStorage(SESSION_STORAGE_KEYS.ARE_ALL_COLLECTIONS_CHECKED, false);
-    // eslint-disable-next-line
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters]);
 
   useEffect(() => {
