@@ -140,7 +140,7 @@ jobs:
           DOCKER_NETWORK: ${{ secrets.DOCKER_NETWORK }}
           DOCKER_CPU_LIMITS: ${{ secrets.DOCKER_CPU_LIMITS }}
           DOCKER_MEMORY_LIMIT: ${{ secrets.DOCKER_MEMORY_LIMIT }}
-        run: docker pull ${{ env.DOCKER_IMAGE }} && docker-compose --compatibility up -d --no-build --force-recreate
+        run: docker pull ${{ env.DOCKER_IMAGE }} && docker-compose stop ${{ secrets.DOCKER_NAME }} && docker-compose --compatibility up -d --no-build --force-recreate
 
       - name: Check status
         run: docker ps --all --latest --size
