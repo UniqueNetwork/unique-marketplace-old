@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import BN from 'bn.js';
-import { useCallback, useEffect, useState } from 'react';
 
 import { ApiPromise } from '@polkadot/api/promise';
 import { DeriveBalancesAll } from '@polkadot/api-derive/types';
@@ -13,22 +12,9 @@ interface UseKusamaBalanceInterface {
 }
 
 export const useKusamaBalance = (kusamaApi?: ApiPromise, account?: string): UseKusamaBalanceInterface => {
-  const [kusamaAvailableBalance, setKusamaAvailableBalance] = useState<BN | undefined>();
   const kusamaBalancesAll = useCall<DeriveBalancesAll>(kusamaApi?.derive.balances?.all, [account]);
 
-  const getKusamaBalance = useCallback(() => {
-    setKusamaAvailableBalance(kusamaBalancesAll?.availableBalance);
-  }, [kusamaBalancesAll?.availableBalance]);
-
-  useEffect(() => {
-    if (!account || !kusamaApi) {
-      return;
-    }
-
-    void getKusamaBalance();
-  }, [account, getKusamaBalance, kusamaApi]);
-
   return {
-    kusamaAvailableBalance
+    kusamaAvailableBalance: kusamaBalancesAll?.availableBalance
   };
 };
