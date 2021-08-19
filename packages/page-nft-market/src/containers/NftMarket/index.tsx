@@ -16,7 +16,6 @@ import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
-import { SESSION_STORAGE_KEYS } from '@polkadot/app-nft-market/containers/marketFilters/constants';
 import envConfig from '@polkadot/apps-config/envConfig';
 import { OpenPanelType } from '@polkadot/apps-routing/types';
 import { useCollections } from '@polkadot/react-hooks';
@@ -25,6 +24,7 @@ import { useCollections } from '@polkadot/react-hooks';
 import NftTokenCard from '../../components/NftTokenCard';
 import SearchForm from '../../components/SearchForm';
 import MarketFilters from '../MarketFilters';
+import { SESSION_STORAGE_KEYS } from '../MarketFilters/constants';
 import MarketSort from '../MarketSort';
 
 interface BuyTokensProps {

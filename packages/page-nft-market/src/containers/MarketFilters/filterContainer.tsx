@@ -9,10 +9,11 @@ import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection
 import BN from 'bn.js';
 import React, { useCallback, useEffect, useState } from 'react';
 
-import { SESSION_STORAGE_KEYS } from '@polkadot/app-nft-market/containers/marketFilters/constants';
 import { Filters } from '@polkadot/app-nft-market/containers/NftMarket';
 import envConfig from '@polkadot/apps-config/envConfig';
 import { useDecoder, useMetadata } from '@polkadot/react-hooks';
+
+import { SESSION_STORAGE_KEYS } from './constants';
 
 const { commission, uniqueCollectionIds } = envConfig;
 
@@ -154,7 +155,7 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearCollections, 
       setIsOnlyMyToken(false);
     }
 
-    const filteredCollections = filters.collectionIds as string[];
+    const filteredCollections = filters.collectionIds;
 
     if (filteredCollections.length === uniqueCollectionIds.length) {
       setInputChecked((prevState) => {
@@ -183,7 +184,7 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearCollections, 
 
     if (storageFilters) {
       setIsOnlyMyToken(!!storageFilters.seller);
-      areAllCollectionsChecked && setInputChecked(storageFilters.collectionIds as string[]);
+      areAllCollectionsChecked && setInputChecked(storageFilters.collectionIds);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
