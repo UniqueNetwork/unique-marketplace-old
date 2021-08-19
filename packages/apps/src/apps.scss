@@ -220,25 +220,24 @@
   }
 }
 
-@media screen and (max-device-width: 1280px) {
+@media (min-width: 1441px) {
   .app-header {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-    z-index: 1000;
-
-    .ui.tabular.header-menu.menu {
-      display: none;
-    }
-
-    .menu-mobile-header {
-      display: block;
-    }
-
     .app-user {
-      display: grid;
-      grid-template-columns: 1fr 50px;
-      grid-column-gap: 16px;
+      .app-balances-mobile {
+        display: none;
+      }
+    }
+  }
+}
 
+@media (max-width: 1440px) {
+  .app-header {
+    .app-user {
       .app-balances {
+        display: none;
+      }
+
+      .app-balances-mobile {
         display: none;
       }
 
@@ -270,6 +269,27 @@
           margin-left: 8px;
         }
       }
+    }
+  }
+}
+
+@media (max-width: 1280px) {
+  .app-header {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    z-index: 1000;
+
+    .ui.tabular.header-menu.menu {
+      display: none;
+    }
+
+    .menu-mobile-header {
+      display: block;
+    }
+
+    .app-user {
+      display: grid;
+      grid-template-columns: 1fr 50px;
+      grid-column-gap: 16px;
 
       .account-selector-block {
         cursor: pointer;
@@ -339,10 +359,6 @@
     }
 
     .app-user {
-      .app-balances-mobile {
-        display: none;
-      }
-
       .account-selector-block {
         .mobile-account-selector {
           display: none;
