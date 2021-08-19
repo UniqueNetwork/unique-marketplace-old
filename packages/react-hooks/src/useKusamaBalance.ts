@@ -5,32 +5,28 @@ import BN from 'bn.js';
 import { useCallback, useEffect, useState } from 'react';
 
 import { ApiPromise } from '@polkadot/api/promise';
+import { DeriveBalancesAll } from '@polkadot/api-derive/types';
+import { useCall } from '@polkadot/react-hooks/useCall';
 
 interface UseKusamaBalanceInterface {
   kusamaAvailableBalance: BN | undefined;
 }
 
-export const useKusamaBalance = (kusamaApi?: ApiPromise, encodedKusamaAccount?: string): UseKusamaBalanceInterface => {
+export const useKusamaBalance = (kusamaApi?: ApiPromise, account?: string): UseKusamaBalanceInterface => {
   const [kusamaAvailableBalance, setKusamaAvailableBalance] = useState<BN | undefined>();
-  const getKusamaBalance = useCallback(async () => {
-    try {
-      if (kusamaApi && encodedKusamaAccount) {
-        const kusamaAccountBalance: { availableBalance: BN } = await kusamaApi?.derive.balances?.all(encodedKusamaAccount);
+  const kusamaBalancesAll = useCall<DeriveBalancesAll>(kusamaApi?.derive.balances?.all, [account]);
 
-        setKusamaAvailableBalance(kusamaAccountBalance.availableBalance);
-      }
-    } catch (e) {
-      console.log('kusama balance error', e);
-    }
-  }, [encodedKusamaAccount, kusamaApi]);
+  const getKusamaBalance = useCallback(() => {
+    setKusamaAvailableBalance(kusamaBalancesAll?.availableBalance);
+  }, [kusamaBalancesAll?.availableBalance]);
 
   useEffect(() => {
-    if (!encodedKusamaAccount || !kusamaApi) {
+    if (!account || !kusamaApi) {
       return;
     }
 
     void getKusamaBalance();
-  }, [encodedKusamaAccount, getKusamaBalance, kusamaApi]);
+  }, [account, getKusamaBalance, kusamaApi]);
 
   return {
     kusamaAvailableBalance
