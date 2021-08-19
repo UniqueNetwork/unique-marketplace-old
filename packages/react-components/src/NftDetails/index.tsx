@@ -38,12 +38,12 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
   const { hex2a } = useDecoder();
   const { attributes, collectionInfo, reFungibleBalance, tokenUrl } = useSchema(account, collectionId, tokenId);
   const [tokenPriceForSale, setTokenPriceForSale] = useState<string>('');
-  const { cancelStep, deposited, escrowAddress, formatKsmBalance, getFee, getKusamaTransferFee, kusamaBalance, readyToAskPrice, sendCurrentUserAction, setPrice, setReadyToAskPrice, tokenAsk, tokenDepositor, tokenInfo, transferStep } = useMarketplaceStages(account, collectionInfo, tokenId);
+  const { cancelStep, deposited, escrowAddress, formatKsmBalance, getFee, getKusamaTransferFee, readyToAskPrice, sendCurrentUserAction, setPrice, setReadyToAskPrice, tokenAsk, tokenDepositor, tokenInfo, transferStep } = useMarketplaceStages(account, collectionInfo, tokenId);
 
   const uOwnIt = tokenInfo?.Owner?.toString() === account || (tokenAsk && tokenAsk.owner === account);
   const uSellIt = tokenAsk && tokenAsk.owner === account;
   const isOwnerEscrow = !!(!uOwnIt && tokenInfo && tokenInfo.Owner && tokenInfo.Owner.toString() === escrowAddress && tokenDepositor && (tokenAsk && tokenAsk.owner !== account));
-  const { freeKusamaBalance } = useKusamaApi(account);
+  const { kusamaBalance } = useKusamaApi(account);
   // const lowBalanceToBuy = !!(buyFee && !balance?.free.gte(buyFee));
   // sponsoring is enabled
   // const lowBalanceToSell = !!(saleFee && !balance?.free.gte(saleFee));
@@ -83,12 +83,12 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
       if (kusamaFees) {
         setKusamaFees(kusamaFees);
         const balanceNeeded = tokenAsk.price.add(getFee(tokenAsk.price)).add(kusamaFees.muln(2));
-        const isLow = !!freeKusamaBalance?.add(deposited || new BN(0)).lte(balanceNeeded);
+        const isLow = !!kusamaBalance?.add(deposited || new BN(0)).lte(balanceNeeded);
 
         setLowKsmBalanceToBuy(isLow);
       }
     }
-  }, [deposited, escrowAddress, freeKusamaBalance, getFee, getKusamaTransferFee, tokenAsk]);
+  }, [deposited, escrowAddress, kusamaBalance, getFee, getKusamaTransferFee, tokenAsk]);
 
   const getMarketPrice = useCallback((price: BN) => {
     return formatPrice(formatKsmBalance(new BN(price).add(getFee(price))));

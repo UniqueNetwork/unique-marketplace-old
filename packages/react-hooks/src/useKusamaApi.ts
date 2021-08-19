@@ -5,12 +5,10 @@ import BN from 'bn.js';
 import { useCallback, useContext, useEffect, useState } from 'react';
 
 import { ApiPromise } from '@polkadot/api/promise';
-import { DeriveBalancesAll } from '@polkadot/api-derive/types';
 import { typesBundle, typesChain } from '@polkadot/apps-config';
 import envConfig from '@polkadot/apps-config/envConfig';
 import { StatusContext } from '@polkadot/react-components';
-import { BalanceInterface } from '@polkadot/react-hooks/useBalance';
-import { useCall } from '@polkadot/react-hooks/useCall';
+import { useKusamaBalance } from '@polkadot/react-hooks/useKusamaBalance';
 import ApiSigner from '@polkadot/react-signer/signers/ApiSigner';
 import { WsProvider } from '@polkadot/rpc-provider';
 import { TypeRegistry } from '@polkadot/types/create';
@@ -20,12 +18,10 @@ const { kusamaDecimals, minPrice } = envConfig;
 
 interface UseKusamaApiInterface {
   formatKsmBalance: (balance: BN | undefined) => string;
-  getKusamaBalance: () => void;
   getKusamaTransferFee: (recipient: string, value: BN) => Promise<BN | null>;
   kusamaApi: ApiPromise | undefined;
-  kusamaBalance: BalanceInterface | undefined;
+  kusamaBalance: BN | undefined;
   kusamaTransfer: (recipient: string, value: BN, onSuccess: (status: string) => void, onFail: (status: string) => void) => void;
-  freeKusamaBalance: BN | undefined
 }
 
 export function formatKsmBalance (value: BN | undefined = new BN(0)): string {
@@ -50,25 +46,12 @@ export function formatStrBalance (decimals: number, value: BN | undefined = new 
 export const useKusamaApi = (account?: string): UseKusamaApiInterface => {
   const { queuePayload, queueSetTxStatus } = useContext(StatusContext);
   const [kusamaApi, setKusamaApi] = useState<ApiPromise>();
-  const [kusamaBalance, setKusamaBalance] = useState<BalanceInterface>();
+  const [kusamaBalance, setKusamaBalance] = useState<BN | undefined>();
   const [encodedKusamaAccount, setEncodedKusamaAccount] = useState<string>();
   const { queueExtrinsic } = useContext(StatusContext);
   const kusamaParity = 'wss://kusama-rpc.polkadot.io';
   const kusamaFinality = 'wss://polkadot.api.onfinality.io/public-ws';
-  const kusamaBalancesAll = useCall<DeriveBalancesAll>(kusamaApi?.derive.balances?.all, [account]);
-  const [freeKusamaBalance, setFreeKusamaBalance] = useState<BN>();
-
-  const getKusamaBalance = useCallback(async () => {
-    try {
-      if (kusamaApi && encodedKusamaAccount) {
-        const kusamaAccountBalance: { data: BalanceInterface } = await kusamaApi.query.system.account(encodedKusamaAccount);
-
-        setKusamaBalance(kusamaAccountBalance.data);
-      }
-    } catch (e) {
-      console.log('kusama balance error', e);
-    }
-  }, [encodedKusamaAccount, kusamaApi]);
+  const { kusamaAvailableBalance } = useKusamaBalance(kusamaApi, encodedKusamaAccount);
 
   const initKusamaApi = useCallback((kusamaUrl) => {
     const registry = new TypeRegistry();
@@ -126,24 +109,18 @@ export const useKusamaApi = (account?: string): UseKusamaApiInterface => {
   }, [account]);
 
   useEffect(() => {
-    void getKusamaBalance();
-  }, [getKusamaBalance]);
-
-  useEffect(() => {
     initKusamaApi(kusamaParity);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    if (kusamaBalancesAll) {
-      setFreeKusamaBalance(kusamaBalancesAll.availableBalance);
+    if (kusamaAvailableBalance) {
+      setKusamaBalance(kusamaAvailableBalance);
     }
-  }, [kusamaBalancesAll]);
+  }, [kusamaAvailableBalance]);
 
   return {
     formatKsmBalance,
-    freeKusamaBalance,
-    getKusamaBalance,
     getKusamaTransferFee,
     kusamaApi,
     kusamaBalance,
