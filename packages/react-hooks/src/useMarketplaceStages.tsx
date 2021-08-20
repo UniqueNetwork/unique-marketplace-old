@@ -29,7 +29,7 @@ export interface MarketplaceStagesInterface {
   formatKsmBalance: (value: BN | undefined) => string;
   getFee: (price: BN) => BN;
   getKusamaTransferFee: (recipient: string, value: BN) => Promise<BN | null>;
-  kusamaBalance: BN | undefined;
+  kusamaAvailableBalance: BN | undefined;
   saleFee: BN | undefined;
   sendCurrentUserAction: (action: UserActionType) => void;
   setPrice: (price: string) => void;
@@ -59,7 +59,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
   const { queueExtrinsic } = useContext(StatusContext);
   const [readyToAskPrice, setReadyToAskPrice] = useState<boolean>(false);
   const [tokenPriceForSale, setTokenPriceForSale] = useState<number>();
-  const { formatKsmBalance, getKusamaTransferFee, kusamaBalance, kusamaTransfer } = useKusamaApi(account);
+  const { formatKsmBalance, getKusamaTransferFee, kusamaAvailableBalance, kusamaTransfer } = useKusamaApi(account);
 
   const sendCurrentUserAction = useCallback((userAction: UserActionType) => {
     send(userAction);
@@ -218,8 +218,8 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
     if (!isDepositEnough(userDeposit, tokenAsk.price)) {
       const needed = depositNeeded(userDeposit, tokenAsk.price);
 
-      if (kusamaBalance?.lt(needed)) {
-        const err = `Your KSM balance is too low: ${formatKsmBalance(kusamaBalance)} KSM. You need at least: ${formatKsmBalance(needed)} KSM`;
+      if (kusamaAvailableBalance?.lt(needed)) {
+        const err = `Your KSM balance is too low: ${formatKsmBalance(kusamaAvailableBalance)} KSM. You need at least: ${formatKsmBalance(needed)} KSM`;
 
         setError(err);
 
@@ -232,7 +232,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
       send('WAIT_FOR_DEPOSIT');
     }
     // buyStep3
-  }, [getUserDeposit, tokenAsk, isDepositEnough, send, depositNeeded, kusamaBalance, kusamaTransfer, formatKsmBalance]);
+  }, [getUserDeposit, tokenAsk, isDepositEnough, send, depositNeeded, kusamaAvailableBalance, kusamaTransfer, formatKsmBalance]);
 
   const checkDepositReady = useCallback(async () => {
     const userDeposit = await getUserDeposit();
@@ -441,7 +441,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
     formatKsmBalance,
     getFee,
     getKusamaTransferFee,
-    kusamaBalance,
+    kusamaAvailableBalance,
     readyToAskPrice,
     saleFee,
     sendCurrentUserAction,

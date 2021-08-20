@@ -20,7 +20,7 @@ interface UseKusamaApiInterface {
   formatKsmBalance: (balance: BN | undefined) => string;
   getKusamaTransferFee: (recipient: string, value: BN) => Promise<BN | null>;
   kusamaApi: ApiPromise | undefined;
-  kusamaBalance: BN | undefined;
+  kusamaAvailableBalance: BN | undefined;
   kusamaTransfer: (recipient: string, value: BN, onSuccess: (status: string) => void, onFail: (status: string) => void) => void;
 }
 
@@ -46,7 +46,6 @@ export function formatStrBalance (decimals: number, value: BN | undefined = new 
 export const useKusamaApi = (account?: string): UseKusamaApiInterface => {
   const { queuePayload, queueSetTxStatus } = useContext(StatusContext);
   const [kusamaApi, setKusamaApi] = useState<ApiPromise>();
-  const [kusamaBalance, setKusamaBalance] = useState<BN | undefined>();
   const [encodedKusamaAccount, setEncodedKusamaAccount] = useState<string>();
   const { queueExtrinsic } = useContext(StatusContext);
   const kusamaParity = 'wss://kusama-rpc.polkadot.io';
@@ -102,12 +101,6 @@ export const useKusamaApi = (account?: string): UseKusamaApiInterface => {
     } else return null;
   }, [encodedKusamaAccount, kusamaApi]);
 
-  const setKusamaBalanceValue = useCallback(() => {
-    if (kusamaAvailableBalance) {
-      setKusamaBalance(kusamaAvailableBalance);
-    }
-  }, [kusamaAvailableBalance]);
-
   useEffect(() => {
     if (account) {
       setEncodedKusamaAccount(encodeAddress(account, 2));
@@ -119,13 +112,11 @@ export const useKusamaApi = (account?: string): UseKusamaApiInterface => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(setKusamaBalanceValue, [setKusamaBalanceValue]);
-
   return {
     formatKsmBalance,
     getKusamaTransferFee,
     kusamaApi,
-    kusamaBalance,
+    kusamaAvailableBalance,
     kusamaTransfer
   };
 };
