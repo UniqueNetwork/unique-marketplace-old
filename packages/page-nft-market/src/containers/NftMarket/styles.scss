@@ -224,6 +224,13 @@
       padding: 0 var(--gap);
     }
 
+    &.no-accounts {
+
+      .nft-market--panel {
+        height: calc(100vh - 221px);
+      }
+    }
+
     &--panel {
       display: block;
       width: 100%;
@@ -269,6 +276,7 @@
     &--footer {
       height: 60px;
       box-shadow: 0px -8px 12px rgba(0, 0, 0, 0.06);
+      position: relative;
       background-color: var(--card-background);
       padding: 10px var(--gap);
 
@@ -311,6 +319,19 @@
 
         .ui.form {
           display: block;
+
+          .search-field .ui--Labelled .input {
+            input {
+              padding: 5px calc(var(--gap) * 2) !important;
+            }
+
+            .search-icon {
+              width: 16px;
+              height: 16px;
+              left: calc(var(--gap) / 2);
+              top: 11px;
+            }
+          }
 
           .field {
             margin-bottom: var(--gap);

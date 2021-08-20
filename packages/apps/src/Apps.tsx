@@ -33,9 +33,8 @@ import MobileMenu from './MobileMenu';
 import MobileMenuHeader from './MobileMenuHeader';
 import ScrollToTop from './ScrollToTop';
 import WarmUp from './WarmUp';
-
-const ManageAccounts = React.lazy(() => import('./ManageAccounts'));
-const ManageBalances = React.lazy(() => import('./ManageBalances'));
+import ManageAccounts from './ManageAccounts';
+import ManageBalances from './ManageBalances';
 
 export const PORTAL_ID = 'portals';
 
@@ -77,7 +76,8 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
   );
 
   const missingApis = findMissingApis(api, needsApi);
-  const currentLocation = location.pathname.slice(1) === 'accounts';
+  const isLocationAccounts = location.pathname.slice(1) === 'accounts';
+  const noAccounts = !account && !isLocationAccounts;
 
   return (
     <>
@@ -98,7 +98,7 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
             )
             : (
               <>
-                {(!account && !currentLocation) && (
+                { noAccounts && (
                   <div className='no-account'>
                     <div className='error-info-svg'>
                       <img src = {String(infoSvg)}/>
@@ -216,20 +216,16 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                             />
                           )}
                           { openPanel === 'accounts' && (
-                            <Suspense fallback='Loading accounts...'>
-                              <ManageAccounts
-                                account={account}
-                                setAccount={setAccount}
-                                setIsMobileMenu={setOpenPanel}
-                              />
-                            </Suspense>
+                            <ManageAccounts
+                              account={account}
+                              setAccount={setAccount}
+                              setIsMobileMenu={setOpenPanel}
+                            />
                           )}
                           { openPanel === 'balances' && (
-                            <Suspense fallback='Loading balances...'>
-                              <ManageBalances
-                                account={account}
-                              />
-                            </Suspense>
+                            <ManageBalances
+                              account={account}
+                            />
                           )}
                           { (openPanel !== 'balances' && openPanel !== 'accounts') && (
                             <Suspense fallback='...'>

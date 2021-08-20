@@ -9,7 +9,7 @@ import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection
 // @ts-ignore
 import equal from 'deep-equal';
 // external imports
-import React, { memo, ReactElement, useCallback, useEffect, useRef, useState } from 'react';
+import React, { memo, ReactElement, useCallback, useEffect, useMemo,useRef, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
 import { useHistory } from 'react-router';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
@@ -114,14 +114,27 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: BuyTokensProps): ReactE
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     if (storageFilters && !equal(storageFilters, filters)) {
-      console.log('setFilters MarketFilter', storageFilters);
       setFilters(storageFilters);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const marketClassName = useMemo((): string => {
+    let className = 'nft-market';
+
+    if (openPanel) {
+      className = `${className} ${openPanel}`;
+    }
+
+    if (!account) {
+      className = `${className} no-accounts`;
+    }
+
+    return className;
+  }, [account, openPanel]);
+
   return (
-    <div className={`nft-market ${openPanel || ''}`}>
+    <div className={marketClassName}>
       <Header as='h1'>Market</Header>
       <div
         className={`nft-market--panel ${openPanel === 'sort' ? 'long' : ''}`}
