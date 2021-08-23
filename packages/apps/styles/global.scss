@@ -679,14 +679,14 @@ button.ui.button,
         img {
           position: absolute;
           &.search-icon {
-            left: 16px;
-            top: 7px;
+            left: var(--gap);
+            top: calc(var(--gap) / 2);
           }
 
           &.clear-icon {
             cursor: pointer;
-            right: 16px;
-            top: 7px;
+            right: var(--gap);
+            top: calc(var(--gap) / 2);
           }
         }
 
