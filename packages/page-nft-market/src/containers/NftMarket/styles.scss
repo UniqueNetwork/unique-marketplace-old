@@ -322,14 +322,14 @@
 
           .search-field .ui--Labelled .input {
             input {
-              padding: 5px calc(var(--gap) * 2) !important;
+              padding: 5px calc(var(--gap) * 2) 5px 48px !important;
             }
 
             .search-icon {
-              width: 16px;
-              height: 16px;
-              left: calc(var(--gap) / 2);
-              top: 11px;
+              width: 24px;
+              height: 24px;
+              left: var(--gap);
+              top: calc(var(--gap) / 2);
             }
           }
 

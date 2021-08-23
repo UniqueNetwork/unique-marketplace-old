@@ -134,6 +134,11 @@
   font-size: 30px;
   height: 24px;
   width: 24px;
+  opacity: 0.5;
+
+  &:hover {
+    opacity: 1;
+  }
 }
 .rotate-icon {
   transform: rotateX(180deg);

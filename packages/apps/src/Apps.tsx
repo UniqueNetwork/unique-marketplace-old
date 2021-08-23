@@ -132,6 +132,7 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                               <MobileMenuHeader
                                 isMobileMenu={openPanel}
                                 setIsMobileMenu={setOpenPanel}
+                                theme={theme}
                               />
                               <Menu
                                 className='header-menu'

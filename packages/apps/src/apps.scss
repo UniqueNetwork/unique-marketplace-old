@@ -294,10 +294,6 @@
       display: none;
     }
 
-    .menu-mobile-header {
-      display: block;
-    }
-
     .app-user {
       display: grid;
       grid-template-columns: 1fr 50px;
@@ -373,6 +369,14 @@
 }
 
 @media (max-width: 1023px) {
+  .app-header {
+    .menu-mobile-header {
+      display: flex;
+      align-items: center;
+      grid-column-gap: var(--gap);
+    }
+  }
+
   .app-wrapper {
     height: 100vh;
     overflow: hidden;
@@ -388,6 +392,15 @@
 
   .deposit-flex .ksm-text {
     width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  .menu-mobile-header {
+    display: block;
+    .app-logo {
+      display: none;
+    }
   }
 }
 
