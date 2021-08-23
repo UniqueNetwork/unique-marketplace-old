@@ -145,5 +145,6 @@ jobs:
         env:
           SLACK_USERNAME: GitHub
           SLACK_ICON: https://github.com/github.png?size=48
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_MESSAGE: "${{ secrets.UNIQUE_NETWORK_URL }} updated :rocket:"
           SLACK_FOOTER: ""
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
