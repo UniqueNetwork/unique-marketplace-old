@@ -273,6 +273,18 @@
   }
 }
 
+@media (min-width: 1025px) {
+  .app-header {
+    .app-user {
+      .account-selector-block {
+        .mobile-account-selector {
+          display: none;
+        }
+      }
+    }
+  }
+}
+
 @media (max-width: 1280px) {
   .app-header {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
@@ -348,7 +360,7 @@
   }
 }
 
-@media (min-width: 1280px) {
+@media (min-width: 1025px) {
   .app-header {
     .menu-mobile-header {
       display: none;
@@ -356,14 +368,6 @@
 
     .ui.tabular.header-menu.menu {
       display: inline-flex;
-    }
-
-    .app-user {
-      .account-selector-block {
-        .mobile-account-selector {
-          display: none;
-        }
-      }
     }
   }
 }

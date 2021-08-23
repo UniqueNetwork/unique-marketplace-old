@@ -140,6 +140,7 @@
 }
 .collection-list {
   max-height: 390px;
+  max-width: 300px;
   overflow-y: auto;
   margin-bottom: 12px;
 }
@@ -254,6 +255,7 @@ input:checked + .slider:before {
   margin: 18px 0 12px 0;
   display: flex;
   justify-content: space-between;
+  max-width: 300px;
 
   input {
     width: 106px;
