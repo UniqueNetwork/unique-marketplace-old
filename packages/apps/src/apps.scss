@@ -220,6 +220,24 @@
   }
 }
 
+.create-account.menu {
+  margin: 0;
+  border: none;
+  box-shadow: none;
+
+  a.crateAccountBtn {
+    border-radius: 4px;
+    color: var(--link-color);
+    font-family: var(--font-roboto);
+    font-weight: 500;
+    font-size: 16px;
+
+    &:hover {
+      color: var(--link-color);
+    }
+  }
+}
+
 @media (min-width: 1441px) {
   .app-header {
     .app-user {

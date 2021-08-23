@@ -187,26 +187,35 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                                   </>
                                 )}
                               </Menu>
-                              <div className='app-user'>
-                                { isApiReady && (
-                                  <>
-                                    <BalancesHeader account={account} />
-                                    <MobileBalancesHeader
-                                      account={account}
-                                      isMobileMenu={openPanel}
-                                      setIsMobileMenu={setOpenPanel}
-                                    />
-                                  </>
-                                )}
-                                <div className='account-selector-block'>
-                                  <AccountSelector onChange={setAccount} />
-                                  <MobileAccountSelector
-                                    address={account}
-                                    openPanel={openPanel}
-                                    setOpenPanel={setOpenPanel}
+                              { (isApiReady && account) && (
+                                <div className='app-user'>
+                                  <BalancesHeader account={account} />
+                                  <MobileBalancesHeader
+                                    account={account}
+                                    isMobileMenu={openPanel}
+                                    setIsMobileMenu={setOpenPanel}
                                   />
+                                  <div className='account-selector-block'>
+                                    <AccountSelector onChange={setAccount} />
+                                    <MobileAccountSelector
+                                      address={account}
+                                      openPanel={openPanel}
+                                      setOpenPanel={setOpenPanel}
+                                    />
+                                  </div>
                                 </div>
-                              </div>
+                              )}
+                              { !account && (
+                                <Menu className='create-account'>
+                                  <Menu.Item
+                                    active={location.pathname === '/accounts'}
+                                    as={NavLink}
+                                    className='crateAccountBtn'
+                                    name='Create or connect account'
+                                    to='/accounts'
+                                  />
+                                </Menu>
+                              )}
                             </div>
                           </header>
                           { openPanel === 'menu' && (

@@ -33,6 +33,7 @@ const MobileAccountSelector = (props: MobileAccountSelectorProps): React.ReactEl
     >
       { address && (
         <IdentityIcon
+          canNotCopy
           className='icon'
           value={address}
         />
