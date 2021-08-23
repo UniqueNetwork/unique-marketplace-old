@@ -142,13 +142,15 @@ class InputAddress extends React.PureComponent<Props, State> {
       // This is nasty, but since this things is non-functional, there is not much
       // we can do (well, wrap it, however that approach is deprecated here)
       return (
-        <Menu.Item
-          active={location.pathname === '/accounts'}
-          as={NavLink}
-          className='crateAccountBtn'
-          name='Create or connect account'
-          to='/accounts'
-        />
+        <Menu className='create-account'>
+          <Menu.Item
+            active={location.pathname === '/accounts'}
+            as={NavLink}
+            className='crateAccountBtn'
+            name='Create or connect account'
+            to='/accounts'
+          />
+        </Menu>
       );
     }
 

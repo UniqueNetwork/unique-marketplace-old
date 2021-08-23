@@ -51,6 +51,10 @@
   display: flex;
   align-items: center;
 
+  &.hidden {
+    display: none;
+  }
+
   .account-selector-block {
     width: 230px;
   }
@@ -316,6 +320,10 @@
       display: grid;
       grid-template-columns: 1fr 50px;
       grid-column-gap: 16px;
+
+      &.hidden {
+        display: none;
+      }
 
       .account-selector-block {
         cursor: pointer;

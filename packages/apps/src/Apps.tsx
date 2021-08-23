@@ -187,8 +187,8 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                                   </>
                                 )}
                               </Menu>
-                              { (isApiReady && account) && (
-                                <div className='app-user'>
+                              { (isApiReady) && (
+                                <div className={`app-user${account ? '' : ' hidden'}`}>
                                   <BalancesHeader account={account} />
                                   <MobileBalancesHeader
                                     account={account}
