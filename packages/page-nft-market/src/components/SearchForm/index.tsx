@@ -9,9 +9,10 @@ import Dropdown, { DropdownProps } from 'semantic-ui-react/dist/commonjs/modules
 import ArrowDown from '@polkadot/app-nft-market/components/arrowDown';
 import ArrowUp from '@polkadot/app-nft-market/components/arrowUp';
 import { Filters } from '@polkadot/app-nft-market/containers/NftMarket';
-import clearIconRoundedActive from './clearIconRoundedActive.svg';
 import searchIcon from '@polkadot/app-nft-wallet/components/CollectionSearch/searchIcon.svg';
 import { Input } from '@polkadot/react-components';
+
+import clearIconRoundedActive from './clearIconRoundedActive.svg';
 
 export type SearchFormProps = {
   clearAllFilters: () => void;

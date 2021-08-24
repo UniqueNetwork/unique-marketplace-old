@@ -54,14 +54,13 @@ const defaultFilters = {
 
 const NftMarket = ({ account, openPanel, setOpenPanel }: BuyTokensProps): ReactElement => {
   const history = useHistory();
-
+  const storageFilters = JSON.parse(sessionStorage.getItem(SESSION_STORAGE_KEYS.FILTERS) as string) as Filters;
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+  const initialFilters = storageFilters && !equal(storageFilters, defaultFilters) ? storageFilters : defaultFilters;
   const { getOffers, offers, offersCount, offersLoading, presetCollections } = useCollections();
-  const [uniqueCollectionIds, setUniqueCollectionIds] = useState(envConfig.uniqueCollectionIds);
-  const [allowClearCollections, setAllowClearCollections] = useState<boolean>(false);
-  const [allowClearPricesAndSeller, setAllowClearPricesAndSeller] = useState<boolean>(false);
-
+  const [allowClearFilters, setAllowClearFilters] = useState<boolean>(false);
   const [collections, setCollections] = useState<NftCollectionInterface[]>([]);
-  const [filters, setFilters] = useState<Filters>({ collectionIds: uniqueCollectionIds, sort: 'desc(creationDate)', traitsCount: [] });
+  const [filters, setFilters] = useState<Filters>(initialFilters);
 
   const nftMarketPanel = useRef<HTMLDivElement>(null);
 
@@ -90,34 +89,14 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: BuyTokensProps): ReactE
   }, [filters, getOffers]);
 
   const clearAllFilters = useCallback(() => {
-    setAllowClearCollections(true);
-    setAllowClearPricesAndSeller(true);
+    setAllowClearFilters(true);
     setFilters(defaultFilters);
     sessionStorage.removeItem(SESSION_STORAGE_KEYS.FILTERS);
     sessionStorage.removeItem(SESSION_STORAGE_KEYS.PRICES);
     sessionStorage.removeItem(SESSION_STORAGE_KEYS.ARE_ALL_COLLECTIONS_CHECKED);
 
     setOpenPanel && setOpenPanel('tokens');
-  }, [setAllowClearCollections, setFilters, setOpenPanel]);
-
-  useEffect(() => {
-    void addMintCollectionToList();
-  }, [addMintCollectionToList]);
-
-  useEffect(() => {
-    console.log('filters changed', filters);
-    void getOffers(1, perPage, filters);
-  }, [filters, getOffers]);
-
-  useEffect(() => {
-    const storageFilters = JSON.parse(sessionStorage.getItem(SESSION_STORAGE_KEYS.FILTERS) as string) as Filters;
-
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-    if (storageFilters && !equal(storageFilters, filters)) {
-      setFilters(storageFilters);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [setFilters, setOpenPanel]);
 
   const marketClassName = useMemo((): string => {
     let className = 'nft-market';
@@ -132,6 +111,15 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: BuyTokensProps): ReactE
 
     return className;
   }, [account, openPanel]);
+
+  useEffect(() => {
+    void addMintCollectionToList();
+  }, [addMintCollectionToList]);
+
+  useEffect(() => {
+    console.log('initialLoad', filters);
+    void getOffers(1, perPage, filters);
+  }, [filters, getOffers]);
 
   return (
     <div className={marketClassName}>
@@ -166,15 +154,12 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: BuyTokensProps): ReactE
         )}
         <MarketFilters
           account={account}
-          allowClearCollections={allowClearCollections}
-          allowClearPricesAndSeller={allowClearPricesAndSeller}
+          allowClearFilters={allowClearFilters}
           collections={collections}
           filters={filters}
           openFilters={openPanel === 'filters'}
-          setAllowClearCollections={setAllowClearCollections}
-          setAllowClearPricesAndSeller={setAllowClearPricesAndSeller}
+          setAllowClearFilters={setAllowClearFilters}
           setFilters={setFilters}
-          setUniqueCollectionIds={setUniqueCollectionIds}
         />
         <MarketSort
           filters={filters}

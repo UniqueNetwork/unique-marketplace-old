@@ -3,7 +3,7 @@
 
 import './styles.scss';
 
-import React, {memo, ReactElement, useCallback, useEffect, useState} from 'react';
+import React, { memo, ReactElement, useCallback, useEffect, useState } from 'react';
 
 import ArrowDown from '@polkadot/app-nft-market/components/arrowDown';
 import ArrowUp from '@polkadot/app-nft-market/components/arrowUp';
@@ -22,7 +22,6 @@ const MarketSort = ({ filters, openSort, setFilters }: PropTypes): ReactElement 
     setSortValue(key || 'creationDate-desc');
 
     if (key && filters) {
-      console.log('setFilters MarketSort');
       setFilters({ ...filters, sort: `${key.split('-')[1]}(${key.split('-')[0]})` });
     }
   }, [filters, setFilters]);
