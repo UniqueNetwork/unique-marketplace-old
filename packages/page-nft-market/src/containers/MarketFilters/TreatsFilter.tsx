@@ -5,6 +5,8 @@ import React, { memo, ReactElement, useCallback, useState } from 'react';
 
 import { Filters } from '@polkadot/app-nft-market/containers/NftMarket';
 
+import { SESSION_STORAGE_KEYS } from './constants';
+
 interface PropTypes {
   filters: Filters;
   setFilters: (filters: Filters) => void;
@@ -31,6 +33,7 @@ const TreatsFilter = ({ filters, setFilters }: PropTypes): ReactElement => {
     newFilters.traitsCount = [];
 
     setFilters(newFilters);
+    sessionStorage.setItem(SESSION_STORAGE_KEYS.FILTERS, JSON.stringify(newFilters));
   }, [filters, setFilters]);
 
   const onClickCheckbox = useCallback((item: string) => {
@@ -43,6 +46,7 @@ const TreatsFilter = ({ filters, setFilters }: PropTypes): ReactElement => {
     }
 
     setFilters(newState);
+    sessionStorage.setItem(SESSION_STORAGE_KEYS.FILTERS, JSON.stringify(newState));
   }, [filters, setFilters]);
 
   return (

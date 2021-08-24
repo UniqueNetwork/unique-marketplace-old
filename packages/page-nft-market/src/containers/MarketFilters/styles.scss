@@ -282,6 +282,7 @@ input:checked + .slider:before {
     &:hover{
       border: 1px solid var(--input-border-color-hover);
     }
+
     &:focus {
       outline: none;
       border: 1px solid var(--input-border-color-outline);
@@ -313,9 +314,11 @@ input:checked + .slider:before {
   color: var(--button-color);
   border: 1px solid var(--button-color);
   cursor: pointer;
+
   &:hover{
     background-color: var(--button-background-hover);
   }
+
   &:active{
     color: var(--button-background-active);
     background-color: var(--white-color);
