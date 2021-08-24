@@ -9,10 +9,9 @@ import Dropdown, { DropdownProps } from 'semantic-ui-react/dist/commonjs/modules
 import ArrowDown from '@polkadot/app-nft-market/components/arrowDown';
 import ArrowUp from '@polkadot/app-nft-market/components/arrowUp';
 import { Filters } from '@polkadot/app-nft-market/containers/NftMarket';
+import { ClearIcon } from '@polkadot/app-nft-wallet/components/CollectionSearch/ClearIcon';
 import searchIcon from '@polkadot/app-nft-wallet/components/CollectionSearch/searchIcon.svg';
 import { Input } from '@polkadot/react-components';
-
-import clearIconRoundedActive from './clearIconRoundedActive.svg';
 
 export type SearchFormProps = {
   clearAllFilters: () => void;
@@ -20,14 +19,14 @@ export type SearchFormProps = {
   offersCount?: number;
   offersLoading: boolean;
   setFilters: (filters: Filters) => void | ((prevFilters: Filters) => Filters) ;
+  areFiltersActive: boolean;
 }
 
 const SearchForm = (props: SearchFormProps) => {
-  const { clearAllFilters, filters, offersCount, offersLoading, setFilters } = props;
+  const { areFiltersActive, clearAllFilters, filters, offersCount, offersLoading, setFilters } = props;
   const [searchString, setSearchString] = useState<string>('');
   const [sortValue, setSortValue] = useState<string>('creationDate-desc');
   const searchRef = useRef<string | null>(null);
-
   const optionNode = useCallback((active: boolean, order: string, text: string) => {
     return (
       <div className={active ? 'current active' : 'current'}>
@@ -157,12 +156,12 @@ const SearchForm = (props: SearchFormProps) => {
             />
           )}
           { searchString?.length > 0 && (
-            <img
-              alt='clear'
+            <div
               className='clear-icon'
               onClick={clearSearch}
-              src={clearIconRoundedActive as string}
-            />
+            >
+              <ClearIcon/>
+            </div>
           )}
         </Input>
       </Form.Field>
@@ -177,7 +176,7 @@ const SearchForm = (props: SearchFormProps) => {
         <span>
           {offersCount} items
         </span>
-        <a onClick={clearFilters}>Clear all filters</a>
+        { areFiltersActive && <a onClick={clearFilters}>Clear all filters</a> }
       </Form.Field>
     </Form>
   );

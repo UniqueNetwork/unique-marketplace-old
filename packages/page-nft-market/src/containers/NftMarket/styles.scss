@@ -22,6 +22,72 @@
         grid-template-columns: 1fr 192px;
         grid-column-gap: 24px;
 
+        .search-field {
+
+            .clear-icon {
+              cursor: pointer;
+              width: 20px;
+
+              & svg {
+                fill: var(--input-placeholder-search-color)
+              }
+
+              &:hover{
+                & svg {
+                  fill: var(--black-color)
+                }
+              }
+            }
+            .ui.input.ui--Input {
+
+              input {
+
+                &:hover {
+                  border: 1px solid var(--input-border-color-hover);
+                }
+
+                &:focus {
+                  outline: none;
+                  border: 1px solid var(--input-border-color-outline);
+                }
+
+                &::-webkit-input-placeholder {
+                  color: var(--input-placeholder-search-color);
+                }
+
+                &::-moz-placeholder {
+                  color: var(--input-placeholder-search-color);
+                }
+
+                &:-ms-input-placeholder {
+                  color: var(--input-placeholder-search-color);
+                }
+
+                &:active, &:focus {
+                  &::-webkit-input-placeholder {
+                    color: var(--input-border-color-outline);
+                  }
+
+                  &::-moz-placeholder {
+                    color: var(--input-border-color-outline);
+                  }
+
+                  &:-ms-input-placeholder {
+                    color: var(--input-border-color-outline);
+                  }
+                }
+              }
+              .clear-icon{
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                position: absolute;
+                right: 18px;
+                transform: translateY(calc(100% - 16px));
+              }
+            }
+        }
+
         .search-results {
           font-size: 16px;
           line-height: 40px;
@@ -33,6 +99,14 @@
             font-weight: 500;
             margin-left: 16px;
             cursor: pointer;
+
+            &:hover{
+              text-decoration: underline;
+            }
+
+            &:active{
+              color:  var(--error-color-dark);
+            }
           }
         }
       }
@@ -54,7 +128,7 @@
       display: flex;
       align-items: center;
       grid-column-gap: 8px;
-      color: var(--tabs-color);
+      color: var(--black-color);
     }
 
     .dropdown.icon {
@@ -63,15 +137,56 @@
       color: var(--tabs-color);
     }
 
+    &.active {
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+
     .menu {
-      width: 100%;
+      width: calc(100% + 2px);
+      left: -1px;
       background-color: var(--card-background);
+      border: 1px solid var(--border-color);
+      border-top-right-radius: 0;
+      border-top-left-radius: 0;
+      box-shadow: none;
 
       .item {
-        &.active {
-          .text.current {
+        .text{
+          color: var(--black-color);
+
+          & svg {
+            fill: var(--black-color);
+          }
+        }
+
+        &:hover{
+          background-color: transparent;
+          .text{
             color: var(--link-color);
-            font-weight: normal;
+
+            & svg {
+              fill: var(--link-color);
+            }
+          }
+        }
+
+        &.selected {
+          background-color: transparent;
+        }
+
+        &.active, &active.selected {
+          background-color: var(--link-light-color);
+          .text{
+            color: var(--link-color);
+
+            &.current{
+              font-weight: normal;
+            }
+
+            & svg {
+              fill: var(--link-color);
+            }
           }
         }
       }
@@ -94,6 +209,22 @@
     .token-card {
       word-break: break-all;
     }
+  }
+}
+.empty{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: calc(100% - 181px);
+
+  .no-tokens-text{
+    font-family: var(--font-roboto);
+    font-size: 18px;
+    line-height: 26px;
+    color: #81858E;
+    text-align: center;
+    margin-top: 24px;
   }
 }
 
