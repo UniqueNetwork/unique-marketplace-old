@@ -9,7 +9,7 @@ import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection
 // @ts-ignore
 import equal from 'deep-equal';
 // external imports
-import React, { memo, ReactElement, useCallback, useEffect, useMemo,useRef, useState } from 'react';
+import React, { memo, ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
 import { useHistory } from 'react-router';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
@@ -25,6 +25,7 @@ import NftTokenCard from '../../components/NftTokenCard';
 import SearchForm from '../../components/SearchForm';
 import MarketFilters from '../MarketFilters';
 import { SESSION_STORAGE_KEYS } from '../MarketFilters/constants';
+import noMyTokensIcon from '../MarketFilters/noMyTokens.svg';
 import MarketSort from '../MarketSort';
 
 interface BuyTokensProps {
@@ -59,6 +60,7 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: BuyTokensProps): ReactE
   const initialFilters = storageFilters && !equal(storageFilters, defaultFilters) ? storageFilters : defaultFilters;
   const { getOffers, offers, offersCount, offersLoading, presetCollections } = useCollections();
   const [allowClearFilters, setAllowClearFilters] = useState<boolean>(false);
+  const [areFiltersActive, setАreFiltersActive] = useState<boolean>(false);
   const [collections, setCollections] = useState<NftCollectionInterface[]>([]);
   const [filters, setFilters] = useState<Filters>(initialFilters);
 
@@ -91,6 +93,7 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: BuyTokensProps): ReactE
   const clearAllFilters = useCallback(() => {
     setAllowClearFilters(true);
     setFilters(defaultFilters);
+    setАreFiltersActive(false);
     sessionStorage.removeItem(SESSION_STORAGE_KEYS.FILTERS);
     sessionStorage.removeItem(SESSION_STORAGE_KEYS.PRICES);
     sessionStorage.removeItem(SESSION_STORAGE_KEYS.ARE_ALL_COLLECTIONS_CHECKED);
@@ -160,6 +163,7 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: BuyTokensProps): ReactE
           openFilters={openPanel === 'filters'}
           setAllowClearFilters={setAllowClearFilters}
           setFilters={setFilters}
+          setАreFiltersActive = {setАreFiltersActive}
         />
         <MarketSort
           filters={filters}
@@ -169,6 +173,7 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: BuyTokensProps): ReactE
         <div className={`marketplace-body ${openPanel === 'tokens' ? 'open' : ''}`}>
           <div className='collection-search-form'>
             <SearchForm
+              areFiltersActive = {areFiltersActive}
               clearAllFilters={clearAllFilters}
               filters={filters}
               offersCount={offersCount}
@@ -176,6 +181,13 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: BuyTokensProps): ReactE
               setFilters={setFilters}
             />
           </div>
+          {(Object.keys(offers).length === 0 && filters.seller) && (
+            <div className='market-pallet empty'>
+              <img alt='no tokens'
+                src={noMyTokensIcon as string} ></img>
+              <p className='no-tokens-text'>You have no tokens</p>
+            </div>
+          )}
           {Object.keys(offers).length > 0 && (
             <div className='market-pallet'>
               <InfiniteScroll
