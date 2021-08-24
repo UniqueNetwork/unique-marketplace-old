@@ -24,7 +24,6 @@ import Proxy from '../modals/ProxiedAdd';
 import Qr from '../modals/Qr';
 import { sortAccounts } from '../util';
 import Account from './Account';
-import BannerExtension from './BannerExtension';
 
 interface Balances {
   accounts: Record<string, BN>;
@@ -205,7 +204,6 @@ function Overview ({ className = 'page-accounts', onStatusChange }: Props): Reac
           onClick={toggleQr}
         />
       </Button.Group>
-      <BannerExtension />
       <Table
         empty={!isLoading && sortedAccountsWithDelegation && 'You don\'t have any accounts. Some features are currently hidden and will only become available once you have accounts.'}
         filter={filter}
