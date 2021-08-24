@@ -60,6 +60,7 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: BuyTokensProps): ReactE
   const initialFilters = storageFilters && !equal(storageFilters, defaultFilters) ? storageFilters : defaultFilters;
   const { getOffers, offers, offersCount, offersLoading, presetCollections } = useCollections();
   const [allowClearFilters, setAllowClearFilters] = useState<boolean>(false);
+  const [areFiltersActive, setАreFiltersActive] = useState<boolean>(false);
   const [collections, setCollections] = useState<NftCollectionInterface[]>([]);
   const [filters, setFilters] = useState<Filters>(initialFilters);
 
@@ -92,6 +93,7 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: BuyTokensProps): ReactE
   const clearAllFilters = useCallback(() => {
     setAllowClearFilters(true);
     setFilters(defaultFilters);
+    setАreFiltersActive(false);
     sessionStorage.removeItem(SESSION_STORAGE_KEYS.FILTERS);
     sessionStorage.removeItem(SESSION_STORAGE_KEYS.PRICES);
     sessionStorage.removeItem(SESSION_STORAGE_KEYS.ARE_ALL_COLLECTIONS_CHECKED);
@@ -161,6 +163,7 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: BuyTokensProps): ReactE
           openFilters={openPanel === 'filters'}
           setAllowClearFilters={setAllowClearFilters}
           setFilters={setFilters}
+          setАreFiltersActive = {setАreFiltersActive}
         />
         <MarketSort
           filters={filters}
@@ -170,6 +173,7 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: BuyTokensProps): ReactE
         <div className={`marketplace-body ${openPanel === 'tokens' ? 'open' : ''}`}>
           <div className='collection-search-form'>
             <SearchForm
+              areFiltersActive = {areFiltersActive}
               clearAllFilters={clearAllFilters}
               filters={filters}
               offersCount={offersCount}

@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export const SESSION_STORAGE_KEYS = {
-  AREFILTERSACTIVE: 'areFiltersActive',
   ARE_ALL_COLLECTIONS_CHECKED: 'areAllCollectionsChecked',
   FILTERS: 'filters',
   PRICES: 'prices'

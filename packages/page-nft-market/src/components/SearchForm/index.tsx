@@ -19,15 +19,14 @@ export type SearchFormProps = {
   offersCount?: number;
   offersLoading: boolean;
   setFilters: (filters: Filters) => void | ((prevFilters: Filters) => Filters) ;
+  areFiltersActive: boolean;
 }
 
 const SearchForm = (props: SearchFormProps) => {
-  const { clearAllFilters, filters, offersCount, offersLoading, setFilters } = props;
+  const { areFiltersActive, clearAllFilters, filters, offersCount, offersLoading, setFilters } = props;
   const [searchString, setSearchString] = useState<string>('');
   const [sortValue, setSortValue] = useState<string>('creationDate-desc');
   const searchRef = useRef<string | null>(null);
-  const areFiltersActive = JSON.parse(sessionStorage.getItem('areFiltersActive') as string) as boolean;
-
   const optionNode = useCallback((active: boolean, order: string, text: string) => {
     return (
       <div className={active ? 'current active' : 'current'}>

@@ -26,6 +26,7 @@ interface PropTypes {
   filters: Filters;
   setAllowClearFilters: (allow: boolean) => void;
   setFilters: (filters: Filters) => void;
+  setАreFiltersActive: (condition: boolean) => void;
 }
 
 interface PricesTypes{
@@ -43,7 +44,7 @@ const setInStorage = (storageKey: string, data: Filters | boolean | PricesTypes)
 
 const defaultPrices: PricesTypes = { maxPrice: '', minPrice: '' };
 
-const FilterContainer: React.FC<PropTypes> = ({ account, allowClearFilters, collections, filters, setAllowClearFilters, setFilters }) => {
+const FilterContainer: React.FC<PropTypes> = ({ account, allowClearFilters, collections, filters, setAllowClearFilters, setFilters, setАreFiltersActive }) => {
   const { collectionName16Decoder } = useDecoder();
   const { getTokenImageUrl } = useMetadata();
   const [images, setImages] = useState<string[]>([]);
@@ -188,8 +189,8 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearFilters, coll
 
   useEffect(() => {
     // listen changes of filters and show or hide <Clear all filters> button.
-    setInStorage(SESSION_STORAGE_KEYS.AREFILTERSACTIVE, !!filters.seller || !!filters.minPrice || !!filters.maxPrice || !!collectionsChecked.length || !!filters.traitsCount.length);
-  }, [collectionsChecked.length, filters.maxPrice, filters.minPrice, filters.seller, filters.traitsCount.length]);
+    setАreFiltersActive(!!filters.seller || !!filters.minPrice || !!filters.maxPrice || !!collectionsChecked.length || !!filters.traitsCount.length);
+  }, [collectionsChecked.length, filters.maxPrice, filters.minPrice, filters.seller, filters.traitsCount.length, setАreFiltersActive]);
 
   return (
     <>
