@@ -18,6 +18,7 @@ import { useTranslation } from '../translate';
 import RoboHash from './RoboHash';
 
 interface Props {
+  canNotCopy?: boolean;
   className?: string;
   prefix?: IdentityProps['prefix'];
   size?: number;
@@ -33,7 +34,7 @@ function isCodec (value?: AccountId | AccountIndex | Address | string | Uint8Arr
   return !!(value && (value as AccountId).toHuman);
 }
 
-function IdentityIcon ({ className = '', prefix, size = 24, theme, value }: Props): React.ReactElement<Props> {
+function IdentityIcon ({ canNotCopy = false, className = '', prefix, size = 24, theme, value }: Props): React.ReactElement<Props> {
   const { isEthereum, systemName } = useApi();
   const { t } = useTranslation();
   const { queueAction } = useContext(StatusContext);
@@ -56,7 +57,7 @@ function IdentityIcon ({ className = '', prefix, size = 24, theme, value }: Prop
     <BaseIdentityIcon
       Custom={Custom}
       className={className}
-      onCopy={_onCopy}
+      onCopy={!canNotCopy ? _onCopy : () => null}
       prefix={prefix}
       size={size}
       theme={isEthereum ? 'ethereum' : thisTheme as 'substrate'}

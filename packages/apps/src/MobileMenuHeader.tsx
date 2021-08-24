@@ -4,14 +4,17 @@
 import type { OpenPanelType } from '@polkadot/apps-routing/types';
 
 import React, { memo } from 'react';
+import { NavLink } from 'react-router-dom';
+import Menu from 'semantic-ui-react/dist/commonjs/collections/Menu';
 
 interface Props {
   isMobileMenu: OpenPanelType;
   setIsMobileMenu: (isOpen: OpenPanelType) => void;
+  theme: { theme: string; logo?: string };
 }
 
 const MobileMenuHeader = (props: Props): React.ReactElement<Props> => {
-  const { isMobileMenu, setIsMobileMenu } = props;
+  const { isMobileMenu, setIsMobileMenu, theme } = props;
 
   console.log('isMobileMenu', isMobileMenu);
 
@@ -65,6 +68,20 @@ const MobileMenuHeader = (props: Props): React.ReactElement<Props> => {
               fillRule='evenodd'/>
           </svg>
         </div>
+      )}
+      { theme.logo && (
+        <Menu.Item
+          active={location.pathname === '/'}
+          as={NavLink}
+          className='app-logo'
+          icon={
+            <img
+              alt={`logo ${theme.theme}`}
+              src={theme.logo}
+            />
+          }
+          to='/'
+        />
       )}
     </div>
   );
