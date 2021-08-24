@@ -27,14 +27,14 @@ import Signer from '@polkadot/react-signer';
 import infoSvg from '../src/images/info.svg';
 import ConnectingOverlay from './overlays/Connecting';
 import BalancesHeader from './BalancesHeader';
+import ManageAccounts from './ManageAccounts';
+import ManageBalances from './ManageBalances';
 import MobileAccountSelector from './MobileAccountSelector';
 import MobileBalancesHeader from './MobileBalancesHeader';
 import MobileMenu from './MobileMenu';
 import MobileMenuHeader from './MobileMenuHeader';
 import ScrollToTop from './ScrollToTop';
 import WarmUp from './WarmUp';
-import ManageAccounts from './ManageAccounts';
-import ManageBalances from './ManageBalances';
 
 export const PORTAL_ID = 'portals';
 
@@ -114,152 +114,150 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                   </div>
 
                 )}
-                <Suspense fallback='...'>
-                  <ErrorBoundary trigger={name}>
-                    {missingApis.length
-                      ? (
-                        <NotFound
-                          basePath={`/${name}`}
-                          location={location}
-                          missingApis={missingApis}
-                          onStatusChange={queueAction}
-                        />
-                      )
-                      : (
-                        <>
-                          <header className='app-header'>
-                            <div className='app-container app-container--header'>
-                              <MobileMenuHeader
-                                isMobileMenu={openPanel}
-                                setIsMobileMenu={setOpenPanel}
-                                theme={theme}
-                              />
-                              <Menu
-                                className='header-menu'
-                                tabular
-                              >
-                                { theme.logo && (
-                                  <Menu.Item
-                                    active={location.pathname === '/'}
-                                    as={NavLink}
-                                    className='app-logo'
-                                    icon={
-                                      <img
-                                        alt={`logo ${theme.theme}`}
-                                        src={theme.logo}
-                                      />
-                                    }
-                                    to='/'
-                                  />
-                                )}
-                                { !walletMode && (
-                                  <>
-                                    <Menu.Item
-                                      active={location.pathname === '/market'}
-                                      as={NavLink}
-                                      name='market'
-                                      to='/market'
+                <ErrorBoundary trigger={name}>
+                  {missingApis.length
+                    ? (
+                      <NotFound
+                        basePath={`/${name}`}
+                        location={location}
+                        missingApis={missingApis}
+                        onStatusChange={queueAction}
+                      />
+                    )
+                    : (
+                      <>
+                        <header className='app-header'>
+                          <div className='app-container app-container--header'>
+                            <MobileMenuHeader
+                              isMobileMenu={openPanel}
+                              setIsMobileMenu={setOpenPanel}
+                              theme={theme}
+                            />
+                            <Menu
+                              className='header-menu'
+                              tabular
+                            >
+                              { theme.logo && (
+                                <Menu.Item
+                                  active={location.pathname === '/'}
+                                  as={NavLink}
+                                  className='app-logo'
+                                  icon={
+                                    <img
+                                      alt={`logo ${theme.theme}`}
+                                      src={theme.logo}
                                     />
-                                    <Menu.Item
-                                      active={location.pathname === '/wallet'}
-                                      as={NavLink}
-                                      name='myTokens'
-                                      to='/wallet'
-                                    />
-                                    <Menu.Item
-                                      active={location.pathname === '/trades'}
-                                      as={NavLink}
-                                      name='trades'
-                                      to='/trades'
-                                    />
-                                    <Menu.Item
-                                      active={location.pathname === '/accounts'}
-                                      as={NavLink}
-                                      name='accounts'
-                                      to='/accounts'
-                                    />
-                                    <Menu.Item
-                                      active={location.pathname === '/faq'}
-                                      as={NavLink}
-                                      name='FAQ'
-                                      to='/faq'
-                                    />
-                                  </>
-                                )}
-                              </Menu>
-                              { (isApiReady) && (
-                                <div className={`app-user${account ? '' : ' hidden'}`}>
-                                  <BalancesHeader account={account} />
-                                  <MobileBalancesHeader
-                                    account={account}
-                                    isMobileMenu={openPanel}
-                                    setIsMobileMenu={setOpenPanel}
-                                  />
-                                  <div className='account-selector-block'>
-                                    <AccountSelector onChange={setAccount} />
-                                    <MobileAccountSelector
-                                      address={account}
-                                      openPanel={openPanel}
-                                      setOpenPanel={setOpenPanel}
-                                    />
-                                  </div>
-                                </div>
+                                  }
+                                  to='/'
+                                />
                               )}
-                              { !account && (
-                                <Menu className='create-account'>
+                              { !walletMode && (
+                                <>
+                                  <Menu.Item
+                                    active={location.pathname === '/market'}
+                                    as={NavLink}
+                                    name='market'
+                                    to='/market'
+                                  />
+                                  <Menu.Item
+                                    active={location.pathname === '/wallet'}
+                                    as={NavLink}
+                                    name='myTokens'
+                                    to='/wallet'
+                                  />
+                                  <Menu.Item
+                                    active={location.pathname === '/trades'}
+                                    as={NavLink}
+                                    name='trades'
+                                    to='/trades'
+                                  />
                                   <Menu.Item
                                     active={location.pathname === '/accounts'}
                                     as={NavLink}
-                                    className='crateAccountBtn'
-                                    name='Create or connect account'
+                                    name='accounts'
                                     to='/accounts'
                                   />
-                                </Menu>
+                                  <Menu.Item
+                                    active={location.pathname === '/faq'}
+                                    as={NavLink}
+                                    name='FAQ'
+                                    to='/faq'
+                                  />
+                                </>
                               )}
-                            </div>
-                          </header>
-                          { openPanel === 'menu' && (
-                            <MobileMenu
-                              account={account}
-                              setOpenPanel={setOpenPanel}
-                              theme={theme}
-                            />
-                          )}
-                          { openPanel === 'accounts' && (
-                            <ManageAccounts
-                              account={account}
-                              setAccount={setAccount}
-                              setIsMobileMenu={setOpenPanel}
-                            />
-                          )}
-                          { openPanel === 'balances' && (
-                            <ManageBalances
-                              account={account}
-                            />
-                          )}
-                          { (openPanel !== 'balances' && openPanel !== 'accounts') && (
-                            <Suspense fallback='...'>
-                              <main className={`app-main ${openPanel || ''}`}>
-                                <div className='app-container'>
-                                  <Component
-                                    account={account}
-                                    basePath={`/${name}`}
-                                    location={location}
-                                    onStatusChange={queueAction}
+                            </Menu>
+                            { (isApiReady) && (
+                              <div className={`app-user${account ? '' : ' hidden'}`}>
+                                <BalancesHeader account={account} />
+                                <MobileBalancesHeader
+                                  account={account}
+                                  isMobileMenu={openPanel}
+                                  setIsMobileMenu={setOpenPanel}
+                                />
+                                <div className='account-selector-block'>
+                                  <AccountSelector onChange={setAccount} />
+                                  <MobileAccountSelector
+                                    address={account}
                                     openPanel={openPanel}
                                     setOpenPanel={setOpenPanel}
                                   />
-                                  <ConnectingOverlay />
-                                  <div id={PORTAL_ID} />
                                 </div>
-                              </main>
-                            </Suspense>
-                          )}
-                        </>
-                      )
-                    }
-                  </ErrorBoundary>
-                </Suspense>
+                              </div>
+                            )}
+                            { !account && (
+                              <Menu className='create-account'>
+                                <Menu.Item
+                                  active={location.pathname === '/accounts'}
+                                  as={NavLink}
+                                  className='crateAccountBtn'
+                                  name='Create or connect account'
+                                  to='/accounts'
+                                />
+                              </Menu>
+                            )}
+                          </div>
+                        </header>
+                        { openPanel === 'menu' && (
+                          <MobileMenu
+                            account={account}
+                            setOpenPanel={setOpenPanel}
+                            theme={theme}
+                          />
+                        )}
+                        { openPanel === 'accounts' && (
+                          <ManageAccounts
+                            account={account}
+                            setAccount={setAccount}
+                            setIsMobileMenu={setOpenPanel}
+                          />
+                        )}
+                        { openPanel === 'balances' && (
+                          <ManageBalances
+                            account={account}
+                          />
+                        )}
+                        { (openPanel !== 'balances' && openPanel !== 'accounts') && (
+                          <Suspense fallback=''>
+                            <main className={`app-main ${openPanel || ''}`}>
+                              <div className='app-container'>
+                                <Component
+                                  account={account}
+                                  basePath={`/${name}`}
+                                  location={location}
+                                  onStatusChange={queueAction}
+                                  openPanel={openPanel}
+                                  setOpenPanel={setOpenPanel}
+                                />
+                                <ConnectingOverlay />
+                                <div id={PORTAL_ID} />
+                              </div>
+                            </main>
+                          </Suspense>
+                        )}
+                      </>
+                    )
+                  }
+                </ErrorBoundary>
                 <Status />
               </>
             )

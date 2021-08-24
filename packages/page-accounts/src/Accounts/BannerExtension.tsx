@@ -5,7 +5,6 @@ import { detect } from 'detect-browser';
 import React, { useRef } from 'react';
 import { Trans } from 'react-i18next';
 
-import useExtensionCounter from './useCounter';
 import { availableExtensions } from '@polkadot/apps-config';
 import { isWeb3Injected } from '@polkadot/extension-dapp';
 import { onlyOnWeb } from '@polkadot/react-api/hoc';
@@ -14,6 +13,7 @@ import { stringUpperFirst } from '@polkadot/util';
 
 import { useTranslation } from '../translate';
 import Banner from './Banner';
+import useExtensionCounter from './useCounter';
 
 // it would have been really good to import this from detect, however... not exported
 type Browser = 'chrome' | 'firefox';
