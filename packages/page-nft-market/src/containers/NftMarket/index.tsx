@@ -25,6 +25,7 @@ import NftTokenCard from '../../components/NftTokenCard';
 import SearchForm from '../../components/SearchForm';
 import MarketFilters from '../MarketFilters';
 import { SESSION_STORAGE_KEYS } from '../MarketFilters/constants';
+import noMyTokensIcon from '../MarketFilters/noMyTokens.svg';
 import MarketSort from '../MarketSort';
 
 interface BuyTokensProps {
@@ -114,7 +115,6 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: BuyTokensProps): ReactE
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     if (storageFilters && !equal(storageFilters, filters)) {
-      console.log('setFilters MarketFilter', storageFilters);
       setFilters(storageFilters);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -178,6 +178,13 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: BuyTokensProps): ReactE
               setFilters={setFilters}
             />
           </div>
+          {(Object.keys(offers).length === 0 && filters.seller) && (
+            <div className='market-pallet empty'>
+              <img alt='no tokens'
+                src={noMyTokensIcon as string} ></img>
+              <p className='no-tokens-text'>You have no tokens</p>
+            </div>
+          )}
           {Object.keys(offers).length > 0 && (
             <div className='market-pallet'>
               <InfiniteScroll

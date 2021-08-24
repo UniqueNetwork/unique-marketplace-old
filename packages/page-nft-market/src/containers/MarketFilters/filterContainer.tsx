@@ -195,6 +195,13 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearCollections, 
     if (inputChecked.length > 0) {
       setInStorage(SESSION_STORAGE_KEYS.ARE_ALL_COLLECTIONS_CHECKED, true);
     } else setInStorage(SESSION_STORAGE_KEYS.ARE_ALL_COLLECTIONS_CHECKED, false);
+
+    if (allowClearCollections) {
+      clearCheckedValues();
+    }
+
+    setInStorage(SESSION_STORAGE_KEYS.AREFILTERSACTIVE, !!filters.seller || !!filters.minPrice || !!filters.maxPrice || !!inputChecked.length || !!filters.traitsCount.length);
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters]);
 
@@ -256,7 +263,7 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearCollections, 
               {collections.map((collection, index) => {
                 return (
                   <div
-                    className={`collections-main ${inputChecked.includes(String(collection.id)) ? 'collections-main-background' : ''}`}
+                    className='collections-main'
                     key={collection.id}
                     onClick={filterCurrent.bind(null, collection.id)}
                   >
@@ -287,7 +294,7 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearCollections, 
           <div>Price</div>
           <div className='clear'>
             <div
-              className={`clear-title ${(KSMPrices.minPrice || KSMPrices.maxPrice) ? 'clear-title-active' : ''}`}
+              className={`clear-title ${(KSMPrices.minPrice || KSMPrices.maxPrice || filters.minPrice || filters.maxPrice) ? 'clear-title-active' : ''}`}
               onClick={clearPrices}
             >
               Clear

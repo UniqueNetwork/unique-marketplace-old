@@ -9,7 +9,7 @@ import Dropdown, { DropdownProps } from 'semantic-ui-react/dist/commonjs/modules
 import ArrowDown from '@polkadot/app-nft-market/components/arrowDown';
 import ArrowUp from '@polkadot/app-nft-market/components/arrowUp';
 import { Filters } from '@polkadot/app-nft-market/containers/NftMarket';
-import clearIcon from '@polkadot/app-nft-wallet/components/CollectionSearch/clearIcon.svg';
+import { ClearIcon } from '@polkadot/app-nft-wallet/components/CollectionSearch/ClearIcon';
 import searchIcon from '@polkadot/app-nft-wallet/components/CollectionSearch/searchIcon.svg';
 import { Input } from '@polkadot/react-components';
 
@@ -26,6 +26,7 @@ const SearchForm = (props: SearchFormProps) => {
   const [searchString, setSearchString] = useState<string>('');
   const [sortValue, setSortValue] = useState<string>('creationDate-desc');
   const searchRef = useRef<string | null>(null);
+  const areFiltersActive = JSON.parse(sessionStorage.getItem('areFiltersActive') as string) as boolean;
 
   const optionNode = useCallback((active: boolean, order: string, text: string) => {
     return (
@@ -156,12 +157,12 @@ const SearchForm = (props: SearchFormProps) => {
             />
           )}
           { searchString?.length > 0 && (
-            <img
-              alt='clear'
+            <div
               className='clear-icon'
               onClick={clearSearch}
-              src={clearIcon as string}
-            />
+            >
+              <ClearIcon/>
+            </div>
           )}
         </Input>
       </Form.Field>
@@ -176,7 +177,7 @@ const SearchForm = (props: SearchFormProps) => {
         <span>
           {offersCount} items
         </span>
-        <a onClick={clearFilters}>Clear all filters</a>
+        { areFiltersActive && <a onClick={clearFilters}>Clear all filters</a> }
       </Form.Field>
     </Form>
   );
