@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright 2017-2021 usetech authors & contributors
+# Copyright 2017-2021 @polkadot/apps authors & contributors
 # SPDX-License-Identifier: Apache-2.0
 
 # This script is used when the docker container starts and does the magic to
@@ -8,12 +8,15 @@
 TARGET=./env-config.js
 
 # Recreate config file
-rm -rf $TARGET
-touch $TARGET
+echo -n > $TARGET
+
+declare -a vars=(
+  "WS_URL"
+  "SAMPLE"
+)
 
 echo "window.process_env = {" >> $TARGET
-echo "escrowAddress: '$escrowAddress'," >> $TARGET
-echo "MatcherContractAddress: '$MatcherContractAddress'," >> $TARGET
-echo "mintedCollection: '$mintedCollection'," >> $TARGET
-echo "vaultAddress: '$vaultAddress'" >> $TARGET
+for VAR in ${vars[@]}; do
+  echo "  $VAR: \"${!VAR}\"," >> $TARGET
+done
 echo "}" >> $TARGET
