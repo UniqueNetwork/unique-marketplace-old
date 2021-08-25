@@ -178,36 +178,45 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: BuyTokensProps): ReactE
               <p className='no-tokens-text'>You have no tokens</p>
             </div>
           )}
-          {Object.keys(offers).length > 0 && (
-            <div className='market-pallet'>
-              <InfiniteScroll
-                hasMore={hasMore}
-                initialLoad={false}
-                loadMore={fetchScrolledData}
-                loader={<Loader
-                  active
-                  className='load-more'
-                  inline='centered'
-                  key={'nft-market'}
-                />}
-                pageStart={1}
-                threshold={200}
-                useWindow={true}
-              >
-                <div className='market-pallet__item'>
-                  {Object.values(offers).map((token) => (
-                    <NftTokenCard
-                      account={account}
-                      collectionId={token.collectionId.toString()}
-                      key={`${token.collectionId}-${token.tokenId}-${Math.random() * 100}`}
-                      openDetailedInformationModal={openDetailedInformationModal}
-                      token={token}
-                    />
-                  ))}
-                </div>
-              </InfiniteScroll>
-            </div>
-          )}
+          {collections.length
+            ? Object.keys(offers).length > 0 && (
+              <div className='market-pallet'>
+                <InfiniteScroll
+                  hasMore={hasMore}
+                  initialLoad={false}
+                  loadMore={fetchScrolledData}
+                  loader={<Loader
+                    active
+                    className='load-more'
+                    inline='centered'
+                    key={'nft-market'}
+                  />}
+                  pageStart={1}
+                  threshold={200}
+                  useWindow={true}
+                >
+                  <div className='market-pallet__item'>
+                    {Object.values(offers).map((token) => (
+                      <NftTokenCard
+                        account={account}
+                        collectionId={token.collectionId.toString()}
+                        key={`${token.collectionId}-${token.tokenId}-${Math.random() * 100}`}
+                        openDetailedInformationModal={openDetailedInformationModal}
+                        token={token}
+                      />
+                    ))}
+                  </div>
+                </InfiniteScroll>
+              </div>
+            )
+            : <div className='market-pallet empty'>
+              <Loader
+                active
+                className='load-more'
+                inline='centered'
+                key={'nft-market'}
+              />
+            </div>}
         </div>
       </div>
       <div className={`nft-market--footer ${openPanel === 'sort' ? 'hide' : ''}`}>
