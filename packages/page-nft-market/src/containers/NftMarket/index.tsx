@@ -60,7 +60,7 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: BuyTokensProps): ReactE
   const initialFilters = storageFilters && !equal(storageFilters, defaultFilters) ? storageFilters : defaultFilters;
   const { getOffers, offers, offersCount, offersLoading, presetCollections } = useCollections();
   const [allowClearFilters, setAllowClearFilters] = useState<boolean>(false);
-  const [areFiltersActive, setАreFiltersActive] = useState<boolean>(false);
+  const [areFiltersActive, setAreFiltersActive] = useState<boolean>(false);
   const [collections, setCollections] = useState<NftCollectionInterface[]>([]);
   const [filters, setFilters] = useState<Filters>(initialFilters);
 
@@ -77,15 +77,6 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: BuyTokensProps): ReactE
     setCollections(() => [...firstCollections]);
   }, [presetCollections]);
 
-  // set scroll parent to initialize scroll container in mobile or desktop
-  const getScrollParent = useCallback(() => {
-    if (nftMarketPanel.current && nftMarketPanel.current.offsetWidth <= 1023) {
-      return nftMarketPanel.current;
-    }
-
-    return null;
-  }, [nftMarketPanel]);
-
   const fetchScrolledData = useCallback((page) => {
     getOffers(page, perPage, filters);
   }, [filters, getOffers]);
@@ -93,7 +84,7 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: BuyTokensProps): ReactE
   const clearAllFilters = useCallback(() => {
     setAllowClearFilters(true);
     setFilters(defaultFilters);
-    setАreFiltersActive(false);
+    setAreFiltersActive(false);
     sessionStorage.removeItem(SESSION_STORAGE_KEYS.FILTERS);
     sessionStorage.removeItem(SESSION_STORAGE_KEYS.PRICES);
     sessionStorage.removeItem(SESSION_STORAGE_KEYS.ARE_ALL_COLLECTIONS_CHECKED);
@@ -120,7 +111,6 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: BuyTokensProps): ReactE
   }, [addMintCollectionToList]);
 
   useEffect(() => {
-    console.log('initialLoad', filters);
     void getOffers(1, perPage, filters);
   }, [filters, getOffers]);
 
@@ -162,8 +152,8 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: BuyTokensProps): ReactE
           filters={filters}
           openFilters={openPanel === 'filters'}
           setAllowClearFilters={setAllowClearFilters}
+          setAreFiltersActive={setAreFiltersActive}
           setFilters={setFilters}
-          setАreFiltersActive = {setАreFiltersActive}
         />
         <MarketSort
           filters={filters}
@@ -191,7 +181,6 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: BuyTokensProps): ReactE
           {Object.keys(offers).length > 0 && (
             <div className='market-pallet'>
               <InfiniteScroll
-                getScrollParent={getScrollParent}
                 hasMore={hasMore}
                 initialLoad={false}
                 loadMore={fetchScrolledData}
@@ -203,7 +192,7 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: BuyTokensProps): ReactE
                 />}
                 pageStart={1}
                 threshold={200}
-                useWindow={!getScrollParent()}
+                useWindow={true}
               >
                 <div className='market-pallet__item'>
                   {Object.values(offers).map((token) => (

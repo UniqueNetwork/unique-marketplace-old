@@ -28,12 +28,11 @@
   }
 }
 
-@media (max-width: 1023px) {
+@media (max-width: 1024px) {
   .accounts--App {
     background-color: var(--card-background);
 
     .page-accounts {
-      height: calc(100vh - 70px);
       overflow: auto;
       padding-top: calc((var(--gap) / 2) * 3);
 

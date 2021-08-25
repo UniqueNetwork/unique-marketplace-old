@@ -30,10 +30,9 @@
   }
 }
 
-@media (max-width: 1023px) {
+@media (max-width: 1024px) {
   .app-trades {
     background-color: var(--card-background);
-    height: calc(100vh - 70px);
     overflow: auto;
 
     .ui.header {

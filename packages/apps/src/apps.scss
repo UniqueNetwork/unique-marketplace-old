@@ -11,7 +11,7 @@
 .app-header {
   background: var(--header-background);
   margin-bottom: 0;
-  padding: var(--gap) 0;
+  padding: calc(var(--gap) / 2) 0;
 
   .ui.tabular.menu {
     display: inline-flex;
@@ -36,11 +36,12 @@
         background-color: transparent;
         padding: 0;
         width: auto;
-        margin-right: 50px;
+        margin-right: calc((var(--gap) / 2) * 3);
 
         img {
           width: auto;
           max-width: 130px;
+          height: 50px;
         }
       }
     }
@@ -350,7 +351,6 @@
     display: flex;
     flex-direction: column;
     background-color: var(--card-background);
-    min-height: calc(100vh - 70px);
 
     &--logo {
       text-align: center;
@@ -395,7 +395,14 @@
 }
 
 @media (max-width: 1024px) {
+  .app-wrapper {
+    background-color: var(--card-background);
+  }
   .app-header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+
     .menu-mobile-header {
       display: flex;
       align-items: center;
@@ -403,12 +410,8 @@
     }
   }
 
-  .app-wrapper {
-    height: 100vh;
-    overflow: hidden;
-  }
-
   .app-main {
+    margin-top: 70px;
     padding: 0;
 
     .app-container {
@@ -422,6 +425,9 @@
 }
 
 @media (max-width: 767px) {
+  .app-main {
+    margin-top: 54px;
+  }
   .menu-mobile-header {
     display: block;
     .app-logo {
@@ -437,7 +443,6 @@
   font-size: 14px;
   font-family: var(--font-roboto);
   font-weight: 500;
-  height: calc(100vh - 75px);
   line-height: 22px;
 
   .unit {
@@ -473,7 +478,6 @@
 }
 
 .manage-accounts {
-  height: calc(100vh - 75px);
   background-color: var(--header-background);
   overflow: hidden;
 
@@ -498,7 +502,6 @@
 
   .accounts-list {
     overflow-y: scroll;
-    height: calc(100vh - 233px);
     padding: 0 var(--gap);
 
     .account-item {

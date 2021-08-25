@@ -19,10 +19,10 @@ interface PropTypes {
   openFilters: boolean;
   setAllowClearFilters: (allow: boolean) => void;
   setFilters: (filters: Filters) => void;
-  setАreFiltersActive: (condition: boolean) => void;
+  setAreFiltersActive: (condition: boolean) => void;
 }
 
-const MarketFilters = ({ account, allowClearFilters, collections, filters, openFilters, setAllowClearFilters, setFilters, setАreFiltersActive }: PropTypes): ReactElement => {
+const MarketFilters = ({ account, allowClearFilters, collections, filters, openFilters, setAllowClearFilters, setAreFiltersActive, setFilters }: PropTypes): ReactElement => {
   return (
     <div className={`filter-main ${openFilters ? 'open' : ''}`}>
       <FilterContainer
@@ -31,8 +31,8 @@ const MarketFilters = ({ account, allowClearFilters, collections, filters, openF
         collections={collections}
         filters={filters}
         setAllowClearFilters={setAllowClearFilters}
+        setAreFiltersActive={setAreFiltersActive}
         setFilters={setFilters}
-        setАreFiltersActive = {setАreFiltersActive}
       />
       <TreatsFilter
         filters={filters}

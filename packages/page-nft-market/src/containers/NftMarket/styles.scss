@@ -7,6 +7,7 @@
     display: grid;
     grid-template-columns: 280px 1fr;
     grid-column-gap: 32px;
+    min-height: 100vh;
   }
 
   .marketplace-body {
@@ -216,7 +217,6 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: calc(100% - 181px);
 
   .no-tokens-text{
     font-family: var(--font-roboto);
@@ -279,7 +279,7 @@
   }
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 1025px) {
   .nft-market {
     h1.ui.header {
       display: block;
@@ -320,7 +320,7 @@
   }
 }
 
-@media (max-width: 1023px) {
+@media (max-width: 1024px) {
   .market-pallet {
     margin-left: 90px;
     width: 85%;
@@ -355,24 +355,13 @@
       padding: 0 var(--gap);
     }
 
-    &.no-accounts {
-
-      .nft-market--panel {
-        height: calc(100vh - 221px);
-      }
-    }
-
     &--panel {
       display: block;
       width: 100%;
+      margin-bottom: 60px;
 
-      height: calc(100vh - 133px);
       overflow-x: hidden;
       overflow-y: auto;
-
-      &.long {
-        height: calc(100vh - 75px);
-      }
 
       .ui.buttons {
         display: grid;
@@ -407,7 +396,9 @@
     &--footer {
       height: 60px;
       box-shadow: 0px -8px 12px rgba(0, 0, 0, 0.06);
-      position: relative;
+      position: fixed;
+      width: 100%;
+      bottom: 0;
       background-color: var(--card-background);
       padding: 10px var(--gap);
 
