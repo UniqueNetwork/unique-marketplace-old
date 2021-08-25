@@ -74,7 +74,7 @@ function NftCollectionCard ({ account, canTransferTokens, collection, onHold, op
 
   // set scroll parent to initialize scroll container in mobile or desktop
   const getScrollParent = useCallback(() => {
-    if (nftWalletPanel.current && nftWalletPanel.current.offsetWidth <= 1024) {
+    if (nftWalletPanel.current && nftWalletPanel.current.offsetWidth > 1024) {
       return nftWalletPanel.current;
     }
 
@@ -92,6 +92,8 @@ function NftCollectionCard ({ account, canTransferTokens, collection, onHold, op
       cleanup.current = true;
     };
   }, []);
+
+  const useWindow = !getScrollParent();
 
   return (
     <Expander
@@ -171,7 +173,7 @@ function NftCollectionCard ({ account, canTransferTokens, collection, onHold, op
           />}
           pageStart={1}
           threshold={100}
-          useWindow={!getScrollParent()}
+          useWindow={useWindow}
         >
           <div className='token-table'>
             { account && tokensOnPage.map((token: string, index: number) => (
