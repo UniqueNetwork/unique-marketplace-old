@@ -26,7 +26,7 @@ const MobileMenuHeader = (props: Props): React.ReactElement<Props> => {
   }, [location, setOpenPanel]);
 
   return (
-    <div className={`menu-mobile ${account ? '' : 'no-account'}`}>
+    <div className={`menu-mobile ${account ? '' : 'no-accounts'}`}>
       <div className='menu-mobile--logo'>
         <img
           alt={`logo ${theme.theme}`}
