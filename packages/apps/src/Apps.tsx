@@ -222,7 +222,7 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                         )}
                         { (openPanel !== 'balances' && openPanel !== 'accounts') && (
                           <Suspense fallback=''>
-                            <main className={`app-main ${openPanel || ''} ${noAccounts ? 'no-account' : ''}`}>
+                            <main className={`app-main ${openPanel || ''} ${noAccounts ? 'no-accounts' : ''}`}>
                               <div className='app-container'>
                                 { noAccounts && (
                                   <div className='no-account'>

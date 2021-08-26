@@ -112,6 +112,8 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: BuyTokensProps): ReactE
     void getOffers(1, perPage, filters);
   }, [filters, getOffers]);
 
+  console.log('offersLoading', offersLoading);
+
   return (
     <div className={marketClassName}>
       <Header as='h1'>Market</Header>
@@ -170,12 +172,14 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: BuyTokensProps): ReactE
           </div>
           {(Object.keys(offers).length === 0 && filters.seller) && (
             <div className='market-pallet empty'>
-              <img alt='no tokens'
-                src={noMyTokensIcon as string} ></img>
+              <img
+                alt='no tokens'
+                src={noMyTokensIcon as string}
+              />
               <p className='no-tokens-text'>You have no tokens</p>
             </div>
           )}
-          { Object.keys(offers).length > 0
+          { (Object.keys(offers).length > 0 || !offersLoading)
             ? (
               <div className='market-pallet'>
                 <InfiniteScroll
