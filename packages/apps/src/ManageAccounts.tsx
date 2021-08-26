@@ -4,7 +4,7 @@
 import type { OpenPanelType } from '@polkadot/apps-routing/types';
 
 import React, { memo, useCallback } from 'react';
-import { NavLink } from 'react-router-dom';
+import { useHistory } from 'react-router';
 
 import AccountName from '@polkadot/react-components/AccountName';
 import IdentityIcon from '@polkadot/react-components/IdentityIcon';
@@ -20,6 +20,7 @@ interface Props {
 
 const ManageAccounts = (props: Props): React.ReactElement<Props> => {
   const { setAccount, setIsMobileMenu } = props;
+  const history = useHistory();
   const { allAccounts } = useAccounts();
 
   const onSelectAccount = useCallback((address: string) => {
@@ -27,16 +28,19 @@ const ManageAccounts = (props: Props): React.ReactElement<Props> => {
     setIsMobileMenu('tokens');
   }, [setAccount, setIsMobileMenu]);
 
+  const onAccounts = useCallback(() => {
+    history.push('/accounts');
+    setIsMobileMenu('tokens');
+  }, [history, setIsMobileMenu]);
+
   return (
     <div className='manage-accounts'>
-      <NavLink
+      <a
         className='manage-accounts--link'
-        exact={true}
-        strict={true}
-        to={'/accounts'}
+        onClick={onAccounts}
       >
         Manage accounts
-      </NavLink>
+      </a>
       <header>Choose the account</header>
       <div className='accounts-list'>
         { allAccounts?.map((address: string) => (
