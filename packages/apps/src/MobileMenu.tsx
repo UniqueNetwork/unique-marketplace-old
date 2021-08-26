@@ -13,7 +13,7 @@ interface Props {
 }
 
 const MobileMenuHeader = (props: Props): React.ReactElement<Props> => {
-  const { setOpenPanel, theme } = props;
+  const { account, setOpenPanel, theme } = props;
   const location = useLocation();
   const currentLocation = useRef<string>();
 
@@ -26,7 +26,7 @@ const MobileMenuHeader = (props: Props): React.ReactElement<Props> => {
   }, [location, setOpenPanel]);
 
   return (
-    <div className='menu-mobile'>
+    <div className={`menu-mobile ${account ? '' : 'no-account'}`}>
       <div className='menu-mobile--logo'>
         <img
           alt={`logo ${theme.theme}`}

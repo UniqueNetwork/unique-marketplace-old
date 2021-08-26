@@ -411,7 +411,7 @@
   }
 
   .app-main {
-    margin-top: 70px;
+    margin-top: 84px;
     padding: 0;
 
     .app-container {
@@ -422,17 +422,41 @@
   .deposit-flex .ksm-text {
     width: 25%;
   }
+
+  .menu-mobile, .manage-balances, .manage-accounts {
+    margin-top: 84px;
+  }
 }
 
 @media (max-width: 767px) {
   .app-main {
     margin-top: 54px;
+
+    &.no-account {
+      margin-top: 67px;
+    }
   }
   .menu-mobile-header {
     display: block;
     .app-logo {
       display: none;
     }
+  }
+
+  .menu-mobile {
+    margin-top: 54px;
+
+    &.no-account {
+      margin-top: 67px;
+    }
+  }
+
+  .manage-balances {
+    margin-top: 54px;
+  }
+
+  .manage-accounts {
+    margin-top: 54px;
   }
 }
 
@@ -501,7 +525,6 @@
   }
 
   .accounts-list {
-    overflow-y: scroll;
     padding: 0 var(--gap);
 
     .account-item {
