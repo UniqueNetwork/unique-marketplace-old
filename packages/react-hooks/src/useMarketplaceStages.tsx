@@ -372,17 +372,11 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
       case state.matches('loadingTokenInfo'):
         void loadingTokenInfo();
         break;
-      case state.matches('buy'):
-        void buy();
-        break;
       case state.matches('sell'):
         void sell();
         break;
       case state.matches('sentTokenToNewOwner'):
         void sentTokenToAccount();
-        break;
-      case state.matches('waitForNftDeposit'):
-        void waitForNftDeposit();
         break;
       case state.matches('getDepositReady'):
         break;
@@ -395,9 +389,6 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
       case state.matches('revertMoney'):
         void revertMoney();
         break;
-      case state.matches('checkDepositReady'):
-        void checkDepositReady();
-        break;
       case state.matches('cancelSell'):
         void cancelSell();
         break;
@@ -408,7 +399,24 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
       default:
         break;
     }
-  }, [state.value, loadingTokenInfo, state, buy, sell, sentTokenToAccount, waitForNftDeposit, askPrice, registerSale, revertMoney, checkDepositReady, cancelSell, waitForTokenRevert]);
+  }, [state.value, state, cancelSell, revertMoney, waitForTokenRevert, registerSale, askPrice, sentTokenToAccount, sell, loadingTokenInfo]);
+
+  useEffect(() => {
+    switch (true) {
+      // on load - update token state
+      case state.matches('buy'):
+        void buy(); // occurs unexpected change of ref (in deps)
+        break;
+      case state.matches('waitForNftDeposit'):
+        void waitForNftDeposit(); // occurs unexpected change of ref (in deps)
+        break;
+      case state.matches('checkDepositReady'):
+        void checkDepositReady(); // occurs unexpected change of ref (in deps)
+        break;
+      default:
+        break;
+    }
+  }, [state.value, state, buy, waitForNftDeposit, checkDepositReady]);
 
   useEffect(() => {
     if (isContractReady) {
