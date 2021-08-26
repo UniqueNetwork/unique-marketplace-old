@@ -9,7 +9,7 @@ import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection
 // @ts-ignore
 import equal from 'deep-equal';
 // external imports
-import React, { memo, ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { memo, ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
 import { useHistory } from 'react-router';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
@@ -64,8 +64,6 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: BuyTokensProps): ReactE
   const [collections, setCollections] = useState<NftCollectionInterface[]>([]);
   const [filters, setFilters] = useState<Filters>(initialFilters);
 
-  const nftMarketPanel = useRef<HTMLDivElement>(null);
-
   const hasMore = !!(offers && offersCount) && Object.keys(offers).length < offersCount;
   const openDetailedInformationModal = useCallback((collectionId: string, tokenId: string) => {
     history.push(`/market/token-details?collectionId=${collectionId}&tokenId=${tokenId}`);
@@ -119,7 +117,6 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: BuyTokensProps): ReactE
       <Header as='h1'>Market</Header>
       <div
         className={`nft-market--panel ${openPanel === 'sort' ? 'long' : ''}`}
-        ref={nftMarketPanel}
       >
         { openPanel === 'tokens' && (
           <Header
@@ -178,8 +175,8 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: BuyTokensProps): ReactE
               <p className='no-tokens-text'>You have no tokens</p>
             </div>
           )}
-          {collections.length
-            ? Object.keys(offers).length > 0 && (
+          { Object.keys(offers).length > 0
+            ? (
               <div className='market-pallet'>
                 <InfiniteScroll
                   hasMore={hasMore}
@@ -200,7 +197,7 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: BuyTokensProps): ReactE
                       <NftTokenCard
                         account={account}
                         collectionId={token.collectionId.toString()}
-                        key={`${token.collectionId}-${token.tokenId}-${Math.random() * 100}`}
+                        key={`${token.collectionId}-${token.tokenId}`}
                         openDetailedInformationModal={openDetailedInformationModal}
                         token={token}
                       />
