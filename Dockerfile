@@ -14,12 +14,6 @@ RUN echo "daemon off;" >> /etc/nginx/nginx.conf \
     && ln -sf /dev/stdout /var/log/nginx/access.log \
     && ln -sf /dev/stderr /var/log/nginx/error.log
 
-# Cleanups
-RUN apt-get remove -y --purge software-properties-common \
-    && apt-get -y autoremove \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
 # Set working directory and copy project files
 WORKDIR /usr/share/nginx/html
 
