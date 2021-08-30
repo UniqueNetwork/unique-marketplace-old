@@ -46,7 +46,7 @@ module.exports = merge(
     },
     plugins: [
       new HtmlWebpackPlugin({
-        PAGE_TITLE: 'Unique Network NFT Marketplace',
+        PAGE_TITLE: 'Artopool NFT Marketplace',
         inject: true,
         template: path.join(__dirname, 'public/index.html')
       }),

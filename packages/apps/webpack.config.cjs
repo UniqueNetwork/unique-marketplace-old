@@ -17,7 +17,7 @@ module.exports = merge(
     devtool: process.env.BUILD_ANALYZE ? 'source-map' : false,
     plugins: [
       new HtmlWebpackPlugin({
-        PAGE_TITLE: 'Unique Network NFT Marketplace',
+        PAGE_TITLE: 'Art Pool NFT Marketplace',
         inject: true,
         template: path.join(context, `${hasPublic ? 'public/' : ''}index.html`)
       })
