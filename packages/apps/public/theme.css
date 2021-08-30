@@ -226,3 +226,65 @@
   --modal-text-color: white;
   --color-checkbox: white;
 }
+
+
+
+[data-theme="Artpool"] {
+  --white-color: #fff;
+  --black-color: #000;
+  --border-color: #ecec   ec;
+  --error-color: #ff6335;
+  --error-color-dark: #E65E35 ;
+  --success-color: #93ff35;
+  --divider-color: #f5f5f5;
+  --tabs-color: #81858e;
+  --table-row-hover: #eef0f7;
+
+  --gap: 16px;
+  --bradius: 4px;
+  --max-width: 1366px;
+
+  --font-roboto: "Roboto", Frutiger, "Frutiger Linotype", "Dejavu Sans",
+  "Helvetica Neue", Arial, sans-serif;
+
+  --font-raleway: "Raleway", Frutiger, "Frutiger Linotype", "Dejavu Sans",
+  "Helvetica Neue", Arial, sans-serif;
+
+  --font-inter: "Inter", Frutiger, "Frutiger Linotype", "Dejavu Sans",
+  "Helvetica Neue", Arial, sans-serif;
+
+  --link-color: #6F32FF;
+  --link-light-color: #CAB8FF;
+  --bg-page:#F1E8FF;
+  --header-background: #fff;
+  --header-text-color: #000000;
+  --sub-header-color: #000;
+  --sub-header-font-size: 14px;
+  --sub-header-text-transform: #040b1d;
+  --menu-text-transform: none;
+  --menu-font-size: 16px;
+  --text-color: #000;
+  --title-color: #040b1d;
+  --button-color: #6F32FF;
+  --button-background-hover: #F5FCFF;
+  --button-background-active: #6F32FF;
+  --input-background-color: #ffffff;
+  --input-border-color-hover: #e1e1e1;
+  --input-border-color-outline: #cccccc;
+  --input-background-disabled-color: #fafafa;
+  --input-placeholder-search-color: #81858E;
+  --input-text-color: #040b1d;
+  --max-header-width: 100%;
+  --card-border-color: #ececec;
+  --card-background: #ffffff;
+  --card-shadow: rgba(0, 0, 0, 0.08);
+  --card-text-color: #000;
+  --card-link-color: #6F32FF;
+  --account-selector-background: #f9faff;
+  --account-selector-name-color: #000;
+  --account-selector-address-color: #000;
+  --dropdown-scrollbar-color: #000;
+  --modal-border-color: transparent;
+  --modal-text-color: #000;
+  --color-checkbox: #000;
+}

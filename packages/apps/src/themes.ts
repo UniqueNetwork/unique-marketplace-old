@@ -6,6 +6,7 @@ import type { ThemeDef } from '@polkadot/react-components/types';
 import nf4Digital from '../public/logos/nf4Digital.png';
 import UniqueLogo from '../public/logos/unique.svg';
 import Vernissage from '../public/logos/vernissage.svg';
+import Artpool from '../public/logos/artpool.svg';
 
 export const uniqueTheme: ThemeDef = {
   domain: 'whitelabel.market',
@@ -31,4 +32,10 @@ export const vernissageTheme: ThemeDef = {
   theme: 'Vernissage'
 };
 
-export const Themes: ThemeDef[] = [uniqueTheme, nf3Theme, luvTheme, vernissageTheme];
+export const artpoolTheme: ThemeDef = {
+  domain: 'artpool.xyz',
+  logo: Artpool as string,
+  theme: 'Artpool'
+};
+
+export const Themes: ThemeDef[] = [uniqueTheme, nf3Theme, luvTheme, vernissageTheme, artpoolTheme];

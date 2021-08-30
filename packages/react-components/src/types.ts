@@ -74,7 +74,7 @@ export interface NullContract {
   address: null;
 }
 
-export type ThemeType = 'Unique' | 'NF3Digital' | 'LUVNFT' | 'Vernissage';
+export type ThemeType = 'Artpool' | 'Unique' | 'NF3Digital' | 'LUVNFT' | 'Vernissage';
 
 export interface ThemeDef {
   domain?: string;
