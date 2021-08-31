@@ -22,6 +22,7 @@ import createRoutes from '@polkadot/apps-routing';
 import { AccountSelector, ErrorBoundary, StatusContext } from '@polkadot/react-components';
 import GlobalStyle from '@polkadot/react-components/styles';
 import { useApi } from '@polkadot/react-hooks';
+import useWindowDimensions from '@polkadot/react-hooks/useWindowDimensions';
 import Signer from '@polkadot/react-signer';
 
 import infoSvg from '../src/images/info.svg';
@@ -30,7 +31,6 @@ import BalancesHeader from './BalancesHeader';
 import ManageAccounts from './ManageAccounts';
 import ManageBalances from './ManageBalances';
 import MobileAccountSelector from './MobileAccountSelector';
-import MobileBalancesHeader from './MobileBalancesHeader';
 import MobileMenu from './MobileMenu';
 import MobileMenuHeader from './MobileMenuHeader';
 import ScrollToTop from './ScrollToTop';
@@ -60,6 +60,7 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
   const { queueAction } = useContext(StatusContext);
   const [account, setAccount] = useState<string>();
   const [openPanel, setOpenPanel] = useState<OpenPanelType>('tokens');
+  const { width } = useWindowDimensions();
 
   const uiHighlight = useMemo(
     () => getSystemChainColor(systemChain, systemName),
@@ -172,11 +173,11 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                             </Menu>
                             { (isApiReady) && (
                               <div className={`app-user${account ? '' : ' hidden'}`}>
-                                <BalancesHeader account={account} />
-                                <MobileBalancesHeader
+                                <BalancesHeader
                                   account={account}
                                   isMobileMenu={openPanel}
-                                  setIsMobileMenu={setOpenPanel}
+                                  isPopupMode={width >= 768}
+                                  setOpenPanel={setOpenPanel}
                                 />
                                 <div className='account-selector-block'>
                                   <AccountSelector onChange={setAccount} />
@@ -215,7 +216,7 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                             setIsMobileMenu={setOpenPanel}
                           />
                         )}
-                        { openPanel === 'balances' && (
+                        { openPanel === 'balances' && width < 768 && (
                           <ManageBalances
                             account={account}
                           />

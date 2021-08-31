@@ -1,71 +1,70 @@
 // Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import BN from 'bn.js';
+import type { OpenPanelType } from '@polkadot/apps-routing/types';
+
 import React, { memo, useCallback, useState } from 'react';
-import Popup from 'semantic-ui-react/dist/commonjs/modules/Popup';
 
 import menuArrow from '@polkadot/apps/images/menu-arrow.svg';
-import { WithdrawModal } from '@polkadot/react-components';
-import ArrowCircleUpRight from '@polkadot/react-components/ManageCollection/ArrowCircleUpRight.svg';
-import ArrowCircleUpRightGreen from '@polkadot/react-components/ManageCollection/ArrowCircleUpRightGreen.svg';
-import { useBalances, useNftContract } from '@polkadot/react-hooks';
+import ManageBalances from '@polkadot/apps/ManageBalances';
+import { useBalances } from '@polkadot/react-hooks';
 import { formatKsmBalance, formatStrBalance } from '@polkadot/react-hooks/useKusamaApi';
 
 interface Props {
   account?: string,
+  isMobileMenu: OpenPanelType;
+  setOpenPanel: (isOpen: OpenPanelType) => void;
+  isPopupMode: boolean
 }
 
 function BalancesHeader (props: Props): React.ReactElement<{ account?: string }> {
-  const { account } = props;
-  const { contractInstance, deposited, getUserDeposit } = useNftContract(account || '');
-  const { freeBalance, freeKusamaBalance } = useBalances(account, getUserDeposit);
-  const [showWithdrawModal, toggleWithdrawModal] = useState<boolean>(false);
+  const { account, isMobileMenu, isPopupMode, setOpenPanel } = props;
+  const { freeBalance, freeKusamaBalance } = useBalances(account);
 
-  const closeModal = useCallback(() => {
-    toggleWithdrawModal(false);
-  }, []);
+  const [isPopupActive, setIsPopupActive] = useState<boolean>(false);
 
-  const balanceUpdate = deposited && deposited.div(new BN(1000000)).gt(new BN(1)) ? ArrowCircleUpRight : ArrowCircleUpRightGreen;
-  const openModal = useCallback(() => {
-    deposited && deposited.div(new BN(1000000)).gt(new BN(1)) && toggleWithdrawModal(true);
-  }, [deposited]);
+  const onClick = useCallback(() => {
+    if (!isPopupMode) {
+      if (isMobileMenu !== 'balances') {
+        setOpenPanel('balances');
+      } else {
+        setOpenPanel('tokens');
+      }
+    } else {
+      setIsPopupActive((prev) => !prev);
+    }
+  }, [isMobileMenu, isPopupMode, setOpenPanel]);
 
   return (
-    <div className='app-balances'>
-      <div className='app-balance--item'>
-        <small>balance</small>
-        {formatStrBalance(15, freeBalance)} UNQ
+    <div
+      className='app-balances'
+    >
+      <div className='app-balances-items 323'
+        onClick={onClick}>
+        <div className='app-balances-items-item'>
+          {formatStrBalance(15, freeBalance)}
+          <span className='unit'>UNQ</span>
+        </div>
+        <div className='app-balances-items-item'>
+          {formatKsmBalance(freeKusamaBalance)}
+          <span className='unit'>KSM</span>
+        </div>
       </div>
-      <div className='app-balance--item'>
-        <small>balance</small>
-        {formatKsmBalance(freeKusamaBalance)} KSM
-      </div>
-      <img
-        alt='menu-arrow'
-        src={menuArrow as string}
-      />
-      <div className='app-balance--item'>
-        <small>deposit</small>
-        { +formatKsmBalance(deposited) > 0.000001 ? formatKsmBalance(deposited) : 0}  KSM
-        <Popup
-          content='Withdrawal from the market deposit to the your main Kusama account (available for the deposit sum greater than 0.000001 KSM)'
-          trigger={<img
-            alt='balance-update'
-            onClick={openModal}
-            src={balanceUpdate as string}
-          />}
+      <div className={isPopupActive ? 'rotate-icon' : 'icon'}>
+        <img
+          alt='menu-arrow'
+          onClick={onClick}
+          src={menuArrow as string}
         />
       </div>
-      { showWithdrawModal && (
-        <WithdrawModal
+
+      { isPopupMode &&
+        <ManageBalances
           account={account}
-          closeModal={closeModal}
-          contractInstance={contractInstance}
-          deposited={deposited}
-          updateDeposit={getUserDeposit}
+          isPopupActive={isPopupActive}
+          isPopupMode={isPopupMode}
         />
-      )}
+      }
     </div>
   );
 }

@@ -4,6 +4,7 @@
 import BN from 'bn.js';
 import React, { memo, useCallback, useMemo, useState } from 'react';
 import { NavLink } from 'react-router-dom';
+import Menu from 'semantic-ui-react/dist/commonjs/collections/Menu';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 import Popup from 'semantic-ui-react/dist/commonjs/modules/Popup';
 
@@ -15,10 +16,12 @@ import question from './images/question.svg';
 
 interface Props {
   account?: string;
+  isPopupMode?: boolean;
+  isPopupActive?: boolean
 }
 
 const ManageBalances = (props: Props) => {
-  const { account } = props;
+  const { account, isPopupActive, isPopupMode } = props;
   const { contractInstance, deposited, getUserDeposit } = useNftContract(account || '');
   const { freeBalance, freeKusamaBalance } = useBalances(account, getUserDeposit);
   const [showWithdrawModal, toggleWithdrawModal] = useState<boolean>(false);
@@ -52,7 +55,7 @@ const ManageBalances = (props: Props) => {
   }, [openModal]);
 
   return (
-    <div className='manage-balances'>
+    <div className={`manage-balances ${isPopupMode ? (isPopupActive ? 'popup active' : 'popup') : 'mobile'}`}>
       <div className='main-balance'>
         {formatStrBalance(15, freeBalance)}
         <span className='unit'>UNQ</span>
@@ -77,11 +80,17 @@ const ManageBalances = (props: Props) => {
             />
           )}
         </div>
-        {/* <div className='footer-balance'>
-          <a onClick={}>
-            View all coins
-          </a>
-        </div> */}
+        <div className='footer-balance'>
+
+          <Menu.Item
+            active={location.pathname === '/wallet'}
+            as={NavLink}
+            className=''
+            name='View all tokens'
+            to='/wallet'
+          />
+
+        </div>
       </div>
       { showWithdrawModal && (
         <WithdrawModal

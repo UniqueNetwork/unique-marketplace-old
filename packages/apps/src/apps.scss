@@ -52,6 +52,46 @@
   display: flex;
   align-items: center;
 
+  .app-balances {
+    display: grid;
+    grid-template-columns: 1fr 24px;
+    align-items: center;
+    min-width: 180px;
+    cursor: pointer;
+
+    .app-balances-items {
+      display: flex;
+      flex-direction: column;
+
+      .app-balances-items-item {
+        text-align: right;
+        font-weight: 500;
+        font-family: var(--font-roboto);
+
+        .unit {
+          color: var(--tabs-color);
+          margin-left: 5px;
+          font-weight: 400;
+        }
+      }
+    }
+
+    .icon {
+      display: flex;
+      img {
+        margin-left: 8px;
+      }
+    }
+
+
+    .rotate-icon {
+      display: flex;
+      img {
+        transform: rotateX(0deg);
+      }
+    }
+  }
+
   &.hidden {
     display: none;
   }
@@ -86,13 +126,77 @@
   height: 32px;
 }
 
-.app-balances {
-  display: flex;
 
-  &--item {
+.manage-balances {
+
+  &.popup {
+    position: absolute;
+    display: none;
+    top: 42px;
+    left: 0;
+    right: 2px;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
+    border-radius: 4px;
+    z-index: 2;
+
+    &.active {
+      display: block;
+    }
   }
 
-  .app-balance--item {
+    background-color: var(--header-background);
+    overflow: hidden;
+    padding: var(--gap);
+    font-size: 14px;
+    font-family: var(--font-roboto);
+    font-weight: 500;
+    line-height: 22px;
+
+    .unit {
+      font-weight: 400;
+      margin-left: 3px;
+    }
+
+    .main-balance {
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .other-balance {
+      margin-top: var(--gap);
+
+      .balance-line {
+        display: flex;
+        align-items: center;
+        margin-top: 3px;
+        grid-column-gap: 3px;
+
+        &:first-child {
+          margin-top: 0;
+        }
+
+        img {
+          width: 24px;
+          height: 24px;
+          margin-left: 3px;
+        }
+        }
+    }
+
+  .footer-balance{
+    padding: 25px 0 0 0;
+    & a {
+      color: var(--button-color);
+      font-size: 14px;
+    }
+  }
+  }
+
+.app-balances {
+  display: flex;
+  position: relative;
+
+  .app-balance-item {
     color: var(--header-text-color);
     border-right: 1px solid var(--border-color);
     font-family: var(--font-roboto) var(--font-mono);
@@ -119,6 +223,7 @@
     margin-left: 8px;
     cursor: pointer;
   }
+
 }
 
 .deposit-flex {
@@ -244,56 +349,11 @@
 }
 
 @media (min-width: 1441px) {
-  .app-header {
-    .app-user {
-      .app-balances-mobile {
-        display: none;
-      }
-    }
-  }
+
 }
 
 @media (max-width: 1440px) {
-  .app-header {
-    .app-user {
-      .app-balances {
-        display: none;
-      }
 
-      .app-balances-mobile {
-        display: none;
-      }
-
-      .app-balances-mobile {
-        display: grid;
-        grid-template-columns: 1fr 24px;
-        align-items: center;
-        min-width: 180px;
-        cursor: pointer;
-
-        .app-balances-mobile--items {
-          display: flex;
-          flex-direction: column;
-
-          .app-balances-mobile--items--item {
-            text-align: right;
-            font-weight: 500;
-            font-family: var(--font-roboto);
-
-            .unit {
-              color: var(--tabs-color);
-              margin-left: 5px;
-              font-weight: 400;
-            }
-          }
-        }
-
-        img {
-          margin-left: 8px;
-        }
-      }
-    }
-  }
 }
 
 /* @media (min-width: 1025px) {
@@ -431,7 +491,7 @@
     width: 25%;
   }
 
-  .menu-mobile, .manage-balances, .manage-accounts {
+  .menu-mobile, .manage-balances.mobile, .manage-accounts {
     margin-top: 84px;
   }
 }
@@ -459,53 +519,12 @@
     }
   }
 
-  .manage-balances {
+  .manage-balances.mobile {
     margin-top: 54px;
   }
 
   .manage-accounts {
     margin-top: 54px;
-  }
-}
-
-.manage-balances {
-  background-color: var(--header-background);
-  overflow: hidden;
-  padding: var(--gap);
-  font-size: 14px;
-  font-family: var(--font-roboto);
-  font-weight: 500;
-  line-height: 22px;
-
-  .unit {
-    font-weight: 400;
-    margin-left: 3px;
-  }
-
-  .main-balance {
-    padding-bottom: var(--gap);
-    border-bottom: 1px solid var(--border-color);
-  }
-
-  .other-balance {
-    margin-top: var(--gap);
-
-    .balance-line {
-      display: flex;
-      align-items: center;
-      margin-top: 3px;
-      grid-column-gap: 3px;
-
-      &:first-child {
-        margin-top: 0;
-      }
-
-      img {
-        width: 24px;
-        height: 24px;
-        margin-left: 3px;
-      }
-    }
   }
 }
 
