@@ -3,10 +3,10 @@
 
 import type { OpenPanelType } from '@polkadot/apps-routing/types';
 
-import React, { memo, useCallback, useState } from 'react';
+import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 
 import menuArrow from '@polkadot/apps/images/menu-arrow.svg';
-import ManageBalances from '@polkadot/apps/ManageBalances';
+import PopupMenu from '@polkadot/react-components/PopupMenu';
 import { useBalances } from '@polkadot/react-hooks';
 import { formatKsmBalance, formatStrBalance } from '@polkadot/react-hooks/useKusamaApi';
 
@@ -14,32 +14,46 @@ interface Props {
   account?: string,
   isMobileMenu: OpenPanelType;
   setOpenPanel: (isOpen: OpenPanelType) => void;
-  isPopupMode: boolean
 }
 
 function BalancesHeader (props: Props): React.ReactElement<{ account?: string }> {
-  const { account, isMobileMenu, isPopupMode, setOpenPanel } = props;
+  const { account, isMobileMenu, setOpenPanel } = props;
   const { freeBalance, freeKusamaBalance } = useBalances(account);
 
   const [isPopupActive, setIsPopupActive] = useState<boolean>(false);
 
-  const onClick = useCallback(() => {
-    if (!isPopupMode) {
-      if (isMobileMenu !== 'balances') {
-        setOpenPanel('balances');
-      } else {
-        setOpenPanel('tokens');
-      }
-    } else {
-      setIsPopupActive((prev) => !prev);
+  const headerRef = useRef<HTMLDivElement>(null);
+
+  const handleClickOutside = (event: MouseEvent) => {
+    if (headerRef.current && !headerRef.current.contains(event.target as HTMLDivElement)) {
+      setIsPopupActive(false);
     }
-  }, [isMobileMenu, isPopupMode, setOpenPanel]);
+  };
+
+  useEffect(() => {
+    document.addEventListener('click', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, []);
+
+  const onClick = useCallback(() => {
+    setIsPopupActive((prev) => !prev);
+
+    if (isMobileMenu !== 'balances') {
+      setOpenPanel('balances');
+    } else {
+      setOpenPanel('tokens');
+    }
+  }, [isMobileMenu, setOpenPanel]);
 
   return (
     <div
       className='app-balances'
+      ref = {headerRef}
     >
-      <div className='app-balances-items 323'
+      <div className='app-balances-items'
         onClick={onClick}>
         <div className='app-balances-items-item'>
           {formatStrBalance(15, freeBalance)}
@@ -57,14 +71,10 @@ function BalancesHeader (props: Props): React.ReactElement<{ account?: string }>
           src={menuArrow as string}
         />
       </div>
-
-      { isPopupMode &&
-        <ManageBalances
-          account={account}
-          isPopupActive={isPopupActive}
-          isPopupMode={isPopupMode}
-        />
-      }
+      <PopupMenu
+        account={account}
+        isPopupActive={isPopupActive}
+      />
     </div>
   );
 }

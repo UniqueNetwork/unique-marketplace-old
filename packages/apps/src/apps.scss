@@ -82,14 +82,6 @@
         margin-left: 8px;
       }
     }
-
-
-    .rotate-icon {
-      display: flex;
-      img {
-        transform: rotateX(0deg);
-      }
-    }
   }
 
   &.hidden {
@@ -98,6 +90,13 @@
 
   .account-selector-block {
     width: 230px;
+  }
+}
+
+.rotate-icon {
+  display: flex;
+  img {
+    transform: rotate(180deg);
   }
 }
 
@@ -137,6 +136,7 @@
     right: 2px;
     box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
     border-radius: 4px;
+    cursor: default;
     z-index: 2;
 
     &.active {
@@ -348,6 +348,10 @@
   }
 }
 
+.manage-balances.mobile {
+  display: none;
+}
+
 @media (min-width: 1441px) {
 
 }
@@ -412,6 +416,10 @@
     }
   }
 
+  .manage-balances.mobile {
+    display: none;
+  }
+
   .menu-mobile {
     padding: var(--gap);
     display: flex;
@@ -466,6 +474,10 @@
       }
     }
   }
+
+  .manage-balances.mobile {
+    display: none;
+  }
 }
 
 @media (max-width: 1024px) {
@@ -487,6 +499,10 @@
     }
   }
 
+  .manage-balances.mobile {
+    display: none;
+  }
+
   .deposit-flex .ksm-text {
     width: 25%;
   }
@@ -494,11 +510,23 @@
   .menu-mobile, .manage-balances.mobile, .manage-accounts {
     margin-top: 84px;
   }
+
+  .manage-balances.mobile {
+    display: none;
+  }
 }
 
 @media (max-width: 767px) {
   .app-main {
     margin-top: 54px;
+
+    .app-container{
+
+      &.is-balance-active {
+        display: none;
+        border: 4px solid red;
+      }
+    }
 
     &.no-accounts {
       margin-top: 67px;
@@ -520,7 +548,12 @@
   }
 
   .manage-balances.mobile {
+    display: block;
     margin-top: 54px;
+  }
+
+  .manage-balances.popup.active {
+    display: none;
   }
 
   .manage-accounts {

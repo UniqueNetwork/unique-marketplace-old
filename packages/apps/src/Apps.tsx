@@ -22,7 +22,6 @@ import createRoutes from '@polkadot/apps-routing';
 import { AccountSelector, ErrorBoundary, StatusContext } from '@polkadot/react-components';
 import GlobalStyle from '@polkadot/react-components/styles';
 import { useApi } from '@polkadot/react-hooks';
-import useWindowDimensions from '@polkadot/react-hooks/useWindowDimensions';
 import Signer from '@polkadot/react-signer';
 
 import infoSvg from '../src/images/info.svg';
@@ -60,7 +59,6 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
   const { queueAction } = useContext(StatusContext);
   const [account, setAccount] = useState<string>();
   const [openPanel, setOpenPanel] = useState<OpenPanelType>('tokens');
-  const { width } = useWindowDimensions();
 
   const uiHighlight = useMemo(
     () => getSystemChainColor(systemChain, systemName),
@@ -176,7 +174,6 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                                 <BalancesHeader
                                   account={account}
                                   isMobileMenu={openPanel}
-                                  isPopupMode={width >= 768}
                                   setOpenPanel={setOpenPanel}
                                 />
                                 <div className='account-selector-block'>
@@ -216,15 +213,16 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                             setIsMobileMenu={setOpenPanel}
                           />
                         )}
-                        { openPanel === 'balances' && width < 768 && (
+                        { openPanel === 'balances' && (
                           <ManageBalances
                             account={account}
+                            setOpenPanel={setOpenPanel}
                           />
                         )}
-                        { (openPanel !== 'balances' && openPanel !== 'accounts') && (
+                        { (openPanel !== 'accounts') && (
                           <Suspense fallback=''>
                             <main className={`app-main ${openPanel || ''} ${noAccounts ? 'no-accounts' : ''}`}>
-                              <div className='app-container'>
+                              <div className={`app-container ${openPanel === 'balances' ? 'is-balance-active' : ''}`}>
                                 { noAccounts && (
                                   <div className='no-account'>
                                     <div className='error-info-svg'>

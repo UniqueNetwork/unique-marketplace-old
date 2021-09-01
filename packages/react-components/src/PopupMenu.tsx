@@ -8,20 +8,18 @@ import Menu from 'semantic-ui-react/dist/commonjs/collections/Menu';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 import Popup from 'semantic-ui-react/dist/commonjs/modules/Popup';
 
-import { OpenPanelType } from '@polkadot/apps-routing/types';
+import question from '@polkadot/apps/images/question.svg';
 import { WithdrawModal } from '@polkadot/react-components';
 import { useBalances, useNftContract } from '@polkadot/react-hooks';
 import { formatKsmBalance, formatStrBalance } from '@polkadot/react-hooks/useKusamaApi';
 
-import question from './images/question.svg';
-
 interface Props {
   account?: string;
-  setOpenPanel: (isOpen: OpenPanelType) => void;
+  isPopupActive?: boolean
 }
 
-const ManageBalances = (props: Props) => {
-  const { account, setOpenPanel } = props;
+const PopupMenu = (props: Props) => {
+  const { account, isPopupActive } = props;
   const { contractInstance, deposited, getUserDeposit } = useNftContract(account || '');
   const { freeBalance, freeKusamaBalance } = useBalances(account, getUserDeposit);
   const [showWithdrawModal, toggleWithdrawModal] = useState<boolean>(false);
@@ -55,7 +53,7 @@ const ManageBalances = (props: Props) => {
   }, [openModal]);
 
   return (
-    <div className='manage-balances mobile'>
+    <div className={`manage-balances ${isPopupActive ? 'popup active' : 'popup'}`}>
       <div className='main-balance'>
         {formatStrBalance(15, freeBalance)}
         <span className='unit'>UNQ</span>
@@ -80,8 +78,7 @@ const ManageBalances = (props: Props) => {
             />
           )}
         </div>
-        <div className='footer-balance'
-          onClick={setOpenPanel.bind(null, 'tokens')}>
+        <div className='footer-balance'>
 
           <Menu.Item
             active={location.pathname === '/wallet'}
@@ -106,4 +103,4 @@ const ManageBalances = (props: Props) => {
   );
 };
 
-export default memo(ManageBalances);
+export default memo(PopupMenu);
