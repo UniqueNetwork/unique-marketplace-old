@@ -70,6 +70,7 @@ const PopupMenu = (props: Props) => {
             <Popup
               className='mobile withdraw-popup'
               content={withdrawPopup}
+              on='click'
               position='bottom left'
               trigger={<img
                 alt='withdraw'
