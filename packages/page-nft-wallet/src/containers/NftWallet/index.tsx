@@ -125,7 +125,7 @@ function NftWallet ({ account, addCollection, collections, openPanel, removeColl
 
   return (
     <div className={`nft-wallet unique-card ${openPanel || ''}`}>
-      { openPanel === 'tokens' && (
+      { (openPanel === 'tokens' || openPanel === 'balances') && (
         <Header
           as='h1'
           className='mobile-header'
