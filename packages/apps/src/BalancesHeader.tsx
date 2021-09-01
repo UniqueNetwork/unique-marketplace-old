@@ -1,71 +1,80 @@
 // Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import BN from 'bn.js';
-import React, { memo, useCallback, useState } from 'react';
-import Popup from 'semantic-ui-react/dist/commonjs/modules/Popup';
+import type { OpenPanelType } from '@polkadot/apps-routing/types';
+
+import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 
 import menuArrow from '@polkadot/apps/images/menu-arrow.svg';
-import { WithdrawModal } from '@polkadot/react-components';
-import ArrowCircleUpRight from '@polkadot/react-components/ManageCollection/ArrowCircleUpRight.svg';
-import ArrowCircleUpRightGreen from '@polkadot/react-components/ManageCollection/ArrowCircleUpRightGreen.svg';
-import { useBalances, useNftContract } from '@polkadot/react-hooks';
+import PopupMenu from '@polkadot/react-components/PopupMenu';
+import { useBalances } from '@polkadot/react-hooks';
 import { formatKsmBalance, formatStrBalance } from '@polkadot/react-hooks/useKusamaApi';
 
 interface Props {
   account?: string,
+  isMobileMenu: OpenPanelType;
+  setOpenPanel: (isOpen: OpenPanelType) => void;
 }
 
 function BalancesHeader (props: Props): React.ReactElement<{ account?: string }> {
-  const { account } = props;
-  const { contractInstance, deposited, getUserDeposit } = useNftContract(account || '');
-  const { freeBalance, freeKusamaBalance } = useBalances(account, getUserDeposit);
-  const [showWithdrawModal, toggleWithdrawModal] = useState<boolean>(false);
+  const { account, isMobileMenu, setOpenPanel } = props;
+  const { freeBalance, freeKusamaBalance } = useBalances(account);
 
-  const closeModal = useCallback(() => {
-    toggleWithdrawModal(false);
+  const [isPopupActive, setIsPopupActive] = useState<boolean>(false);
+
+  const headerRef = useRef<HTMLDivElement>(null);
+
+  const handleClickOutside = (event: MouseEvent) => {
+    if (headerRef.current && !headerRef.current.contains(event.target as HTMLDivElement)) {
+      setIsPopupActive(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('click', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
   }, []);
 
-  const balanceUpdate = deposited && deposited.div(new BN(1000000)).gt(new BN(1)) ? ArrowCircleUpRight : ArrowCircleUpRightGreen;
-  const openModal = useCallback(() => {
-    deposited && deposited.div(new BN(1000000)).gt(new BN(1)) && toggleWithdrawModal(true);
-  }, [deposited]);
+  const onClick = useCallback(() => {
+    setIsPopupActive((prev) => !prev);
+
+    if (isMobileMenu !== 'balances') {
+      setOpenPanel('balances');
+    } else {
+      setOpenPanel('tokens');
+    }
+  }, [isMobileMenu, setOpenPanel]);
 
   return (
-    <div className='app-balances'>
-      <div className='app-balance--item'>
-        <small>balance</small>
-        {formatStrBalance(15, freeBalance)} UNQ
+    <div
+      className='app-balances'
+      ref = {headerRef}
+    >
+      <div className='app-balances-items'
+        onClick={onClick}>
+        <div className='app-balances-items-item'>
+          {formatStrBalance(15, freeBalance)}
+          <span className='unit'>UNQ</span>
+        </div>
+        <div className='app-balances-items-item'>
+          {formatKsmBalance(freeKusamaBalance)}
+          <span className='unit'>KSM</span>
+        </div>
       </div>
-      <div className='app-balance--item'>
-        <small>balance</small>
-        {formatKsmBalance(freeKusamaBalance)} KSM
+      <div className={isPopupActive ? 'rotate-icon' : 'icon'}>
+        <img
+          alt='menu-arrow'
+          onClick={onClick}
+          src={menuArrow as string}
+        />
       </div>
-      <img
-        alt='menu-arrow'
-        src={menuArrow as string}
+      <PopupMenu
+        account={account}
+        isPopupActive={isPopupActive}
       />
-      <div className='app-balance--item'>
-        <small>deposit</small>
-        { +formatKsmBalance(deposited) > 0.000001 ? formatKsmBalance(deposited) : 0}  KSM
-        <Popup
-          content='Withdrawal from the market deposit to the your main Kusama account (available for the deposit sum greater than 0.000001 KSM)'
-          trigger={<img
-            alt='balance-update'
-            onClick={openModal}
-            src={balanceUpdate as string}
-          />}
-        />
-      </div>
-      { showWithdrawModal && (
-        <WithdrawModal
-          account={account}
-          closeModal={closeModal}
-          contractInstance={contractInstance}
-          deposited={deposited}
-          updateDeposit={getUserDeposit}
-        />
-      )}
     </div>
   );
 }
