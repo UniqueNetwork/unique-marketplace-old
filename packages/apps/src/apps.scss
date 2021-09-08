@@ -48,6 +48,33 @@
   }
 }
 
+.app-footer {
+  background: var(--header-background);
+  padding: calc(var(--gap) / 2) 0;
+  display: flex;
+}
+
+.footer {
+  &--grid{
+    width: 100%;
+    justify-content: space-between;
+    min-height: 180px;
+
+    &--left{
+      text-align: start;
+      background-color: red;
+    }
+    &--center{
+      text-align: center;
+      background-color: sandybrown;
+    }
+    &--right{
+      text-align: end;
+      background-color: #1db0ff;
+    }
+  }
+}
+
 .app-user {
   display: flex;
   align-items: center;
@@ -77,7 +104,19 @@
     justify-content: space-between;
     align-items: center;
     max-width: var(--max-header-width);
+    padding: var(--gap);
+    margin: 0 auto;
   }
+  &--footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: var(--max-header-width);
+    padding: var(--gap);
+    margin: 0 auto;
+  }
+
+
 }
 
 .app-user-icon {
@@ -390,6 +429,8 @@
 
     .ui.tabular.header-menu.menu {
       display: inline-flex;
+      width: 100%;
+      // padding-left: 265px;
     }
   }
 }

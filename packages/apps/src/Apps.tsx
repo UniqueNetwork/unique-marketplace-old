@@ -10,6 +10,9 @@ import React, { Suspense, useContext, useMemo, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import Menu from 'semantic-ui-react/dist/commonjs/collections/Menu';
 import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
+import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
+import Image from 'semantic-ui-react/dist/commonjs/elements/Image';
+
 import { ThemeContext } from 'styled-components';
 
 import { findMissingApis } from '@polkadot/apps/endpoint';
@@ -26,7 +29,7 @@ import Signer from '@polkadot/react-signer';
 
 import infoSvg from '../src/images/info.svg';
 import ConnectingOverlay from './overlays/Connecting';
-import BalancesHeader from './BalancesHeader';
+// import BalancesHeader from './BalancesHeader';
 import ManageAccounts from './ManageAccounts';
 import ManageBalances from './ManageBalances';
 import MobileAccountSelector from './MobileAccountSelector';
@@ -136,7 +139,7 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                                 />
                               )}
                               { !walletMode && (
-                                <>
+                                <Menu.Menu position='right'>
                                   <Menu.Item
                                     active={location.pathname === '/market'}
                                     as={NavLink}
@@ -167,12 +170,12 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                                     name='FAQ'
                                     to='/faq'
                                   />
-                                </>
+                                </Menu.Menu>
                               )}
                             </Menu>
                             { (isApiReady) && (
                               <div className={`app-user${account ? '' : ' hidden'}`}>
-                                <BalancesHeader account={account} />
+                                {/* <BalancesHeader account={account} /> */}
                                 <MobileBalancesHeader
                                   account={account}
                                   isMobileMenu={openPanel}
@@ -251,6 +254,27 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                                 <div id={PORTAL_ID} />
                               </div>
                             </main>
+                            <footer className='app-footer'>
+                              <div className='app-container app-container--footer'>
+                                <Grid className={'footer--grid'}
+                                      columns={3}>
+                                  <Grid.Row>
+                                    <Grid.Column className={'footer--grid--left'}>
+                                      <Image src='/images/wireframe/media-paragraph.png' />
+                                      <p>LEFT</p>
+                                    </Grid.Column>
+                                    <Grid.Column className={'footer--grid--center'}>
+                                      <Image src='/images/wireframe/media-paragraph.png' />
+                                      <p>CENTER</p>
+                                    </Grid.Column>
+                                    <Grid.Column className={'footer--grid--right'}>
+                                      <Image src='/images/wireframe/media-paragraph.png' />
+                                      <p>RIGHT</p>
+                                    </Grid.Column>
+                                  </Grid.Row>
+                                </Grid>
+                              </div>
+                            </footer>
                           </Suspense>
                         )}
                       </>

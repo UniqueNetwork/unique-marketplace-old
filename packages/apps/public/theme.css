@@ -11,6 +11,7 @@
   --width-half: 875px;
 }
 
+/*
 [data-theme="Unique"] {
   --white-color: #fff;
   --black-color: #000;
@@ -227,7 +228,7 @@
   --color-checkbox: white;
 }
 
-
+*/
 
 [data-theme="Artpool"] {
   --white-color: #fff;
@@ -255,8 +256,8 @@
 
   --link-color: #6F32FF;
   --link-light-color: #CAB8FF;
-  --bg-page:#F1E8FF;
-  --header-background: #fff;
+  --bg-page:#F6F6F6;
+  --header-background: #FFFFFF;
   --header-text-color: #000000;
   --sub-header-color: #000;
   --sub-header-font-size: 14px;
@@ -274,7 +275,7 @@
   --input-background-disabled-color: #fafafa;
   --input-placeholder-search-color: #81858E;
   --input-text-color: #040b1d;
-  --max-header-width: 100%;
+  --max-header-width: 1466px;
   --card-border-color: #ececec;
   --card-background: #ffffff;
   --card-shadow: rgba(0, 0, 0, 0.08);
