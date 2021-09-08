@@ -39,6 +39,8 @@ import MobileMenuHeader from './MobileMenuHeader';
 import ScrollToTop from './ScrollToTop';
 import WarmUp from './WarmUp';
 
+import Footer from './Footer';
+
 export const PORTAL_ID = 'portals';
 
 const { walletMode } = envConfig;
@@ -254,27 +256,7 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                                 <div id={PORTAL_ID} />
                               </div>
                             </main>
-                            <footer className='app-footer'>
-                              <div className='app-container app-container--footer'>
-                                <Grid className={'footer--grid'}
-                                      columns={3}>
-                                  <Grid.Row>
-                                    <Grid.Column className={'footer--grid--left'}>
-                                      <Image src='/images/wireframe/media-paragraph.png' />
-                                      <p>LEFT</p>
-                                    </Grid.Column>
-                                    <Grid.Column className={'footer--grid--center'}>
-                                      <Image src='/images/wireframe/media-paragraph.png' />
-                                      <p>CENTER</p>
-                                    </Grid.Column>
-                                    <Grid.Column className={'footer--grid--right'}>
-                                      <Image src='/images/wireframe/media-paragraph.png' />
-                                      <p>RIGHT</p>
-                                    </Grid.Column>
-                                  </Grid.Row>
-                                </Grid>
-                              </div>
-                            </footer>
+                            <Footer />
                           </Suspense>
                         )}
                       </>

@@ -67,7 +67,8 @@
     "test:all": "polkadot-dev-run-test --selectProjects=all-tests --silent",
     "test:one": "polkadot-dev-run-test",
     "start": "yarn clean && cd packages/apps && yarn webpack-cli serve --config webpack.serve.cjs --port 3000",
-    "start:electron": "yarn clean:electronBuild && concurrently 'yarn build:devElectronMain && cd packages/apps-electron && electron ./build/electron.js' 'yarn build:devElectronRenderer'"
+    "start:electron": "yarn clean:electronBuild && concurrently 'yarn build:devElectronMain && cd packages/apps-electron && electron ./build/electron.js' 'yarn build:devElectronRenderer'",
+    "build:www:docker": "yarn build:www && docker-compose up -d --build --force-recreate --no-deps"
   },
   "devDependencies": {
     "@babel/core": "^7.15.0",

@@ -11,6 +11,42 @@
   --width-half: 875px;
 }
 
+@font-face {
+  font-family: 'Replica';
+  src: url('/fonts/Replica/Replica-Regular.eot');
+  src: url('/fonts/Replica/Replica-Regular.eot?#iefix') format('embedded-opentype'),
+  url('/fonts/Replica/Replica-Regular.woff2') format('woff2'),
+  url('/fonts/Replica/Replica-Regular.woff') format('woff'),
+  url('/fonts/Replica/Replia-Regular.ttf') format('truetype'),
+  url('/fonts/Replica/Replica-Regular.svg#Replica-Regular') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Replica';
+  src: url('/fonts/Replica/Replica-Light.eot');
+  src: url('/fonts/Replica/Replica-Light.eot?#iefix') format('embedded-opentype'),
+  url('/fonts/Replica/Replica-Light.woff2') format('woff2'),
+  url('/fonts/Replica/Replica-Light.woff') format('woff'),
+  url('/fonts/Replica/Replica-Light.ttf') format('truetype'),
+  url('/fonts/Replica/Replica-Light.svg#Replica-Light') format('svg');
+  font-weight: lighter;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Replica';
+  src: url('/fonts/Replica/Replica-Bold.eot');
+  src: url('/fonts/Replica/Replica-Bold.eot?#iefix') format('embedded-opentype'),
+  url('/fonts/Replica/Replica-Bold.woff2') format('woff2'),
+  url('/fonts/Replica/Replica-Bold.woff') format('woff'),
+  url('/fonts/Replica/Replica-Bold.ttf') format('truetype'),
+  url('/fonts/Replica/Replica-Bold.svg#Replica-Bold') format('svg');
+  font-weight: bold;
+  font-style: normal;
+}
+
 /*
 [data-theme="Unique"] {
   --white-color: #fff;
@@ -288,4 +324,31 @@
   --modal-border-color: transparent;
   --modal-text-color: #000;
   --color-checkbox: #000;
+
+
+
+  --acg-purple-50: #F1E8FF;
+  --acg-purple-200: #CAB8FF;
+  --acg-purple-500: #6F32FF;
+  --acg-green: #aaff80;
+
+  --acg-blue:#CBFFFF;
+  --acg-yellow:#FBF563;
+  --acg-orange:#DD9768;
+  --acg-pink:#E177FA;
+
+  --acg-neutral-50: #F6F6F6;
+  --acg-neutral-100: #F1F1F1;
+  --acg-neutral-200: #EBEBEB;
+  --acg-neutral-300: #E6E6E6;
+  --acg-neutral-400: #CCCCCC;
+  --acg-neutral-500: #999999;
+  --acg-neutral-600: #707070;
+  --acg-neutral-700: #5D5D5D;
+  --acg-neutral-800: #3E3E3E;
+  --acg-neutral-900: #1D1D1D;
+
+  --font-replica: "Replica";
 }
+
+

@@ -17,19 +17,24 @@
     display: inline-flex;
     border-bottom: none;
     margin: 0;
+    font-family: 'Replica';
 
     .item {
       border: none;
       padding: calc(var(--gap) / 2) calc(var(--gap) * 1.5);
-      font: 500 16px/24px var(--font-roboto);
+      font: bold 17px/30px var(--font-replica);
       letter-spacing: 1px;
       border-radius: var(--bradius) !important;
 
       &.active {
-        background-color: var(--link-color);
+        background-color: var(--acg-purple-200);
         color: var(--white-color);
         margin-top: 0;
-        font-weight: 500;
+        font-weight: bolder;
+      }
+
+      &:hover {
+        background-color: var(--acg-green);
       }
 
       &.app-logo {
@@ -40,8 +45,8 @@
 
         img {
           width: auto;
-          max-width: 130px;
-          height: 50px;
+          // max-width: 130px;
+          height: 80px;
         }
       }
     }
@@ -54,23 +59,59 @@
   display: flex;
 }
 
+
+
 .footer {
+
   &--grid{
+    margin: 0 !important;
+    padding-left: 40px !important;
+    padding-right: 40px !important;
     width: 100%;
     justify-content: space-between;
-    min-height: 180px;
+    font-family: var(--font-replica);
 
     &--left{
       text-align: start;
-      background-color: red;
+      width: 40% !important;
+      &--logo{
+        width: 273px;
+      }
+      &--copy{
+        padding-top: 20px;
+        font-size: 16px;
+      }
+      &--byACG {
+        display: inline !important;
+        padding-left: 17px;
+        height: 30px;
+      }
     }
     &--center{
-      text-align: center;
-      background-color: sandybrown;
+      width: 30% !important;
+      padding-left: 30px;
+      &--links{
+        text-align: left;
+        margin: 0 !important;
+
+        a{
+          color: var(--acg-neutral-900);
+          font-size: 20px;
+          font-weight: bold;
+          &:hover {
+            color: var(--acg-green);
+          }
+        }
+
+      }
     }
     &--right{
+      width: 30% !important;
       text-align: end;
-      background-color: #1db0ff;
+      &--image{
+        display: inline !important;
+        padding-left: 5px;
+      }
     }
   }
 }

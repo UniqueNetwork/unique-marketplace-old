@@ -110,7 +110,8 @@ hr {
 }
 
 h1.ui.header {
-  font: 700 36px/48px var(--font-inter);
+  font: bold 36px/48px var(--font-replica);
+  text-align: center;
   color: var(--title-color);
   margin-bottom: calc(var(--gap) / 0.6);
 }
