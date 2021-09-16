@@ -58,6 +58,7 @@
     align-items: center;
     min-width: 180px;
     cursor: pointer;
+    margin-right: 14px;
 
     .app-balances-items {
       display: flex;
@@ -81,6 +82,11 @@
       img {
         margin-left: 8px;
       }
+    }
+
+    .rotate-icon-balance{
+      transform: rotateX(180deg);
+      margin-top: 4px;
     }
   }
 
@@ -412,6 +418,10 @@
           grid-column-gap: 8px;
           align-items: center;
           height: 100%;
+
+          .rotate-icon{
+            transform: rotateX(180deg);
+          }
         }
       }
     }
