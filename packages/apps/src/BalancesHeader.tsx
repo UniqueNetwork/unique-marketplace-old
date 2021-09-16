@@ -51,10 +51,10 @@ function BalancesHeader (props: Props): React.ReactElement<{ account?: string }>
   return (
     <div
       className='app-balances'
+      onClick={onClick}
       ref = {headerRef}
     >
-      <div className='app-balances-items'
-        onClick={onClick}>
+      <div className='app-balances-items'>
         <div className='app-balances-items-item'>
           {formatStrBalance(15, freeBalance)}
           <span className='unit'>UNQ</span>
@@ -64,10 +64,9 @@ function BalancesHeader (props: Props): React.ReactElement<{ account?: string }>
           <span className='unit'>KSM</span>
         </div>
       </div>
-      <div className={isPopupActive ? 'rotate-icon' : 'icon'}>
+      <div className={isPopupActive ? 'rotate-icon-balance' : 'icon'}>
         <img
           alt='menu-arrow'
-          onClick={onClick}
           src={menuArrow as string}
         />
       </div>
