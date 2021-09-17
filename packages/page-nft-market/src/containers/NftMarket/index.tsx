@@ -9,7 +9,7 @@ import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection
 // @ts-ignore
 import equal from 'deep-equal';
 // external imports
-import React, { memo, ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { memo, ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
 import { useHistory } from 'react-router';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
@@ -63,6 +63,7 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: BuyTokensProps): ReactE
   const [areFiltersActive, setAreFiltersActive] = useState<boolean>(false);
   const [collections, setCollections] = useState<NftCollectionInterface[]>([]);
   const [filters, setFilters] = useState<Filters>(initialFilters);
+  const page = useRef<number>(1);
 
   const hasMore = !!(offers && offersCount) && Object.keys(offers).length < offersCount;
   const openDetailedInformationModal = useCallback((collectionId: string, tokenId: string) => {
@@ -75,8 +76,8 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: BuyTokensProps): ReactE
     setCollections(() => [...firstCollections]);
   }, [presetCollections]);
 
-  const fetchScrolledData = useCallback((page) => {
-    getOffers(page, perPage, filters);
+  const fetchScrolledData = useCallback(() => {
+    getOffers(++page.current, perPage, filters);
   }, [filters, getOffers]);
 
   const clearAllFilters = useCallback(() => {
@@ -110,6 +111,7 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: BuyTokensProps): ReactE
 
   useEffect(() => {
     void getOffers(1, perPage, filters);
+    page.current = 1;
   }, [filters, getOffers]);
 
   console.log('offersLoading', offersLoading);
