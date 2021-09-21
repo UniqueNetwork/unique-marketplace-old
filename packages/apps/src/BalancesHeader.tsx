@@ -3,11 +3,13 @@
 
 import type { OpenPanelType } from '@polkadot/apps-routing/types';
 
+import BN from 'bn.js';
 import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 
 import menuArrow from '@polkadot/apps/images/menu-arrow.svg';
 import PopupMenu from '@polkadot/react-components/PopupMenu';
-import { useBalances } from '@polkadot/react-hooks';
+import { useGetFee } from '@polkadot/react-components/util/useGetFee';
+import { useBalances, useNftContract } from '@polkadot/react-hooks';
 import { formatKsmBalance, formatStrBalance } from '@polkadot/react-hooks/useKusamaApi';
 
 interface Props {
@@ -19,6 +21,8 @@ interface Props {
 function BalancesHeader (props: Props): React.ReactElement<{ account?: string }> {
   const { account, isMobileMenu, setOpenPanel } = props;
   const { freeBalance, freeKusamaBalance } = useBalances(account);
+  const { deposited } = useNftContract(account || '');
+  const getFee = useGetFee();
 
   const [isPopupActive, setIsPopupActive] = useState<boolean>(false);
 
@@ -29,6 +33,13 @@ function BalancesHeader (props: Props): React.ReactElement<{ account?: string }>
       setIsPopupActive(false);
     }
   };
+
+  let allKSMBalance = formatKsmBalance(freeKusamaBalance);
+
+  // Get all KSM balance with deposit.
+  if (Number(allKSMBalance) > 0 && Number(formatKsmBalance(deposited)) > 0.000001 && deposited) {
+    allKSMBalance = String(Number(allKSMBalance) + Number(formatKsmBalance(new BN(deposited).add(getFee(deposited)))));
+  }
 
   useEffect(() => {
     document.addEventListener('click', handleClickOutside);
@@ -51,16 +62,16 @@ function BalancesHeader (props: Props): React.ReactElement<{ account?: string }>
   return (
     <div
       className='app-balances'
-      onClick={onClick}
       ref = {headerRef}
     >
-      <div className='app-balances-items'>
+      <div className='app-balances-items'
+        onClick={onClick}>
         <div className='app-balances-items-item'>
           {formatStrBalance(15, freeBalance)}
           <span className='unit'>UNQ</span>
         </div>
         <div className='app-balances-items-item'>
-          {formatKsmBalance(freeKusamaBalance)}
+          {allKSMBalance}
           <span className='unit'>KSM</span>
         </div>
       </div>
