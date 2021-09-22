@@ -12,11 +12,10 @@ import Modal from 'semantic-ui-react/dist/commonjs/modules/Modal/Modal';
 import { ContractPromise } from '@polkadot/api-contract';
 import envConfig from '@polkadot/apps-config/envConfig';
 import { Input, StatusContext } from '@polkadot/react-components';
-import { useGetFee } from '@polkadot/react-components/util/useGetFee';
 import { formatKsmBalance } from '@polkadot/react-hooks/useKusamaApi';
 import { findCallMethodByName } from '@polkadot/react-hooks/utils';
 
-const { kusamaDecimals, maxGas, quoteId } = envConfig;
+const { commission, kusamaDecimals, maxGas, quoteId } = envConfig;
 
 interface Props {
   account?: string;
@@ -29,8 +28,6 @@ interface Props {
 function WithdrawModal ({ account, closeModal, contractInstance, deposited, updateDeposit }: Props): React.ReactElement<Props> {
   const { queueExtrinsic } = useContext(StatusContext);
   const [withdrawAmount, setWithdrawAmount] = useState<string>('');
-  const { commission } = envConfig;
-  const getFee = useGetFee();
 
   const revertMoney = useCallback(() => {
     const message = findCallMethodByName(contractInstance, 'withdraw');
@@ -64,6 +61,10 @@ function WithdrawModal ({ account, closeModal, contractInstance, deposited, upda
 
     setWithdrawAmount(val);
   };
+
+  const getFee = useCallback((price: BN): BN => {
+    return new BN(price).mul(new BN(commission)).div(new BN(100));
+  }, []);
 
   return (
     <Modal

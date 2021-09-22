@@ -7,10 +7,12 @@ import BN from 'bn.js';
 import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 
 import menuArrow from '@polkadot/apps/images/menu-arrow.svg';
+import envConfig from '@polkadot/apps-config/envConfig';
 import PopupMenu from '@polkadot/react-components/PopupMenu';
-import { useGetFee } from '@polkadot/react-components/util/useGetFee';
 import { useBalances, useNftContract } from '@polkadot/react-hooks';
 import { formatKsmBalance, formatStrBalance } from '@polkadot/react-hooks/useKusamaApi';
+
+const { commission, minPrice } = envConfig;
 
 interface Props {
   account?: string,
@@ -22,11 +24,14 @@ function BalancesHeader (props: Props): React.ReactElement<{ account?: string }>
   const { account, isMobileMenu, setOpenPanel } = props;
   const { freeBalance, freeKusamaBalance } = useBalances(account);
   const { deposited } = useNftContract(account || '');
-  const getFee = useGetFee();
 
   const [isPopupActive, setIsPopupActive] = useState<boolean>(false);
 
   const headerRef = useRef<HTMLDivElement>(null);
+
+  const getFee = useCallback((price: BN): BN => {
+    return new BN(price).mul(new BN(commission)).div(new BN(100));
+  }, []);
 
   const handleClickOutside = (event: MouseEvent) => {
     if (headerRef.current && !headerRef.current.contains(event.target as HTMLDivElement)) {
@@ -36,10 +41,12 @@ function BalancesHeader (props: Props): React.ReactElement<{ account?: string }>
 
   let allKSMBalance = formatKsmBalance(freeKusamaBalance);
 
-  // Get all KSM balance with deposit.
-  if (Number(allKSMBalance) > 0 && Number(formatKsmBalance(deposited)) > 0.000001 && deposited) {
-    allKSMBalance = String(Number(allKSMBalance) + Number(formatKsmBalance(new BN(deposited).add(getFee(deposited)))));
-  }
+  useEffect(() => {
+    // Get all KSM balance with deposit.
+    if (Number(allKSMBalance) > 0 && Number(formatKsmBalance(deposited)) > minPrice && deposited) {
+      allKSMBalance = String(Number(allKSMBalance) + Number(formatKsmBalance(new BN(deposited).add(getFee(deposited)))));
+    }
+  }, [deposited, freeKusamaBalance, getFee]);
 
   useEffect(() => {
     document.addEventListener('click', handleClickOutside);

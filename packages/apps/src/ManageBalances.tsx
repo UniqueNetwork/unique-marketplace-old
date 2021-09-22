@@ -7,13 +7,15 @@ import { NavLink } from 'react-router-dom';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 import Popup from 'semantic-ui-react/dist/commonjs/modules/Popup';
 
+import envConfig from '@polkadot/apps-config/envConfig';
 import { OpenPanelType } from '@polkadot/apps-routing/types';
 import { WithdrawModal } from '@polkadot/react-components';
-import { useGetFee } from '@polkadot/react-components/util/useGetFee';
 import { useBalances, useNftContract } from '@polkadot/react-hooks';
 import { formatKsmBalance, formatStrBalance } from '@polkadot/react-hooks/useKusamaApi';
 
 import question from './images/question.svg';
+
+const { commission, minPrice } = envConfig;
 
 interface Props {
   account?: string;
@@ -25,7 +27,6 @@ const ManageBalances = (props: Props) => {
   const { contractInstance, deposited, getUserDeposit } = useNftContract(account || '');
   const { freeBalance, freeKusamaBalance } = useBalances(account, getUserDeposit);
   const [showWithdrawModal, toggleWithdrawModal] = useState<boolean>(false);
-  const getFee = useGetFee();
 
   const closeModal = useCallback(() => {
     toggleWithdrawModal(false);
@@ -34,6 +35,10 @@ const ManageBalances = (props: Props) => {
   // deposited && deposited.div(new BN(1000000)).gt(new BN(1))
   const openModal = useCallback(() => {
     toggleWithdrawModal(true);
+  }, []);
+
+  const getFee = useCallback((price: BN): BN => {
+    return new BN(price).mul(new BN(commission)).div(new BN(100));
   }, []);
 
   const withdrawPopup = useMemo(() => {
@@ -67,7 +72,7 @@ const ManageBalances = (props: Props) => {
           <span className='unit'>KSM</span>
         </div>
         <div className='balance-line'>
-          { +formatKsmBalance(deposited) > 0.000001 && deposited ? formatKsmBalance(new BN(deposited).add(getFee(deposited))) : 0}
+          { +formatKsmBalance(deposited) > minPrice && deposited ? formatKsmBalance(new BN(deposited).add(getFee(deposited))) : 0}
           <span className='unit'>KSM deposit</span>
           { !!(deposited && deposited.div(new BN(1000000)).gt(new BN(1))) && (
             <Popup
