@@ -11,7 +11,6 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Filters } from '@polkadot/app-nft-market/containers/NftMarket';
 import envConfig from '@polkadot/apps-config/envConfig';
 import { useApi, useCollection, useFetch } from '@polkadot/react-hooks';
-import { base64Decode, encodeAddress } from '@polkadot/util-crypto';
 
 const { canAddCollections, uniqueApi, uniqueCollectionIds } = envConfig;
 
@@ -154,7 +153,7 @@ export function useCollections () {
 
                 result.items.forEach((offer: OfferType) => {
                   if (!newState[`${offer.collectionId}-${offer.tokenId}`]) {
-                    newState[`${offer.collectionId}-${offer.tokenId}`] = { ...offer, seller: encodeAddress(base64Decode(offer.seller)) };
+                    newState[`${offer.collectionId}-${offer.tokenId}`] = { ...offer, seller: offer.seller };
                   }
                 });
 
