@@ -12,7 +12,7 @@ import PopupMenu from '@polkadot/react-components/PopupMenu';
 import { useBalances, useNftContract } from '@polkadot/react-hooks';
 import { formatKsmBalance, formatStrBalance } from '@polkadot/react-hooks/useKusamaApi';
 
-const { commission, minPrice } = envConfig;
+const { commission } = envConfig;
 
 interface Props {
   account?: string,
@@ -33,20 +33,15 @@ function BalancesHeader (props: Props): React.ReactElement<{ account?: string }>
     return new BN(price).mul(new BN(commission)).div(new BN(100));
   }, []);
 
+  const getAllKSMBalance = useCallback((): string => {
+    return (String(Number(formatKsmBalance(new BN(deposited).add(getFee(deposited)))) + Number(formatKsmBalance(freeKusamaBalance))));
+  }, [deposited, freeKusamaBalance, getFee]);
+
   const handleClickOutside = (event: MouseEvent) => {
     if (headerRef.current && !headerRef.current.contains(event.target as HTMLDivElement)) {
       setIsPopupActive(false);
     }
   };
-
-  let allKSMBalance = formatKsmBalance(freeKusamaBalance);
-
-  useEffect(() => {
-    // Get all KSM balance with deposit.
-    if (Number(allKSMBalance) > 0 && Number(formatKsmBalance(deposited)) > minPrice && deposited) {
-      allKSMBalance = String(Number(allKSMBalance) + Number(formatKsmBalance(new BN(deposited).add(getFee(deposited)))));
-    }
-  }, [deposited, freeKusamaBalance, getFee]);
 
   useEffect(() => {
     document.addEventListener('click', handleClickOutside);
@@ -78,7 +73,11 @@ function BalancesHeader (props: Props): React.ReactElement<{ account?: string }>
           <span className='unit'>UNQ</span>
         </div>
         <div className='app-balances-items-item'>
-          {allKSMBalance}
+          {deposited &&
+          Number(formatKsmBalance(freeKusamaBalance)) &&
+          Number(formatKsmBalance(new BN(deposited).add(getFee(deposited))))
+            ? getAllKSMBalance()
+            : formatKsmBalance(freeKusamaBalance)}
           <span className='unit'>KSM</span>
         </div>
       </div>

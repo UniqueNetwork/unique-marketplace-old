@@ -51,7 +51,7 @@ function WithdrawModal ({ account, closeModal, contractInstance, deposited, upda
         txUpdateCb: () => { console.log('update withdraw'); }
       });
     }
-  }, [account, closeModal, commission, contractInstance, queueExtrinsic, updateDeposit, withdrawAmount]);
+  }, [account, closeModal, contractInstance, queueExtrinsic, updateDeposit, withdrawAmount]);
 
   const setValue = (val: string) => {
     val = val.slice(0, 8);
