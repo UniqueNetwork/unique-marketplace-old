@@ -56,7 +56,7 @@
     display: grid;
     grid-template-columns: 1fr 24px;
     align-items: center;
-    min-width: 180px;
+    min-width: 213px;
     cursor: pointer;
     margin-right: 14px;
 
@@ -465,6 +465,11 @@
       display: none;
     }
   }
+  .ui.popup.mobile.withdraw-popup {
+    &:before {
+      left: 47% !important;
+    }
+  }
 }
 
 @media (min-width: 1280px) {
@@ -569,6 +574,12 @@
 
   .manage-accounts {
     margin-top: 54px;
+  }
+
+  .ui.popup.mobile.withdraw-popup {
+    &:before {
+      left: 1em !important;
+    }
   }
 }
 

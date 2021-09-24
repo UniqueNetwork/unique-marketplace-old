@@ -4,10 +4,10 @@
 import BN from 'bn.js';
 import React, { memo, useCallback, useMemo, useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import Menu from 'semantic-ui-react/dist/commonjs/collections/Menu';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 import Popup from 'semantic-ui-react/dist/commonjs/modules/Popup';
 
+import envConfig from '@polkadot/apps-config/envConfig';
 import { OpenPanelType } from '@polkadot/apps-routing/types';
 import { WithdrawModal } from '@polkadot/react-components';
 import { useBalances, useNftContract } from '@polkadot/react-hooks';
@@ -15,13 +15,15 @@ import { formatKsmBalance, formatStrBalance } from '@polkadot/react-hooks/useKus
 
 import question from './images/question.svg';
 
+const { commission, minPrice } = envConfig;
+
 interface Props {
   account?: string;
   setOpenPanel: (isOpen: OpenPanelType) => void;
 }
 
 const ManageBalances = (props: Props) => {
-  const { account, setOpenPanel } = props;
+  const { account } = props;
   const { contractInstance, deposited, getUserDeposit } = useNftContract(account || '');
   const { freeBalance, freeKusamaBalance } = useBalances(account, getUserDeposit);
   const [showWithdrawModal, toggleWithdrawModal] = useState<boolean>(false);
@@ -33,6 +35,10 @@ const ManageBalances = (props: Props) => {
   // deposited && deposited.div(new BN(1000000)).gt(new BN(1))
   const openModal = useCallback(() => {
     toggleWithdrawModal(true);
+  }, []);
+
+  const getFee = useCallback((price: BN): BN => {
+    return new BN(price).mul(new BN(commission)).div(new BN(100));
   }, []);
 
   const withdrawPopup = useMemo(() => {
@@ -66,7 +72,7 @@ const ManageBalances = (props: Props) => {
           <span className='unit'>KSM</span>
         </div>
         <div className='balance-line'>
-          { +formatKsmBalance(deposited) > 0.000001 ? formatKsmBalance(deposited) : 0}
+          { +formatKsmBalance(deposited) > minPrice && deposited ? formatKsmBalance(new BN(deposited).add(getFee(deposited))) : 0}
           <span className='unit'>KSM deposit</span>
           { !!(deposited && deposited.div(new BN(1000000)).gt(new BN(1))) && (
             <Popup
@@ -81,18 +87,17 @@ const ManageBalances = (props: Props) => {
             />
           )}
         </div>
-        <div className='footer-balance'
-          onClick={setOpenPanel.bind(null, 'tokens')}>
-
-          <Menu.Item
-            active={location.pathname === '/wallet'}
-            as={NavLink}
-            className=''
-            name='View all tokens'
-            to='/wallet'
-          />
-
-        </div>
+        {/* Todo uncomment this when the 'View all tokens' functional will be clear */}
+        {/* <div className='footer-balance' */}
+        {/*  onClick={setOpenPanel.bind(null, 'tokens')}> */}
+        {/*  <Menu.Item */}
+        {/*    active={location.pathname === '/wallet'} */}
+        {/*    as={NavLink} */}
+        {/*    className='' */}
+        {/*    name='View all tokens' */}
+        {/*    to='/wallet' */}
+        {/*  /> */}
+        {/* </div> */}
       </div>
       { showWithdrawModal && (
         <WithdrawModal

@@ -15,7 +15,7 @@ import { Input, StatusContext } from '@polkadot/react-components';
 import { formatKsmBalance } from '@polkadot/react-hooks/useKusamaApi';
 import { findCallMethodByName } from '@polkadot/react-hooks/utils';
 
-const { kusamaDecimals, maxGas, quoteId } = envConfig;
+const { commission, kusamaDecimals, maxGas, quoteId } = envConfig;
 
 interface Props {
   account?: string;
@@ -32,11 +32,14 @@ function WithdrawModal ({ account, closeModal, contractInstance, deposited, upda
   const revertMoney = useCallback(() => {
     const message = findCallMethodByName(contractInstance, 'withdraw');
 
+    // subtract commission from deposit
+    const depositValue = String(+withdrawAmount / (1 + commission / 100));
+
     if (message && contractInstance) {
       const extrinsic = contractInstance.tx.withdraw({
         gasLimit: maxGas,
         value: 0
-      }, quoteId, (parseFloat(withdrawAmount) * Math.pow(10, kusamaDecimals)));
+      }, quoteId, (parseFloat(depositValue) * Math.pow(10, kusamaDecimals)));
 
       queueExtrinsic({
         accountId: account && account.toString(),
@@ -59,6 +62,10 @@ function WithdrawModal ({ account, closeModal, contractInstance, deposited, upda
     setWithdrawAmount(val);
   };
 
+  const getFee = useCallback((price: BN): BN => {
+    return new BN(price).mul(new BN(commission)).div(new BN(100));
+  }, []);
+
   return (
     <Modal
       className='unique-modal withdraw modal-position'
@@ -80,7 +87,7 @@ function WithdrawModal ({ account, closeModal, contractInstance, deposited, upda
                   defaultValue={(withdrawAmount || 0).toString()}
                   isError={!!(!deposited || (withdrawAmount && parseFloat(withdrawAmount) > parseFloat(formatKsmBalance(deposited))))}
                   label={'amount'}
-                  max={parseFloat(formatKsmBalance(deposited))}
+                  max={deposited && parseFloat(formatKsmBalance(new BN(deposited).add(getFee(deposited))))}
                   onChange={setValue}
                   onKeyDown={(evt) => ['e', 'E', '+', '-'].includes(evt.key) && evt.preventDefault()}
                   placeholder='0'
@@ -89,7 +96,7 @@ function WithdrawModal ({ account, closeModal, contractInstance, deposited, upda
                 />
                 <Button
                   content='Max'
-                  onClick={deposited ? setWithdrawAmount.bind(null, formatKsmBalance(deposited)) : () => null}
+                  onClick={deposited ? setWithdrawAmount.bind(null, formatKsmBalance(new BN(deposited).add(getFee(deposited)))) : () => null}
                 />
               </div>
 
@@ -108,7 +115,7 @@ function WithdrawModal ({ account, closeModal, contractInstance, deposited, upda
 
         <Button
           content='Confirm'
-          disabled={!deposited || !parseFloat(withdrawAmount) || (parseFloat(withdrawAmount) > parseFloat(formatKsmBalance(deposited)))}
+          disabled={!deposited || !parseFloat(withdrawAmount) || (parseFloat(withdrawAmount) > parseFloat(formatKsmBalance(new BN(deposited).add(getFee(deposited)))))}
           onClick={revertMoney}
         />
       </Modal.Actions>
