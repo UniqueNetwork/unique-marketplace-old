@@ -34,7 +34,7 @@ function BalancesHeader (props: Props): React.ReactElement<{ account?: string }>
   }, []);
 
   const getAllKSMBalance = useCallback((): string => {
-    return (String(Number(formatKsmBalance(new BN(deposited).add(getFee(deposited)))) + Number(formatKsmBalance(freeKusamaBalance))));
+    return deposited ? (String(Number(formatKsmBalance(new BN(deposited).add(getFee(deposited)))) + Number(formatKsmBalance(freeKusamaBalance)))) : '';
   }, [deposited, freeKusamaBalance, getFee]);
 
   const handleClickOutside = (event: MouseEvent) => {
