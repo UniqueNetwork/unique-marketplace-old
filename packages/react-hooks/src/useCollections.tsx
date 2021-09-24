@@ -123,11 +123,13 @@ export function useCollections () {
               } else {
                 url = `${url}${currentFilter.map((item: string) => `&collectionId=${item}`).join('')}`;
               }
-            } else if (filterKey === 'traitsCount') {
+            } else if (filterKey === 'traitsCount' && currentFilter?.length) {
               url = `${url}${currentFilter.map((item: string) => `&traitsCount=${item}`).join('')}`;
             }
           } else {
-            url += `&${filterKey}=${currentFilter}`;
+            if (currentFilter) {
+              url += `&${filterKey}=${currentFilter}`;
+            }
           }
         });
       }
