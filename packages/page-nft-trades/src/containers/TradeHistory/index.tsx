@@ -10,8 +10,6 @@ import { useHistory } from 'react-router';
 import envConfig from '@polkadot/apps-config/envConfig';
 import { ListComponent } from '@polkadot/react-components';
 import { useCollections } from '@polkadot/react-hooks';
-import { keyring } from '@polkadot/ui-keyring';
-import { base64Decode } from '@polkadot/util-crypto';
 
 const { kusamaDecimals, uniqueCollectionIds } = envConfig;
 
@@ -78,10 +76,10 @@ function TradeHistory ({ account }: { account?: string }): React.ReactElement {
               {moment.utc(trade.tradeDate).local().format(' YYYY-MM-DD HH:mm:ss   (Z)')}
             </td>
             <td className='overflow tradeList box-buyer-seler'>
-              {trade.buyer ? keyring.encodeAddress(base64Decode(trade.buyer)) : ''}
+              {trade.buyer ? trade.buyer : ''}
             </td>
             <td className='overflow tradeList box-buyer-seler'>
-              {keyring.encodeAddress(base64Decode(trade.seller))}
+              {trade.seller}
             </td>
           </tr>
         ))}

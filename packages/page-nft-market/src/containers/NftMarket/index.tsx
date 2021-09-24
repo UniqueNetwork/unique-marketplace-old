@@ -114,8 +114,6 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: BuyTokensProps): ReactE
     page.current = 1;
   }, [filters, getOffers]);
 
-  console.log('offersLoading', offersLoading);
-
   return (
     <div className={marketClassName}>
       <Header as='h1'>Market</Header>

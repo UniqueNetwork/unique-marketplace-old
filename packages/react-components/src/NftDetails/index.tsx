@@ -216,7 +216,7 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
                         applied to the transaction</div>
                       <Button
                         content={`Buy it - ${formatKsmBalance(tokenAsk.price.add(getFee(tokenAsk.price)).add(kusamaFees.muln(2)))} KSM`}
-                        disabled={ lowKsmBalanceToBuy}
+                        disabled={lowKsmBalanceToBuy}
                         onClick={sendCurrentUserAction.bind(null, 'BUY')}
                       />
                     </>

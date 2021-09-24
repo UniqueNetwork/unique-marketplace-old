@@ -16,8 +16,6 @@ interface Props {
 const MobileMenuHeader = (props: Props): React.ReactElement<Props> => {
   const { isMobileMenu, setIsMobileMenu, theme } = props;
 
-  console.log('isMobileMenu', isMobileMenu);
-
   return (
     <div className='menu-mobile-header'>
       { isMobileMenu === 'tokens' && (
