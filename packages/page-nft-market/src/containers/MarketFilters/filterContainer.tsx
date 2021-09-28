@@ -44,7 +44,7 @@ const setInStorage = (storageKey: string, data: Filters | boolean | PricesTypes)
 
 const defaultPrices: PricesTypes = { maxPrice: '', minPrice: '' };
 
-const FilterContainer: React.FC<PropTypes> = ({ account, allowClearFilters, collections, filters, setAllowClearFilters, setFilters, setAreFiltersActive }) => {
+const FilterContainer: React.FC<PropTypes> = ({ account, allowClearFilters, collections, filters, setAllowClearFilters, setAreFiltersActive, setFilters }) => {
   const { collectionName16Decoder } = useDecoder();
   const { getTokenImageUrl } = useMetadata();
   const [images, setImages] = useState<string[]>([]);
@@ -118,6 +118,21 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearFilters, coll
 
     setInStorage(SESSION_STORAGE_KEYS.FILTERS, filtersCopy);
   }, [account, filters, setFilters]);
+
+  const updateSeller = useCallback(() => {
+    if (filters.seller && account) {
+      const filtersCopy = { ...filters, seller: account };
+
+      if (JSON.stringify(filters) !== JSON.stringify(filtersCopy)) {
+        setFilters(filtersCopy);
+        setInStorage(SESSION_STORAGE_KEYS.FILTERS, filtersCopy);
+      }
+    }
+  }, [account, filters, setFilters]);
+
+  useEffect(() => {
+    updateSeller();
+  }, [account, updateSeller]);
 
   const filterCurrent = useCallback((id: string) => {
     let newIds: string[] = [];
