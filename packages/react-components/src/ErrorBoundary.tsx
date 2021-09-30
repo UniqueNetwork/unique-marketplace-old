@@ -10,9 +10,11 @@ import translate from './translate';
 interface Props extends I18nProps {
   children: React.ReactNode;
   doThrow?: boolean;
+  isPageFound?: boolean;
   error?: Error | null;
   onError?: () => void;
   trigger?: unknown;
+  setIsPageFound?: (isFound: boolean) => void;
 }
 
 interface State {
@@ -47,9 +49,17 @@ class ErrorBoundary extends React.Component<Props> {
   }
 
   public override render (): React.ReactNode {
-    const { children, error: errorProps, t } = this.props;
+    const { children, error: errorProps, isPageFound, setIsPageFound, t } = this.props;
     const { error } = this.state;
     const displayError = errorProps || error;
+
+    if (displayError && displayError.message === 'Cannot read properties of undefined (reading \'substring\')' && setIsPageFound) {
+      setIsPageFound(false);
+
+      return children;
+    }
+
+    !isPageFound && setIsPageFound && setIsPageFound(true);
 
     return displayError
       ? (

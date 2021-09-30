@@ -20,6 +20,7 @@ import { getSystemChainColor } from '@polkadot/apps-config';
 import envConfig from '@polkadot/apps-config/envConfig';
 import createRoutes from '@polkadot/apps-routing';
 import { AccountSelector, ErrorBoundary, StatusContext } from '@polkadot/react-components';
+import PageNotFound from '@polkadot/react-components/PageNotFound';
 import GlobalStyle from '@polkadot/react-components/styles';
 import { useApi } from '@polkadot/react-hooks';
 import Signer from '@polkadot/react-signer';
@@ -59,6 +60,7 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
   const { queueAction } = useContext(StatusContext);
   const [account, setAccount] = useState<string>();
   const [openPanel, setOpenPanel] = useState<OpenPanelType>('tokens');
+  const [isPageFound, setIsPageFound] = useState<boolean>(true);
 
   const uiHighlight = useMemo(
     () => getSystemChainColor(systemChain, systemName),
@@ -97,7 +99,11 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
             )
             : (
               <>
-                <ErrorBoundary trigger={name}>
+                <ErrorBoundary
+                  isPageFound={isPageFound}
+                  setIsPageFound={setIsPageFound}
+                  trigger={name}
+                >
                   {missingApis.length
                     ? (
                       <NotFound
@@ -221,7 +227,7 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                         )}
                         { (openPanel !== 'accounts') && (
                           <Suspense fallback=''>
-                            <main className={`app-main ${openPanel || ''} ${noAccounts ? 'no-accounts' : ''}`}>
+                            <main className={`app-main ${openPanel || ''} ${noAccounts ? 'no-accounts' : ''} ${!isPageFound ? 'page-no-found' : ''}`}>
                               <div className={`app-container ${openPanel === 'balances' ? 'is-balance-active' : ''}`}>
                                 { noAccounts && (
                                   <div className='no-account'>
@@ -238,16 +244,24 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                                     </div>
                                   </div>
                                 )}
-                                <Component
-                                  account={account}
-                                  basePath={`/${name}`}
-                                  location={location}
-                                  onStatusChange={queueAction}
-                                  openPanel={openPanel}
-                                  setOpenPanel={setOpenPanel}
-                                />
-                                <ConnectingOverlay />
-                                <div id={PORTAL_ID} />
+                                {
+                                  isPageFound
+                                    ? (
+                                      <>
+                                        <Component
+                                          account={account}
+                                          basePath={`/${name}`}
+                                          location={location}
+                                          onStatusChange={queueAction}
+                                          openPanel={openPanel}
+                                          setOpenPanel={setOpenPanel}
+                                        />
+                                        <ConnectingOverlay />
+                                        <div id={PORTAL_ID} />
+                                      </>
+                                    )
+                                    : <PageNotFound/>
+                                }
                               </div>
                             </main>
                           </Suspense>
