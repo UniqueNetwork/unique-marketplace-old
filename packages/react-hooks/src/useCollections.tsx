@@ -79,7 +79,7 @@ export function useCollections () {
   const [myHold, setMyHold] = useState<{ [key: string]: HoldType[] }>({});
   const [offersLoading, setOffersLoading] = useState<boolean>(false);
   const [holdLoading, setHoldLoading] = useState<boolean>(false);
-  const [offersCount, setOffersCount] = useState<number>();
+  const [offersCount, setOffersCount] = useState<number>(0);
   const [trades, setTrades] = useState<TradeType[]>();
   const [tradesLoading, setTradesLoading] = useState<boolean>(false);
   const [myTrades, setMyTrades] = useState<TradeType[]>();
@@ -105,6 +105,7 @@ export function useCollections () {
    */
   const getOffers = useCallback((page: number, pageSize: number, filters?: Filters) => {
     try {
+      setOffersLoading(true);
       let url = `${uniqueApi}/offers?page=${page}&pageSize=${pageSize}`;
 
       // reset offers before loading first page

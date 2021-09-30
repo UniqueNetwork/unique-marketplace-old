@@ -160,7 +160,7 @@ const SearchForm = (props: SearchFormProps) => {
               className='clear-icon'
               onClick={clearSearch}
             >
-              <ClearIcon/>
+              <ClearIcon />
             </div>
           )}
         </Input>
@@ -173,9 +173,11 @@ const SearchForm = (props: SearchFormProps) => {
         />
       </Form.Field>
       <Form.Field className='search-results'>
-        <span>
-          {offersCount} items
-        </span>
+        { !!(offersCount && offersCount > 0) && (
+          <span>
+            {offersCount} items
+          </span>
+        )}
         { areFiltersActive && <a onClick={clearFilters}>Clear all filters</a> }
       </Form.Field>
     </Form>
