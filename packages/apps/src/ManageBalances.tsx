@@ -24,15 +24,15 @@ interface Props {
 
 const ManageBalances = (props: Props) => {
   const { account } = props;
-  const { contractInstance, deposited, getUserDeposit } = useNftContract(account || '');
+  const { contractInstance, getUserDeposit } = useNftContract(account || '');
   const { freeBalance, freeKusamaBalance } = useBalances(account, getUserDeposit);
   const [showWithdrawModal, toggleWithdrawModal] = useState<boolean>(false);
+  const deposited: BN|undefined = new BN(Number(localStorage.getItem('deposit')));
 
   const closeModal = useCallback(() => {
     toggleWithdrawModal(false);
   }, []);
 
-  // deposited && deposited.div(new BN(1000000)).gt(new BN(1))
   const openModal = useCallback(() => {
     toggleWithdrawModal(true);
   }, []);
