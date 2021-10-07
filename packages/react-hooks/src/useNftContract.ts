@@ -8,13 +8,14 @@ import { Abi, ContractPromise } from '@polkadot/api-contract';
 import envConfig from '@polkadot/apps-config/envConfig';
 import { DEFAULT_DECIMALS } from '@polkadot/react-api';
 import { useApi } from '@polkadot/react-hooks';
+import { formatKsmBalance } from '@polkadot/react-hooks/useKusamaApi';
 import keyring from '@polkadot/ui-keyring';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import metadata from './metadata19.03.json';
 
-const { contractAddress, maxGas, quoteId, value } = envConfig;
+const { contractAddress, maxGas, minPrice, quoteId, value } = envConfig;
 
 export interface AskOutputInterface {
   output: [string, string, string, BN, string]
@@ -24,7 +25,6 @@ export interface useNftContractInterface {
   abi: Abi | undefined;
   contractInstance: ContractPromise | null;
   decimals: BN;
-  deposited: BN | undefined;
   depositor: string | undefined;
   getDepositor: (collectionId: string, tokenId: string) => Promise<string | null>;
   getTokenAsk: (collectionId: string, tokenId: string) => Promise<{ owner: string, price: BN } | null>;
@@ -40,7 +40,6 @@ export function useNftContract (account: string): useNftContractInterface {
   const [contractInstance, setContractInstance] = useState<ContractPromise | null>(null);
   const [abi, setAbi] = useState<Abi>();
   const [depositor, setDepositor] = useState<string>();
-  const [deposited, setDeposited] = useState<BN>();
   const [tokenAsk, setTokenAsk] = useState<{ owner: string, price: BN }>();
 
   // get offers
@@ -51,7 +50,7 @@ export function useNftContract (account: string): useNftContractInterface {
         const result = await contractInstance.query.getBalance(account, { gasLimit: maxGas, value }, quoteId) as unknown as { output: BN };
 
         if (result.output) {
-          setDeposited(result.output);
+          Number(formatKsmBalance(result.output)) > minPrice ? localStorage.setItem('deposit', JSON.stringify(result.output)) : localStorage.removeItem('deposit');
 
           return result.output;
         }
@@ -179,7 +178,6 @@ export function useNftContract (account: string): useNftContractInterface {
     abi,
     contractInstance,
     decimals,
-    deposited,
     depositor,
     getDepositor,
     getTokenAsk,
