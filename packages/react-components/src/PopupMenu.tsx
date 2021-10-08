@@ -48,7 +48,8 @@ const PopupMenu = (props: Props) => {
         >
           Withdraw deposit
         </Button>
-        or <NavLink
+        or
+        <NavLink
           exact={true}
           strict={true}
           to={'/faq'}
