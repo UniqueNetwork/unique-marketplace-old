@@ -29,9 +29,6 @@ jobs:
         with:
           languages: ${{ matrix.language }}
 
-      - name: NPM audit
-        run: yarn npm audit --recursive --all --severity high
-
       - name: CodeQL autobuild
         uses: github/codeql-action/autobuild@v1
 
