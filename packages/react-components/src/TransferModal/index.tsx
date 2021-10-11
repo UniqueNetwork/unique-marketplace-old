@@ -31,7 +31,7 @@ function TransferModal ({ account, closeModal, collection, reFungibleBalance, to
   const [recipient, setRecipient] = useState<string>();
   // const { balance } = useBalance(account);
   const { queueExtrinsic } = useContext(StatusContext);
-  const [tokenPart, setTokenPart] = useState<number>(0);
+  const [tokenPart, setTokenPart] = useState<number>(1);
   // const [balanceTooLow, setBalanceTooLow] = useState<boolean>(false);
   const [isAddressError, setIsAddressError] = useState<boolean>(true);
   const [isError, setIsError] = useState<boolean>(false);
