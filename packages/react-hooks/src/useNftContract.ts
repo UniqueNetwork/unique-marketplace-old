@@ -25,6 +25,7 @@ export interface useNftContractInterface {
   abi: Abi | undefined;
   contractInstance: ContractPromise | null;
   decimals: BN;
+  deposited: BN | undefined;
   depositor: string | undefined;
   getDepositor: (collectionId: string, tokenId: string) => Promise<string | null>;
   getTokenAsk: (collectionId: string, tokenId: string) => Promise<{ owner: string, price: BN } | null>;
@@ -40,6 +41,7 @@ export function useNftContract (account: string): useNftContractInterface {
   const [contractInstance, setContractInstance] = useState<ContractPromise | null>(null);
   const [abi, setAbi] = useState<Abi>();
   const [depositor, setDepositor] = useState<string>();
+  const [deposited, setDeposited] = useState<BN>();
   const [tokenAsk, setTokenAsk] = useState<{ owner: string, price: BN }>();
 
   // get offers
@@ -51,6 +53,8 @@ export function useNftContract (account: string): useNftContractInterface {
 
         if (result.output) {
           Number(formatKsmBalance(result.output)) > minPrice ? localStorage.setItem('deposit', JSON.stringify(result.output)) : localStorage.removeItem('deposit');
+
+          setDeposited(result.output);
 
           return result.output;
         }
@@ -178,6 +182,7 @@ export function useNftContract (account: string): useNftContractInterface {
     abi,
     contractInstance,
     decimals,
+    deposited,
     depositor,
     getDepositor,
     getTokenAsk,
