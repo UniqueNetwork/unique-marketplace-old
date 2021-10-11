@@ -8,13 +8,14 @@ import { Abi, ContractPromise } from '@polkadot/api-contract';
 import envConfig from '@polkadot/apps-config/envConfig';
 import { DEFAULT_DECIMALS } from '@polkadot/react-api';
 import { useApi } from '@polkadot/react-hooks';
+import { formatKsmBalance } from '@polkadot/react-hooks/useKusamaApi';
 import keyring from '@polkadot/ui-keyring';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import metadata from './metadata19.03.json';
 
-const { contractAddress, maxGas, quoteId, value } = envConfig;
+const { contractAddress, maxGas, minPrice, quoteId, value } = envConfig;
 
 export interface AskOutputInterface {
   output: [string, string, string, BN, string]
@@ -51,6 +52,8 @@ export function useNftContract (account: string): useNftContractInterface {
         const result = await contractInstance.query.getBalance(account, { gasLimit: maxGas, value }, quoteId) as unknown as { output: BN };
 
         if (result.output) {
+          Number(formatKsmBalance(result.output)) > minPrice ? localStorage.setItem('deposit', JSON.stringify(result.output)) : localStorage.removeItem('deposit');
+
           setDeposited(result.output);
 
           return result.output;

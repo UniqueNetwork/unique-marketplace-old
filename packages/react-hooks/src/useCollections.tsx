@@ -11,7 +11,6 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Filters } from '@polkadot/app-nft-market/containers/NftMarket';
 import envConfig from '@polkadot/apps-config/envConfig';
 import { useApi, useCollection, useFetch } from '@polkadot/react-hooks';
-import { base64Decode, encodeAddress } from '@polkadot/util-crypto';
 
 const { canAddCollections, uniqueApi, uniqueCollectionIds } = envConfig;
 
@@ -80,7 +79,7 @@ export function useCollections () {
   const [myHold, setMyHold] = useState<{ [key: string]: HoldType[] }>({});
   const [offersLoading, setOffersLoading] = useState<boolean>(false);
   const [holdLoading, setHoldLoading] = useState<boolean>(false);
-  const [offersCount, setOffersCount] = useState<number>();
+  const [offersCount, setOffersCount] = useState<number>(0);
   const [trades, setTrades] = useState<TradeType[]>();
   const [tradesLoading, setTradesLoading] = useState<boolean>(false);
   const [myTrades, setMyTrades] = useState<TradeType[]>();
@@ -106,6 +105,7 @@ export function useCollections () {
    */
   const getOffers = useCallback((page: number, pageSize: number, filters?: Filters) => {
     try {
+      setOffersLoading(true);
       let url = `${uniqueApi}/offers?page=${page}&pageSize=${pageSize}`;
 
       // reset offers before loading first page
@@ -124,11 +124,13 @@ export function useCollections () {
               } else {
                 url = `${url}${currentFilter.map((item: string) => `&collectionId=${item}`).join('')}`;
               }
-            } else if (filterKey === 'traitsCount') {
+            } else if (filterKey === 'traitsCount' && currentFilter?.length) {
               url = `${url}${currentFilter.map((item: string) => `&traitsCount=${item}`).join('')}`;
             }
           } else {
-            url += `&${filterKey}=${currentFilter}`;
+            if (currentFilter) {
+              url += `&${filterKey}=${currentFilter}`;
+            }
           }
         });
       }
@@ -154,7 +156,7 @@ export function useCollections () {
 
                 result.items.forEach((offer: OfferType) => {
                   if (!newState[`${offer.collectionId}-${offer.tokenId}`]) {
-                    newState[`${offer.collectionId}-${offer.tokenId}`] = { ...offer, seller: encodeAddress(base64Decode(offer.seller)) };
+                    newState[`${offer.collectionId}-${offer.tokenId}`] = { ...offer, seller: offer.seller };
                   }
                 });
 

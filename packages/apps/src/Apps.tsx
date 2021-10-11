@@ -10,9 +10,6 @@ import React, { Suspense, useContext, useMemo, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import Menu from 'semantic-ui-react/dist/commonjs/collections/Menu';
 import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
-import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
-import Image from 'semantic-ui-react/dist/commonjs/elements/Image';
-
 import { ThemeContext } from 'styled-components';
 
 import { findMissingApis } from '@polkadot/apps/endpoint';
@@ -23,17 +20,17 @@ import { getSystemChainColor } from '@polkadot/apps-config';
 import envConfig from '@polkadot/apps-config/envConfig';
 import createRoutes from '@polkadot/apps-routing';
 import { AccountSelector, ErrorBoundary, StatusContext } from '@polkadot/react-components';
+import PageNotFound from '@polkadot/react-components/PageNotFound';
 import GlobalStyle from '@polkadot/react-components/styles';
 import { useApi } from '@polkadot/react-hooks';
 import Signer from '@polkadot/react-signer';
 
 import infoSvg from '../src/images/info.svg';
 import ConnectingOverlay from './overlays/Connecting';
-// import BalancesHeader from './BalancesHeader';
+import BalancesHeader from './BalancesHeader';
 import ManageAccounts from './ManageAccounts';
 import ManageBalances from './ManageBalances';
 import MobileAccountSelector from './MobileAccountSelector';
-import MobileBalancesHeader from './MobileBalancesHeader';
 import MobileMenu from './MobileMenu';
 import MobileMenuHeader from './MobileMenuHeader';
 import ScrollToTop from './ScrollToTop';
@@ -65,6 +62,7 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
   const { queueAction } = useContext(StatusContext);
   const [account, setAccount] = useState<string>();
   const [openPanel, setOpenPanel] = useState<OpenPanelType>('tokens');
+  const [isPageFound, setIsPageFound] = useState<boolean>(true);
 
   const uiHighlight = useMemo(
     () => getSystemChainColor(systemChain, systemName),
@@ -75,9 +73,13 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
     (): Route => {
       const app = location.pathname.slice(1) || '';
 
-      return createRoutes(t).find((route) => !!(route && app.startsWith(route.name))) || NOT_FOUND;
+      return createRoutes(t).find((route) => {
+        setOpenPanel((prev) => prev === 'accounts' ? 'tokens' : prev);
+
+        return !!(route && app.startsWith(route.name));
+      }) || NOT_FOUND;
     },
-    [location, t]
+    [location.pathname, t]
   );
 
   const missingApis = findMissingApis(api, needsApi);
@@ -103,7 +105,11 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
             )
             : (
               <>
-                <ErrorBoundary trigger={name}>
+                <ErrorBoundary
+                  isPageFound={isPageFound}
+                  setIsPageFound={setIsPageFound}
+                  trigger={name}
+                >
                   {missingApis.length
                     ? (
                       <NotFound
@@ -141,7 +147,7 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                                 />
                               )}
                               { !walletMode && (
-                                <Menu.Menu position='right'>
+                                <>
                                   <Menu.Item
                                     active={location.pathname === '/market'}
                                     as={NavLink}
@@ -172,16 +178,15 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                                     name='FAQ'
                                     to='/faq'
                                   />
-                                </Menu.Menu>
+                                </>
                               )}
                             </Menu>
                             { (isApiReady) && (
                               <div className={`app-user${account ? '' : ' hidden'}`}>
-                                {/* <BalancesHeader account={account} /> */}
-                                <MobileBalancesHeader
+                                <BalancesHeader
                                   account={account}
                                   isMobileMenu={openPanel}
-                                  setIsMobileMenu={setOpenPanel}
+                                  setOpenPanel={setOpenPanel}
                                 />
                                 <div className='account-selector-block'>
                                   <AccountSelector onChange={setAccount} />
@@ -223,6 +228,7 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                         { openPanel === 'balances' && (
                           <ManageBalances
                             account={account}
+                            setOpenPanel={setOpenPanel}
                           />
                         )}
                         { (openPanel !== 'balances' && openPanel !== 'accounts') && (

@@ -7,23 +7,21 @@ import { NavLink } from 'react-router-dom';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 import Popup from 'semantic-ui-react/dist/commonjs/modules/Popup';
 
+import question from '@polkadot/apps/images/question.svg';
 import envConfig from '@polkadot/apps-config/envConfig';
-import { OpenPanelType } from '@polkadot/apps-routing/types';
 import { WithdrawModal } from '@polkadot/react-components';
 import { useBalances, useNftContract } from '@polkadot/react-hooks';
 import { formatKsmBalance, formatStrBalance } from '@polkadot/react-hooks/useKusamaApi';
-
-import question from './images/question.svg';
 
 const { commission, minPrice } = envConfig;
 
 interface Props {
   account?: string;
-  setOpenPanel: (isOpen: OpenPanelType) => void;
+  isPopupActive?: boolean
 }
 
-const ManageBalances = (props: Props) => {
-  const { account } = props;
+const PopupMenu = (props: Props) => {
+  const { account, isPopupActive } = props;
   const { contractInstance, getUserDeposit } = useNftContract(account || '');
   const { freeBalance, freeKusamaBalance } = useBalances(account, getUserDeposit);
   const [showWithdrawModal, toggleWithdrawModal] = useState<boolean>(false);
@@ -50,7 +48,8 @@ const ManageBalances = (props: Props) => {
         >
           Withdraw deposit
         </Button>
-        or <NavLink
+        or
+        <NavLink
           exact={true}
           strict={true}
           to={'/faq'}
@@ -61,7 +60,7 @@ const ManageBalances = (props: Props) => {
   }, [openModal]);
 
   return (
-    <div className='manage-balances mobile'>
+    <div className={`manage-balances ${isPopupActive ? 'popup active' : 'popup'}`}>
       <div className='main-balance'>
         {formatStrBalance(15, freeBalance)}
         <span className='unit'>UNQ</span>
@@ -88,8 +87,7 @@ const ManageBalances = (props: Props) => {
           )}
         </div>
         {/* Todo uncomment this when the 'View all tokens' functional will be clear */}
-        {/* <div className='footer-balance' */}
-        {/*  onClick={setOpenPanel.bind(null, 'tokens')}> */}
+        {/* <div className='footer-balance'> */}
         {/*  <Menu.Item */}
         {/*    active={location.pathname === '/wallet'} */}
         {/*    as={NavLink} */}
@@ -112,4 +110,4 @@ const ManageBalances = (props: Props) => {
   );
 };
 
-export default memo(ManageBalances);
+export default memo(PopupMenu);

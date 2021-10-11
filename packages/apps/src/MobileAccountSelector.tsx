@@ -40,6 +40,7 @@ const MobileAccountSelector = (props: MobileAccountSelectorProps): React.ReactEl
       )}
       <img
         alt='menu-arrow'
+        className={openPanel === 'accounts' ? 'rotate-icon' : ''}
         src={menuArrow as string}
       />
     </div>
