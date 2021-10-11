@@ -114,7 +114,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
   }, [account, queueExtrinsic, send]);
 
   const getSaleFee = useCallback(async () => {
-    const fee = await api.tx.nft.transfer(escrowAddress, collectionInfo?.id, tokenId, 0).paymentInfo(account) as { partialFee: BN };
+    const fee = await api.tx.nft.transfer(escrowAddress, collectionInfo?.id, tokenId, 1).paymentInfo(account) as { partialFee: BN };
 
     if (fee) {
       setSaleFee(fee.partialFee);
