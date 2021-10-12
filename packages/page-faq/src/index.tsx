@@ -51,7 +51,15 @@ function Faq (): React.ReactElement<Props> {
           <li> Restore your wallet through the seed phrase, JSON file+password or QR code.Make sure that using Chrome or Firefox desktop with the Polkadot.js browser extension you’ve set your wallet account setting to 'allow use on any chain'.</li>
           <li>Send KSM anywhere you want</li>
         </ol>
-
+        <Header as='h4'>Q: Where can I read the Terms of Service?</Header>
+        <p>A: You can read our Terms of Service &nbsp;
+          <a
+            download
+            href='/files/Terms.pdf'
+          >
+            here:
+          </a>
+        </p>
       </div>
     </main>
   );
