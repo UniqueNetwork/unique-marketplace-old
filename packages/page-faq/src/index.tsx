@@ -52,11 +52,11 @@ function Faq (): React.ReactElement<Props> {
           <li>Send KSM anywhere you want</li>
         </ol>
         <Header as='h4'>Q: Where can I read the Terms of Service?</Header>
-        <p>A: You can read our Terms of Service &nbsp;
+        <p>A: You can read our Terms of Service&nbsp;
           <a
             download
             href='/files/Terms.pdf'
-          >here
+          >here.
           </a>
         </p>
       </div>
