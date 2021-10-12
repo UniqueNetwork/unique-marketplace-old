@@ -97,12 +97,10 @@ export function convertEnumToString (value: string, key: string, NFTMeta: Type, 
 export function deserializeNft (onChainSchema: ProtobufAttributeType, buffer: Uint8Array, locale: string): { [key: string]: any } {
   try {
     const root = defineMessage(onChainSchema);
-    let NFTMeta: Type;
+    let NFTMeta: Type = root.lookupType('onChainMetaData.NFTMeta');
 
     // Obtain the message type
-    if (root?.nested?.onChainMetaData) {
-      NFTMeta = root.lookupType('onChainMetaData.NFTMeta');
-    } else if (root?.nested?.onchainmetadata) {
+    if (root?.nested?.onchainmetadata) {
       NFTMeta = root.lookupType('onchainmetadata.NFTMeta');
     }
 
