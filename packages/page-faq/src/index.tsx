@@ -56,8 +56,7 @@ function Faq (): React.ReactElement<Props> {
           <a
             download
             href='/files/Terms.pdf'
-          >
-            here:
+          >here
           </a>
         </p>
       </div>
