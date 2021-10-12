@@ -674,6 +674,10 @@ button.ui.button,
           position: absolute;
           left: 95%;
           top: 7px;
+
+          &:after, &:before {
+            left: 0;
+          }
         }
 
         img {
