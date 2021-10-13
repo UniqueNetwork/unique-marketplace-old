@@ -13,9 +13,8 @@ import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 import Item from 'semantic-ui-react/dist/commonjs/views/Item';
 
 import envConfig from '@polkadot/apps-config/envConfig';
-import { Expander } from '@polkadot/react-components';
+import { Expander, Tooltip } from '@polkadot/react-components';
 import trash from '@polkadot/react-components/ManageCollection/trash.svg';
-import Tooltip from '@polkadot/react-components/Tooltip';
 import { useDecoder, useMetadata, useMyTokens } from '@polkadot/react-hooks';
 
 import NftTokenCard from '../NftTokenCard';
