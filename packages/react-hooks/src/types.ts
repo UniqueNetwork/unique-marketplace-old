@@ -72,12 +72,6 @@ export interface TxState extends ExtrinsicAndSenders {
   onChangeAccountId: (_: string | null) => void;
 }
 
-export interface UseSudo {
-  allAccounts: string[];
-  hasSudoKey: boolean;
-  sudoKey?: string;
-}
-
 export interface AddressFlags extends DeriveAccountFlags {
   isDevelopment: boolean;
   isEditable: boolean;

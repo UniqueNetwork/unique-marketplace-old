@@ -4,20 +4,14 @@
 import React, { memo, useCallback, useContext, useEffect, useState } from 'react';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button';
 
-import { Dropdown, Input } from '@polkadot/react-components';
-import EnumsInput from '@polkadot/react-components/EnumsInput';
+import { Dropdown, EnumsInput, Input } from '@polkadot/react-components';
 import close from '@polkadot/react-components/ManageCollection/close.svg';
 import floppy from '@polkadot/react-components/ManageCollection/floppy.svg';
 import pencil from '@polkadot/react-components/ManageCollection/pencil.svg';
 import plus from '@polkadot/react-components/ManageCollection/plus.svg';
 import trash from '@polkadot/react-components/ManageCollection/trash.svg';
 import StatusContext from '@polkadot/react-components/Status/Context';
-import { AttributeItemType,
-  FieldRuleType,
-  FieldType,
-  fillAttributes,
-  fillProtobufJson,
-  ProtobufAttributeType } from '@polkadot/react-components/util/protobufUtils';
+import { AttributeItemType, FieldRuleType, FieldType, fillAttributes, fillProtobufJson, ProtobufAttributeType } from '@polkadot/react-components/util/protobufUtils';
 
 import { CountOptions, TypeOptions } from './types';
 

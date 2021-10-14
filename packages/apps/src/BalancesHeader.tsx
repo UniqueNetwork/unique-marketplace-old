@@ -8,7 +8,7 @@ import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 
 import menuArrow from '@polkadot/apps/images/menu-arrow.svg';
 import envConfig from '@polkadot/apps-config/envConfig';
-import PopupMenu from '@polkadot/react-components/PopupMenu';
+import { PopupMenu } from '@polkadot/react-components';
 import { useBalances } from '@polkadot/react-hooks';
 import { formatKsmBalance, formatStrBalance } from '@polkadot/react-hooks/useKusamaApi';
 
@@ -74,8 +74,10 @@ function BalancesHeader (props: Props): React.ReactElement<{ account?: string }>
       className='app-balances'
       ref = {headerRef}
     >
-      <div className='app-balances-items'
-        onClick={onClick}>
+      <div
+        className='app-balances-items'
+        onClick={onClick}
+      >
         <div className='app-balances-items-item'>
           {formatStrBalance(15, freeBalance)}
           <span className='unit'>UNQ</span>
