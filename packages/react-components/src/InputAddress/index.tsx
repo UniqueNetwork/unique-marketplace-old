@@ -217,6 +217,8 @@ class InputAddress extends React.PureComponent<Props, State> {
   private getLastOptionValue (): KeyringSectionOption | undefined {
     const available = this.getFiltered();
 
+    console.log('available', available);
+
     return available.length
       ? available[available.length - 1]
       : undefined;
