@@ -36,11 +36,15 @@ const NftTokenCard = ({ account, collectionId, openDetailedInformationModal, tok
     return formatPrice(formatKsmBalance(new BN(price).add(getFee(price))));
   }, [getFee]);
 
+  const onCardClick = useCallback(() => {
+    openDetailedInformationModal(collectionId, token.tokenId);
+  }, [collectionId, openDetailedInformationModal, token]);
+
   return (
     <Card
       className='token-card'
       key={token.tokenId}
-      onClick={openDetailedInformationModal.bind(null, collectionId, token.tokenId)}
+      onClick={onCardClick}
     >
       { token && (
         <Image
