@@ -129,9 +129,11 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                       <Menu.Item
                         active={location.pathname === '/wallet'}
                         as={NavLink}
-                        name='myTokens'
+                        name='myNFT'
                         to='/wallet'
-                      />
+                      >
+                        My NFTs
+                      </Menu.Item>
                       <Menu.Item
                         active={location.pathname === '/trades'}
                         as={NavLink}
@@ -141,7 +143,7 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                       <Menu.Item
                         active={location.pathname === '/accounts'}
                         as={NavLink}
-                        name='accounts'
+                        name='wallets'
                         to='/accounts'
                       />
                       <Menu.Item
@@ -215,8 +217,7 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                         <div className='error-message-info'>
                           <div>
                             <p> Some features are currently hidden and will only become available once you connect your wallet.  </p>
-                            <p> You can create new or add your existing substrate account on the
-                              <Link to='accounts'> <span> account page</span> </Link>
+                            <p> You can create new or add your existing substrate account on the <Link to='accounts'> <span> wallets page</span> </Link>
                             </p>
                           </div>
                         </div>

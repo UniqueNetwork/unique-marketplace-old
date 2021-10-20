@@ -27,8 +27,9 @@
       border-radius: var(--bradius) !important;
 
       &.active {
-        background-color: var(--acg-purple-200);
-        color: var(--white-color);
+        // background-color: var(--acg-purple-200);
+        border-bottom: var(--acg-green) solid 3px;
+        // color: var(--acg-green);
         margin-top: 0;
         font-weight: bolder;
       }
@@ -443,14 +444,17 @@
   box-shadow: none;
 
   a.crateAccountBtn {
-    border-radius: 4px;
-    color: var(--link-color);
+    border-radius: 4px ;
+    border-color: var(--acg-green);
     font-family: var(--font-roboto);
     font-weight: 500;
     font-size: 16px;
+    color: var(--acg-neutral-900);
+    background-color: var(--acg-green);
 
     &:hover {
-      color: var(--link-color);
+      color: var(--acg-green);
+      background-color: var(--acg-neutral-900);
     }
   }
 }
