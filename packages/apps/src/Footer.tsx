@@ -1,14 +1,24 @@
-import React from 'react';
-import styled from 'styled-components';
+// Copyright 2017-2021 Art Curator Grid/Artpool authors & contributors
+// SPDX-License-Identifier: Apache-2.0
+
+// eslint-disable-next-line header/header
 import './apps.scss';
 
+import React from 'react';
 import Grid from 'semantic-ui-react/dist/commonjs/collections/Grid';
 import Image from 'semantic-ui-react/dist/commonjs/elements/Image';
+import styled from 'styled-components';
 
-import ArtpoolGreen from '../public/logos/artpool_hover.svg';
-import byArtCuratorGrid from '../public/images/byArtCuratorGrid.svg';
-import instagramLogo from '../public/images/instagramLogo.svg';
-import acg from '../public/images/acg.svg';
+import { ACG_URL, DISCORD_URL, INSTAGRAM_URL, LINKEDIN_URL, TELEGRAM_URL, TWITTER_URL } from '@polkadot/apps/constants';
+
+import AcgLogoCompleteIcon from '../public/images/AcgLogoCompleteIcon.svg';
+import AcgLogoIcon from '../public/images/AcgLogoIcon.svg';
+import AcgLogoGreen from '../public/images/ARTPOOL_Green_RGB.svg';
+import DiscordIcon from '../public/images/DiscordIcon.svg';
+import InstagramIcon from '../public/images/InstagramIcon.svg';
+import LinkedinIcon from '../public/images/LinkedinIcon.svg';
+import TelegramIcon from '../public/images/TelegramIcon.svg';
+import TwitterIcon from '../public/images/TwitterIcon.svg';
 
 interface Props {
   className?: string;
@@ -19,37 +29,79 @@ function Footer ({ className }: Props): React.ReactElement<Props> {
     <>
       <footer className='app-footer'>
         <div className='app-container app-container--footer'>
-          <Grid className={'footer--grid'} columns={3}>
+          <Grid
+            className={'footer--grid'}
+            columns={3}
+          >
             <Grid.Row>
               <Grid.Column className={'footer--grid--left'}>
-                <Image src={ArtpoolGreen} className='footer--grid--left--logo'/>
+                <Image
+                  className='footer--grid--left--logo'
+                  src={AcgLogoGreen}
+                />
                 <div className='footer--grid--left--copy'>
-                  ©️️ 2021 Artpool <Image src={byArtCuratorGrid} className='footer--grid--left--byACG' />
+                  ©️️ 2021 Artpool By <Image
+                  className='footer--grid--left--byACG'
+                  src={AcgLogoIcon}
+                /> Art Curator Grid
                 </div>
               </Grid.Column>
-              <Grid.Column className={'footer--grid--center'}>
-                <Grid columns={2} className={'footer--grid--center--links'}>
-                  <Grid.Row>
-                    <Grid.Column >
-                      <a href={'/'}><p>About</p></a>
-                      <a href={'/'}><p>NFTs</p></a>
-                      <a href={'/'}><p>Projects</p></a>
-                      <a href={'/'}><p>Community</p></a>
-                    </Grid.Column>
-                    <Grid.Column>
-                      <a href={'/'}><p>FAQ</p></a>
-                      <a href={'/'}><p>Help</p></a>
-                      <a href={'/'}><p>Privacy</p></a>
-                      <a href={'/'}><p>Terms of Service</p></a>
-                    </Grid.Column>
-                  </Grid.Row>
-                </Grid>
-
-
-              </Grid.Column>
+              <Grid.Column className={'footer--grid--center'} />
               <Grid.Column className='footer--grid--right'>
-                <Image src={acg} className='footer--grid--right--image'/>
-                <Image src={instagramLogo}  className='footer--grid--right--image'/>
+                <a
+                  href={ACG_URL}
+                  target='blank'
+                >
+                  <Image
+                    className='footer--grid--right--image'
+                    src={AcgLogoCompleteIcon}
+                  />
+                </a>
+                <a
+                  href={INSTAGRAM_URL}
+                  target='blank'
+                >
+                  <Image
+                    className='footer--grid--right--image'
+                    src={InstagramIcon}
+                  />
+                </a>
+                <a
+                  href={DISCORD_URL}
+                  target='blank'
+                >
+                  <Image
+                    className='footer--grid--right--image'
+                    src={DiscordIcon}
+                  />
+                </a>
+                <a
+                  href={TELEGRAM_URL}
+                  target='blank'
+                >
+                  <Image
+                    className='footer--grid--right--image'
+                    src={TelegramIcon}
+                  />
+                </a>
+                <a
+                  href={TWITTER_URL}
+                  target='blank'
+                >
+                  <Image
+                    className='footer--grid--right--image'
+                    src={TwitterIcon}
+                  />
+                </a>
+                <a
+                  href={LINKEDIN_URL}
+                  target='blank'
+                >
+                  <Image
+                    className='footer--grid--right--image'
+                    src={LinkedinIcon}
+                  />
+                </a>
               </Grid.Column>
             </Grid.Row>
           </Grid>

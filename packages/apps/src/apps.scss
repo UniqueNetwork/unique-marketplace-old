@@ -72,19 +72,20 @@
     font-family: var(--font-replica);
 
     &--left{
-      text-align: start;
-      width: 40% !important;
       &--logo{
-        width: 273px;
+        width: 270px;
       }
       &--copy{
-        padding-top: 20px;
-        font-size: 16px;
+        padding-top: 8px;
+        font-size: 12px;
+        color: #999999;
       }
       &--byACG {
         display: inline !important;
-        padding-left: 17px;
-        height: 30px;
+        padding: 5px;
+        &img {
+          height: 24px;
+        }
       }
     }
     &--center{
@@ -108,9 +109,26 @@
     &--right{
       width: 30% !important;
       text-align: end;
+      a{
+        color: var(--acg-neutral-900);
+        font-size: 20px;
+        font-weight: bold;
+        &:hover {
+          color: var(--acg-green);
+        }
+      }
       &--image{
+        padding-top: 16px;
+        padding-left: 16px;
         display: inline !important;
-        padding-left: 5px;
+        &img{
+          width: 35px;
+          height: 35px;
+          &:hover {
+            fill: var(--acg-green);
+          }
+        }
+
       }
     }
   }
@@ -199,6 +217,7 @@
     align-items: center;
     max-width: var(--max-header-width);
     padding: var(--gap);
+    padding-top: 40px;
     margin: 0 auto;
   }
 
