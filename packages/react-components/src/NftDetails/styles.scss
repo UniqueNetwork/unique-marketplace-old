@@ -117,6 +117,81 @@
     }
   }
 
+  .token-info-artist {
+    margin-top: 40px;
+    // padding: 24px;
+    background-color: var(--card-background);
+
+    .token-info-artist-row{
+      padding: 24px !important;
+    }
+    .artist-profile {
+      display: flex;
+      min-height: 120px;
+      align-items: center;
+      flex-direction: row;
+
+      .avatar {
+        width: 90px;
+        height: 90px;
+        float: left;
+        margin-right: 12px;
+        margin-left: 16px;
+        display: flex;
+        overflow: hidden;
+        position: relative;
+        font-size: 1.25rem;
+        align-items: center;
+        flex-shrink: 0;
+        line-height: 1;
+        user-select: none;
+        border-radius: 50%;
+        justify-content: center;
+
+        img {
+          color: transparent;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          text-align: center;
+          text-indent: 10000px;
+        }
+      }
+
+      .artist-name {
+        font-size: 20px;
+        font-weight: normal;
+        color: var(--acg-neutral-900);
+        margin: 0;
+      }
+      .artist-location {
+        font-size: 16px;
+        color: var(--acg-neutral-600);
+      }
+    }
+
+    .artist-biography {
+
+      display: flex;
+      min-height: 120px;
+      align-items: start;
+      flex-direction: row;
+
+      .bio-header {
+        color: var(--acg-purple-500);
+        font-size: 20px;
+        font-weight: normal;
+        padding-right: 30px;
+      }
+      .bio-text {
+        font-size: 16px;
+        p{
+          line-height: 19px;
+          white-space: pre-wrap;
+        }
+      }
+    }
+  }
   .divider {
     border: 1px solid var(--divider-color);
     height: 1px;

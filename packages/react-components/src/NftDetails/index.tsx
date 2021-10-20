@@ -20,6 +20,7 @@ import { useBalance, useDecoder, useMarketplaceStages, useSchema } from '@polkad
 import BuySteps from './BuySteps';
 import SaleSteps from './SaleSteps';
 import SetPriceModal from './SetPriceModal';
+import { Grid } from 'semantic-ui-react';
 
 const { kusamaDecimals, showMarketActions } = envConfig;
 
@@ -105,19 +106,19 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
         onClick={goBack}
       >
         <svg fill='none'
-          height='16'
-          viewBox='0 0 16 16'
-          width='16'
-          xmlns='http://www.w3.org/2000/svg'>
+             height='16'
+             viewBox='0 0 16 16'
+             width='16'
+             xmlns='http://www.w3.org/2000/svg'>
           <path d='M13.5 8H2.5'
-            stroke='var(--card-link-color)'
-            strokeLinecap='round'
-            strokeLinejoin='round'
+                stroke='var(--card-link-color)'
+                strokeLinecap='round'
+                strokeLinejoin='round'
           />
           <path d='M7 3.5L2.5 8L7 12.5'
-            stroke='var(--card-link-color)'
-            strokeLinecap='round'
-            strokeLinejoin='round'
+                stroke='var(--card-link-color)'
+                strokeLinecap='round'
+                strokeLinejoin='round'
           />
         </svg>
         back
@@ -269,6 +270,62 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
 
           </div>
         </div>
+      </div>
+
+      {/* TODO: SET THIS DINAMIC FOR THE ARTISTS */}
+      <div className='token-info-artist'>
+        <Grid>
+          <Grid.Row className='token-info-artist-row'>
+            <Grid.Column width={4}>
+              <a target='blank' href='https://www.artcuratorgrid.com/users/fredrik-tjaerandsen/posts'>
+                <div className='artist-profile'>
+                  <div className='avatar'>
+                    <img alt='Fredrik Tjaerandsen' src='https://drbfkoztg80ia.cloudfront.net/607ac251c65b900004df4162/1618658073104-md.jpg' />
+                  </div>
+                  <div>
+                    <h3 className='artist-name'>Fredrik Tjaerandsen</h3>
+                    <p className='artist-location'>London, UK</p>
+                  </div>
+                </div>
+              </a>
+            </Grid.Column>
+            <Grid.Column width={1} />
+            <Grid.Column width={11}>
+              <div className='artist-biography'>
+                <h3 className='bio-header'>Biography</h3>
+                <div className='bio-text'>
+                  <p>Fredrik Tjærandsen’s practise focuses on performance,
+                    motion and the body in relation to the space around it.</p>
+                  <br />
+                  <p>Fredrik Tjærandsen (b. 1995) is a Norwegian artist and designer
+                    based in London. His upbringing in rural Norway is a source of
+                    inspiration for his design practice, and local traditions and
+                    family history are incredibly important to his work.
+                    Trained in visual art and fashion, Fredrik’s design process is
+                    artistic, intuitive, and emotional: he is drawn to working with
+                    visuals that captivate his emotions or feelings in that moment
+                  </p>
+                  <br />
+                  <p>
+                    “My work explores connection and transitions of the mind.
+                    I’m fascinated with where identity originates. Previously in my
+                    work I explore wearable spheres which centred on examining early
+                    childhood memories. I wanted to explore the questions of how I become
+                    the person I am today. To do that, I played with the idea of
+                    transitional processes, which relate to the different way we
+                    perceive things. The spere itself serves a metaphor.
+                    When you’re inside it you feel as if you are in your own space,
+                    just like you are in your own mind, but when you are looking at
+                    it from the outside, your perspective is entirely different.
+                    I think of it as a visualisation of how we understand the world
+                    around us. How, if we transcend the border of our bubbles,
+                    we ultimately reach these moments of clarity in the here and now. “
+                  </p>
+                </div>
+              </div>
+            </Grid.Column>
+          </Grid.Row>
+        </Grid>
       </div>
       { readyToAskPrice && (
         <SetPriceModal
