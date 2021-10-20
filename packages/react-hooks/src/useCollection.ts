@@ -56,12 +56,14 @@ interface TransactionCallBacks {
 }
 
 export function useCollection () {
-  const { api } = useApi();
+  const { api, isApiConnected, isApiReady } = useApi();
   const { queueExtrinsic } = useContext(StatusContext);
   const { hex2a } = useDecoder();
 
+  const isApi = api && isApiReady && isApiConnected;
+
   const getCollectionTokensCount = useCallback(async (collectionId: string) => {
-    if (!api || !collectionId) {
+    if (!isApi || !collectionId) {
       return [];
     }
 
@@ -72,7 +74,7 @@ export function useCollection () {
     }
 
     return 0;
-  }, [api]);
+  }, [api, isApi]);
 
   const getCreatedCollectionCount = useCallback(async () => {
     try {
@@ -141,7 +143,7 @@ export function useCollection () {
   }, [api, queueExtrinsic]);
 
   const getCollectionAdminList = useCallback(async (collectionId: string) => {
-    if (!api || !collectionId) {
+    if (!isApi || !collectionId) {
       return [];
     }
 
@@ -152,7 +154,7 @@ export function useCollection () {
     }
 
     return [];
-  }, [api]);
+  }, [api, isApi]);
 
   const setSchemaVersion = useCallback(({ account, collectionId, errorCallback, schemaVersion, successCallback }: { account: string, schemaVersion: SchemaVersionTypes, collectionId: string, successCallback?: () => void, errorCallback?: () => void }) => {
     const transaction = api.tx.nft.setSchemaVersion(collectionId, schemaVersion);
@@ -241,7 +243,7 @@ export function useCollection () {
   }, [api, queueExtrinsic]);
 
   const getDetailedCollectionInfo = useCallback(async (collectionId: string) => {
-    if (!api) {
+    if (!api || !isApi) {
       return null;
     }
 
@@ -257,7 +259,7 @@ export function useCollection () {
     }
 
     return {};
-  }, [api]);
+  }, [api, isApi]);
 
   const getCollectionOnChainSchema = useCallback((collectionInfo: NftCollectionInterface): { constSchema: ProtobufAttributeType | undefined, variableSchema: ProtobufAttributeType | undefined } => {
     const result: {
@@ -289,7 +291,7 @@ export function useCollection () {
   }, [hex2a]);
 
   const getTokensOfCollection = useCallback(async (collectionId: string, ownerId: string) => {
-    if (!api || !collectionId || !ownerId) {
+    if (!isApi || !collectionId || !ownerId) {
       return [];
     }
 
@@ -300,7 +302,7 @@ export function useCollection () {
     }
 
     return [];
-  }, [api]);
+  }, [api, isApi]);
 
   return {
     addCollectionAdmin,

@@ -63,6 +63,7 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: BuyTokensProps): ReactE
   const [areFiltersActive, setAreFiltersActive] = useState<boolean>(false);
   const [collections, setCollections] = useState<NftCollectionInterface[]>([]);
   const [filters, setFilters] = useState<Filters>(initialFilters);
+  const [loadingCollections, setLoadingCollections] = useState<boolean>(false);
   const page = useRef<number>(1);
 
   const hasMore = !!(offers && offersCount) && Object.keys(offers).length < offersCount;
@@ -71,9 +72,11 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: BuyTokensProps): ReactE
   }, [history]);
 
   const addMintCollectionToList = useCallback(async () => {
+    setLoadingCollections(true);
     const firstCollections: NftCollectionInterface[] = await presetCollections();
 
     setCollections(() => [...firstCollections]);
+    setLoadingCollections(false);
   }, [presetCollections]);
 
   const fetchScrolledData = useCallback(() => {
@@ -114,8 +117,6 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: BuyTokensProps): ReactE
     page.current = 1;
   }, [filters, getOffers]);
 
-  console.log('offersLoading', offersLoading, 'hasMore', hasMore, 'offers', Object.keys(offers).length, 'offersCount', offersCount);
-
   return (
     <div className={marketClassName}>
       <Header as='h1'>Market</Header>
@@ -151,6 +152,7 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: BuyTokensProps): ReactE
           allowClearFilters={allowClearFilters}
           collections={collections}
           filters={filters}
+          loadingCollections={loadingCollections}
           openFilters={openPanel === 'filters'}
           setAllowClearFilters={setAllowClearFilters}
           setAreFiltersActive={setAreFiltersActive}

@@ -1,5 +1,4 @@
-/* eslint-disable header/header */
-// [object Object]
+// Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import './styles.scss';
@@ -8,12 +7,14 @@ import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection
 
 import BN from 'bn.js';
 import React, { useCallback, useEffect, useState } from 'react';
+import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
 import { Filters } from '@polkadot/app-nft-market/containers/NftMarket';
 import envConfig from '@polkadot/apps-config/envConfig';
-import { useDecoder, useMetadata } from '@polkadot/react-hooks';
+import { useMetadata } from '@polkadot/react-hooks';
 
 import { SESSION_STORAGE_KEYS } from './constants';
+import FilterContainerItem from './FilterContainerItem';
 
 const { commission, uniqueCollectionIds } = envConfig;
 
@@ -24,6 +25,7 @@ interface PropTypes {
   allowClearFilters: boolean;
   collections: NftCollectionInterface[];
   filters: Filters;
+  loadingCollections: boolean;
   setAllowClearFilters: (allow: boolean) => void;
   setFilters: (filters: Filters) => void;
   setAreFiltersActive: (condition: boolean) => void;
@@ -44,8 +46,7 @@ const setInStorage = (storageKey: string, data: Filters | boolean | PricesTypes)
 
 const defaultPrices: PricesTypes = { maxPrice: '', minPrice: '' };
 
-const FilterContainer: React.FC<PropTypes> = ({ account, allowClearFilters, collections, filters, setAllowClearFilters, setAreFiltersActive, setFilters }) => {
-  const { collectionName16Decoder } = useDecoder();
+const FilterContainer: React.FC<PropTypes> = ({ account, allowClearFilters, collections, filters, loadingCollections, setAllowClearFilters, setAreFiltersActive, setFilters }) => {
   const { getTokenImageUrl } = useMetadata();
   const [images, setImages] = useState<string[]>([]);
   const [KSMPrices, setKSMPrices] = useState<PricesTypes>(defaultPrices);
@@ -86,7 +87,7 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearFilters, coll
     setInStorage(SESSION_STORAGE_KEYS.PRICES, pricesDefaultValue);
   }, [changePrices]);
 
-  const setKSMPrice: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+  const setKSMPrice: React.ChangeEventHandler<HTMLInputElement> = useCallback((e) => {
     let val = e.target.value;
 
     val = val.slice(0, 8);
@@ -103,7 +104,7 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearFilters, coll
 
     setKSMPrices(newKsmPrices);
     setInStorage(SESSION_STORAGE_KEYS.PRICES, newKsmPrices);
-  };
+  }, [KSMPrices]);
 
   const handleOnlyMyToken = useCallback(() => {
     let filtersCopy: Filters = { ...filters };
@@ -129,10 +130,6 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearFilters, coll
       }
     }
   }, [account, filters, setFilters]);
-
-  useEffect(() => {
-    updateSeller();
-  }, [account, updateSeller]);
 
   const filterCurrent = useCallback((id: string) => {
     let newIds: string[] = [];
@@ -175,11 +172,40 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearFilters, coll
     });
   }, [collections, getTokenImageUrl]);
 
+  const onSetCurrentFilter = useCallback(() => {
+    setIsShowCollection(!isShowCollection);
+  }, [isShowCollection, setIsShowCollection]);
+
+  const onApplyPrices = useCallback(() => {
+    changePrices(KSMPrices.minPrice, KSMPrices.maxPrice);
+  }, [changePrices, KSMPrices]);
+
+  const onKeyDown = useCallback((evt: React.KeyboardEvent) => {
+    ['e', 'E', '+', '-'].includes(evt.key) && evt.preventDefault();
+  }, []);
+
+  /* const onKeyPress = useCallback((evt: KeyPressEvent) => {
+    if (evt.charCode === 13) {
+
+    }
+    evt.charCode === 13 ? changePrices(KSMPrices.minPrice, KSMPrices.maxPrice) : null;
+  }, [changePrices, KSMPrices]); */
+
+  const onSetShowPrices = useCallback(() => {
+    setIsShowPrice(!isShowPrice);
+  }, [isShowPrice, setIsShowPrice]);
+
+  const onCheckBoxMockFunc = useCallback(() => null, []);
+
   useEffect(() => {
     if (filters.collectionIds.length !== uniqueCollectionIds.length || areAllCollectionsChecked) {
       setCollectionsChecked(filters.collectionIds);
     }
   }, [areAllCollectionsChecked, filters]);
+
+  useEffect(() => {
+    updateSeller();
+  }, [account, updateSeller]);
 
   useEffect(() => {
     void updateImageUrl();
@@ -234,7 +260,7 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearFilters, coll
             </div>
             <div
               className={`filter-arrow-icon ${isShowCollection ? 'rotate-icon' : ''}`}
-              onClick={setIsShowCollection.bind(null, !isShowCollection)}
+              onClick={onSetCurrentFilter}
             />
           </div>
         </div>
@@ -247,29 +273,25 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearFilters, coll
           </input>
         </div> */}
             <div className='collection-list'>
+              { loadingCollections && (
+                <Loader
+                  active
+                  className='load-more'
+                  inline='centered'
+                />
+              )}
               {collections.map((collection, index) => {
                 return (
-                  <div
-                    className={`collections-main ${collectionsChecked.includes(String(collection.id)) ? 'collections-main-background' : ''}`}
+                  <FilterContainerItem
+                    collection={collection}
+                    collections={collections}
+                    collectionsChecked={collectionsChecked}
+                    filterCurrent={filterCurrent}
+                    images={images}
+                    index={index}
                     key={collection.id}
-                    onClick={filterCurrent.bind(null, collection.id)}
-                  >
-                    <div className='custom-checkbox'>
-                      <div className='checkbox-input'>
-                        <input
-                          checked={collectionsChecked.includes(String(collection.id))}
-                          data-current={collection.id}
-                          onChange={() => null}
-                          type='checkbox'
-                        />
-                      </div>
-                      <div className='checkbox-title'>{collectionName16Decoder(collection.Name)}</div>
-                    </div>
-                    { images.length === collections.length && images[index] !== '' && (
-                      <div className='collection-img'
-                        style={ { backgroundImage: `url(${images.length === collections.length ? images[index] : ''})` }} />
-                    )}
-                  </div>
+                    onCheckBoxMockFunc={onCheckBoxMockFunc}
+                  />
                 );
               })}
             </div>
@@ -288,27 +310,27 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearFilters, coll
             </div>
             <div
               className={`filter-arrow-icon ${isShowPrice ? 'rotate-icon' : ''}`}
-              onClick={setIsShowPrice.bind(null, !isShowPrice)}
+              onClick={onSetShowPrices}
             />
           </div>
         </div>
         { isShowPrice && (
           <div className='filter--body'>
-            <div className='price-main' >
-              <input className='min-input'
+            <div className='price-main'>
+              <input
+                className='min-input'
                 name='minPrice'
                 onChange= {setKSMPrice}
-                onKeyDown={(evt) => ['e', 'E', '+', '-'].includes(evt.key) && evt.preventDefault()}
-                onKeyPress={(e) => e.charCode === 13 ? changePrices(KSMPrices.minPrice, KSMPrices.maxPrice) : null}
+                onKeyDown={onKeyDown}
                 placeholder='Min'
                 type='number'
                 value={KSMPrices.minPrice}
               />
               <p>to</p>
-              <input name='maxPrice'
-                onChange= {setKSMPrice}
-                onKeyDown={(evt) => ['e', 'E', '+', '-'].includes(evt.key) && evt.preventDefault()}
-                onKeyPress={(e) => e.charCode === 13 ? changePrices(KSMPrices.minPrice, KSMPrices.maxPrice) : null}
+              <input
+                name='maxPrice'
+                onChange={setKSMPrice}
+                onKeyDown={onKeyDown}
                 placeholder='Max'
                 type='number'
                 value={KSMPrices.maxPrice}
@@ -318,7 +340,7 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearFilters, coll
             <button
               className={`price-btn ${(KSMPrices.minPrice || KSMPrices.maxPrice) ? 'price-btn-active' : ''}`}
               disabled={!KSMPrices.minPrice && !KSMPrices.maxPrice}
-              onClick={() => changePrices(KSMPrices.minPrice, KSMPrices.maxPrice)}
+              onClick={onApplyPrices}
             >
               Apply
             </button>

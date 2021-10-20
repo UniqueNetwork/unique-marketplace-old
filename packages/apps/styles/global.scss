@@ -287,6 +287,16 @@ h4.ui.header {
     margin-top: 1rem;
     margin-bottom: 1rem;
   }
+
+  &.centered {
+    &:after {
+      left: 0;
+    }
+
+    &:before {
+      left: 0;
+    }
+  }
 }
 
 .ui.grid > .row {
@@ -675,6 +685,10 @@ button.ui.button,
           position: absolute;
           left: 95%;
           top: 7px;
+
+          &:after, &:before {
+            left: 0;
+          }
         }
 
         img {

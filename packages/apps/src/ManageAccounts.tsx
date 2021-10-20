@@ -6,8 +6,7 @@ import type { OpenPanelType } from '@polkadot/apps-routing/types';
 import React, { memo, useCallback } from 'react';
 import { useHistory } from 'react-router';
 
-import AccountName from '@polkadot/react-components/AccountName';
-import IdentityIcon from '@polkadot/react-components/IdentityIcon';
+import { AccountName, IdentityIcon } from '@polkadot/react-components';
 import { useAccounts } from '@polkadot/react-hooks';
 
 import infoBlue from './images/infoBlue.svg';

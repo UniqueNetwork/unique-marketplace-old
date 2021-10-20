@@ -8,7 +8,7 @@ import React, { useMemo } from 'react';
 import { Route, Switch } from 'react-router';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header/Header';
 
-import Tabs from '@polkadot/react-components/Tabs';
+import { Tabs } from '@polkadot/react-components';
 // local imports and components
 import { AppProps as Props } from '@polkadot/react-components/types';
 

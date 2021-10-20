@@ -5,7 +5,7 @@ import type { OpenPanelType } from '@polkadot/apps-routing/types';
 
 import React, { memo, useCallback } from 'react';
 
-import IdentityIcon from '@polkadot/react-components/IdentityIcon';
+import { IdentityIcon } from '@polkadot/react-components';
 
 import menuArrow from './images/menu-arrow.svg';
 
