@@ -20,7 +20,7 @@ import { getSystemChainColor } from '@polkadot/apps-config';
 import envConfig from '@polkadot/apps-config/envConfig';
 import createRoutes from '@polkadot/apps-routing';
 import { AccountSelector, ErrorBoundary, StatusContext } from '@polkadot/react-components';
-import PageNotFound from '@polkadot/react-components/PageNotFound';
+// import PageNotFound from '@polkadot/react-components/PageNotFound';
 import GlobalStyle from '@polkadot/react-components/styles';
 import { useApi } from '@polkadot/react-hooks';
 import Signer from '@polkadot/react-signer';
@@ -28,6 +28,7 @@ import Signer from '@polkadot/react-signer';
 import infoSvg from '../src/images/info.svg';
 import ConnectingOverlay from './overlays/Connecting';
 import BalancesHeader from './BalancesHeader';
+import Footer from './Footer';
 import ManageAccounts from './ManageAccounts';
 import ManageBalances from './ManageBalances';
 import MobileAccountSelector from './MobileAccountSelector';
@@ -35,8 +36,6 @@ import MobileMenu from './MobileMenu';
 import MobileMenuHeader from './MobileMenuHeader';
 import ScrollToTop from './ScrollToTop';
 import WarmUp from './WarmUp';
-
-import Footer from './Footer';
 
 export const PORTAL_ID = 'portals';
 
