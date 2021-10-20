@@ -59,6 +59,9 @@ function Faq (): React.ReactElement<Props> {
           >here.
           </a>
         </p>
+
+        <Header as='h4'>Q: Whom can I contact if I have questions regarding the marketplace?</Header>
+        <p>Please contact <a href='mailto:unqnftsupport@unique.network'>unqnftsupport@unique.network</a> if you have any questions.</p>
       </div>
     </main>
   );
