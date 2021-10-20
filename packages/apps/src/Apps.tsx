@@ -152,6 +152,10 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                         name='FAQ'
                         to='/faq'
                       />
+                      <Menu.Item
+                        href='https://buy.ramp.network/' target='_blank'>
+                        Get KSM
+                      </Menu.Item>
                     </>
                   )}
                 </Menu>
