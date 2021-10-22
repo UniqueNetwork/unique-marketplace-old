@@ -11,7 +11,7 @@
     "packages/*"
   ],
   "resolutions": {
-    "@polkadot/api": "^6.3.1",
+    "@polkadot/api": "^6.4.2",
     "@polkadot/hw-ledger": "^7.4.1",
     "@polkadot/keyring": "^7.4.1",
     "@polkadot/networks": "^7.4.1",

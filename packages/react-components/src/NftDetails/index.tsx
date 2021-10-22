@@ -141,7 +141,7 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
             )}
           </div>
           <div className='token-info--row--attributes'>
-            <Header as='h3'>
+            <Header as='h3' className={'token-header'}>
               {collectionInfo && <span>{hex2a(collectionInfo.TokenPrefix)}</span>} #{tokenId}
             </Header>
             { attributes && Object.values(attributes).length > 0 && (
@@ -247,6 +247,10 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
                       onClick={sendCurrentUserAction.bind(null, 'CANCEL')}
                     />
                   )}
+
+                  <p className='terms-conditions'>
+                    Please read our <a href='/assets/Artpool_Terms_and_Conditions.pdf' target='_blank'>Terms and Conditions</a> before buying the NFTs. In making the purchase you are agreeing to it.
+                  </p>
                 </>
               )}
             </div>
@@ -273,6 +277,19 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
       </div>
 
       {/* TODO: SET THIS DINAMIC FOR THE ARTISTS */}
+
+      <div className='token-info-artist'>
+        <Grid>
+          <Grid.Row className='token-info-artist-row'>
+            <Grid.Column width={16}>
+              <p>These photographs are the very first NFTs released by the Norwegian artist Fredrik Tjaerandsen who is an artist with a fashion design background, making clothing an artform in its own right.</p>
+              <p>These images depict dynamic, performative latex garments during a rehearsal for the 2020 Fashion in Motion show at the Victoria & Albert Museum in London.</p>
+              <p>A silhouette, a sphere of color, inhabited, brings us to another level of consciousness: offering viewers the opportunity to immerse themselves in a color-filtered, protected world.</p>
+            </Grid.Column>
+          </Grid.Row>
+        </Grid>
+      </div>
+
       <div className='token-info-artist'>
         <Grid>
           <Grid.Row className='token-info-artist-row'>
@@ -294,32 +311,16 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
               <div className='artist-biography'>
                 <h3 className='bio-header'>Biography</h3>
                 <div className='bio-text'>
-                  <p>Fredrik Tjærandsen’s practise focuses on performance,
-                    motion and the body in relation to the space around it.</p>
-                  <br />
-                  <p>Fredrik Tjærandsen (b. 1995) is a Norwegian artist and designer
-                    based in London. His upbringing in rural Norway is a source of
-                    inspiration for his design practice, and local traditions and
-                    family history are incredibly important to his work.
-                    Trained in visual art and fashion, Fredrik’s design process is
-                    artistic, intuitive, and emotional: he is drawn to working with
-                    visuals that captivate his emotions or feelings in that moment
+                  <p>
+                    Fredrik Tjærandsen is a Norwegian artist and designer based in London. His upbringing in rural Norway is a source of inspiration for his work, and his fascination with where identity originates is incredibly important to his work. Trained in visual art and fashion, his process is artistic, intuitive, and emotional: he is drawn to working with visuals that captivate his emotions or feelings in that moment.
                   </p>
                   <br />
                   <p>
-                    “My work explores connection and transitions of the mind.
-                    I’m fascinated with where identity originates. Previously in my
-                    work I explore wearable spheres which centred on examining early
-                    childhood memories. I wanted to explore the questions of how I become
-                    the person I am today. To do that, I played with the idea of
-                    transitional processes, which relate to the different way we
-                    perceive things. The spere itself serves a metaphor.
-                    When you’re inside it you feel as if you are in your own space,
-                    just like you are in your own mind, but when you are looking at
-                    it from the outside, your perspective is entirely different.
-                    I think of it as a visualisation of how we understand the world
-                    around us. How, if we transcend the border of our bubbles,
-                    we ultimately reach these moments of clarity in the here and now. “
+                    Tjærandsen’s practice focuses on performance, motion and the body in relation to the space around it.
+                  </p>
+                  <br />
+                  <p>
+                    “My work explores connection and transitions of the mind. I’m fascinated with where identity originates. Previously in my work I explore wearable spheres which centred on examining early childhood memories. I wanted to explore the questions of how I become the person I am today. To do that, I played with the idea of transitional processes, which relate to the different way we perceive things. The spere itself serves a metaphor. When you’re inside it you feel as if you are in your own space, just like you are in your own mind, but when you are looking at it from the outside, your perspective is entirely different. I think of it as a visualisation of how we understand the world around us. How, if we transcend the border of our bubbles, we ultimately reach these moments of clarity in the here and now. “
                   </p>
                 </div>
               </div>

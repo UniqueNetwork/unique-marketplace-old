@@ -8,11 +8,20 @@
         grid-column-gap: var(--gap);
         margin-top: var(--gap);
         margin-bottom: var(--gap);
+        button {
+          background-color: var(--acg-green) !important;
+          color: var(--acg-neutral-900) !important;
+        }
+
       }
     }
   }
 
   td.button {
     float: right;
+    button {
+      background-color: var(--acg-green) !important;
+      color: var(--acg-neutral-900) !important;
+    }
   }
 }

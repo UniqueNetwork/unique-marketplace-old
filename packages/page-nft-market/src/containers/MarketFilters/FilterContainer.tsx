@@ -245,7 +245,7 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearFilters, coll
           />
           <span className={`slider round ${account ? '' : 'disable-token'}`} />
         </label>
-        <div className='title'>Only my tokens</div>
+        <div className='title'>Only my NFTs</div>
       </div>
 
       <div className='filter'>

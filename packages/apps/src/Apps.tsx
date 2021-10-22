@@ -106,16 +106,16 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                 >
                   { theme.logo && (
                     <Menu.Item
-                      active={location.pathname === '/'}
-                      as={NavLink}
+                      href={'https://www.artpool.xyz/'}
+                      target='_blank'
                       className='app-logo'
                       icon={
                         <img
                           alt={`logo ${theme.theme}`}
                           src={theme.logo}
+                          className={'app-logo'}
                         />
                       }
-                      to='/'
                     />
                   )}
                   { !walletMode && (
@@ -147,13 +147,13 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                         to='/accounts'
                       />
                       <Menu.Item
-                        active={location.pathname === '/faq'}
-                        as={NavLink}
-                        name='FAQ'
-                        to='/faq'
-                      />
+                        href='http://help.artpool.xyz/ '
+                        target='_blank'>
+                        FAQ
+                      </Menu.Item>
                       <Menu.Item
-                        href='https://buy.ramp.network/' target='_blank'>
+                        href='https://buy.ramp.network/'
+                        target='_blank'>
                         Get KSM
                       </Menu.Item>
                     </>

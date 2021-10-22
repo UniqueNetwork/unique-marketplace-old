@@ -88,22 +88,35 @@
       word-break: break-all;
       color: var(--title-color);
       font-family: var(--font-inter);
-      opacity: 0.5;
-      font-weight: bold;
-      font-size: 18px;
+      // opacity: 0.5;
+      // font-weight: bold;
+      // font-size: 18px;
       line-height: 27px;
+      font-weight: normal;
+      font-size: 16px;
+      opacity: 1;
 
       p {
         font-family: var(--font-roboto);
         font-style: normal;
         font-weight: normal;
-        font-size: 16px;
-        line-height: 24px;
+        // font-size: 16px;
+        // line-height: 24px;
         margin-right: 24px;
         margin-bottom: 0;
         color: var(--card-text-color);
+        font-size: 30px;
+        line-height: 50px;
       }
     }
+
+
+    .token-header {
+      font-weight: normal;
+      font-size: 16px;
+      opacity: 0.5;
+    }
+
 
     .prices {
       h2 {
@@ -215,6 +228,12 @@
       }
       background-color: var(--acg-green) !important;
       color: var(--acg-neutral-900) !important;
+    }
+
+    .terms-conditions {
+      padding-top: 20px;
+      font-size: 12px;
+
     }
   }
 

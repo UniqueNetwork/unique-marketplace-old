@@ -49,10 +49,16 @@ const TreatsFilter = ({ filters, setFilters }: PropTypes): ReactElement => {
     sessionStorage.setItem(SESSION_STORAGE_KEYS.FILTERS, JSON.stringify(newState));
   }, [filters, setFilters]);
 
+  // TODO: Review this
+  const removeTraitsFilters = true;
+
+  if (removeTraitsFilters) {
+    return (<></>);
+  }
+
   return (
     <div className='filter'>
-      <div className='filter--title
-      '>
+      <div className='filter--title'>
         <div>Traits</div>
         <div className='clear'>
           <div
