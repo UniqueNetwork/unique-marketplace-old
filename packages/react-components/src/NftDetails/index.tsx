@@ -249,7 +249,7 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
                   )}
 
                   <p className='terms-conditions'>
-                    Please read our <a href='/assets/Artpool_Terms_and_Conditions.pdf' target='_blank'>Terms and Conditions</a> before buying the NFTs. In making the purchase you are agreeing to it.
+                    Please read our <a href='/assets/Artpool_Terms_and_Conditions.pdf' target='_blank'>Terms and Conditions</a> before purchasing NFTs, in making the purchase you are agreeing to them.
                   </p>
                 </>
               )}
