@@ -19,33 +19,31 @@ function PageNftMarketplace ({ account, basePath, openPanel, setOpenPanel }: Pro
   const { isApiConnected, isApiReady } = useApi();
 
   return (
-    <>
-      { (!isApiReady || !isApiConnected) && (
-        <div className='accounts-preloader'>
-          <Loader
-            active
-          >
-            Loading data from chain...
-          </Loader>
-        </div>
-      )}
-      { (isApiConnected && isApiReady) && (
-        <Switch>
-          <Route path={`${basePath}/token-details`}>
-            <NftDetails
-              account={account || ''}
-            />
-          </Route>
-          <Route path={basePath}>
-            <NftMarket
-              account={account}
-              openPanel={openPanel}
-              setOpenPanel={setOpenPanel}
-            />
-          </Route>
-        </Switch>
-      )}
-    </>
+    <Switch>
+      <Route path={`${basePath}/token-details`}>
+        { (!isApiReady || !isApiConnected) && (
+          <div className='accounts-preloader'>
+            <Loader
+              active
+            >
+              Loading data from chain...
+            </Loader>
+          </div>
+        )}
+        { (isApiConnected && isApiReady) && (
+          <NftDetails
+            account={account || ''}
+          />
+        )}
+      </Route>
+      <Route path={basePath}>
+        <NftMarket
+          account={account}
+          openPanel={openPanel}
+          setOpenPanel={setOpenPanel}
+        />
+      </Route>
+    </Switch>
   );
 }
 

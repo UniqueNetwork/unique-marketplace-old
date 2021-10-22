@@ -93,6 +93,26 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
     return formatPrice(formatKsmBalance(new BN(price).add(getFee(price))));
   }, [formatKsmBalance, getFee]);
 
+  const onCancel = useCallback(() => {
+    sendCurrentUserAction('CANCEL');
+  }, [sendCurrentUserAction]);
+
+  const onBuy = useCallback(() => {
+    sendCurrentUserAction('BUY');
+  }, [sendCurrentUserAction]);
+
+  const toggleTransferForm = useCallback(() => {
+    setShowTransferForm(!showTransferForm);
+  }, [showTransferForm]);
+
+  const onSell = useCallback(() => {
+    sendCurrentUserAction('SELL');
+  }, [sendCurrentUserAction]);
+
+  const closeTransferModal = useCallback(() => {
+    setShowTransferForm(false);
+  }, []);
+
   useEffect(() => {
     void ksmFeesCheck();
   }, [ksmFeesCheck]);
@@ -123,13 +143,6 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
         back
       </a>
       <div className='token-info'>
-        { (!collectionInfo || (account && (!kusamaAvailableBalance || !balance))) && (
-          <Loader
-            active
-            className='load-info'
-            inline='centered'
-          />
-        )}
         <div className='token-info--row'>
           <div className='token-info--row--image'>
             { collectionInfo && (
@@ -195,7 +208,7 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
               { (uOwnIt && !uSellIt) && (
                 <Button
                   content='Transfer'
-                  onClick={setShowTransferForm.bind(null, !showTransferForm)}
+                  onClick={toggleTransferForm}
                 />
               )}
               {(!account && tokenAsk) && (
@@ -219,7 +232,7 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
                       <Button
                         content={`Buy it - ${formatKsmBalance(tokenAsk.price.add(getFee(tokenAsk.price)).add(kusamaFees.muln(2)))} KSM`}
                         disabled={lowKsmBalanceToBuy}
-                        onClick={sendCurrentUserAction.bind(null, 'BUY')}
+                        onClick={onBuy}
                       />
                     </>
                   )}
@@ -227,7 +240,7 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
                   { (uOwnIt && !uSellIt) && (
                     <Button
                       content='Sell'
-                      onClick={sendCurrentUserAction.bind(null, 'SELL')}
+                      onClick={onSell}
                     />
                   )}
                   { (uSellIt && !transferStep) && (
@@ -243,7 +256,7 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
                           )}
                         </>
                       }
-                      onClick={sendCurrentUserAction.bind(null, 'CANCEL')}
+                      onClick={onCancel}
                     />
                   )}
                 </>
@@ -253,7 +266,7 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
             { (showTransferForm && collectionInfo) && (
               <TransferModal
                 account={account}
-                closeModal={setShowTransferForm.bind(null, false)}
+                closeModal={closeTransferModal}
                 collection={collectionInfo}
                 reFungibleBalance={reFungibleBalance}
                 tokenId={tokenId}
@@ -266,7 +279,13 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
             { !!(transferStep && transferStep >= 4) && (
               <BuySteps step={transferStep - 3} />
             )}
-
+            { (!collectionInfo || (account && (!kusamaAvailableBalance || !balance))) && (
+              <Loader
+                active
+                className='load-info'
+                inline='centered'
+              />
+            )}
           </div>
         </div>
       </div>
