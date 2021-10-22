@@ -112,7 +112,6 @@ function WithdrawModal ({ account, closeModal, contractInstance, deposited, upda
         </Form>
       </Modal.Content>
       <Modal.Actions>
-
         <Button
           content='Confirm'
           disabled={!deposited || !parseFloat(withdrawAmount) || (parseFloat(withdrawAmount) > parseFloat(formatKsmBalance(new BN(deposited).add(getFee(deposited)))))}
