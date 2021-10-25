@@ -13,6 +13,8 @@ export type EnvConfigType = {
   environment: string;
   escrowAddress: string; // 5FdzbgdBGRM5FDALrnSPRybWhqKv4eiy6QUpWUdBt3v3omAU
   faviconPath: string;
+  kusamaApiUrl: string;
+  kusamaBackupApiUrl: string;
   kusamaDecimals: number; // 12
   maxGas: number; // 1000000000000
   midTedCollection: number;
@@ -41,6 +43,8 @@ const envConfig: EnvConfigType = {
   environment: (process.env.ENVIRONMENT as string),
   escrowAddress: (process.env.ESCROW_ADDRESS as string),
   faviconPath: (process.env.FAVICON_PATH as string),
+  kusamaApiUrl: (process.env.KUSAMA_API as string),
+  kusamaBackupApiUrl: (process.env.KUSAMA_BACKUP_API as string),
   kusamaDecimals: +(process.env.KUSAMA_DECIMALS as string),
   maxGas: +(process.env.MAX_GAS as string),
   midTedCollection: +(process.env.MIN_TED_COLLECTION as string),
