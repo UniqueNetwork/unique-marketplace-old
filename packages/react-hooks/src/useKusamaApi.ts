@@ -14,7 +14,7 @@ import { WsProvider } from '@polkadot/rpc-provider';
 import { TypeRegistry } from '@polkadot/types/create';
 import { encodeAddress } from '@polkadot/util-crypto';
 
-const { kusamaDecimals, minPrice } = envConfig;
+const { kusamaApiUrl, kusamaBackupApiUrl, kusamaDecimals, minPrice } = envConfig;
 
 interface UseKusamaApiInterface {
   formatKsmBalance: (balance: BN | undefined) => string;
@@ -48,8 +48,6 @@ export const useKusamaApi = (account?: string): UseKusamaApiInterface => {
   const [kusamaApi, setKusamaApi] = useState<ApiPromise>();
   const [encodedKusamaAccount, setEncodedKusamaAccount] = useState<string>();
   const { queueExtrinsic } = useContext(StatusContext);
-  const kusamaParity = 'wss://kusama-rpc.polkadot.io';
-  const kusamaFinality = 'wss://polkadot.api.onfinality.io/public-ws';
   const { kusamaAvailableBalance } = useKusamaBalance(kusamaApi, account);
 
   const initKusamaApi = useCallback((kusamaUrl) => {
@@ -73,7 +71,7 @@ export const useKusamaApi = (account?: string): UseKusamaApiInterface => {
       console.log('kusama api error');
 
       void api.disconnect().then(() => {
-        initKusamaApi(kusamaFinality);
+        initKusamaApi(kusamaBackupApiUrl);
       });
     });
   }, [queuePayload, queueSetTxStatus]);
@@ -108,7 +106,7 @@ export const useKusamaApi = (account?: string): UseKusamaApiInterface => {
   }, [account]);
 
   useEffect(() => {
-    initKusamaApi(kusamaParity);
+    initKusamaApi(kusamaApiUrl);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
