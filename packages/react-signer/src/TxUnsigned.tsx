@@ -20,8 +20,6 @@ interface Props {
   currentItem: QueueTx;
 }
 
-const NOOP = () => undefined;
-
 async function send (queueSetTxStatus: QueueTxMessageSetStatus, currentItem: QueueTx, tx: SubmittableExtrinsic<'promise'>): Promise<void> {
   currentItem.txStartCb && currentItem.txStartCb();
 
@@ -42,17 +40,6 @@ function TxUnsigned ({ className, currentItem }: Props): React.ReactElement<Prop
   const { queueSetTxStatus } = useContext(StatusContext);
   const [isRenderError, toggleRenderError] = useToggle();
 
-  const _onCancel = useCallback(
-    (): void => {
-      const { id, signerCb = NOOP, txFailedCb = NOOP } = currentItem;
-
-      queueSetTxStatus(id, 'cancelled');
-      signerCb(id, null);
-      txFailedCb(null);
-    },
-    [currentItem, queueSetTxStatus]
-  );
-
   const _onSend = useCallback(
     async (): Promise<void> => {
       if (currentItem.extrinsic) {
@@ -72,7 +59,7 @@ function TxUnsigned ({ className, currentItem }: Props): React.ReactElement<Prop
           />
         </ErrorBoundary>
       </Modal.Content>
-      <Modal.Actions onCancel={_onCancel}>
+      <Modal.Actions>
         <Button
           icon='sign-in-alt'
           isDisabled={isRenderError}
