@@ -2,114 +2,132 @@
 // SPDX-License-Identifier: Apache-2.0
 
 const defaultNftTypes = `{
-  "AccessMode": {
-    "_enum": [
-      "Normal",
-      "WhiteList"
-    ]
-  },
-  "DecimalPoints": "u8",
-  "CollectionMode": {
-    "_enum": {
-      "Invalid": null,
-      "NFT": null,
-      "Fungible": "DecimalPoints",
-      "ReFungible": null
-    }
-  },
-  "Ownership": {
-    "Owner": "AccountId",
-    "Fraction": "u128"
-  },
-  "FungibleItemType": {
-    "Value": "u128"
-  },
-  "NftItemType": {
-    "Owner": "AccountId",
-    "ConstData": "Vec<u8>",
-    "VariableData": "Vec<u8>"
-  },
-  "ReFungibleItemType": {
-    "Owner": "Vec<Ownership<AccountId>>",
-    "ConstData": "Vec<u8>",
-    "VariableData": "Vec<u8>"
-  },
-  "SponsorshipState": {
-    "_enum": {
-      "Disabled": null,
-      "Unconfirmed": "AccountId",
-      "Confirmed": "AccountId"
-    }
-  },
-  "Collection": {
-    "Owner": "AccountId",
-    "Mode": "CollectionMode",
-    "Access": "AccessMode",
-    "DecimalPoints": "DecimalPoints",
-    "Name": "Vec<u16>",
-    "Description": "Vec<u16>",
-    "TokenPrefix": "Vec<u8>",
-    "MintMode": "bool",
-    "OffchainSchema": "Vec<u8>",
-    "SchemaVersion": "SchemaVersion",
-    "Sponsorship": "SponsorshipState",
-    "Limits": "CollectionLimits",
-    "VariableOnChainSchema": "Vec<u8>",
-    "ConstOnChainSchema": "Vec<u8>"
-  },
-  "RawData": "Vec<u8>",
-  "Address": "AccountId",
-  "LookupSource": "AccountId",
-  "Weight": "u64",
-  "CreateNftData": {
-    "const_data": "Vec<u8>",
-    "variable_data": "Vec<u8>"
-  },
-  "CreateFungibleData": {
-    "value": "u128"
-  },
-  "CreateReFungibleData": {
-    "const_data": "Vec<u8>",
-    "variable_data": "Vec<u8>",
-    "pieces": "u128"
-  },
-  "CreateItemData": {
-    "_enum": {
-      "NFT": "CreateNftData",
-      "Fungible": "CreateFungibleData",
-      "ReFungible": "CreateReFungibleData"
-    }
-  },
-  "SchemaVersion": {
-    "_enum": [
-      "ImageURL",
-      "Unique"
-    ]
-  },
-  "CollectionId": "u32",
-  "TokenId": "u32",
-  "ChainLimits": {
-    "CollectionNumbersLimit": "u32",
-    "AccountTokenOwnershipLimit": "u32",
-    "CollectionAdminsLimit": "u64",
-    "CustomDataLimit": "u32",
-    "NftSponsorTimeout": "u32",
-    "FungibleSponsorTimeout": "u32",
-    "RefungibleSponsorTimeout": "u32",
-    "OffchainSchemaLimit": "u32",
-    "VariableOnChainSchemaLimit": "u32",
-    "ConstOnChainSchemaLimit": "u32"
-  },
-  "CollectionLimits": {
-    "AccountTokenOwnershipLimit": "u32",
-    "SponsoredDataSize": "u32",
-    "SponsoredDataRateLimit": "Option<BlockNumber>",
-    "TokenLimit": "u32",
-    "SponsorTimeout": "u32",
-    "OwnerCanTransfer": "bool",
-    "OwnerCanDestroy": "bool"
-  },
-  "AccountInfo": "AccountInfoWithDualRefCount"
+        "AccountInfo": "AccountInfoWithTripleRefCount",
+        "CrossAccountId": {
+                "_enum": {
+                        "Substrate": "AccountId",
+                        "Ethereum": "H160"
+                }
+        },
+        "AccessMode": {
+                "_enum": [
+                        "Normal",
+                        "WhiteList"
+                ]
+        },
+        "CallSpec": {
+                "module": "u32",
+                "method": "u32"
+        },
+        "DecimalPoints": "u8",
+        "CollectionMode": {
+                "_enum": {
+                        "NFT": null,
+                        "Fungible": "DecimalPoints",
+                        "ReFungible": null
+                }
+        },
+        "Ownership": {
+                "owner": "CrossAccountId",
+                "fraction": "u128"
+        },
+        "FungibleItemType": {
+                "value": "u128"
+        },
+        "NftItemType": {
+                "owner": "CrossAccountId",
+                "constData": "Vec<u8>",
+                "variableData": "Vec<u8>"
+        },
+        "ReFungibleItemType": {
+                "owner": "Vec<Ownership<CrossAccountId>>",
+                "constData": "Vec<u8>",
+                "variableData": "Vec<u8>"
+        },
+        "SponsorshipState": {
+                "_enum": {
+                        "Disabled": null,
+                        "Unconfirmed": "AccountId",
+                        "Confirmed": "AccountId"
+                }
+        },
+        "Collection": {
+                "owner": "AccountId",
+                "mode": "CollectionMode",
+                "access": "AccessMode",
+                "decimalPoints": "DecimalPoints",
+                "name": "Vec<u16>",
+                "description": "Vec<u16>",
+                "tokenPrefix": "Vec<u8>",
+                "mintMode": "bool",
+                "offchainSchema": "Vec<u8>",
+                "schemaVersion": "SchemaVersion",
+                "sponsorship": "SponsorshipState",
+                "limits": "CollectionLimits",
+                "variableOnChainSchema": "Vec<u8>",
+                "constOnChainSchema": "Vec<u8>",
+                "metaUpdatePermission": "MetaUpdatePermission",
+                "transfersEnabled": "bool"
+        },
+        "RawData": "Vec<u8>",
+        "Address": "MultiAddress",
+        "LookupSource": "MultiAddress",
+        "Weight": "u64",
+        "CreateNftData": {
+                "constData": "Vec<u8>",
+                "variableData": "Vec<u8>"
+        },
+        "CreateFungibleData": {
+                "value": "u128"
+        },
+        "CreateReFungibleData": {
+                "constData": "Vec<u8>",
+                "variableData": "Vec<u8>",
+                "pieces": "u128"
+        },
+        "CreateItemData": {
+                "_enum": {
+                        "NFT": "CreateNftData",
+                        "Fungible": "CreateFungibleData",
+                        "ReFungible": "CreateReFungibleData"
+                }
+        },
+        "SchemaVersion": {
+                "_enum": [
+                        "ImageURL",
+                        "Unique"
+                ]
+        },
+        "MetaUpdatePermission": {
+                "_enum": [
+                        "ItemOwner",
+                        "Admin",
+                        "None"
+                ]
+        },
+        "CollectionId": "u32",
+        "TokenId": "u32",
+        "ChainLimits": {
+                "collectionNumbersLimit": "u32",
+                "accountTokenOwnershipLimit": "u32",
+                "collectionAdminsLimit": "u64",
+                "customDataLimit": "u32",
+                "nftSponsorTimeout": "u32",
+                "fungibleSponsorTimeout": "u32",
+                "refungibleSponsorTimeout": "u32",
+                "offchainSchemaLimit": "u32",
+                "variableOnChainSchemaLimit": "u32",
+                "constOnChainSchemaLimit": "u32"
+        },
+        "CollectionLimits": {
+                "accountTokenOwnershipLimit": "u32",
+                "sponsoredDataSize": "u32",
+                "sponsoredDataRateLimit": "Option<BlockNumber>",
+                "tokenLimit": "u32",
+                "sponsorTimeout": "u32",
+                "ownerCanTransfer": "bool",
+                "ownerCanDestroy": "bool"
+        }
 }`;
 
 export default defaultNftTypes;
