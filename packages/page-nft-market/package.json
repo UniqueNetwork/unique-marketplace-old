@@ -5,10 +5,19 @@
   "description": "Nft token market",
   "main": "index.js",
   "scripts": {},
-  "author": "Konstantin Pozdnikin <kpozdnikin@usetech.ru>",
+  "author": "Konstantin Pozdnikin <kpozdnikin@usetech.com>",
   "maintainers": [
-    "Konstantin Pozdnikin <kpozdnikin@usetech.ru>"
+    "Konstantin Pozdnikin <kpozdnikin@usetech.com>"
   ],
+  "repository": {
+    "directory": "packages/page-nft-market",
+    "type": "git",
+    "url": "https://github.com/UniqueNetwork/unique-marketplace.git"
+  },
+  "sideEffects": [
+    "*.scss"
+  ],
+  "type": "module",
   "license": "Apache-2.0",
   "dependencies": {
     "@babel/runtime": "^7.13.10",

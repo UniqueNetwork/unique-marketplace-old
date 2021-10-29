@@ -13,7 +13,7 @@ import keyring from '@polkadot/ui-keyring';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import metadata from './metadata19.03.json';
+import metadata from './metadata28.10.21.json';
 
 const { contractAddress, maxGas, minPrice, quoteId, value } = envConfig;
 

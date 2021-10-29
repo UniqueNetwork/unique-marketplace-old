@@ -17,14 +17,6 @@ module.exports = merge(
       open: false,
       port: 3000,
       proxy: {
-        '/health': {
-          changeOrigin: true,
-          target: process.env.UNIQUE_API
-        },
-        '/mint': {
-          changeOrigin: true,
-          target: process.env.UNIQUE_API
-        },
         '/offers': {
           changeOrigin: true,
           target: process.env.UNIQUE_API

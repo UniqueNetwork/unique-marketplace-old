@@ -17,7 +17,7 @@ function getCounter (index) {
 function getFiles (dir) {
   return fs
     .readdirSync(dir)
-    .filter((entry) => !['.', '..', 'index.tsx'].includes(entry))
+    .filter((entry) => !['.', '..', 'index.ts'].includes(entry))
     .map((entry) => {
       if (entry.includes('#')) {
         const newName = entry.replace(/#/g, '-');
@@ -47,7 +47,7 @@ function extractBg () {
   const imports = files.map((file, index) => `import b${getCounter(index)} from '${file}';`);
   const list = `const backgrounds: any[] = [${files.map((_, index) => `b${getCounter(index)}`).join(', ')}];`;
 
-  fs.writeFileSync(path.join(root, 'index.tsx'), `${HEADER}\n\n${imports.join('\n')}\n\n${list}\n\nexport default backgrounds;\n`);
+  fs.writeFileSync(path.join(root, 'index.ts'), `${HEADER}\n\n${imports.join('\n')}\n\n${list}\n\nexport default backgrounds;\n`);
 }
 
 function extractSets () {
@@ -81,7 +81,7 @@ function extractSets () {
 
   list = `${list}\n];`;
 
-  fs.writeFileSync(path.join(root, 'index.tsx'), `${HEADER}\n\n${imports.join('\n')}\n\n${list}\n\nexport default sets;\n`);
+  fs.writeFileSync(path.join(root, 'index.ts'), `${HEADER}\n\n${imports.join('\n')}\n\n${list}\n\nexport default sets;\n`);
 }
 
 extractBg();

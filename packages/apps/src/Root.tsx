@@ -12,10 +12,13 @@ import { Api } from '@polkadot/react-api';
 import Queue from '@polkadot/react-components/Status/Queue';
 import { BlockAuthors, Events } from '@polkadot/react-query';
 import { settings } from '@polkadot/ui-settings';
+import envConfig from '@polkadot/apps-config/envConfig';
 
 import Apps from './Apps';
 import { Themes, uniqueTheme } from './themes';
 import WindowDimensions from './WindowDimensions';
+
+const { uniqueSubstrateApi } = envConfig;
 
 interface Props {
   store?: KeyringStore;
@@ -45,7 +48,7 @@ function Root ({ store }: Props): React.ReactElement<Props> {
         <Queue>
           <Api
             store={store}
-            url={settings.apiUrl}
+            url={uniqueSubstrateApi}
           >
             <BlockAuthors>
               <Events>

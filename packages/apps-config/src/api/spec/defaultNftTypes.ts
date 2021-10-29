@@ -34,13 +34,6 @@ const defaultNftTypes = `{
     "ConstData": "Vec<u8>",
     "VariableData": "Vec<u8>"
   },
-  "SponsorshipState": {
-    "_enum": {
-      "Disabled": null,
-      "Unconfirmed": "AccountId",
-      "Confirmed": "AccountId"
-    }
-  },
   "Collection": {
     "Owner": "AccountId",
     "Mode": "CollectionMode",
@@ -52,7 +45,8 @@ const defaultNftTypes = `{
     "MintMode": "bool",
     "OffchainSchema": "Vec<u8>",
     "SchemaVersion": "SchemaVersion",
-    "Sponsorship": "SponsorshipState",
+    "Sponsor": "AccountId",
+    "SponsorConfirmed": "bool",
     "Limits": "CollectionLimits",
     "VariableOnChainSchema": "Vec<u8>",
     "ConstOnChainSchema": "Vec<u8>"
@@ -102,8 +96,7 @@ const defaultNftTypes = `{
   },
   "CollectionLimits": {
     "AccountTokenOwnershipLimit": "u32",
-    "SponsoredDataSize": "u32",
-    "SponsoredDataRateLimit": "Option<BlockNumber>",
+    "SponsoredMintSize": "u32",
     "TokenLimit": "u32",
     "SponsorTimeout": "u32",
     "OwnerCanTransfer": "bool",

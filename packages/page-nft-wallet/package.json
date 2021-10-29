@@ -1,15 +1,25 @@
 {
+  "author": "Konstantin Pozdnikin <kpozdnikin@usetech.com>",
+  "bugs": "https://github.com/UniqueNetwork/unique-marketplace/issues",
+  "description": "Nft wallet functional",
+  "homepage": "https://github.com/UniqueNetwork/unique-marketplace/tree/master/packages/page-nft-wallet#readme",
+  "license": "Apache-2.0",
+  "maintainers": [
+    "Konstantin Pozdnikin <kpozdnikin@usetech.com>"
+  ],
   "name": "@polkadot/app-nft-wallet",
   "private": true,
-  "version": "2.01",
-  "description": "Nft wallet functional",
-  "main": "index.js",
-  "scripts": {},
-  "author": "Konstantin Pozdnikin <kpozdnikin@usetech.ru>",
-  "maintainers": [
-    "Konstantin Pozdnikin <kpozdnikin@usetech.ru>"
+  "repository": {
+    "directory": "packages/page-nft-marketplace",
+    "type": "git",
+    "url": "https://github.com/UniqueNetwork/unique-marketplace.git"
+  },
+  "sideEffects": [
+    "*.scss"
   ],
-  "license": "Apache-2.0",
+  "type": "module",
+  "version": "2.01",
+  "main": "index.js",
   "dependencies": {
     "@babel/runtime": "^7.13.10",
     "@polkadot/react-components": "^0.83.2-28"

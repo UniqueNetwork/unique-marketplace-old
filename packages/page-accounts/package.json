@@ -1,19 +1,29 @@
 {
+  "author": "Jaco Greeff <jacogr@gmail.com>, Konstantin Pozdnikin <kpozdnikin@usetech.com>",
+  "bugs": "https://github.com/UniqueNetwork/unique-marketplace/issues",
+  "contributors": [],
+  "homepage": "https://github.com/UniqueNetwork/unique-marketplace/tree/master/packages/page-accounts#readme",
+  "license": "Apache-2.0",
+  "maintainers": [],
   "name": "@polkadot/app-accounts",
   "private": true,
+  "repository": {
+    "directory": "packages/page-accounts",
+    "type": "git",
+    "url": "https://github.com/UniqueNetwork/unique-marketplace.git"
+  },
+  "sideEffects": [
+    "*.scss"
+  ],
+  "type": "module",
   "version": "0.83.2-28",
   "main": "index.js",
-  "repository": "github:polkadot-js/apps",
-  "author": "Jaco Greeff <jacogr@gmail.com>",
-  "maintainers": [],
-  "contributors": [],
-  "license": "Apache-2.0",
   "dependencies": {
-    "@babel/runtime": "^7.13.10",
-    "@polkadot/phishing": "^0.6.20",
+    "@babel/runtime": "^7.15.4",
+    "@polkadot/phishing": "^0.6.383",
     "@polkadot/react-components": "^0.83.2-28",
-    "@polkadot/vanitygen": "^0.30.2-2",
-    "detect-browser": "^5.2.0",
+    "@polkadot/vanitygen": "^0.48.2-1",
+    "detect-browser": "^5.2.1",
     "file-saver": "^2.0.5"
   },
   "devDependencies": {

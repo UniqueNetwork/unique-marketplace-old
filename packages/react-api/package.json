@@ -1,15 +1,26 @@
 {
+  "bugs": "https://github.com/UniqueNetwork/unique-marketplace/issues",
+  "homepage": "https://github.com/UniqueNetwork/unique-marketplace/tree/master/packages/react-api#readme",
+  "license": "Apache-2.0",
   "name": "@polkadot/react-api",
   "private": true,
+  "repository": {
+    "directory": "packages/react-api",
+    "type": "git",
+    "url": "https://github.com/UniqueNetwork/unique-marketplace.git"
+  },
+  "sideEffects": [
+    "*.scss"
+  ],
   "type": "module",
   "version": "0.94.2-95",
-  "license": "Apache-2.0",
   "dependencies": {
-    "@babel/runtime": "^7.14.6",
-    "@polkadot/api": "^5.2.2-4",
-    "@polkadot/extension-dapp": "^0.39.2-0",
-    "@substrate/connect": "^0.3.16",
+    "@babel/runtime": "^7.15.4",
+    "@polkadot/api": "^6.5.3-4",
+    "@polkadot/extension-compat-metamask": "^0.40.5-2",
+    "@polkadot/extension-dapp": "^0.40.5-2",
+    "@substrate/connect": "^0.4.6",
     "fflate": "^0.7.1",
-    "rxjs": "^7.2.0"
+    "rxjs": "^7.4.0"
   }
 }

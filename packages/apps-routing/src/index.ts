@@ -3,25 +3,14 @@
 
 import type { TFunction } from 'i18next';
 import type { Routes } from './types';
-
-import envConfig from '@polkadot/apps-config/envConfig';
-
 import accounts from './accounts';
 import faq from './faq';
 import nftMarket from './nft-market';
 import nftTrades from './nft-trades';
 import nftWallet from './nft-wallet';
 
-const { walletMode } = envConfig;
 
 export default function create (t: TFunction): Routes {
-  if (walletMode) {
-    return [
-      nftWallet(t),
-      accounts(t)
-    ];
-  }
-
   return [
     nftTrades(t),
     nftWallet(t),

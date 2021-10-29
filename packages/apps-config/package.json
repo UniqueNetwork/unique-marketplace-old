@@ -1,10 +1,16 @@
 {
   "name": "@polkadot/apps-config",
   "version": "0.83.2-28",
-  "type": "module",
   "main": "index.js",
-  "sideEffects": true,
-  "repository": "github:polkadot-js/apps",
+  "repository": {
+    "directory": "packages/apps-config",
+    "type": "git",
+    "url": "https://github.com/UniqueNetwork/unique-marketplace.git"
+  },
+  "sideEffects": [
+    "*.scss"
+  ],
+  "type": "module",
   "dependencies": {
     "@acala-network/type-definitions": "1.0.2-2",
     "@babel/runtime": "^7.14.6",
@@ -16,9 +22,10 @@
     "@snowfork/snowbridge-types": "0.2.3",
     "@sora-substrate/type-definitions": "^0.5.0",
     "@subsocial/types": "0.5.9-dev.2",
-    "moonbeam-types-bundle": "1.1.26"
+    "moonbeam-types-bundle": "1.1.26",
+    "rxjs": "^7.4.0"
   },
   "devDependencies": {
-    "i18next": "^19.9.2"
+    "i18next": "^21.3.3"
   }
 }
