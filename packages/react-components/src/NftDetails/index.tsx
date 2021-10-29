@@ -21,7 +21,7 @@ import BuySteps from './BuySteps';
 import SaleSteps from './SaleSteps';
 import SetPriceModal from './SetPriceModal';
 
-const { kusamaDecimals, showMarketActions } = envConfig;
+const { kusamaDecimals } = envConfig;
 
 interface NftDetailsProps {
   account: string;
@@ -223,44 +223,42 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
 
                 </div>
               )}
-              {showMarketActions && (
-                <>
-                  { (!uOwnIt && !transferStep && tokenAsk && kusamaFees) && (
-                    <>
-                      <div className='warning-block'>A small Kusama Network transaction fee up to {formatKsmBalance(kusamaFees.muln(2))} KSM will be
-                        applied to the transaction</div>
-                      <Button
-                        content={`Buy it - ${formatKsmBalance(tokenAsk.price.add(getFee(tokenAsk.price)).add(kusamaFees.muln(2)))} KSM`}
-                        disabled={lowKsmBalanceToBuy}
-                        onClick={onBuy}
-                      />
-                    </>
-                  )}
+              <>
+                { (!uOwnIt && !transferStep && tokenAsk && kusamaFees) && (
+                  <>
+                    <div className='warning-block'>A small Kusama Network transaction fee up to {formatKsmBalance(kusamaFees.muln(2))} KSM will be
+                      applied to the transaction</div>
+                    <Button
+                      content={`Buy it - ${formatKsmBalance(tokenAsk.price.add(getFee(tokenAsk.price)).add(kusamaFees.muln(2)))} KSM`}
+                      disabled={lowKsmBalanceToBuy}
+                      onClick={onBuy}
+                    />
+                  </>
+                )}
 
-                  { (uOwnIt && !uSellIt) && (
-                    <Button
-                      content='Sell'
-                      onClick={onSell}
-                    />
-                  )}
-                  { (uSellIt && !transferStep) && (
-                    <Button
-                      content={
-                        <>
-                          Delist
-                          { cancelStep && (
-                            <Loader
-                              active
-                              inline='centered'
-                            />
-                          )}
-                        </>
-                      }
-                      onClick={onCancel}
-                    />
-                  )}
-                </>
-              )}
+                { (uOwnIt && !uSellIt) && (
+                  <Button
+                    content='Sell'
+                    onClick={onSell}
+                  />
+                )}
+                { (uSellIt && !transferStep) && (
+                  <Button
+                    content={
+                      <>
+                        Delist
+                        { cancelStep && (
+                          <Loader
+                            active
+                            inline='centered'
+                          />
+                        )}
+                      </>
+                    }
+                    onClick={onCancel}
+                  />
+                )}
+              </>
             </div>
 
             { (showTransferForm && collectionInfo) && (

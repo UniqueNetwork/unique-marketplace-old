@@ -66,17 +66,15 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
     (): Route => {
       const app = location.pathname.slice(1) || '';
 
-      return createRoutes(t).find((route) => {
-        setOpenPanel((prev) => prev === 'accounts' ? 'tokens' : prev);
-
-        return !!(route && app.startsWith(route.name));
-      }) || NOT_FOUND;
+      return createRoutes(t).find((route) => !!(route && app.startsWith(route.name))) || NOT_FOUND;
     },
-    [location.pathname, t]
+    [location, t]
   );
 
   const isLocationAccounts = location.pathname.slice(1) === 'accounts';
   const noAccounts = !account && !isLocationAccounts;
+
+  console.log('isApiReady', isApiReady, 'isApiConnected', isApiConnected);
 
   return (
     <>

@@ -8,12 +8,10 @@ import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header/Header';
 
-import envConfig from '@polkadot/apps-config/envConfig';
 import { OpenPanelType } from '@polkadot/apps-routing/types';
 import { Table, TransferModal } from '@polkadot/react-components';
 import { useCollections } from '@polkadot/react-hooks';
 
-import CollectionSearch from '../../components/CollectionSearch';
 import NftCollectionCard from '../../components/NftCollectionCard';
 
 interface NftWalletProps {
@@ -27,8 +25,6 @@ interface NftWalletProps {
   setShouldUpdateTokens: (value: string) => void;
   shouldUpdateTokens?: string;
 }
-
-const { canAddCollections } = envConfig;
 
 function NftWallet ({ account, addCollection, collections, openPanel, removeCollectionFromList, setCollections, setOpenPanel, setShouldUpdateTokens, shouldUpdateTokens }: NftWalletProps): React.ReactElement {
   const [openTransfer, setOpenTransfer] = useState<{ collection: NftCollectionInterface, tokenId: string, balance: number } | null>(null);
@@ -132,16 +128,6 @@ function NftWallet ({ account, addCollection, collections, openPanel, removeColl
         >
           My tokens
         </Header>
-      )}
-      { canAddCollections && (
-        <>
-          <CollectionSearch
-            account={account}
-            addCollection={addCollection}
-            collections={collections}
-          />
-          <br />
-        </>
       )}
       <Header as='h3'>
         My collections

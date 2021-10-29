@@ -19,8 +19,6 @@ import { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
 
 import NftWallet from './containers/NftWallet';
 
-const { canAddCollections } = envConfig;
-
 function PageNftWallet ({ account, basePath, openPanel, setOpenPanel }: Props): React.ReactElement<Props> {
   const location = useLocation();
   const { isApiConnected, isApiReady } = useApi();
@@ -48,13 +46,6 @@ function PageNftWallet ({ account, basePath, openPanel, setOpenPanel }: Props): 
     setCollections(newCollectionList);
     localStorage.setItem('tokenCollections', JSON.stringify(newCollectionList));
   }, [collections]);
-
-  // reset collections if we can't add another except uniqueCollectionId
-  useEffect(() => {
-    if (!canAddCollections) {
-      localStorage.setItem('tokenCollections', JSON.stringify([]));
-    }
-  }, []);
 
   return (
     <div className='my-tokens'>

@@ -12,7 +12,7 @@ import { Filters } from '@polkadot/app-nft-market/containers/NftMarket';
 import envConfig from '@polkadot/apps-config/envConfig';
 import { useApi, useCollection, useFetch } from '@polkadot/react-hooks';
 
-const { canAddCollections, uniqueApi, uniqueCollectionIds } = envConfig;
+const { uniqueApi, uniqueCollectionIds } = envConfig;
 
 export type MetadataType = {
   metadata?: string;
@@ -181,7 +181,7 @@ export function useCollections () {
     try {
       let url = `${uniqueApi}/OnHold/${account}?page=${page}&pageSize=${pageSize}`;
 
-      if (!canAddCollections && collectionIds && collectionIds.length) {
+      if (collectionIds && collectionIds.length) {
         url = `${url}${collectionIds.map((item: string) => `&collectionId=${item}`).join('')}`;
       }
 
@@ -240,7 +240,7 @@ export function useCollections () {
 
       url = `${url}?page=${page}&pageSize=${pageSize}`;
 
-      if (!canAddCollections && collectionIds && collectionIds.length) {
+      if (collectionIds && collectionIds.length) {
         url = `${url}${collectionIds.map((item: string) => `&collectionId=${item}`).join('')}`;
       }
 
@@ -326,7 +326,7 @@ export function useCollections () {
 
   const presetCollections = useCallback(async (): Promise<NftCollectionInterface[]> => {
     try {
-      const collections: Array<NftCollectionInterface> = canAddCollections ? JSON.parse(localStorage.getItem('tokenCollections') || '[]') as NftCollectionInterface[] : [];
+      const collections: Array<NftCollectionInterface> = [];
 
       if (uniqueCollectionIds && uniqueCollectionIds.length) {
         for (let i = 0; i < uniqueCollectionIds.length; i++) {
