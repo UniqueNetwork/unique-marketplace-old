@@ -8,8 +8,6 @@ const { merge } = require('webpack-merge');
 
 const baseConfig = require('./webpack.base.cjs');
 
-require('dotenv-defaults').config();
-
 module.exports = merge(
   baseConfig(__dirname, 'development'),
   {

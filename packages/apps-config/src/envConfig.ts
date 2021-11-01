@@ -12,31 +12,32 @@ export type EnvConfigType = {
   kusamaBackupApiUrl: string;
   kusamaDecimals: number; // 12
   maxGas: number; // 1000000000000
-  midTedCollection: number;
   minPrice: number;
   quoteId: number; // 2
   uniqueCollectionIds: string[]; // ['23']
   uniqueApi: string;
   uniqueSubstrateApi: string;
   value: number; // 0
-  vaultAddress: string; // 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
   version: string;
   whiteLabelUrl: string;
 };
 
-/* declare global {
+declare global {
   interface Window {
     ENV: {
+      COMMISSION: number;
+      CONTRACT_ADDRESS: string;
+      DECIMALS: number;
       ENVIRONMENT: string;
+      ESCROW_ADDRESS: string;
       FAVICON_PATH: string;
-      GRAPH_QL_ADMIN_SECRET: string;
-      GRAPH_QL_API: string;
       KUSAMA_API: string;
       KUSAMA_BACKUP_API: string;
       KUSAMA_DECIMALS: number; // 12
       MAX_GAS: number; // 1000000000000
       MIN_PRICE: number;
       QUOTE_ID: number; // 2
+      UNIQUE_API: string;
       UNIQUE_COLLECTION_IDS: string; // ['23']
       UNIQUE_SUBSTRATE_API: string;
       VALUE: number; // 0
@@ -44,29 +45,27 @@ export type EnvConfigType = {
       WHITE_LABEL_URL: string;
     }
   }
-} */
+}
 
 const envConfig: EnvConfigType = {
-  commission: +(process.env.COMMISSION as string),
-  contractAddress: process.env.CONTRACT_ADDRESS as string,
-  decimals: +(process.env.DECIMALS as string),
-  environment: (process.env.ENVIRONMENT as string),
-  escrowAddress: (process.env.ESCROW_ADDRESS as string),
-  faviconPath: (process.env.FAVICON_PATH as string),
-  kusamaApiUrl: (process.env.KUSAMA_API as string),
-  kusamaBackupApiUrl: (process.env.KUSAMA_BACKUP_API as string),
-  kusamaDecimals: +(process.env.KUSAMA_DECIMALS as string),
-  maxGas: +(process.env.MAX_GAS as string),
-  midTedCollection: +(process.env.MIN_TED_COLLECTION as string),
-  minPrice: +(process.env.MIN_PRICE as string),
-  quoteId: +(process.env.QUOTE_ID as string),
-  uniqueApi: (process.env.UNIQUE_API as string),
-  uniqueCollectionIds: (process.env.UNIQUE_COLLECTION_IDS as string).split(','),
-  uniqueSubstrateApi: (process.env.UNIQUE_SUBSTRATE_API as string),
-  value: +(process.env.VALUE as string),
-  vaultAddress: (process.env.VAULT_ADDRESS as string),
-  version: (process.env.VERSION as string),
-  whiteLabelUrl: (process.env.WHITE_LABEL_URL as string)
+  commission: +window.ENV.COMMISSION,
+  contractAddress: window.ENV.CONTRACT_ADDRESS,
+  decimals: +window.ENV.DECIMALS,
+  environment: window.ENV.ENVIRONMENT,
+  escrowAddress: window.ENV.ESCROW_ADDRESS,
+  faviconPath: window.ENV.FAVICON_PATH,
+  kusamaApiUrl: window.ENV.KUSAMA_API,
+  kusamaBackupApiUrl: window.ENV.KUSAMA_BACKUP_API,
+  kusamaDecimals: +window.ENV.KUSAMA_DECIMALS,
+  maxGas: +window.ENV.MAX_GAS,
+  minPrice: +window.ENV.MIN_PRICE,
+  quoteId: +window.ENV.QUOTE_ID,
+  uniqueApi: window.ENV.UNIQUE_API,
+  uniqueCollectionIds: window.ENV.UNIQUE_COLLECTION_IDS.split(','),
+  uniqueSubstrateApi: window.ENV.UNIQUE_SUBSTRATE_API,
+  value: +window.ENV.VALUE,
+  version: window.ENV.VERSION,
+  whiteLabelUrl: window.ENV.WHITE_LABEL_URL
 };
 
 export default envConfig;
