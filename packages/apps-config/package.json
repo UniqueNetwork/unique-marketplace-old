@@ -1,7 +1,8 @@
 {
+  "bugs": "https://github.com/UniqueNetwork/unique-marketplace/issues",
+  "homepage": "https://github.com/UniqueNetwork/unique-marketplace/tree/master/packages/apps-config#readme",
+  "license": "Apache-2",
   "name": "@polkadot/apps-config",
-  "version": "0.83.2-28",
-  "main": "index.js",
   "repository": {
     "directory": "packages/apps-config",
     "type": "git",
@@ -11,6 +12,8 @@
     "*.scss"
   ],
   "type": "module",
+  "version": "0.83.2-28",
+  "main": "index.js",
   "dependencies": {
     "@acala-network/type-definitions": "1.0.2-2",
     "@babel/runtime": "^7.14.6",

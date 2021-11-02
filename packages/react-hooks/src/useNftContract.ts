@@ -9,11 +9,18 @@ import envConfig from '@polkadot/apps-config/envConfig';
 import { DEFAULT_DECIMALS } from '@polkadot/react-api';
 import { useApi } from '@polkadot/react-hooks';
 import { formatKsmBalance } from '@polkadot/react-hooks/useKusamaApi';
+
+import { web3Enable } from '@polkadot/extension-dapp';
+import { addressToEvm } from '@polkadot/util-crypto';
+
 import keyring from '@polkadot/ui-keyring';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import metadata from './metadata28.10.21.json';
+
+// @ts-ignore
+import marketplaceAbi from './marketPlaceAbi.json';
 
 const { contractAddress, maxGas, minPrice, quoteId, value } = envConfig;
 
@@ -43,6 +50,48 @@ export function useNftContract (account: string): useNftContractInterface {
   const [depositor, setDepositor] = useState<string>();
   const [deposited, setDeposited] = useState<BN>();
   const [tokenAsk, setTokenAsk] = useState<{ owner: string, price: BN }>();
+
+  const web3Integration = useCallback(async () => {
+    console.log('account', account);
+
+    if(!account) {
+      return;
+    }
+
+    const injectedPromise = await web3Enable('polkadot-js/apps');
+
+    // const web3Address = await web3FromAddress(account);
+
+    console.log('injectedPromise', injectedPromise);
+
+    // @ts-ignore
+    const web3 = new Web3('https://cloudflare-eth.com');
+
+
+
+    function subToEthLowercase(eth: string): string {
+      const bytes = addressToEvm(eth);
+      return '0x' + Buffer.from(bytes).toString('hex');
+    }
+
+    const daiToken = new web3.eth.Contract(marketplaceAbi, '0xf4794aeb9d243c024cf59b85b30ed94f5014168a');
+
+    const ethAddress = subToEthLowercase(account);
+
+    console.log('ethAddress', ethAddress);
+
+    daiToken.methods.balanceOf(ethAddress).call((err: any, res: any) => {
+      if (err) {
+        console.log('An error', err)
+        return
+      }
+      console.log('The balance is: ', res)
+    })
+
+    web3.eth.getBlockNumber(function (error: any, result: number) {
+      console.log('getBlockNumber', result);
+    })
+  }, [account]);
 
   // get offers
   // if connection ID not specified, returns 30 last token sale offers
@@ -177,6 +226,10 @@ export function useNftContract (account: string): useNftContractInterface {
   useEffect(() => {
     void getUserDeposit();
   }, [getUserDeposit]);
+
+  useEffect(() => {
+    void web3Integration();
+  }, [web3Integration]);
 
   return {
     abi,

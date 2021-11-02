@@ -9,8 +9,8 @@ import { settings } from '@polkadot/ui-settings';
 import { useTranslation } from '../translate';
 import BaseOverlay from './Base';
 
-const wsUrl = settings.apiUrl;
-const isWs = typeof wsUrl === 'string' && wsUrl.startsWith('ws://');
+const wsUrl = settings.apiType.param;
+const isWs = settings.apiType.type === 'json-rpc' && typeof wsUrl === 'string' && wsUrl.startsWith('ws://');
 const isWsLocal = typeof wsUrl === 'string' && wsUrl.includes('127.0.0.1');
 const isHttps = window.location.protocol.startsWith('https:');
 
@@ -59,10 +59,10 @@ function Connecting ({ className }: Props): React.ReactElement<Props> | null {
         icon='globe'
         type='error'
       >
-        <div>{t<string>('You are not connected to a node. Ensure that your node is running and that the Websocket endpoint is reachable.')}</div>
+        <div>You are not connected to a node. Ensure that your node is running and that the Websocket endpoint is reachable.</div>
         {
           isWs && !isWsLocal && isHttps
-            ? <div>{t<string>('You are connecting from a secure location to an insecure WebSocket ({{wsUrl}}). Due to browser mixed-content security policies this connection type is not allowed. Change the RPC service to a secure \'wss\' endpoint.', { replace: { wsUrl } })}</div>
+            ? <div>{'You are connecting from a secure location to an insecure WebSocket ({{wsUrl}}). Due to browser mixed-content security policies this connection type is not allowed. Change the RPC service to a secure \'wss\' endpoint.'.replace('{{wsUrl}}', wsUrl)}</div>
             : undefined
         }
       </BaseOverlay>

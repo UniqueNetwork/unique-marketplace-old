@@ -1,22 +1,22 @@
 {
-  "name": "unique-marketplace",
-  "main": "packages/apps-electron/build/electron.js",
-  "description": "A marketplace for Unique NFT tokens",
   "author": "Jaco Greeff <jacogr@gmail.com>, Konstantin Pozdnikin <kpozdnikin@usetech.com>",
-  "version": "2.1.0-6.5.3-4",
-  "license": "Apache-2",
+  "bugs": "https://github.com/UniqueNetwork/unique-marketplace/issues",
+  "description": "A marketplace for Unique NFT tokens",
   "homepage": "https://github.com/UniqueNetwork/unique-marketplace#readme",
+  "license": "Apache-2",
+  "name": "unique-marketplace",
   "repository": {
     "type": "git",
     "url": "https://github.com/UniqueNetwork/unique-marketplace.git"
   },
-  "bugs": "https://github.com/UniqueNetwork/unique-marketplace/issues",
   "sideEffects": [
     "*.scss"
   ],
+  "version": "2.1.0-6.5.3-4",
   "workspaces": [
     "packages/*"
   ],
+  "main": "packages/apps-electron/build/electron.js",
   "scripts": {
     "analyze": "yarn clean && BUILD_ANALYZE=1 yarn run build:code && yarn source-map-explorer packages/apps/build/main.*.js",
     "audit": "yarn npm audit --recursive --all",

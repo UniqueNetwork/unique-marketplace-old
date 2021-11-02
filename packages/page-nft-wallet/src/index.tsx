@@ -4,13 +4,12 @@
 import './styles.scss';
 
 // external imports
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Route, Switch } from 'react-router';
 import { useLocation } from 'react-router-dom';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header/Header';
 import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
-import envConfig from '@polkadot/apps-config/envConfig';
 import { NftDetails } from '@polkadot/react-components';
 // local imports and components
 import { AppProps as Props } from '@polkadot/react-components/types';
