@@ -68,6 +68,9 @@ export function useNftContract (account: string): useNftContractInterface {
     const web3 = new Web3('https://cloudflare-eth.com');
 
 
+    // const provider = new Web3.providers.HttpProvider(config.frontierUrl);
+    // const web3: Web3 = new Web3(provider);
+
 
     function subToEthLowercase(eth: string): string {
       const bytes = addressToEvm(eth);
