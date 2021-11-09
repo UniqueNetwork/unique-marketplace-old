@@ -276,7 +276,7 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
         </div>
       </div>
 
-      {/* TODO: SET THIS DINAMIC FOR THE ARTISTS */}
+      {/* TODO: SET THIS DINAMIC FOR THE ARTISTS
 
       <div className='token-info-artist'>
         <Grid>
@@ -328,6 +328,7 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
           </Grid.Row>
         </Grid>
       </div>
+      */}
       { readyToAskPrice && (
         <SetPriceModal
           closeModal={closeAskModal}
