@@ -20,7 +20,7 @@ import { useBalance, useDecoder, useMarketplaceStages, useSchema } from '@polkad
 import BuySteps from './BuySteps';
 import SaleSteps from './SaleSteps';
 import SetPriceModal from './SetPriceModal';
-import { Grid } from 'semantic-ui-react';
+// import { Grid } from 'semantic-ui-react';
 
 const { kusamaDecimals, showMarketActions } = envConfig;
 
