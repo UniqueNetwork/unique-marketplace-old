@@ -316,7 +316,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
     }
   }, [collectionInfo, contractInstance, queueTransaction, tokenId]);
 
-  const setPrice = useCallback((price) => {
+  const setPrice = useCallback((price: number) => {
     setTokenPriceForSale(price);
     setReadyToAskPrice(false);
     send('ASK_PRICE_SUCCESS');
