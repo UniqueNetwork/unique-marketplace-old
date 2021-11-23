@@ -51,7 +51,7 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
 
   const goBack = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-    history.goBack()
+    history.back();
   }, []);
 
   const onSavePrice = useCallback(() => {
