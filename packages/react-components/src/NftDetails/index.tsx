@@ -4,8 +4,8 @@
 import './styles.scss';
 
 import BN from 'bn.js';
-import React, { useCallback, useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import React, {useCallback, useEffect, useState} from 'react';
+import {useLocation} from 'react-router-dom';
 // import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
@@ -13,13 +13,14 @@ import Image from 'semantic-ui-react/dist/commonjs/elements/Image';
 import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
 import envConfig from '@polkadot/apps-config/envConfig';
-import { TransferModal } from '@polkadot/react-components';
+import {TransferModal} from '@polkadot/react-components';
 import formatPrice from '@polkadot/react-components/util/formatPrice';
-import { useBalance, useDecoder, useMarketplaceStages, useSchema } from '@polkadot/react-hooks';
+import {useBalance, useDecoder, useMarketplaceStages, useSchema} from '@polkadot/react-hooks';
 
 import BuySteps from './BuySteps';
 import SaleSteps from './SaleSteps';
 import SetPriceModal from './SetPriceModal';
+import {onRamp} from '@polkadot/apps/util/ramp';
 // import { Grid } from 'semantic-ui-react';
 
 const { kusamaDecimals, showMarketActions } = envConfig;
@@ -50,7 +51,7 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
 
   const goBack = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-    history.back();
+    history.goBack()
   }, []);
 
   const onSavePrice = useCallback(() => {
@@ -97,6 +98,8 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
   useEffect(() => {
     void ksmFeesCheck();
   }, [ksmFeesCheck]);
+
+  const requireMoreKSM = (!uOwnIt && !transferStep && tokenAsk) && lowKsmBalanceToBuy;
 
   return (
     <div className='toke-details'>
@@ -169,8 +172,8 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
                     rel='noreferrer nooperer'
                     target='_blank'>Get testUNQ here</a></div>
                 )} */}
-                { (!uOwnIt && !transferStep && tokenAsk) && lowKsmBalanceToBuy && (
-                  <div className='warning-block'>Your balance is too low to buy</div>
+                { requireMoreKSM && (
+                    <div className='warning-block'>Your balance is too low to buy</div>
                 )}
               </>
             )}
@@ -199,6 +202,10 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
                   onClick={setShowTransferForm.bind(null, !showTransferForm)}
                 />
               )}
+              {requireMoreKSM &&  <Button
+                content='Add KSM to wallet'
+                onClick={() => onRamp(account)}
+              />}
               {(!account && tokenAsk) && (
 
                 <div>
@@ -213,7 +220,7 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
               )}
               {showMarketActions && (
                 <>
-                  { (!uOwnIt && !transferStep && tokenAsk && kusamaFees) && (
+                  { (!uOwnIt && !transferStep && tokenAsk && kusamaFees && !requireMoreKSM) && (
                     <>
                       <div className='warning-block'>A small Kusama Network transaction fee up to {formatKsmBalance(kusamaFees.muln(2))} KSM will be
                         applied to the transaction</div>
