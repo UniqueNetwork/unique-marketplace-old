@@ -18,7 +18,7 @@ import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
 import envConfig from '@polkadot/apps-config/envConfig';
 import { OpenPanelType } from '@polkadot/apps-routing/types';
-import { useCollections } from '@polkadot/react-hooks';
+import { useCollections, useIsMountedRef } from '@polkadot/react-hooks';
 
 // local imports and components
 import NftTokenCard from '../../components/NftTokenCard';
@@ -64,6 +64,7 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: BuyTokensProps): ReactE
   const [collections, setCollections] = useState<NftCollectionInterface[]>([]);
   const [filters, setFilters] = useState<Filters>(initialFilters);
   const [loadingCollections, setLoadingCollections] = useState<boolean>(false);
+  const mountedRef = useIsMountedRef();
   const page = useRef<number>(1);
 
   const hasMore = !!(offers && offersCount) && Object.keys(offers).length < offersCount;
@@ -72,27 +73,34 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: BuyTokensProps): ReactE
   }, [history]);
 
   const addMintCollectionToList = useCallback(async () => {
-    setLoadingCollections(true);
+    mountedRef.current && setLoadingCollections(true);
     const firstCollections: NftCollectionInterface[] = await presetCollections();
+
+    if (!mountedRef.current) {
+      return;
+    }
 
     setCollections(() => [...firstCollections]);
     setLoadingCollections(false);
-  }, [presetCollections]);
+  }, [mountedRef, presetCollections]);
 
   const fetchScrolledData = useCallback(() => {
     getOffers(++page.current, perPage, filters);
   }, [filters, getOffers]);
 
   const clearAllFilters = useCallback(() => {
+    if (!mountedRef.current) {
+      return;
+    }
+
     setAllowClearFilters(true);
     setFilters(defaultFilters);
     setAreFiltersActive(false);
     sessionStorage.removeItem(SESSION_STORAGE_KEYS.FILTERS);
     sessionStorage.removeItem(SESSION_STORAGE_KEYS.PRICES);
     sessionStorage.removeItem(SESSION_STORAGE_KEYS.ARE_ALL_COLLECTIONS_CHECKED);
-
     setOpenPanel && setOpenPanel('tokens');
-  }, [setFilters, setOpenPanel]);
+  }, [mountedRef, setFilters, setOpenPanel]);
 
   const marketClassName = useMemo((): string => {
     let className = 'nft-market';
