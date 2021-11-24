@@ -61,6 +61,8 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
   const [tokenPriceForSale, setTokenPriceForSale] = useState<number>();
   const { formatKsmBalance, getKusamaTransferFee, kusamaAvailableBalance, kusamaTransfer } = useKusamaApi(account);
 
+  console.log('state', state.value);
+
   const sendCurrentUserAction = useCallback((userAction: UserActionType) => {
     send(userAction);
   }, [send]);

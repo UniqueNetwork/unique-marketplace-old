@@ -29,7 +29,8 @@ const marketplaceStateMachine = Machine({
     checkDepositReady: {
       on: {
         DEPOSIT_FAIL: 'checkDepositReady',
-        DEPOSIT_SUCCESS: 'sentTokenToNewOwner'
+        DEPOSIT_SUCCESS: 'sentTokenToNewOwner',
+        SIGN_TRANSACTION_FAIL: 'loadingTokenInfo'
       }
     },
     idle: {
