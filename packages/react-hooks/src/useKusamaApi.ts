@@ -5,18 +5,16 @@ import BN from 'bn.js';
 import { useCallback, useContext, useEffect, useState } from 'react';
 
 import { ApiPromise } from '@polkadot/api/promise';
-import { typesBundle, typesChain } from '@polkadot/apps-config';
 import envConfig from '@polkadot/apps-config/envConfig';
 import { StatusContext } from '@polkadot/react-components';
+import { useApi } from '@polkadot/react-hooks/useApi';
 import { useKusamaBalance } from '@polkadot/react-hooks/useKusamaBalance';
-import ApiSigner from '@polkadot/react-signer/signers/ApiSigner';
-import { WsProvider } from '@polkadot/rpc-provider';
-import { TypeRegistry } from '@polkadot/types/create';
 import { encodeAddress } from '@polkadot/util-crypto';
 
-const { kusamaApiUrl, kusamaBackupApiUrl, kusamaDecimals, minPrice } = envConfig;
+const { kusamaDecimals, minPrice } = envConfig;
 
 interface UseKusamaApiInterface {
+  encodedKusamaAccount: string | undefined;
   formatKsmBalance: (balance: BN | undefined) => string;
   getKusamaTransferFee: (recipient: string, value: BN) => Promise<BN | null>;
   kusamaApi: ApiPromise | undefined;
@@ -44,60 +42,40 @@ export function formatStrBalance (decimals: number, value: BN | undefined = new 
 }
 
 export const useKusamaApi = (account?: string): UseKusamaApiInterface => {
-  const { queuePayload, queueSetTxStatus } = useContext(StatusContext);
-  const [kusamaApi, setKusamaApi] = useState<ApiPromise>();
+  const { isKusamaApiConnected, isKusamaApiReady, kusamaApi } = useApi();
+  const [api, setApi] = useState<ApiPromise>();
   const [encodedKusamaAccount, setEncodedKusamaAccount] = useState<string>();
   const { queueExtrinsic } = useContext(StatusContext);
-  const { kusamaAvailableBalance } = useKusamaBalance(kusamaApi, account);
-
-  const initKusamaApi = useCallback((kusamaUrl) => {
-    const registry = new TypeRegistry();
-    const provider = new WsProvider(kusamaUrl);
-    const signer = new ApiSigner(registry, queuePayload, queueSetTxStatus);
-    const types = {} as Record<string, Record<string, string>>;
-
-    const api = new ApiPromise({ provider, registry, signer, types, typesBundle, typesChain });
-
-    api.on('ready', (): void => {
-      // console.log('kusama api ready');
-      setKusamaApi(api);
-    });
-
-    api.on('disconnected', (): void => {
-      window.location.reload();
-    });
-
-    api.on('error', (): void => {
-      console.log('kusama api error');
-
-      void api.disconnect().then(() => {
-        initKusamaApi(kusamaBackupApiUrl);
-      });
-    });
-  }, [queuePayload, queueSetTxStatus]);
+  const { kusamaAvailableBalance } = useKusamaBalance(api, account);
 
   const kusamaTransfer = useCallback((recipient: string, value: BN, onSuccess: (status: string) => void, onFail: (status: string) => void) => {
-    if (encodedKusamaAccount && kusamaApi) {
+    if (encodedKusamaAccount && api) {
       queueExtrinsic({
         accountId: encodedKusamaAccount,
-        extrinsic: kusamaApi.tx.balances
+        extrinsic: api.tx.balances
           .transfer(recipient, value),
         isUnsigned: false,
-        txFailedCb: () => { onFail('SEND_MONEY_FAIL'); },
-        txStartCb: () => { console.log('start'); },
-        txSuccessCb: () => { onSuccess('SEND_MONEY_SUCCESS'); },
-        txUpdateCb: () => { console.log('update'); }
+        txFailedCb: () => { console.log('failed'); onFail('SIGN_TRANSACTION_FAIL'); },
+        txStartCb: () => { onSuccess('SIGN_SUCCESS'); },
+        txSuccessCb: () => { console.log('success'); },
+        txUpdateCb: (data) => { console.log('update', data); }
       });
     }
-  }, [encodedKusamaAccount, kusamaApi, queueExtrinsic]);
+  }, [api, encodedKusamaAccount, queueExtrinsic]);
 
   const getKusamaTransferFee = useCallback(async (recipient: string, value: BN): Promise<BN | null> => {
-    if (encodedKusamaAccount && kusamaApi) {
-      const transferFee = await kusamaApi.tx.balances.transfer(recipient, value).paymentInfo(encodedKusamaAccount) as { partialFee: BN };
+    if (encodedKusamaAccount && api) {
+      const transferFee = await api.tx.balances.transfer(recipient, value).paymentInfo(encodedKusamaAccount) as { partialFee: BN };
 
       return transferFee.partialFee;
     } else return null;
-  }, [encodedKusamaAccount, kusamaApi]);
+  }, [encodedKusamaAccount, api]);
+
+  const initKusamaApi = useCallback(() => {
+    if (isKusamaApiReady && isKusamaApiConnected) {
+      setApi(kusamaApi);
+    }
+  }, [isKusamaApiReady, isKusamaApiConnected, kusamaApi]);
 
   useEffect(() => {
     if (account) {
@@ -106,14 +84,14 @@ export const useKusamaApi = (account?: string): UseKusamaApiInterface => {
   }, [account]);
 
   useEffect(() => {
-    initKusamaApi(kusamaApiUrl);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    initKusamaApi();
+  }, [initKusamaApi]);
 
   return {
+    encodedKusamaAccount,
     formatKsmBalance,
     getKusamaTransferFee,
-    kusamaApi,
+    kusamaApi: api,
     kusamaAvailableBalance,
     kusamaTransfer
   };

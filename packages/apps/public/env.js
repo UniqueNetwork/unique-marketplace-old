@@ -55,18 +55,18 @@
     DECIMALS: defaults('${DECIMALS}', 6),
     ESCROW_ADDRESS: defaults('${ESCROW_ADDRESS}', '5DACuDR8CXXmQS3tpGyrHZXoJ6ds7bjdRb4wVqqSt2CMfAoG'),
     FAVICON_PATH: defaults('${FAVICON_PATH}', 'favicons/marketplace'),
+    KUSAMA_API: defaults('${KUSAMA_API}', 'wss://kusama-rpc.polkadot.io'),
+    KUSAMA_BACKUP_API: defaults('${KUSAMA_BACKUP_API}', 'wss://polkadot.api.onfinality.io/public-ws'),
     KUSAMA_DECIMALS: defaults('${KUSAMA_DECIMALS}', 12),
     MAX_GAS: defaults('${MAX_GAS}', 1000000000000),
     MIN_PRICE: defaults('${MIN_PRICE}', 0.000001),
     MIN_TED_COLLECTION: defaults('${MIN_TED_COLLECTION}', 1),
     QUOTE_ID: defaults('${QUOTE_ID}', 2),
+    UNIQUE_API: defaults('${UNIQUE_API}', 'https://dev-api.unique.network'),
+    UNIQUE_COLLECTION_IDS: defaults('${UNIQUE_COLLECTION_IDS}', [23, 25, 155, 112, 113].join(',')),
+    UNIQUE_SUBSTRATE_API: defaults('${UNIQUE_SUBSTRATE_API}', 'wss://testnet2.uniquenetwork.io'),
     VALUE: defaults('${VALUE}', 0),
     WHITE_LABEL_URL: defaults('${WHITE_LABEL_URL}', 'https://whitelabel.unique.network'),
-    UNIQUE_API: defaults('${UNIQUE_API}', 'https://dev-api.unique.network'),
-    UNIQUE_COLLECTION_IDS: defaults('${UNIQUE_COLLECTION_IDS}', [23, 25, 155].join(',')),
-    UNIQUE_SUBSTRATE_API: defaults('${UNIQUE_SUBSTRATE_API}', 'wss://ws-opal.unique.network'),
-    KUSAMA_API: defaults('${KUSAMA_API}', 'wss://kusama-rpc.polkadot.io'),
-    KUSAMA_BACKUP_API: defaults('${KUSAMA_BACKUP_API}', 'wss://polkadot.api.onfinality.io/public-ws'),
   };
 
   // eslint-disable-next-line no-template-curly-in-string

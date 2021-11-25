@@ -32,6 +32,8 @@
     "@polkadot/react-params": "^0.83.2-28",
     "@polkadot/react-query": "^0.83.2-28",
     "@polkadot/react-signer": "^0.83.2-28",
+    "@sentry/react": "^6.15.0",
+    "@sentry/tracing": "^6.15.0",
     "punycode": "^2.1.1",
     "query-string": "^7.0.1"
   },
