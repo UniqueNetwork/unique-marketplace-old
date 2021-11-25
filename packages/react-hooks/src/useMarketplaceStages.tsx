@@ -32,7 +32,7 @@ export interface MarketplaceStagesInterface {
   kusamaAvailableBalance: BN | undefined;
   saleFee: BN | undefined;
   sendCurrentUserAction: (action: UserActionType) => void;
-  setPrice: (price: string) => void;
+  setPrice: (price: number) => void;
   setReadyToAskPrice: (ready: boolean) => void;
   setTokenPriceForSale: (price: number) => void;
   setWithdrawAmount: (withdrawAmount: string) => void;
@@ -228,7 +228,6 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
         return;
       }
 
-      send('SIGN_SUCCESS');
       kusamaTransfer(escrowAddress, needed, send, send);
     } else {
       send('WAIT_FOR_DEPOSIT');
@@ -318,7 +317,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
     }
   }, [collectionInfo, contractInstance, queueTransaction, tokenId]);
 
-  const setPrice = useCallback((price) => {
+  const setPrice = useCallback((price: number) => {
     setTokenPriceForSale(price);
     setReadyToAskPrice(false);
     send('ASK_PRICE_SUCCESS');
@@ -335,7 +334,6 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
       case 'registerSale':
         return 3;
       case 'buy':
-      case 'waitForSignMoneyTransfer':
         return 4;
       case 'checkDepositReady':
         return 5;
