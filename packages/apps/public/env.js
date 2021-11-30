@@ -66,7 +66,7 @@
     UNIQUE_COLLECTION_IDS: defaults('${UNIQUE_COLLECTION_IDS}', [23, 25, 155, 112, 113].join(',')),
     UNIQUE_SUBSTRATE_API: defaults('${UNIQUE_SUBSTRATE_API}', 'wss://testnet2.uniquenetwork.io'),
     VALUE: defaults('${VALUE}', 0),
-    WHITE_LABEL_URL: defaults('${WHITE_LABEL_URL}', 'https://whitelabel.unique.network'),
+    WHITE_LABEL_URL: defaults('${WHITE_LABEL_URL}', 'https://whitelabel.unique.network')
   };
 
   // eslint-disable-next-line no-template-curly-in-string

@@ -185,6 +185,8 @@ export function useNftContract (account: string): useNftContractInterface {
 
       console.log('account', account, 'ethAddress', ethAddress);
 
+      console.log('mySubEthAddress', evmToAddress('0xCFB8D32364F173051C2CC43eB165701e9E6737DF', 42, 'blake2'));
+
       // const web3 = new Web3('https://rpc-opal.unique.network');
 
       // @ts-ignore
@@ -235,7 +237,7 @@ export function useNftContract (account: string): useNftContractInterface {
         gasPrice: '0x01'
       }); */
 
-      const newContractInstance = new web3.eth.Contract(marketplaceAbi.abi, '0xcCB834937c2eDE3F5e8F31D1f0C94a0b34fa2170', {
+      const newContractInstance = new web3.eth.Contract(marketplaceAbi.abi, '0x1A75f02eeA6228C6249eFf4F0E4184C8BC2e02E0', {
         from: ethAddress
       });
 
@@ -341,7 +343,7 @@ export function useNftContract (account: string): useNftContractInterface {
   }, [abi, api]); */
 
   useEffect(() => {
-    initAbi();
+    void initAbi();
   }, [initAbi]);
 
   useEffect(() => {

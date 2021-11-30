@@ -1,11 +1,17 @@
 // Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import type { CrossAccountId } from './utils';
+
 import { useCallback, useContext } from 'react';
 
 import { StatusContext } from '@polkadot/react-components';
 import { useApi } from '@polkadot/react-hooks/useApi';
 import { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
+
+import { normalizeAccountId } from './utils';
+import {ApiPromise} from "@polkadot/api/promise";
+
 
 export interface TokenDetailsInterface {
   Owner?: any[];
@@ -24,6 +30,14 @@ interface UseTokenInterface {
 export function useToken (): UseTokenInterface {
   const { api } = useApi();
   const { queueExtrinsic } = useContext(StatusContext);
+
+  const getTokenOwner = useCallback(async (collectionId: number, token: number): Promise<CrossAccountId> => {
+    if (!api) {
+      return { Substrate: '' };
+    }
+
+    return normalizeAccountId((await api.rpc.nft.tokenOwner(collectionId, token)).toJSON() as unknown as CrossAccountId);
+  }, [api]);
 
   // const createData = {nft: {const_data: [], variable_data: []}};
   // tx = api.tx.nft.createItem(collectionId, owner, createData);
