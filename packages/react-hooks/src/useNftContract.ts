@@ -92,7 +92,7 @@ export function useNftContract (account: string): useNftContractInterface {
   }, [account, contractInstance]);
 
   const initAbi = useCallback(() => {
-    const jsonAbi = new Abi(metadata, api.registry.getChainProperties());
+    const jsonAbi = new Abi(metadata as string, api.registry.getChainProperties());
     const newContractInstance = new ContractPromise(api, jsonAbi, contractAddress);
 
     setAbi(jsonAbi);
