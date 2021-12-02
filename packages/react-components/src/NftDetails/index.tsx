@@ -119,29 +119,32 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
 
   return (
     <div className='toke-details'>
-      <a
+      <div
         className='go-back'
-        href='/'
-        onClick={goBack}
       >
-        <svg fill='none'
-          height='16'
-          viewBox='0 0 16 16'
-          width='16'
-          xmlns='http://www.w3.org/2000/svg'>
-          <path d='M13.5 8H2.5'
-            stroke='var(--card-link-color)'
-            strokeLinecap='round'
-            strokeLinejoin='round'
-          />
-          <path d='M7 3.5L2.5 8L7 12.5'
-            stroke='var(--card-link-color)'
-            strokeLinecap='round'
-            strokeLinejoin='round'
-          />
-        </svg>
-        back
-      </a>
+        <a
+          href='/'
+          onClick={goBack}
+        >
+          <svg fill='none'
+            height='16'
+            viewBox='0 0 16 16'
+            width='16'
+            xmlns='http://www.w3.org/2000/svg'>
+            <path d='M13.5 8H2.5'
+              stroke='var(--card-link-color)'
+              strokeLinecap='round'
+              strokeLinejoin='round'
+            />
+            <path d='M7 3.5L2.5 8L7 12.5'
+              stroke='var(--card-link-color)'
+              strokeLinecap='round'
+              strokeLinejoin='round'
+            />
+          </svg>
+          back
+        </a>
+      </div>
       <div className='token-info'>
         <div className='token-info--row'>
           <div className='token-info--row--image'>
