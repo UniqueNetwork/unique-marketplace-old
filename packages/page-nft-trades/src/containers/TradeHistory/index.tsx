@@ -22,8 +22,8 @@ function TradeHistory ({ account }: { account?: string }): React.ReactElement {
   const history = useHistory();
 
   const fetchTrades = useCallback(() => {
-    getTrades({ account, collectionIds: uniqueCollectionIds, page: 1, pageSize: 100 });
-  }, [account, getTrades]);
+    getTrades({ account, collectionIds: uniqueCollectionIds, page, pageSize });
+  }, [account, getTrades, page, pageSize]);
 
   const headerRef = useRef([
     ['Token', 'start'],
