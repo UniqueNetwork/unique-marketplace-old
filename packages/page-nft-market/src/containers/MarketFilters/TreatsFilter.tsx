@@ -40,9 +40,9 @@ const TreatsFilter = ({ filters, setFilters }: PropTypes): ReactElement => {
     let newState: Filters;
 
     if (filters.traitsCount.includes(item)) {
-      newState = { ...filters, sort: 'desc(creationDate)', traitsCount: filters.traitsCount.filter((traitsCount) => traitsCount !== item) };
+      newState = { ...filters, traitsCount: filters.traitsCount.filter((traitsCount) => traitsCount !== item) };
     } else {
-      newState = { ...filters, sort: 'desc(creationDate)', traitsCount: [...filters.traitsCount, item] };
+      newState = { ...filters, traitsCount: [...filters.traitsCount, item] };
     }
 
     setFilters(newState);
