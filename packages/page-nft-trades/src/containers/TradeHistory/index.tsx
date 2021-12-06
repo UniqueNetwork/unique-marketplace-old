@@ -10,12 +10,15 @@ import { useHistory } from 'react-router';
 import envConfig from '@polkadot/apps-config/envConfig';
 import { ListComponent } from '@polkadot/react-components';
 import { useCollections } from '@polkadot/react-hooks';
+import Pagination from '@polkadot/react-components/Pagination';
 
 const { kusamaDecimals, uniqueCollectionIds } = envConfig;
 
 function TradeHistory ({ account }: { account?: string }): React.ReactElement {
-  const { getTrades, myTrades, trades } = useCollections();
+  const { getTrades, myTrades, trades, tradesCount } = useCollections();
   const [tradesList, setTradesList] = useState<TradeType[]>();
+  const [page, setPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(20);
   const history = useHistory();
 
   const fetchTrades = useCallback(() => {
@@ -85,6 +88,7 @@ function TradeHistory ({ account }: { account?: string }): React.ReactElement {
           </tr>
         ))}
       </ListComponent>
+      <Pagination page={page} perPage={pageSize} itemsCount={tradesCount} onChangePage={setPage} onChangePageSize={setPageSize} />
     </div>
   );
 }

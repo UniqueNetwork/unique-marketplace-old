@@ -81,6 +81,7 @@ export function useCollections () {
   const [holdLoading, setHoldLoading] = useState<boolean>(false);
   const [offersCount, setOffersCount] = useState<number>(0);
   const [trades, setTrades] = useState<TradeType[]>();
+  const [tradesCount, setTradesCount] = useState<number>(0);
   const [tradesLoading, setTradesLoading] = useState<boolean>(false);
   const [myTrades, setMyTrades] = useState<TradeType[]>();
   const cleanup = useRef<boolean>(false);
@@ -260,6 +261,7 @@ export function useCollections () {
           } else {
             setMyTrades(result.items);
           }
+          setTradesCount(result.itemsCount || 0);
         }
 
         setTradesLoading(false);
@@ -375,6 +377,7 @@ export function useCollections () {
     presetCollections,
     presetTokensCollections,
     trades,
+    tradesCount,
     tradesLoading
   };
 }

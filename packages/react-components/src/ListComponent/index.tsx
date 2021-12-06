@@ -19,6 +19,7 @@ interface Props {
 function ListComponent (props: Props): React.ReactElement<Props> {
   const { children, empty, header } = props;
 
+
   return (
     <div className='list-component'>
       <Table
