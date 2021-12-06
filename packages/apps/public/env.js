@@ -51,7 +51,7 @@
 
   window.ENV = window.ENV || {
     COMMISSION: defaults('${COMMISSION}', 10),
-    CONTRACT_ADDRESS: defaults('${CONTRACT_ADDRESS}', '5GPbxrVzvjRHUSQUS9BNUFe2Q4KVfsYZtG1CTRaqe51rNSAX'),
+    CONTRACT_ADDRESS: defaults('${CONTRACT_ADDRESS}', '0xCFB8D32364F173051C2CC43eB165701e9E6737DF'),
     DECIMALS: defaults('${DECIMALS}', 6),
     ESCROW_ADDRESS: defaults('${ESCROW_ADDRESS}', '5DACuDR8CXXmQS3tpGyrHZXoJ6ds7bjdRb4wVqqSt2CMfAoG'),
     FAVICON_PATH: defaults('${FAVICON_PATH}', 'favicons/marketplace'),
@@ -64,7 +64,7 @@
     QUOTE_ID: defaults('${QUOTE_ID}', 2),
     UNIQUE_API: defaults('${UNIQUE_API}', 'https://dev-api.unique.network'),
     UNIQUE_COLLECTION_IDS: defaults('${UNIQUE_COLLECTION_IDS}', [23, 25, 155, 112, 113].join(',')),
-    UNIQUE_SUBSTRATE_API: defaults('${UNIQUE_SUBSTRATE_API}', 'wss://testnet2.uniquenetwork.io'),
+    UNIQUE_SUBSTRATE_API: defaults('${UNIQUE_SUBSTRATE_API}', 'wss://ws-opal.unique.network'),
     VALUE: defaults('${VALUE}', 0),
     WHITE_LABEL_URL: defaults('${WHITE_LABEL_URL}', 'https://whitelabel.unique.network')
   };

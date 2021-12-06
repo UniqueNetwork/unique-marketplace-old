@@ -54,7 +54,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
   const [saleFee, setSaleFee] = useState<BN>();
   const [buyFee, setBuyFee] = useState<BN>();
   const { getTokenInfo } = useToken();
-  const { contractInstance, deposited, depositor, getDepositor, getTokenAsk, getUserDeposit, isContractReady, tokenAsk } = useNftContract(account);
+  const { cancelAsk, contractInstance, deposited, depositor, getDepositor, getTokenAsk, getUserDeposit, isContractReady, tokenAsk } = useNftContract(account);
   const [error, setError] = useState<string | null>(null);
   const { queueExtrinsic } = useContext(StatusContext);
   const [readyToAskPrice, setReadyToAskPrice] = useState<boolean>(false);
@@ -116,19 +116,19 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
   }, [account, queueExtrinsic, send]);
 
   const getSaleFee = useCallback(async () => {
-    const fee = await api.tx.nft.transfer(escrowAddress, collectionInfo?.id, tokenId, 1).paymentInfo(account) as { partialFee: BN };
+    /* const fee = await api.tx.nft.transfer(escrowAddress, collectionInfo?.id, tokenId, 1).paymentInfo(account) as { partialFee: BN };
 
     if (fee) {
       setSaleFee(fee.partialFee);
 
       return fee.partialFee;
-    }
+    } */
 
     return null;
   }, [account, api.tx.nft, collectionInfo, tokenId]);
 
   const getBuyFee = useCallback(async () => {
-    if (contractInstance && collectionInfo) {
+    /* if (contractInstance && collectionInfo) {
       const extrinsic = contractInstance.tx.buy({
         gasLimit: maxGas,
         value: 0
@@ -141,7 +141,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
 
         return fee.partialFee;
       }
-    }
+    } */
 
     return null;
   }, [account, contractInstance, collectionInfo, tokenId]);
@@ -149,7 +149,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
   /** user actions **/
   const sell = useCallback(() => {
     // check balance to have enough fee
-    if (collectionInfo) {
+    /* if (collectionInfo) {
       queueTransaction(
         api.tx.nft
           .transfer(escrowAddress, collectionInfo.id, tokenId, 0),
@@ -159,7 +159,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
         'deposit nft to contract update'
       );
       send('TRANSACTION_READY');
-    }
+    } */
   }, [api.tx.nft, collectionInfo, queueTransaction, send, tokenId]);
 
   const waitForNftDeposit = useCallback(async () => {
@@ -248,7 +248,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
   }, [getUserDeposit, isDepositEnough, send, tokenAsk]);
 
   const sentTokenToAccount = useCallback(() => {
-    if (contractInstance && collectionInfo) {
+    /* if (contractInstance && collectionInfo) {
       send('SIGN_SUCCESS');
 
       const extrinsic = contractInstance.tx.buy({
@@ -265,11 +265,11 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
       );
     } else {
       send('SIGN_FAIL');
-    }
+    } */
   }, [contractInstance, collectionInfo, send, tokenId, queueTransaction]);
 
   const revertMoney = useCallback(() => {
-    if (contractInstance) {
+    /* if (contractInstance) {
       const extrinsic = contractInstance.tx.withdraw({
         gasLimit: maxGas,
         value: 0
@@ -282,7 +282,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
         'WITHDRAW_SUCCESS',
         'withdraw update'
       );
-    }
+    } */
   }, [contractInstance, withdrawAmount, queueTransaction]);
 
   const askPrice = useCallback(() => {
@@ -290,7 +290,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
   }, [setReadyToAskPrice]);
 
   const registerSale = useCallback(() => {
-    if (contractInstance && collectionInfo) {
+    /* if (contractInstance && collectionInfo) {
       const extrinsic = contractInstance.tx.ask({ gasLimit: maxGas, value: 0 }, collectionInfo.id, tokenId, quoteId, tokenPriceForSale);
 
       queueTransaction(
@@ -300,11 +300,12 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
         'REGISTER_SALE_SUCCESS',
         'registerSale update'
       );
-    }
+    } */
   }, [collectionInfo, contractInstance, queueTransaction, tokenId, tokenPriceForSale]);
 
   const cancelSell = useCallback(() => {
-    if (contractInstance && collectionInfo) {
+    cancelAsk();
+    /* if (contractInstance && collectionInfo) {
       const extrinsic = contractInstance.tx.cancel({ gasLimit: maxGas, value: 0 }, collectionInfo.id, tokenId);
 
       queueTransaction(
@@ -314,7 +315,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
         'CANCEL_SELL_SUCCESS',
         'cancelSell update'
       );
-    }
+    } */
   }, [collectionInfo, contractInstance, queueTransaction, tokenId]);
 
   const setPrice = useCallback((price: number) => {

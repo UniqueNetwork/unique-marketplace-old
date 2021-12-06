@@ -47,6 +47,8 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
   // sponsoring is enabled
   // const lowBalanceToSell = !!(saleFee && !balance?.free.gte(saleFee));
 
+  console.log('collectionInfo', collectionInfo);
+
   const goBack = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     history.back();
@@ -154,7 +156,7 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
           </div>
           <div className='token-info--row--attributes'>
             <Header as='h3'>
-              {collectionInfo && <span>{hex2a(collectionInfo.TokenPrefix)}</span>} #{tokenId}
+              {collectionInfo && <span>{hex2a(collectionInfo.tokenPrefix)}</span>} #{tokenId}
             </Header>
             { attributes && Object.values(attributes).length > 0 && (
               <div className='accessories'>

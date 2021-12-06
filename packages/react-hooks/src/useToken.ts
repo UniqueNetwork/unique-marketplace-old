@@ -1,17 +1,11 @@
 // Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import type { CrossAccountId } from './utils';
-
 import { useCallback, useContext } from 'react';
 
 import { StatusContext } from '@polkadot/react-components';
 import { useApi } from '@polkadot/react-hooks/useApi';
 import { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
-
-import { normalizeAccountId } from './utils';
-import {ApiPromise} from "@polkadot/api/promise";
-
 
 export interface TokenDetailsInterface {
   Owner?: any[];
@@ -30,18 +24,6 @@ interface UseTokenInterface {
 export function useToken (): UseTokenInterface {
   const { api } = useApi();
   const { queueExtrinsic } = useContext(StatusContext);
-
-  const getTokenOwner = useCallback(async (collectionId: number, token: number): Promise<CrossAccountId> => {
-    if (!api) {
-      return { Substrate: '' };
-    }
-
-    return normalizeAccountId((await api.rpc.nft.tokenOwner(collectionId, token)).toJSON() as unknown as CrossAccountId);
-  }, [api]);
-
-  // const createData = {nft: {const_data: [], variable_data: []}};
-  // tx = api.tx.nft.createItem(collectionId, owner, createData);
-  // setVariableMetaData(collection_id, item_id, data)
 
   const createNft = useCallback((
     { account, collectionId, constData, errorCallback, owner, successCallback, variableData }:
@@ -81,7 +63,7 @@ export function useToken (): UseTokenInterface {
     }
 
     try {
-      const tokenInfo = await api.query.nft.nftItemList(collectionId, tokenId);
+      const tokenInfo = await api.query.unique.nftItemList(collectionId, tokenId);
 
       return tokenInfo.toJSON() as unknown as TokenDetailsInterface;
     } catch (e) {
@@ -97,7 +79,7 @@ export function useToken (): UseTokenInterface {
     }
 
     try {
-      return (await api.query.nft.reFungibleItemList(collectionId, tokenId) as unknown as TokenDetailsInterface);
+      return (await api.query.unique.nftItemList(collectionId, tokenId) as unknown as TokenDetailsInterface);
     } catch (e) {
       console.log('getDetailedReFungibleTokenInfo error', e);
 
@@ -109,9 +91,9 @@ export function useToken (): UseTokenInterface {
     let tokenDetailsData: TokenDetailsInterface = {};
 
     if (tokenId && collectionInfo) {
-      if (Object.prototype.hasOwnProperty.call(collectionInfo.Mode, 'nft')) {
+      if (Object.prototype.hasOwnProperty.call(collectionInfo.mode, 'nft')) {
         tokenDetailsData = await getDetailedTokenInfo(collectionInfo.id, tokenId);
-      } else if (Object.prototype.hasOwnProperty.call(collectionInfo.Mode, 'reFungible')) {
+      } else if (Object.prototype.hasOwnProperty.call(collectionInfo.mode, 'reFungible')) {
         tokenDetailsData = await getDetailedReFungibleTokenInfo(collectionInfo.id, tokenId);
       }
     }
