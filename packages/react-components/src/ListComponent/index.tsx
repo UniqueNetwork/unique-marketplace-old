@@ -11,17 +11,20 @@ interface Props {
   children: React.ReactNode | React.ReactNode[];
   empty?: string;
   header: ReactText[][];
+  sortedValue?: [string, string];
+  onSort?: (value: string) => void;
 }
 
 function ListComponent (props: Props): React.ReactElement<Props> {
-  const { children, empty, header } = props;
-
+  const { children, empty, header, sortedValue, onSort} = props;
 
   return (
     <div className='list-component'>
       <Table
         empty={empty || 'No items'}
         header={header}
+        sortedValue={sortedValue}
+        onSort={onSort}
       >
         {children}
       </Table>

@@ -16,6 +16,8 @@ interface TableProps {
   filter?: React.ReactNode;
   footer?: React.ReactNode;
   header?: [React.ReactNode?, string?, number?, (() => void)?][];
+  sortedValue?: [string, string];
+  onSort?: (value: string) => void;
   isFixed?: boolean;
   legend?: React.ReactNode;
 }
@@ -31,8 +33,9 @@ function extractKids (children: React.ReactNode): [boolean, React.ReactNode] {
   return [isEmpty, isEmpty ? null : kids];
 }
 
-function Table ({ children, className = '', empty, emptySpinner, filter, footer, header, isFixed, legend }: TableProps): React.ReactElement<TableProps> {
+function Table ({ children, className = '', empty, emptySpinner, filter, footer, header, isFixed, legend, sortedValue, onSort }: TableProps): React.ReactElement<TableProps> {
   const [isEmpty, kids] = extractKids(children);
+
 
   return (
     <div className={`ui--Table ${className}`}>
@@ -42,6 +45,8 @@ function Table ({ children, className = '', empty, emptySpinner, filter, footer,
           filter={filter}
           header={header}
           isEmpty={isEmpty}
+          sortedValue={sortedValue}
+          onSort={onSort}
         />
         <Body
           empty={empty}
@@ -77,8 +82,17 @@ export default React.memo(styled(Table)`
       table-layout: fixed;
     }
     th {
-      font-size:12px;
+      font-size:16px;
+      weight: 500;
+      color: var(--blue-text-color);
       text-align: left;
+      &.sortable {
+        cursor: pointer;
+        .order {
+          font-size:14px;
+          margin-left: calc(var(--gap) / 2);
+        }
+      }
     }
     td{
       padding-left: 0;

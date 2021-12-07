@@ -231,7 +231,8 @@ export function useCollections () {
   const getTrades = useCallback(({ account,
     collectionIds,
     page,
-    pageSize }: { account?: string, collectionIds?: string[], page: number, pageSize: number }) => {
+    pageSize,
+    sort }: { account?: string, collectionIds?: string[], page: number, pageSize: number, sort?: string}) => {
     try {
       let url = `${uniqueApi}/trades`;
 
@@ -243,6 +244,10 @@ export function useCollections () {
 
       if (collectionIds && collectionIds.length) {
         url = `${url}${collectionIds.map((item: string) => `&collectionId=${item}`).join('')}`;
+      }
+
+      if (sort) {
+        url = `${url}&sort=${sort}`;
       }
 
       setTradesLoading(true);

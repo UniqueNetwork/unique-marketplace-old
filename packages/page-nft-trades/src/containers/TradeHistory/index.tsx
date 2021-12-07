@@ -4,7 +4,7 @@
 import type { TradeType } from '@polkadot/react-hooks/useCollections';
 
 import moment from 'moment';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import { useHistory } from 'react-router';
 
 import envConfig from '@polkadot/apps-config/envConfig';
@@ -19,17 +19,18 @@ function TradeHistory ({ account }: { account?: string }): React.ReactElement {
   const [tradesList, setTradesList] = useState<TradeType[]>();
   const [page, setPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(20);
+  const [sortedValue, setSortedValue] = useState<[string, string] | undefined>();
   const history = useHistory();
 
   const fetchTrades = useCallback(() => {
-    getTrades({ account, collectionIds: uniqueCollectionIds, page, pageSize });
-  }, [account, getTrades, page, pageSize]);
+    getTrades({ account, collectionIds: uniqueCollectionIds, page, pageSize, sort: sortedValue ? `${sortedValue[0]}(${sortedValue[1]})` : undefined });
+  }, [account, getTrades, page, pageSize, sortedValue]);
 
   const headerRef = useRef([
-    ['Token', 'start'],
-    ['Collection', 'start'],
-    ['Price', 'start'],
-    ['Date', 'start'],
+    ['Token', 'start', undefined, undefined, 'TokenId'],
+    ['Collection', 'start', undefined, undefined, 'CollectionId'],
+    ['Price', 'start', undefined, undefined, 'Price'],
+    ['Date', 'start', undefined, undefined, 'TradeDate'],
     ['Buyer', 'start'],
     ['Seller', 'start']
   ]);
@@ -50,6 +51,15 @@ function TradeHistory ({ account }: { account?: string }): React.ReactElement {
     history.push(`/wallet/token-details?collectionId=${collectionId}&tokenId=${tokenId}`);
   }, [history]);
 
+  const onSort = useCallback((newSort: string) => {
+    setSortedValue((_value) => {
+      const [order, sortedBy] = _value || [];
+      return sortedBy === newSort
+        ? (order === 'asc' ? ['desc', newSort] : ['asc', newSort])
+        : ['asc', newSort]
+    });
+  }, [setSortedValue]);
+
   return (
     <div
       className='trades'
@@ -58,6 +68,8 @@ function TradeHistory ({ account }: { account?: string }): React.ReactElement {
       <ListComponent
         empty={'No trades found'}
         header={headerRef.current}
+        sortedValue={sortedValue}
+        onSort={onSort}
       >
         { tradesList && tradesList.map((trade: TradeType) => (
           <tr
