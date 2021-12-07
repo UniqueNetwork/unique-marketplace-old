@@ -58,11 +58,15 @@ function Pagination (props: Props): React.ReactElement<Props> {
     onChangePage && onChangePage(page + 1);
   }, [page, lastPage]);
 
-  const _onGoToChange = useCallback(() => {
+  const _onGoToChange = useCallback((value?: BN) => {
+    value && setGoToPageValue(value.toNumber());
+  }, [goToPageValue]);
+
+  const _onGoToEnter = useCallback(() => {
     if(goToPageValue && goToPageValue > 0 && goToPageValue <= lastPage) {
       onChangePage && onChangePage(goToPageValue);
     }
-  }, [goToPageValue])
+  }, [goToPageValue]);
 
   return <div className='pagination'>
     <div className='pagination__page'>
@@ -87,7 +91,7 @@ function Pagination (props: Props): React.ReactElement<Props> {
           key={'page-item-' + item + index}
           className={item === page ? 'active' : item === '...' ? 'dots' : undefined}
         >
-          {!(item === page || item === '...') ? <a onClick={() => _onChangePage(item)}>{item}</a>
+          {!(item === page || item === '...') ? <a onClick={_onChangePage.bind(null, item)}>{item}</a>
           : item}
         </li>
         ))}
@@ -102,10 +106,10 @@ function Pagination (props: Props): React.ReactElement<Props> {
         <InputNumber
           defaultValue={'1'}
           value={new BN(goToPageValue)}
-          onChange={(value: BN) => value && setGoToPageValue(value.toNumber())}
+          onChange={_onGoToChange}
           isZeroable={false}
           isDisabled={itemsCount === 0}
-          onEnter={_onGoToChange}
+          onEnter={_onGoToEnter}
         />
       </div>
     </div>

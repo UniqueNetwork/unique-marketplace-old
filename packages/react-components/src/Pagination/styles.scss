@@ -23,7 +23,10 @@
       min-width: 5em;
       display: flex;
       align-items: center;
+      margin-left: calc(var(--gap) / 2);
       padding: calc(var(--gap) / 3) calc(var(--gap));
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
 
       div.visible.menu.transition {
         background-color: var(--white-color);
@@ -86,7 +89,7 @@
     margin-left: var(--gap);
     div.ui.input input {
       min-width: 5em;
-      margin-left: var(--gap);
+      margin-left: calc(var(--gap) / 2);
       padding-top: calc(var(--gap) / 3) !important;
       left: calc(var(--gap) / 2) !important;
       width: calc(var(--gap) / 3) !important;
