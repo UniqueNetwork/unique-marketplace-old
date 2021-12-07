@@ -8,6 +8,7 @@ export type EnvConfigType = {
   environment: string;
   escrowAddress: string; // 5FdzbgdBGRM5FDALrnSPRybWhqKv4eiy6QUpWUdBt3v3omAU
   faviconPath: string;
+  ipfsGateway: string;
   kusamaApiUrl: string;
   kusamaBackupApiUrl: string;
   kusamaDecimals: number; // 12
@@ -31,6 +32,7 @@ declare global {
       ENVIRONMENT: string;
       ESCROW_ADDRESS: string;
       FAVICON_PATH: string;
+      IPFS_GATEWAY: string;
       KUSAMA_API: string;
       KUSAMA_BACKUP_API: string;
       KUSAMA_DECIMALS: number; // 12
@@ -54,6 +56,7 @@ const envConfig: EnvConfigType = {
   environment: window.ENV.ENVIRONMENT,
   escrowAddress: window.ENV.ESCROW_ADDRESS,
   faviconPath: window.ENV.FAVICON_PATH,
+  ipfsGateway: window.ENV.IPFS_GATEWAY,
   kusamaApiUrl: window.ENV.KUSAMA_API,
   kusamaBackupApiUrl: window.ENV.KUSAMA_BACKUP_API,
   kusamaDecimals: +window.ENV.KUSAMA_DECIMALS,

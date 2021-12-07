@@ -61,7 +61,7 @@ export const useMetadata = (): UseMetadataInterface => {
   // uses for token image path
   const setUnique = useCallback(async (collectionInfo: NftCollectionInterface, tokenId: string): Promise<string> => {
     try {
-      const collectionMetadata = JSON.parse(hex2a(collectionInfo.OffchainSchema)) as MetadataType;
+      const collectionMetadata = JSON.parse(hex2a(collectionInfo.offchainSchema)) as MetadataType;
 
       if (collectionMetadata.metadata) {
         const dataUrl = tokenImageUrl(collectionMetadata.metadata, tokenId);
@@ -83,8 +83,8 @@ export const useMetadata = (): UseMetadataInterface => {
 
   const getTokenImageUrl = useCallback(async (collectionInfo: NftCollectionInterface, tokenId: string): Promise<string> => {
     if (collectionInfo) {
-      if (collectionInfo.SchemaVersion === 'ImageURL') {
-        return tokenImageUrl(hex2a(collectionInfo.OffchainSchema), tokenId);
+      if (collectionInfo.schemaVersion === 'ImageURL') {
+        return tokenImageUrl(hex2a(collectionInfo.offchainSchema), tokenId);
       } else {
         return await setUnique(collectionInfo, tokenId);
       }
@@ -95,7 +95,7 @@ export const useMetadata = (): UseMetadataInterface => {
 
   const getAndParseOffchainSchemaMetadata = useCallback(async (collectionInfo: NftCollectionInterface) => {
     try {
-      const offChainSchema: { metadata: string } = JSON.parse(hex2a(collectionInfo.OffchainSchema)) as unknown as { metadata: string };
+      const offChainSchema: { metadata: string } = JSON.parse(hex2a(collectionInfo.offchainSchema)) as unknown as { metadata: string };
 
       const metadataResponse = await fetch(offChainSchema.metadata.replace('{id}', '1'));
       const metadataJson = await metadataResponse.json() as MetadataJsonType;
@@ -117,8 +117,8 @@ export const useMetadata = (): UseMetadataInterface => {
   const getOnChainSchema = useCallback((collectionInf: NftCollectionInterface): { attributesConst: string, attributesVar: string } => {
     if (collectionInf) {
       return {
-        attributesConst: hex2a(collectionInf.ConstOnChainSchema),
-        attributesVar: hex2a(collectionInf.VariableOnChainSchema)
+        attributesConst: hex2a(collectionInf.constOnChainSchema),
+        attributesVar: hex2a(collectionInf.variableOnChainSchema)
       };
     }
 
@@ -132,9 +132,9 @@ export const useMetadata = (): UseMetadataInterface => {
     let tokenDetailsData: TokenDetailsInterface = {};
 
     if (tokenId && collectionInfo) {
-      if (Object.prototype.hasOwnProperty.call(collectionInfo.Mode, 'nft')) {
+      if (Object.prototype.hasOwnProperty.call(collectionInfo.mode, 'nft')) {
         tokenDetailsData = await getDetailedTokenInfo(collectionInfo.id, tokenId.toString());
-      } else if (Object.prototype.hasOwnProperty.call(collectionInfo.Mode, 'reFungible')) {
+      } else if (Object.prototype.hasOwnProperty.call(collectionInfo.mode, 'reFungible')) {
         tokenDetailsData = await getDetailedReFungibleTokenInfo(collectionInfo.id, tokenId.toString());
       }
 
@@ -151,8 +151,8 @@ export const useMetadata = (): UseMetadataInterface => {
     const tokenDetails = await getTokenDetails(collectionInfo, tokenId);
 
     return {
-      ...decodeStruct({ attr: onChainSchema.attributesConst, data: tokenDetails?.ConstData }),
-      ...decodeStruct({ attr: onChainSchema.attributesVar, data: tokenDetails?.VariableData })
+      ...decodeStruct({ attr: onChainSchema.attributesConst, data: tokenDetails?.constData }),
+      ...decodeStruct({ attr: onChainSchema.attributesVar, data: tokenDetails?.variableData })
     };
   }, [getOnChainSchema, getTokenDetails, decodeStruct]);
 

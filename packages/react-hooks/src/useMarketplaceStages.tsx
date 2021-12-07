@@ -1,7 +1,6 @@
 // Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import type { SubmittableExtrinsic } from '@polkadot/api/promise/types';
 import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
 import type { TokenDetailsInterface } from '@polkadot/react-hooks/useToken';
 
@@ -46,7 +45,6 @@ export interface MarketplaceStagesInterface {
 }
 
 export const useMarketplaceStages = (account: string, collectionInfo: NftCollectionInterface | undefined, tokenId: string): MarketplaceStagesInterface => {
-  const { api } = useApi();
   const [state, send] = useMachine(marketplaceStateMachine);
   const [withdrawAmount, setWithdrawAmount] = useState<string>('0');
   const [tokenDepositor, setTokenDepositor] = useState<string>();
@@ -54,7 +52,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
   const [saleFee, setSaleFee] = useState<BN>();
   const [buyFee, setBuyFee] = useState<BN>();
   const { getTokenInfo } = useToken();
-  const { cancelAsk, contractInstance, deposited, depositor, getDepositor, getTokenAsk, getUserDeposit, isContractReady, tokenAsk } = useNftContract(account);
+  const { cancelAsk, deposited, depositor, getDepositor, getTokenAsk, getUserDeposit, isContractReady, tokenAsk, withdrawKSM } = useNftContract(account);
   const [error, setError] = useState<string | null>(null);
   const { queueExtrinsic } = useContext(StatusContext);
   const [readyToAskPrice, setReadyToAskPrice] = useState<boolean>(false);
@@ -87,7 +85,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
     await getUserDeposit();
 
     // the token is mine
-    if (info?.Owner?.toString() === escrowAddress) {
+    if (info?.owner?.toString() === escrowAddress) {
       if (!ask || !ask.price) {
         if (tokenDepositor === account) {
           // the token is in escrow - waiting for deposit
@@ -103,7 +101,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
     return price.mul(new BN(commission)).div(new BN(100));
   }, []);
 
-  const queueTransaction = useCallback((transaction: SubmittableExtrinsic, fail: string, start: string, success: string, update: string) => {
+  /* const queueTransaction = useCallback((transaction: SubmittableExtrinsic, fail: string, start: string, success: string, update: string) => {
     queueExtrinsic({
       accountId: account && account.toString(),
       extrinsic: transaction,
@@ -113,7 +111,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
       txSuccessCb: () => { send(success); },
       txUpdateCb: () => { console.log(update); }
     });
-  }, [account, queueExtrinsic, send]);
+  }, [account, queueExtrinsic, send]); */
 
   const getSaleFee = useCallback(async () => {
     /* const fee = await api.tx.nft.transfer(escrowAddress, collectionInfo?.id, tokenId, 1).paymentInfo(account) as { partialFee: BN };
@@ -125,7 +123,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
     } */
 
     return null;
-  }, [account, api.tx.nft, collectionInfo, tokenId]);
+  }, []);
 
   const getBuyFee = useCallback(async () => {
     /* if (contractInstance && collectionInfo) {
@@ -144,7 +142,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
     } */
 
     return null;
-  }, [account, contractInstance, collectionInfo, tokenId]);
+  }, []);
 
   /** user actions **/
   const sell = useCallback(() => {
@@ -160,7 +158,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
       );
       send('TRANSACTION_READY');
     } */
-  }, [api.tx.nft, collectionInfo, queueTransaction, send, tokenId]);
+  }, []);
 
   const waitForNftDeposit = useCallback(async () => {
     if (collectionInfo) {
@@ -184,7 +182,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
 
       setTokenInfo(info);
 
-      if (info?.Owner?.toString() === account) {
+      if (info?.owner?.toString() === account) {
         send('TOKEN_REVERT_SUCCESS');
       } else {
         setTimeout(() => {
@@ -266,9 +264,12 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
     } else {
       send('SIGN_FAIL');
     } */
-  }, [contractInstance, collectionInfo, send, tokenId, queueTransaction]);
+  }, []);
 
   const revertMoney = useCallback(() => {
+    const amount = parseFloat(withdrawAmount) * Math.pow(10, kusamaDecimals);
+
+    withdrawKSM(amount, () => send('WITHDRAW_FAIL'), () => send('WITHDRAW_SUCCESS'));
     /* if (contractInstance) {
       const extrinsic = contractInstance.tx.withdraw({
         gasLimit: maxGas,
@@ -283,7 +284,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
         'withdraw update'
       );
     } */
-  }, [contractInstance, withdrawAmount, queueTransaction]);
+  }, [send, withdrawKSM, withdrawAmount]);
 
   const askPrice = useCallback(() => {
     setReadyToAskPrice(true);
@@ -301,10 +302,12 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
         'registerSale update'
       );
     } */
-  }, [collectionInfo, contractInstance, queueTransaction, tokenId, tokenPriceForSale]);
+  }, []);
 
   const cancelSell = useCallback(() => {
-    cancelAsk();
+    if (collectionInfo) {
+      cancelAsk(collectionInfo.id, tokenId, () => send('CANCEL_SELL_FAIL'), () => send('CANCEL_SELL_SUCCESS'));
+    }
     /* if (contractInstance && collectionInfo) {
       const extrinsic = contractInstance.tx.cancel({ gasLimit: maxGas, value: 0 }, collectionInfo.id, tokenId);
 
@@ -316,7 +319,7 @@ export const useMarketplaceStages = (account: string, collectionInfo: NftCollect
         'cancelSell update'
       );
     } */
-  }, [collectionInfo, contractInstance, queueTransaction, tokenId]);
+  }, [cancelAsk, collectionInfo, send, tokenId]);
 
   const setPrice = useCallback((price: number) => {
     setTokenPriceForSale(price);

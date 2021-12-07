@@ -4,11 +4,13 @@
 import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
 import type { TokenDetailsInterface } from '@polkadot/react-hooks/useToken';
 
-import BN from 'bn.js';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import envConfig from '@polkadot/apps-config/envConfig';
 
-import { useMetadata, useToken } from '@polkadot/react-hooks';
+import { useIsMountedRef, useMetadata, useToken } from '@polkadot/react-hooks';
 import { useCollection } from '@polkadot/react-hooks/useCollection';
+
+const { ipfsGateway } = envConfig;
 
 export type AttributesDecoded = {
   [key: string]: string | string[],
@@ -21,21 +23,23 @@ interface UseSchemaInterface {
   collectionInfo?: NftCollectionInterface;
   getCollectionInfo: () => void;
   getTokenDetails: () => void;
-  reFungibleBalance: number;
+  // reFungibleBalance: number;
   tokenDetails?: TokenDetailsInterface;
   tokenName: { name: string, value: string } | null;
   tokenUrl: string;
 }
 
+export type IpfsJsonType = { ipfs: string, type: 'image' };
+
 export function useSchema (account: string | undefined, collectionId: string, tokenId: string | number): UseSchemaInterface {
   const [collectionInfo, setCollectionInfo] = useState<NftCollectionInterface>();
-  const [reFungibleBalance, setReFungibleBalance] = useState<number>(0);
+  // const [reFungibleBalance, setReFungibleBalance] = useState<number>(0);
   const [tokenUrl, setTokenUrl] = useState<string>('');
   const [attributes, setAttributes] = useState<AttributesDecoded>();
   const [tokenDetails, setTokenDetails] = useState<TokenDetailsInterface>();
   const { getTokenInfo } = useToken();
   const { getDetailedCollectionInfo } = useCollection();
-  const cleanup = useRef<boolean>(false);
+  const mountedRef = useIsMountedRef();
   const { getTokenAttributes, getTokenImageUrl } = useMetadata();
 
   const tokenName = useMemo(() => {
@@ -50,11 +54,11 @@ export function useSchema (account: string | undefined, collectionId: string, to
     return null;
   }, [attributes]);
 
-  const getReFungibleDetails = useCallback(() => {
+  /* const getReFungibleDetails = useCallback(() => {
     try {
-      if (account && tokenDetails?.Owner) {
+      if (account && tokenDetails?.owner) {
         if (Object.prototype.hasOwnProperty.call(collectionInfo?.mode, 'reFungible')) {
-          const owner = tokenDetails.Owner.find((item: { fraction: BN, owner: string }) => item.owner.toString() === account) as { fraction: BN, owner: string } | undefined;
+          const owner = tokenDetails.owner.find((item: { fraction: BN, owner: string }) => item.owner.toString() === account) as { fraction: BN, owner: string } | undefined;
 
           if (typeof collectionInfo?.decimalPoints === 'number') {
             const balance = owner && owner.fraction.toNumber() / Math.pow(10, collectionInfo.decimalPoints);
@@ -70,65 +74,68 @@ export function useSchema (account: string | undefined, collectionId: string, to
     } catch (e) {
       console.error('token balance calculation error', e);
     }
-  }, [account, collectionInfo, tokenDetails?.Owner]);
+  }, [account, collectionInfo, tokenDetails?.Owner]); */
 
   const getCollectionInfo = useCallback(async () => {
     if (collectionId) {
       const info: NftCollectionInterface = await getDetailedCollectionInfo(collectionId) as unknown as NftCollectionInterface;
 
-      if (cleanup.current) {
-        return;
-      }
-
       if (info && Object.keys(info).length) {
-        setCollectionInfo({
+        mountedRef.current && setCollectionInfo({
           ...info,
           id: collectionId
         });
       }
     }
-  }, [collectionId, getDetailedCollectionInfo]);
+  }, [collectionId, getDetailedCollectionInfo, mountedRef]);
 
   const getTokenDetails = useCallback(async () => {
     if (tokenId && collectionInfo) {
       const tokenDetailsData = await getTokenInfo(collectionInfo, tokenId.toString());
 
-      if (cleanup.current) {
-        return;
-      }
-
-      setTokenDetails(tokenDetailsData);
+      mountedRef.current && setTokenDetails(tokenDetailsData);
     }
-  }, [collectionInfo, getTokenInfo, tokenId]);
+  }, [collectionInfo, getTokenInfo, mountedRef, tokenId]);
 
   const mergeTokenAttributes = useCallback(async () => {
     if (collectionInfo && tokenId) {
       const attrs = await getTokenAttributes(collectionInfo, tokenId.toString());
 
-      if (cleanup.current) {
-        return;
-      }
-
-      setAttributes(attrs);
+      mountedRef.current && setAttributes(attrs);
     }
-  }, [collectionInfo, getTokenAttributes, tokenId]);
+  }, [collectionInfo, getTokenAttributes, mountedRef, tokenId]);
 
   const saveTokenImageUrl = useCallback(async (collectionInf: NftCollectionInterface, tokenId: string) => {
-    const tokenImageUrl = await getTokenImageUrl(collectionInf, tokenId);
+    let tokenImageUrl: string;
+    let ipfsJson: IpfsJsonType;
 
-    if (cleanup.current) {
-      return;
+    if (collectionInf.schemaVersion === 'Unique' && attributes?.ipfsJson) {
+      try {
+        ipfsJson = JSON.parse(attributes.ipfsJson as string) as IpfsJsonType;
+        tokenImageUrl = `${ipfsGateway}/${ipfsJson?.ipfs}`;
+      } catch (e) {
+        console.log('ipfsJson parse error', e);
+        tokenImageUrl = '';
+      }
+    } else {
+      // use old logic
+      tokenImageUrl = await getTokenImageUrl(collectionInf, tokenId);
     }
 
-    setTokenUrl(tokenImageUrl);
-  }, [getTokenImageUrl]);
+    mountedRef.current && setTokenUrl(tokenImageUrl);
+  }, [attributes, getTokenImageUrl, mountedRef]);
+
+  useEffect(() => {
+    if (collectionInfo) {
+      void getTokenDetails();
+    }
+  }, [collectionInfo, getTokenDetails]);
 
   useEffect(() => {
     if (collectionInfo) {
       void saveTokenImageUrl(collectionInfo, tokenId.toString());
-      void getTokenDetails();
     }
-  }, [collectionInfo, getTokenDetails, saveTokenImageUrl, tokenId]);
+  }, [collectionInfo, saveTokenImageUrl, tokenId]);
 
   useEffect(() => {
     void getCollectionInfo();
@@ -140,22 +147,16 @@ export function useSchema (account: string | undefined, collectionId: string, to
     }
   }, [collectionInfo, mergeTokenAttributes, tokenDetails]);
 
-  useEffect(() => {
+  /* useEffect(() => {
     void getReFungibleDetails();
-  }, [getReFungibleDetails]);
-
-  useEffect(() => {
-    return () => {
-      cleanup.current = true;
-    };
-  }, []);
+  }, [getReFungibleDetails]); */
 
   return {
     attributes,
     collectionInfo,
     getCollectionInfo,
     getTokenDetails,
-    reFungibleBalance,
+    // reFungibleBalance,
     tokenDetails,
     tokenName,
     tokenUrl

@@ -6,11 +6,12 @@ import { useCallback, useContext } from 'react';
 import { StatusContext } from '@polkadot/react-components';
 import { useApi } from '@polkadot/react-hooks/useApi';
 import { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
+import { normalizeAccountId } from './utils';
 
 export interface TokenDetailsInterface {
-  Owner?: any[];
-  ConstData?: string;
-  VariableData?: string;
+  owner?: string;
+  constData?: string;
+  variableData?: string;
 }
 
 interface UseTokenInterface {
@@ -63,9 +64,27 @@ export function useToken (): UseTokenInterface {
     }
 
     try {
-      const tokenInfo = await api.query.unique.nftItemList(collectionId, tokenId);
+      let tokenDetailsData: TokenDetailsInterface = {};
 
-      return tokenInfo.toJSON() as unknown as TokenDetailsInterface;
+      const variableData = (await api.rpc.unique.variableMetadata(collectionId, tokenId)).toJSON() as string;
+
+      console.log('variableData', variableData);
+
+      const constData = (await api.rpc.unique.constMetadata(collectionId, tokenId)).toJSON();
+
+      console.log('constData', constData);
+
+      const crossAccount = normalizeAccountId((await api.rpc.unique.tokenOwner(collectionId, tokenId)).toJSON() as string) as { Substrate: string };
+
+      console.log('crossAccount', crossAccount);
+
+      tokenDetailsData = {
+        constData,
+        owner: crossAccount.Substrate,
+        variableData
+      };
+
+      return tokenDetailsData;
     } catch (e) {
       console.log('getDetailedTokenInfo error', e);
 
@@ -91,15 +110,16 @@ export function useToken (): UseTokenInterface {
     let tokenDetailsData: TokenDetailsInterface = {};
 
     if (tokenId && collectionInfo) {
-      if (Object.prototype.hasOwnProperty.call(collectionInfo.mode, 'nft')) {
+      tokenDetailsData = await getDetailedTokenInfo(collectionInfo.id, tokenId);
+      /* if (Object.prototype.hasOwnProperty.call(collectionInfo.mode, 'nft')) {
         tokenDetailsData = await getDetailedTokenInfo(collectionInfo.id, tokenId);
       } else if (Object.prototype.hasOwnProperty.call(collectionInfo.mode, 'reFungible')) {
         tokenDetailsData = await getDetailedReFungibleTokenInfo(collectionInfo.id, tokenId);
-      }
+      } */
     }
 
     return tokenDetailsData;
-  }, [getDetailedTokenInfo, getDetailedReFungibleTokenInfo]);
+  }, [getDetailedTokenInfo]);
 
   return {
     createNft,

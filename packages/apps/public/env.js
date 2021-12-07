@@ -55,6 +55,7 @@
     DECIMALS: defaults('${DECIMALS}', 6),
     ESCROW_ADDRESS: defaults('${ESCROW_ADDRESS}', '5DACuDR8CXXmQS3tpGyrHZXoJ6ds7bjdRb4wVqqSt2CMfAoG'),
     FAVICON_PATH: defaults('${FAVICON_PATH}', 'favicons/marketplace'),
+    IPFS_GATEWAY: defaults('${IPFS_GATEWAY}', 'https://dev-ipfs.unique.network/ipfs'),
     KUSAMA_API: defaults('${KUSAMA_API}', 'wss://kusama-rpc.polkadot.io'),
     KUSAMA_BACKUP_API: defaults('${KUSAMA_BACKUP_API}', 'wss://polkadot.api.onfinality.io/public-ws'),
     KUSAMA_DECIMALS: defaults('${KUSAMA_DECIMALS}', 12),

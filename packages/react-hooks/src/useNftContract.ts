@@ -60,7 +60,7 @@ export interface AskOutputInterface {
 
 export interface useNftContractInterface {
   // abi: Abi | undefined;
-  cancelAsk: () => void;
+  cancelAsk: (collectionId: string, tokenId: string, failCallBack: () => void, successCallBack: () => void) => void;
   contractInstance: any | null;
   decimals: BN;
   deposited: BN | undefined;
@@ -70,6 +70,7 @@ export interface useNftContractInterface {
   getUserDeposit: () => Promise<BN | null>;
   isContractReady: boolean;
   tokenAsk: { owner: string, price: BN } | undefined;
+  withdrawKSM: (amount: number, failCallBack: () => void, successCallBack: () => void) => void;
 }
 
 // decimals: 15 - opal, 18 - eth
@@ -187,7 +188,7 @@ export function useNftContract (account: string): useNftContractInterface {
     });
   }, [account, api, approveTokenToContract, queueExtrinsic]);
 
-  const cancelAsk = useCallback(async (collectionId: string, tokenId: string) => {
+  const cancelAsk = useCallback(async (collectionId: string, tokenId: string, failCallBack: () => void, successCallBack: () => void) => {
     try {
       if (contractInstance && web3Instance) {
         const extrinsic = api.tx.evm.call(
@@ -205,9 +206,9 @@ export function useNftContract (account: string): useNftContractInterface {
           accountId: account && account.toString(),
           extrinsic,
           isUnsigned: false,
-          txFailedCb: () => { console.log('cancelAsk fail'); },
+          txFailedCb: () => failCallBack,
           txStartCb: () => { console.log('cancelAsk start'); },
-          txSuccessCb: () => { console.log('cancelAsk success'); },
+          txSuccessCb: () => successCallBack,
           txUpdateCb: () => { console.log('cancelAsk update'); }
         });
       }
@@ -216,7 +217,7 @@ export function useNftContract (account: string): useNftContractInterface {
     }
   }, [account, api, contractInstance, queueExtrinsic, web3Instance]);
 
-  const withdrawKSM = useCallback(async (amount: BN) => {
+  const withdrawKSM = useCallback(async (amount: number, failCallBack: () => void, successCallBack: () => void) => {
     if (!amount) {
       return;
     }
@@ -239,21 +240,11 @@ export function useNftContract (account: string): useNftContractInterface {
           accountId: account && account.toString(),
           extrinsic,
           isUnsigned: false,
-          txFailedCb: () => { console.log('withdrawKSM fail'); },
+          txFailedCb: () => failCallBack,
           txStartCb: () => { console.log('withdrawKSM start'); },
-          txSuccessCb: () => { console.log('withdrawKSM success'); },
+          txSuccessCb: () => successCallBack,
           txUpdateCb: () => { console.log('withdrawKSM update'); }
         });
-
-        /* const extrinsic = contractInstance.tx.cancel({ gasLimit: maxGas, value: 0 }, collectionInfo.id, tokenId);
-
-        queueTransaction(
-          extrinsic,
-          'CANCEL_SELL_FAIL',
-          'cancelSell start',
-          'CANCEL_SELL_SUCCESS',
-          'cancelSell update'
-        ); */
       }
 
       return null;
@@ -317,12 +308,11 @@ export function useNftContract (account: string): useNftContractInterface {
     return null;
   }, [contractInstance]);
 
-  const getDepositor = useCallback(async (collectionId: string, tokenId: string): Promise<string | null> => {
+  const getDepositor = useCallback(async (collectionId: string, tokenId: string) => {
     await getTokenAsk(collectionId, tokenId);
   }, [getTokenAsk]);
 
-  const initAbi = useCallback(async () => {
-
+  const initAbi = useCallback(() => {
     if (account) {
       const ethAddress = subToEth(account);
 
