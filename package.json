@@ -62,7 +62,6 @@
     "@types/lodash": "^4.14.168",
     "@types/lodash.memoize": "^4.1.6",
     "@types/react-infinite-scroller": "^1.2.1",
-    "@unique-nft/types": "^0.2.0",
     "@xstate/react": "^1.1.0",
     "bignumber": "^1.1.0",
     "cypress": "^6.8.0",
@@ -110,7 +109,7 @@
     "sass": "^1.43.4",
     "sass-loader": "^12.3.0",
     "source-map-explorer": "^2.5.2",
-    "styled-components": "^5.3.1",
+    "styled-components": "^5.3.3",
     "webpack": "^5.64.1",
     "webpack-cli": "^4.9.1",
     "webpack-manifest-plugin": "^3.0.0"

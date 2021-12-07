@@ -22,6 +22,8 @@ export interface ApiState {
   isKusamaApiReady: boolean;
   isDevelopment: boolean;
   isEthereum: boolean;
+  specName: string;
+  specVersion: string;
   systemChain: string;
   systemName: string;
   systemVersion: string;
@@ -31,10 +33,12 @@ export interface ApiProps extends ApiState {
   api: ApiPromise;
   kusamaApi: ApiPromise;
   apiError: string | null;
+  apiUrl?: string;
   extensions?: InjectedExtension[];
   isApiConnected: boolean;
-  isKusamaApiConnected: boolean;
   isApiInitialized: boolean;
+  isElectron: boolean;
+  isKusamaApiConnected: boolean;
   isKusamaApiInitialized: boolean;
   isWaitingInjected: boolean;
 }

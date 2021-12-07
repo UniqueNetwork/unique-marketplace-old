@@ -3,6 +3,8 @@
 
 import type { OverrideBundleDefinition } from '@polkadot/types/types';
 
-import { typesBundleForPolkadot } from '@darwinia/types/mix';
+import { unique } from '@unique-nft/types/definitions';
 
-export default typesBundleForPolkadot.spec.crab as unknown as OverrideBundleDefinition;
+export default {
+  rpc: { unique: unique.rpc }
+} as OverrideBundleDefinition;

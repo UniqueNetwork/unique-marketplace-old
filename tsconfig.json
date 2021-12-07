@@ -8,12 +8,6 @@
     "jsx": "react",
     "baseUrl": ".",
     "paths": {
-      "@polkadot/api/augment": [
-        "@unique-nft/types/src/interfaces/augment-api.ts"
-      ],
-      "@polkadot/types/augment": [
-        "@unique-nft/types/src/interfaces/augment-types.ts"
-      ],
       "@polkadot/apps/*": ["packages/apps/src/*"],
       "@polkadot/apps": ["packages/apps/src"],
       "@polkadot/apps-config": [ "packages/apps-config/src" ],

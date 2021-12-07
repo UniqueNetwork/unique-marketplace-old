@@ -3,8 +3,8 @@
 
 import type { OverrideBundleDefinition } from '@polkadot/types/types';
 
-import { spec } from '@edgeware/node-types';
+import { unique } from '@unique-nft/types/definitions';
 
-const edgeware = spec.typesBundle.spec?.edgeware as OverrideBundleDefinition;
-
-export default edgeware;
+export default {
+  rpc: { unique: unique.rpc }
+} as OverrideBundleDefinition;

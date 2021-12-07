@@ -53,11 +53,11 @@ export function useSchema (account: string | undefined, collectionId: string, to
   const getReFungibleDetails = useCallback(() => {
     try {
       if (account && tokenDetails?.Owner) {
-        if (Object.prototype.hasOwnProperty.call(collectionInfo?.Mode, 'reFungible')) {
+        if (Object.prototype.hasOwnProperty.call(collectionInfo?.mode, 'reFungible')) {
           const owner = tokenDetails.Owner.find((item: { fraction: BN, owner: string }) => item.owner.toString() === account) as { fraction: BN, owner: string } | undefined;
 
-          if (typeof collectionInfo?.DecimalPoints === 'number') {
-            const balance = owner && owner.fraction.toNumber() / Math.pow(10, collectionInfo.DecimalPoints);
+          if (typeof collectionInfo?.decimalPoints === 'number') {
+            const balance = owner && owner.fraction.toNumber() / Math.pow(10, collectionInfo.decimalPoints);
 
             if (cleanup.current) {
               return;
