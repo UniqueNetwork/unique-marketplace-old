@@ -4,8 +4,8 @@
 import './styles.scss';
 
 import React, { ReactText } from 'react';
-import {Table} from '@polkadot/react-components';
 
+import { Table } from '@polkadot/react-components';
 
 interface Props {
   children: React.ReactNode | React.ReactNode[];
@@ -16,15 +16,15 @@ interface Props {
 }
 
 function ListComponent (props: Props): React.ReactElement<Props> {
-  const { children, empty, header, sortedValue, onSort} = props;
+  const { children, empty, header, onSort, sortedValue } = props;
 
   return (
     <div className='list-component'>
       <Table
         empty={empty || 'No items'}
         header={header}
-        sortedValue={sortedValue}
         onSort={onSort}
+        sortedValue={sortedValue}
       >
         {children}
       </Table>

@@ -266,6 +266,7 @@ export function useCollections () {
           } else {
             setMyTrades(result.items);
           }
+
           setTradesCount(result.itemsCount || 0);
         }
 

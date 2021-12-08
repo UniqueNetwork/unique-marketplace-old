@@ -87,12 +87,15 @@
     display: flex;
     align-items: center;
     margin-left: var(--gap);
-    div.ui.input input {
-      min-width: 5em;
-      margin-left: calc(var(--gap) / 2);
-      padding-top: calc(var(--gap) / 3) !important;
-      left: calc(var(--gap) / 2) !important;
-      width: calc(var(--gap) / 3) !important;
+    div.ui.input {
+      width: auto;
+      input {
+        min-width: 5em;
+        margin-left: calc(var(--gap) / 2);
+        padding-top: calc(var(--gap) / 3) !important;
+        left: calc(var(--gap) / 2) !important;
+        width: calc(var(--gap) / 3) !important;
+      }
     }
   }
 }

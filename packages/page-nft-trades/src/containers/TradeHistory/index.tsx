@@ -4,13 +4,13 @@
 import type { TradeType } from '@polkadot/react-hooks/useCollections';
 
 import moment from 'moment';
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router';
 
 import envConfig from '@polkadot/apps-config/envConfig';
 import { ListComponent } from '@polkadot/react-components';
-import { useCollections } from '@polkadot/react-hooks';
 import Pagination from '@polkadot/react-components/Pagination';
+import { useCollections } from '@polkadot/react-hooks';
 
 const { kusamaDecimals, uniqueCollectionIds } = envConfig;
 
@@ -54,9 +54,10 @@ function TradeHistory ({ account }: { account?: string }): React.ReactElement {
   const onSort = useCallback((newSort: string) => {
     setSortedValue((_value) => {
       const [order, sortedBy] = _value || [];
+
       return sortedBy === newSort
         ? (order === 'asc' ? ['desc', newSort] : ['asc', newSort])
-        : ['asc', newSort]
+        : ['asc', newSort];
     });
   }, [setSortedValue]);
 
@@ -68,8 +69,8 @@ function TradeHistory ({ account }: { account?: string }): React.ReactElement {
       <ListComponent
         empty={'No trades found'}
         header={headerRef.current}
-        sortedValue={sortedValue}
         onSort={onSort}
+        sortedValue={sortedValue}
       >
         { tradesList && tradesList.map((trade: TradeType) => (
           <tr
@@ -100,7 +101,13 @@ function TradeHistory ({ account }: { account?: string }): React.ReactElement {
           </tr>
         ))}
       </ListComponent>
-      <Pagination page={page} perPage={pageSize} itemsCount={tradesCount} onChangePage={setPage} onChangePageSize={setPageSize} />
+      <Pagination
+        itemsCount={tradesCount}
+        onChangePage={setPage}
+        onChangePageSize={setPageSize}
+        page={page}
+        perPage={pageSize}
+      />
     </div>
   );
 }

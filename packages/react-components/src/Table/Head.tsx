@@ -1,8 +1,9 @@
 // Copyright 2017-2021 @polkadot/react-components authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import React, {useCallback} from 'react';
-import {Icon} from "@polkadot/react-components";
+import React, { useCallback } from 'react';
+
+import { Icon } from '@polkadot/react-components';
 
 type HeaderDef = [React.ReactNode?, string?, number?, (() => void)?, string?];
 
@@ -15,16 +16,15 @@ interface Props {
   onSort?: (value: string) => void;
 }
 
-function Head ({ className = '', filter, header, isEmpty, sortedValue, onSort }: Props): React.ReactElement<Props> | null {
+function Head ({ className = '', filter, header, isEmpty, onSort, sortedValue }: Props): React.ReactElement<Props> | null {
+  const _onClick = useCallback((onClick?: () => void, sortableBy?: string) => () => {
+    onClick && onClick();
+    sortableBy && onSort && onSort(sortableBy);
+  }, [onSort]);
+
   if (!header?.length) {
     return null;
   }
-
-  const _onClick = useCallback((onClick?: () => void, sortableBy?: string) => {
-    onClick && onClick();
-    sortableBy && onSort && onSort(sortableBy);
-  }, []);
-
 
   return (
     <thead className={className}>
@@ -39,7 +39,7 @@ function Head ({ className = '', filter, header, isEmpty, sortedValue, onSort }:
             className={[className, sortableBy && 'sortable'].join(' ')}
             colSpan={colSpan}
             key={index}
-            onClick={_onClick.bind(null, onClick, sortableBy)}
+            onClick={_onClick(onClick, sortableBy)}
           >
             {index === 0
               ? (
