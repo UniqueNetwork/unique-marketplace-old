@@ -81,6 +81,7 @@ export function useCollections () {
   const [holdLoading, setHoldLoading] = useState<boolean>(false);
   const [offersCount, setOffersCount] = useState<number>(0);
   const [trades, setTrades] = useState<TradeType[]>();
+  const [tradesCount, setTradesCount] = useState<number>(0);
   const [tradesLoading, setTradesLoading] = useState<boolean>(false);
   const [myTrades, setMyTrades] = useState<TradeType[]>();
   const cleanup = useRef<boolean>(false);
@@ -230,7 +231,8 @@ export function useCollections () {
   const getTrades = useCallback(({ account,
     collectionIds,
     page,
-    pageSize }: { account?: string, collectionIds?: string[], page: number, pageSize: number }) => {
+    pageSize,
+    sort }: { account?: string, collectionIds?: string[], page: number, pageSize: number, sort?: string}) => {
     try {
       let url = `${uniqueApi}/trades`;
 
@@ -242,6 +244,10 @@ export function useCollections () {
 
       if (collectionIds && collectionIds.length) {
         url = `${url}${collectionIds.map((item: string) => `&collectionId=${item}`).join('')}`;
+      }
+
+      if (sort) {
+        url = `${url}&sort=${sort}`;
       }
 
       setTradesLoading(true);
@@ -260,6 +266,8 @@ export function useCollections () {
           } else {
             setMyTrades(result.items);
           }
+
+          setTradesCount(result.itemsCount || 0);
         }
 
         setTradesLoading(false);
@@ -375,6 +383,7 @@ export function useCollections () {
     presetCollections,
     presetTokensCollections,
     trades,
+    tradesCount,
     tradesLoading
   };
 }

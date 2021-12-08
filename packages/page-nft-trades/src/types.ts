@@ -1,3 +1,6 @@
+// [object Object]
+// SPDX-License-Identifier: Apache-2.0
+
 export interface PunkForSaleInterface {
   id: string;
   isOwned: boolean;
@@ -6,7 +9,7 @@ export interface PunkForSaleInterface {
 }
 
 export interface Punk {
-  originalId : string;
+  originalId: string;
   owner: string;
   sex: string;
   attributes: Array<string>,
