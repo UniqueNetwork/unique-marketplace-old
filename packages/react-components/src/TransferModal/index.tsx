@@ -39,7 +39,7 @@ function TransferModal ({ account, closeModal, collection, tokenId, updateTokens
   const transferToken = useCallback(() => {
     queueExtrinsic({
       accountId: account && account.toString(),
-      extrinsic: api.tx.nft.transfer(recipient, collection.id, tokenId, (tokenPart * Math.pow(10, decimalPoints))),
+      extrinsic: api.tx.unique.transfer(recipient, collection.id, tokenId, (tokenPart * Math.pow(10, decimalPoints))),
       isUnsigned: false,
       txStartCb: () => { closeModal(); },
       txSuccessCb: () => { updateTokens(collection.id); }

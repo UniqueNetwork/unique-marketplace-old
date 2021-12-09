@@ -5,13 +5,27 @@ import type { ContractPromise } from '@polkadot/api-contract';
 import type { AbiMessage } from '@polkadot/api-contract/types';
 import type { AccountId } from '@polkadot/types/interfaces';
 
+import Web3 from 'web3';
+
 import { IKeyringPair } from '@polkadot/types/types';
+import { addressToEvm } from '@polkadot/util-crypto';
 
 export type CrossAccountId = {
   Substrate: string,
 } | {
   Ethereum: string,
 };
+
+// decimals: 15 - opal, 18 - eth
+function subToEthLowercase (eth: string): string {
+  const bytes = addressToEvm(eth);
+
+  return '0x' + Buffer.from(bytes).toString('hex');
+}
+
+export function subToEth (eth: string): string {
+  return Web3.utils.toChecksumAddress(subToEthLowercase(eth));
+}
 
 export const findCallMethodByName = (contractInstance: ContractPromise | null, methodName: string): AbiMessage | null => {
   const message = contractInstance && Object.values(contractInstance.abi.messages).find((message) => message.identifier === methodName);

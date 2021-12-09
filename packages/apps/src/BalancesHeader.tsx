@@ -9,7 +9,7 @@ import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 import menuArrow from '@polkadot/apps/images/menu-arrow.svg';
 import envConfig from '@polkadot/apps-config/envConfig';
 import { PopupMenu } from '@polkadot/react-components';
-import { useBalances } from '@polkadot/react-hooks';
+import { useApi, useBalances } from '@polkadot/react-hooks';
 import { formatKsmBalance, formatStrBalance } from '@polkadot/react-hooks/useKusamaApi';
 
 const { commission, minPrice } = envConfig;
@@ -23,7 +23,10 @@ interface Props {
 function BalancesHeader (props: Props): React.ReactElement<{ account?: string }> {
   const { account, isMobileMenu, setOpenPanel } = props;
   const { freeBalance, freeKusamaBalance } = useBalances(account);
-  const [deposited, setDeposited] = useState< BN >();
+  const [deposited, setDeposited] = useState<BN>();
+  const { api } = useApi();
+
+  const chainName = api?.registry.chainTokens[0];
 
   const getDeposited = useCallback(() => {
     setDeposited(new BN(Number(localStorage.getItem('deposit'))));
@@ -80,7 +83,7 @@ function BalancesHeader (props: Props): React.ReactElement<{ account?: string }>
       >
         <div className='app-balances-items-item'>
           {formatStrBalance(15, freeBalance)}
-          <span className='unit'>UNQ</span>
+          <span className='unit'>{chainName}</span>
         </div>
         <div className='app-balances-items-item'>
           {deposited && +formatKsmBalance(deposited) > minPrice &&

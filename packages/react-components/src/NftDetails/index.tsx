@@ -16,6 +16,7 @@ import envConfig from '@polkadot/apps-config/envConfig';
 import { TransferModal } from '@polkadot/react-components';
 import formatPrice from '@polkadot/react-components/util/formatPrice';
 import { useBalance, useDecoder, useMarketplaceStages, useSchema } from '@polkadot/react-hooks';
+import { subToEth } from '@polkadot/react-hooks/utils';
 
 import BuySteps from './BuySteps';
 import SaleSteps from './SaleSteps';
@@ -39,12 +40,17 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
   const { attributes, collectionInfo, tokenUrl } = useSchema(account, collectionId, tokenId);
   const [tokenPriceForSale, setTokenPriceForSale] = useState<string>('');
   const { cancelStep, deposited, escrowAddress, formatKsmBalance, getFee, getKusamaTransferFee, kusamaAvailableBalance, readyToAskPrice, sendCurrentUserAction, setPrice, setReadyToAskPrice, tokenAsk, tokenDepositor, tokenInfo, transferStep } = useMarketplaceStages(account, collectionInfo, tokenId);
-  const uOwnIt = tokenInfo?.owner?.toString() === account || (tokenAsk && tokenAsk.owner === account);
-  const uSellIt = tokenAsk && tokenAsk.owner === account;
-  const tokenPrice = tokenAsk?.price && tokenAsk?.price.gtn(0) ? tokenAsk.price : 0;
-  const isOwnerEscrow = !!(!uOwnIt && tokenInfo && tokenInfo.owner && tokenInfo.owner.toString() === escrowAddress && tokenDepositor && (tokenAsk && tokenAsk.owner !== account));
 
-  console.log('collectionInfo', collectionInfo, 'tokenAsk', tokenAsk, 'tokenPrice', tokenPrice, 'tokenInfo', tokenInfo, 'tokenUrl', tokenUrl, 'attributes', attributes);
+  const ethAccount = account ? subToEth(account).toLowerCase() : null;
+  const uSellIt = tokenAsk && tokenAsk.ownerAddr.toLowerCase() === ethAccount && tokenAsk.flagActive === '1';
+  const uOwnIt = tokenInfo?.owner?.Substrate === account || tokenInfo?.owner?.Ethereum?.toLowerCase() === ethAccount || uSellIt;
+
+  const tokenPrice = tokenAsk?.price && tokenAsk?.price.gtn(0) ? tokenAsk.price : 0;
+  const isOwnerEscrow = !!(!uOwnIt && tokenInfo && tokenInfo.owner && tokenInfo.owner.toString() === escrowAddress && tokenDepositor && (tokenAsk && (tokenAsk.ownerAddr.toLowerCase() !== ethAccount || tokenAsk.flagActive !== '1')));
+
+  console.log('collectionInfo', collectionInfo, 'tokenAsk', tokenAsk, 'tokenPrice', tokenPrice, 'tokenInfo', tokenInfo, 'ethAccount', ethAccount);
+
+  console.log('tokenAsk.owner === ethAccount', tokenAsk?.ownerAddr.toLowerCase() === ethAccount);
 
   const goBack = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
@@ -57,7 +63,7 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
     const priceRight = new BN(parseFloat(`0.${parts[1]}`) * Math.pow(10, kusamaDecimals));
     const price = priceLeft.add(priceRight);
 
-    setPrice(price.toString());
+    setPrice(price.toNumber());
   }, [setPrice, tokenPriceForSale]);
 
   const onTransferSuccess = useCallback(() => {
@@ -123,17 +129,21 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
         href='/'
         onClick={goBack}
       >
-        <svg fill='none'
+        <svg
+          fill='none'
           height='16'
           viewBox='0 0 16 16'
           width='16'
-          xmlns='http://www.w3.org/2000/svg'>
-          <path d='M13.5 8H2.5'
+          xmlns='http://www.w3.org/2000/svg'
+        >
+          <path
+            d='M13.5 8H2.5'
             stroke='var(--card-link-color)'
             strokeLinecap='round'
             strokeLinejoin='round'
           />
-          <path d='M7 3.5L2.5 8L7 12.5'
+          <path
+            d='M7 3.5L2.5 8L7 12.5'
             stroke='var(--card-link-color)'
             strokeLinecap='round'
             strokeLinejoin='round'
@@ -200,12 +210,12 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
               <Header as='h5'>The owner is Escrow</Header>
             )}
 
-            { (!uOwnIt && tokenInfo && tokenInfo.owner && tokenInfo.owner.toString() !== escrowAddress && !tokenAsk?.owner) && (
-              <Header as='h5'>The owner is {tokenInfo?.owner?.toString()}</Header>
+            { (!uOwnIt && tokenInfo && tokenInfo.owner && tokenInfo.owner.toString() !== escrowAddress && !tokenAsk?.ownerAddr) && (
+              <Header as='h5'>The owner is {tokenInfo?.owner.Substrate || tokenInfo?.owner.Ethereum || ''}</Header>
             )}
 
-            { (!uOwnIt && tokenInfo && tokenInfo.owner && tokenInfo.owner.toString() === escrowAddress && tokenAsk?.owner) && (
-              <Header as='h5'>The owner is {tokenAsk?.owner.toString()}</Header>
+            { (!uOwnIt && tokenInfo && tokenInfo.owner && tokenInfo.owner.toString() === escrowAddress && tokenAsk?.ownerAddr) && (
+              <Header as='h5'>The owner is {tokenAsk?.ownerAddr}</Header>
             )}
             <div className='buttons'>
               { (uOwnIt && !uSellIt) && (

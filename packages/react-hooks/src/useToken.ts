@@ -6,10 +6,11 @@ import { useCallback, useContext } from 'react';
 import { StatusContext } from '@polkadot/react-components';
 import { useApi } from '@polkadot/react-hooks/useApi';
 import { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
+
 import { normalizeAccountId } from './utils';
 
 export interface TokenDetailsInterface {
-  owner?: string;
+  owner?: { Ethereum?: string, Substrate?: string };
   constData?: string;
   variableData?: string;
 }
@@ -80,7 +81,7 @@ export function useToken (): UseTokenInterface {
 
       tokenDetailsData = {
         constData,
-        owner: crossAccount.Substrate,
+        owner: crossAccount,
         variableData
       };
 
@@ -111,11 +112,8 @@ export function useToken (): UseTokenInterface {
 
     if (tokenId && collectionInfo) {
       tokenDetailsData = await getDetailedTokenInfo(collectionInfo.id, tokenId);
-      /* if (Object.prototype.hasOwnProperty.call(collectionInfo.mode, 'nft')) {
-        tokenDetailsData = await getDetailedTokenInfo(collectionInfo.id, tokenId);
-      } else if (Object.prototype.hasOwnProperty.call(collectionInfo.mode, 'reFungible')) {
-        tokenDetailsData = await getDetailedReFungibleTokenInfo(collectionInfo.id, tokenId);
-      } */
+
+      console.log('tokenDetailsData', tokenDetailsData);
     }
 
     return tokenDetailsData;
