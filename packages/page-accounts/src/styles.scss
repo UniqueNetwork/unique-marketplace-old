@@ -1,9 +1,5 @@
-.accounts-preloader {
-  background: var(--card-background);
-  min-height: 400px;
-  padding: var(--gap);
-  display: flex;
-  align-items: center;
+.accounts--App {
+
 }
 
 @media (max-width: 1279px) {
@@ -49,8 +45,3 @@
     }
   }
 }
-
-@media (max-width: 768px) {
-
-}
-
