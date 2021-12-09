@@ -677,3 +677,13 @@
     margin: 0 3px;
   }
 }
+
+.ui.popup.help {
+  background-color: var(--text-color) !important;
+  color: var(--header-background);
+  max-width: 355px;
+
+  &:before {
+    background-color: var(--text-color) !important;
+  }
+}

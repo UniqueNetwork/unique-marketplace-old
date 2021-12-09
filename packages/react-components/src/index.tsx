@@ -3,6 +3,7 @@
 
 export * from '@polkadot/react-qr';
 
+export { default as AccountButtonGroup } from './AccountButtonGroup';
 export { default as AccountName } from './AccountName';
 export { default as AccountSelector } from './AccountSelector';
 export { default as AddressInfo } from './AddressInfo';
@@ -22,6 +23,7 @@ export { default as Checkbox } from './Checkbox';
 export { default as Columar } from './Columar';
 export { default as ConvictionDropdown } from './ConvictionDropdown';
 export { default as CopyButton } from './CopyButton';
+export { default as CopyIcon } from './CopyIcon';
 export { default as CryptoType } from './CryptoType';
 export { default as Digits } from './Digits';
 export { default as Dropdown } from './Dropdown';
@@ -32,6 +34,7 @@ export { default as Expander } from './Expander';
 export { default as Extrinsic } from './Extrinsic';
 export { default as FormatBalance } from './FormatBalance';
 export { default as Forget } from './Forget';
+export { default as HelpTooltip } from './HelpTooltip';
 export { default as Icon } from './Icon';
 export { default as IdentityIcon } from './IdentityIcon';
 export { default as Input } from './Input';
@@ -58,6 +61,7 @@ export { default as Password } from './Password';
 export { default as PasswordStrength } from './PasswordStrength';
 export { default as PopupMenu } from './PopupMenu';
 export { default as Row } from './Row';
+export { default as SearchFilter } from './SearchFilter';
 export { default as Sidebar } from './Sidebar';
 export { default as Spinner } from './Spinner';
 export { default as StakingUnbonding } from './StakingUnbonding';

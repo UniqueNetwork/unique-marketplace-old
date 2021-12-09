@@ -1,18 +1,199 @@
 .page-accounts {
-  .ui {
-    &.buttons {
 
-      &.account-actions {
-        float: right;
-        display: flex;
-        grid-column-gap: var(--gap);
-        margin-top: var(--gap);
-        margin-bottom: var(--gap);
+  &--card {
+    background: var(--card-background);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-radius: 4px;
+    padding: calc(var(--gap) * 2);
+
+    &--header {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      margin-bottom: calc(var(--gap) * 2);
+
+      .accounts-filter {
+        margin-left: 24px;
+      }
+    }
+
+    .accounts-table {
+
+      &--header {
+        background: var(--divider-color);
+        border-radius: 2px;
+        padding: calc(var(--gap) / 2) calc((var(--gap) / 2) * 3);
+        display: grid;
+        grid-template-columns: 40% 1fr 1fr 230px;
+        font-size: 14px;
+        font-weight: 500;
+        margin-bottom: calc((var(--gap) / 2) * 3);
+
+        .with-tooltip {
+          display: flex;
+          align-items: center;
+          grid-column-gap: calc(var(--gap) / 4);
+        }
+
+        span {
+          color: var(--input-placeholder-search-color);
+          font-family: var(--font-roboto);
+
+          &:first-child {
+            img{
+              cursor: pointer;
+            }
+          }
+
+          &:last-child {
+            margin-right: 37px;
+          }
+        }
+      }
+
+      &--body {
+        .accounts-table-item {
+          padding: var(--gap) calc((var(--gap) / 2) * 3);
+          border: 1px solid var(--border-color);
+          border-bottom: none;
+          display: grid;
+          grid-template-columns: 40% 1fr 1fr 230px;
+          align-items: center;
+          overflow: hidden;
+
+          &:last-child {
+            border-bottom: 1px solid var(--border-color);
+          }
+
+          .item {
+
+            &--address {
+              color: var(--input-placeholder-search-color);
+              font-size: 14px;
+              display: flex;
+              grid-column-gap: 10px;
+              word-break: break-all;
+              align-items: center;
+              width: 100%;
+
+              svg {
+                opacity: 0.5;
+
+                &:hover {
+                  opacity: 1;
+                }
+              }
+            }
+
+            .ui--AccountName {
+              font-size: 16px;
+              font-weight: 500;
+            }
+          }
+
+          .explorer {
+            display: flex;
+            align-items: center;
+            img {
+              margin-right: calc(var(--gap) / 2);
+            }
+          }
+
+          .actions {
+            display: flex;
+            button:last-child {
+              color: var(--error-color);
+              border: 1px solid var(--error-color);
+            }
+          }
+
+          a {
+            cursor: pointer;
+            color: var(--button-color);
+            font-family: var(--font-roboto);
+            font-weight: 500;
+
+            &:hover {
+              text-decoration: underline;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 1023px) {
+
+  .page-accounts--card--header {
+    grid-template-columns: 5fr 3fr;
+  }
+
+  .mobile-header {
+    display: block;
+    padding: 0 16px !important;
+  }
+
+  .accounts-table {
+
+    &--body {
+
+      .accounts-table-item {
+        display: flex !important;
+        flex-direction: column;
+        align-items: flex-start !important;
+        border: 1px solid red;
+
+        .explorer {
+          margin-top: 16px;
+        }
+
+        a {
+          margin-top: var(--gap);
+          display: block;
+          margin-top: 16px;
+        }
+        .actions {
+          width: 100%;
+          flex-direction: row;
+          margin-top: var(--gap);
+          button {
+            flex-grow: 1;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 767px) {
+  .account-header {
+    margin: 16px 24px;
+  }
+
+  .page-accounts--card--header {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+
+    .accounts-filter {
+      margin-left: 0;
+      margin-top: 32px;
+    }
+  }
+  .accounts-table--header {
+    background: transparent !important;
+    padding: 0 !important;
+
+    span {
+      &:nth-child(2),
+      &:nth-child(3),
+      &:nth-child(4) {
+        display: none;
       }
     }
   }
 
-  td.button {
-    float: right;
+  .ui.bottom.left.popup{
+    margin: 5px 16px 0 0 !important;
   }
 }

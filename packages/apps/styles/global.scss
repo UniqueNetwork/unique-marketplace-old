@@ -24,6 +24,13 @@ body {
 .ui.popup {
   background: var(--bg-page) !important;
 
+  a{
+    color: unset;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+
+
   &:before,
   &:after {
     background: var(--bg-page) !important;
@@ -79,6 +86,9 @@ hr {
   }
 
   .actions {
+    .ui--Button-Group {
+      display: flex;
+    }
     .ui--Button {
       background: var(--link-color);
       color: var(--text-color);
@@ -444,18 +454,23 @@ form {
   padding: 1rem var(--gap);
 }
 
-button.ui.button,
-.button-link {
+button.ui.button,.ui--Button,.button-link {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 40px;
   background-color: var(--link-color) !important;
   padding: calc(var(--gap) / 2) calc(var(--gap) * 1.5) !important;
-  color: var(--white-color) !important;
+  color: var(--white-color);
   font: 500 16px/24px var(--font-roboto) !important;
   letter-spacing: 0.11em;
   border-radius: var(--bradius) !important;
+  &.ui.secondary.button {
+    background-color: var(--white);
+    border: 1px solid var(--link-color);
+    color: var(--link-color);
+  }
+
 }
 
 .button-link {
