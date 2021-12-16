@@ -28,30 +28,9 @@
     return variable || defaults;
   }
 
-  /*
-      COMMISSION: number;
-      CONTRACT_ADDRESS: string;
-      DECIMALS: number;
-      ENVIRONMENT: string;
-      ESCROW_ADDRESS: string;
-      FAVICON_PATH: string;
-      KUSAMA_API: string;
-      KUSAMA_BACKUP_API: string;
-      KUSAMA_DECIMALS: number; // 12
-      MAX_GAS: number; // 1000000000000
-      MIN_PRICE: number;
-      QUOTE_ID: number; // 2
-      UNIQUE_API: string;
-      UNIQUE_COLLECTION_IDS: string; // ['23']
-      UNIQUE_SUBSTRATE_API: string;
-      VALUE: number; // 0
-      VERSION: string;
-      WHITE_LABEL_URL: string;
-   */
-
   window.ENV = window.ENV || {
     COMMISSION: defaults('${COMMISSION}', 10),
-    CONTRACT_ADDRESS: defaults('${CONTRACT_ADDRESS}', '0xFE5a897aE4e478063d64B2C53DfeC6bfBE244c0B'),
+    CONTRACT_ADDRESS: defaults('${CONTRACT_ADDRESS}', '0x6656d857a8FA7F447E51f8dF83234dAcd1C74527'),
     DECIMALS: defaults('${DECIMALS}', 6),
     ESCROW_ADDRESS: defaults('${ESCROW_ADDRESS}', '5DACuDR8CXXmQS3tpGyrHZXoJ6ds7bjdRb4wVqqSt2CMfAoG'),
     FAVICON_PATH: defaults('${FAVICON_PATH}', 'favicons/marketplace'),
@@ -59,6 +38,7 @@
     KUSAMA_API: defaults('${KUSAMA_API}', 'wss://ws-relay-opal.unique.network'),
     KUSAMA_BACKUP_API: defaults('${KUSAMA_BACKUP_API}', 'wss://polkadot.api.onfinality.io/public-ws'),
     KUSAMA_DECIMALS: defaults('${KUSAMA_DECIMALS}', 12),
+    MATCHER_OWNER_ADDRESS: defaults('${MATCHER_OWNER_ADDRESS}', '0xCFB8D32364F173051C2CC43eB165701e9E6737DF'),
     MAX_GAS: defaults('${MAX_GAS}', 1000000000000),
     MIN_PRICE: defaults('${MIN_PRICE}', 0.000001),
     MIN_TED_COLLECTION: defaults('${MIN_TED_COLLECTION}', 1),
@@ -66,6 +46,7 @@
     UNIQUE_API: defaults('${UNIQUE_API}', 'https://dev-api.unique.network'),
     UNIQUE_COLLECTION_IDS: defaults('${UNIQUE_COLLECTION_IDS}', [23, 25, 155, 112, 113].join(',')),
     UNIQUE_SUBSTRATE_API: defaults('${UNIQUE_SUBSTRATE_API}', 'wss://ws-opal.unique.network'),
+    UNIQUE_SUBSTRATE_API_RPC: defaults('${UNIQUE_SUBSTRATE_API_RPC}', 'https://rpc-opal.unique.network'),
     VALUE: defaults('${VALUE}', 1),
     WHITE_LABEL_URL: defaults('${WHITE_LABEL_URL}', 'https://whitelabel.unique.network')
   };

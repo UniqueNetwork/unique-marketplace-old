@@ -12,12 +12,14 @@ export type EnvConfigType = {
   kusamaApiUrl: string;
   kusamaBackupApiUrl: string;
   kusamaDecimals: number; // 12
+  matcherOwnerAddress: string;
   maxGas: number; // 1000000000000
   minPrice: number;
   quoteId: number; // 2
   uniqueCollectionIds: string[]; // ['23']
   uniqueApi: string;
   uniqueSubstrateApi: string;
+  uniqueSubstrateApiRpc: string;
   value: number; // 0
   version: string;
   whiteLabelUrl: string;
@@ -36,12 +38,14 @@ declare global {
       KUSAMA_API: string;
       KUSAMA_BACKUP_API: string;
       KUSAMA_DECIMALS: number; // 12
+      MATCHER_OWNER_ADDRESS: string;
       MAX_GAS: number; // 1000000000000
       MIN_PRICE: number;
       QUOTE_ID: number; // 2
       UNIQUE_API: string;
       UNIQUE_COLLECTION_IDS: string; // ['23']
       UNIQUE_SUBSTRATE_API: string;
+      UNIQUE_SUBSTRATE_API_RPC: string;
       VALUE: number; // 0
       VERSION: string;
       WHITE_LABEL_URL: string;
@@ -60,12 +64,14 @@ const envConfig: EnvConfigType = {
   kusamaApiUrl: window.ENV.KUSAMA_API,
   kusamaBackupApiUrl: window.ENV.KUSAMA_BACKUP_API,
   kusamaDecimals: +window.ENV.KUSAMA_DECIMALS,
+  matcherOwnerAddress: window.ENV.MATCHER_OWNER_ADDRESS,
   maxGas: +window.ENV.MAX_GAS,
   minPrice: +window.ENV.MIN_PRICE,
   quoteId: +window.ENV.QUOTE_ID,
   uniqueApi: window.ENV.UNIQUE_API,
   uniqueCollectionIds: window.ENV.UNIQUE_COLLECTION_IDS.split(','),
   uniqueSubstrateApi: window.ENV.UNIQUE_SUBSTRATE_API,
+  uniqueSubstrateApiRpc: window.ENV.UNIQUE_SUBSTRATE_API_RPC,
   value: +window.ENV.VALUE,
   version: window.ENV.VERSION,
   whiteLabelUrl: window.ENV.WHITE_LABEL_URL

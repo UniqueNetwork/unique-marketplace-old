@@ -1,22 +1,18 @@
 // Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import BN from 'bn.js';
-import type { SubmittableExtrinsic } from '@polkadot/api/promise/types';
-import type { DeriveBalancesAll } from '@polkadot/api-derive/types';
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
-
-import { Abi, ContractPromise } from '@polkadot/api-contract';
-import envConfig from '@polkadot/apps-config/envConfig';
-import { web3Enable } from '@polkadot/extension-dapp';
 import type { Contract } from 'web3-eth-contract';
+
+import BN from 'bn.js';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import Web3 from 'web3';
+
+import envConfig from '@polkadot/apps-config/envConfig';
 import { DEFAULT_DECIMALS } from '@polkadot/react-api';
-import { useApi, useCall } from '@polkadot/react-hooks';
+import { StatusContext } from '@polkadot/react-components';
+import { useApi } from '@polkadot/react-hooks';
 import { formatKsmBalance } from '@polkadot/react-hooks/useKusamaApi';
-import keyring from '@polkadot/ui-keyring';
-import { addressToEvm, evmToAddress } from '@polkadot/util-crypto';
-import { subToEth } from './utils';
+import { evmToAddress } from '@polkadot/util-crypto';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -24,15 +20,14 @@ import marketplaceAbi from './abi/marketPlaceAbi.json';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import nonFungibleAbi from './abi/nonFungibleAbi.json';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import metadata from './abi/metadata28.10.21.json';
-import { StatusContext } from '@polkadot/react-components';
-import {BN_HUNDRED} from "@polkadot/util";
+import { subToEth } from './utils';
 
 type EvmCollectionAbiMethods = {
   approve: (contractAddress: string, tokenId: string) => {
     encodeABI: () => any;
+  },
+  getApproved: (tokenId: string | number) => {
+    call: () => Promise<string>;
   }
 }
 export type TokenFullAskType = {
@@ -50,18 +45,21 @@ export type TokenFullAskType = {
 export type TokenAskType = { flagActive: '0' | '1', ownerAddr: string, price: BN };
 
 type MarketplaceAbiMethods = {
-  addAsk: (price: bigint, currencyCode: string, address: string, tokenId: string) => {
+  addAsk: (price: string, currencyCode: string, address: string, tokenId: string) => {
     encodeABI: () => any;
   },
   balanceKSM: (ethAddress: string) => {
     call: () => Promise<string>;
   };
-  buy: (collectionAddress: string, tokenId: string) => {
+  buyKSM: (collectionAddress: string, tokenId: string, buyer: string, receiver: string) => {
     encodeABI: () => any;
   };
   cancelAsk: (collectionId: string, tokenId: string) => {
     encodeABI: () => any;
   };
+  depositKSM: (price: number) => {
+    encodeABI: () => any;
+  },
   getOrder: (collectionId: string, tokenId: string) => {
     call: () => Promise<TokenAskType>;
   };
@@ -71,6 +69,9 @@ type MarketplaceAbiMethods = {
   orders: (orderNumber: number) => {
     call: () => Promise<TokenAskType>;
   },
+  setEscrow: (escrow: string) => {
+    encodeABI: () => any;
+  },
   Withdrawn: (amount: string, currencyCode: string, address: string) => {
     call: {
       encodeABI: () => any;
@@ -78,32 +79,30 @@ type MarketplaceAbiMethods = {
   }; // (amount: string, currencyCode: string, address: string) => any;
 }
 
-const { contractAddress, maxGas, minPrice, quoteId, value } = envConfig;
+const { contractAddress, matcherOwnerAddress, minPrice, uniqueSubstrateApiRpc, value } = envConfig;
 
 export interface AskOutputInterface {
   output: [string, string, string, BN, string]
 }
 
-// @todo use batch - .api.tx.utility
-//   .batch(txs)
-//   .signAndSend
-
 export interface useNftContractInterface {
   // abi: Abi | undefined;
-  addAsk: (collectionId: string, tokenId: string, amount: bigint, failCallBack: () => void, successCallBack: () => void) => void;
-  approveTokenToContract: (collectionId: string, tokenId: string, failCallBack: () => void, successCallBack: () => void) => void;
-  buyToken: (collectionId: string, tokenId: string, price: bigint, failCallBack: () => void, successCallBack: () => void) => void;
+  addAsk: (collectionId: string, tokenId: string, amount: BN, failCallBack: () => void, successCallBack: () => void) => void;
+  approveTokenToContract: (tokenId: string, failCallBack: () => void, successCallBack: () => void) => void;
+  balanceTransfer: (recipient: string, amount: BN, failCallBack: () => void, successCallBack: () => void) => void;
+  buyToken: (collectionId: string, tokenId: string, failCallBack: () => void, successCallBack: () => void) => void;
   cancelAsk: (collectionId: string, tokenId: string, failCallBack: () => void, successCallBack: () => void) => void;
   contractInstance: any | null;
   decimals: BN;
   deposited: BN | undefined;
   depositor: string | undefined;
-  getDepositor: (collectionId: string, tokenId: string) => Promise<string | null>;
-  getTokenAsk: (collectionId: string, tokenId: string) => Promise<{ owner: string, price: BN } | null>;
+  getApproved: (tokenId: string) => Promise<boolean>;
+  getTokenAsk: (collectionId: string, tokenId: string) => Promise<TokenAskType | null>;
   getUserDeposit: () => Promise<BN | null>;
+  initCollectionAbi: (collectionId: string) => void;
   isContractReady: boolean;
-  sellToken: (collectionId: string, tokenId: string, successCallBack: () => void, errorCallBack: () => void) => void;
   tokenAsk: TokenAskType | undefined;
+  transferToken: (collectionId: string, tokenId: string, address: { Ethereum?: string, Substrate?: string }, successCallBack: () => void, errorCallBack: () => void) => void;
   withdrawKSM: (amount: number, failCallBack: () => void, successCallBack: () => void) => void;
 }
 
@@ -125,33 +124,6 @@ export function collectionIdToAddress (address: number): string {
 }
 
 /*
-Execute ethereum method call using substrate account
- * @param to target contract
- * @param mkTx - closure, receiving `contract.methods`, and returning method call,
- * to be used as following (assuming `to` = erc20 contract):
- * `m => m.transfer(to, amount)`
- *
- * # Example
- * ```ts
- * executeEthTxOnSub(api, alice, erc20Contract, m => m.transfer(target, amount));
- * ```
-
-export async function executeEthTxOnSub(web3: Web3, api: ApiPromise, from: IKeyringPair, to: any, call: any, {value = 0}: {value?: bigint | number} = { }) {
-  const tx = api.tx.evm.call(
-    subToEth(from.address),
-    to.options.address,
-    call.encodeABI(),
-    value,
-    GAS_ARGS.gas,
-    await web3.eth.getGasPrice(),
-    null,
-  );
-  const events = await submitTransactionAsync(from, tx);
-  expect(events.some(({event: {section, method}}) => section == 'evm' && method == 'Executed')).to.be.true;
-}
- */
-
-/*
 to sell:
 1. Transfer NFT to your eth address mirror - subToEth(account);
 2. Transfer money to your eth address mirror to pay fees (for approval);
@@ -161,42 +133,43 @@ to sell:
  */
 
 // https://docs.google.com/document/d/1WED9VP8Yj52Un4qmkGDpzjesQTzwwoDgYMk1Ty8yftQ/edit
-export function useNftContract (account: string): useNftContractInterface {
+export function useNftContract (account: string | undefined): useNftContractInterface {
   const { api } = useApi();
   const [decimals, setDecimals] = useState(new BN(15));
   const [web3Instance, setWeb3Instance] = useState<Web3>();
   // const balancesAll = useCall<DeriveBalancesAll>(api.derive.balances?.all, [evmToAddress(subToEthLowercase(account))]);
   const [contractInstance, setContractInstance] = useState<Contract | null>(null);
+  const [evmCollectionInstance, setEvmCollectionInstance] = useState<Contract | null>(null);
   const [depositor, setDepositor] = useState<string>();
   const [deposited, setDeposited] = useState<BN>();
   const { queueExtrinsic } = useContext(StatusContext);
   const [tokenAsk, setTokenAsk] = useState<TokenAskType>();
 
+  const getApproved = useCallback(async (tokenId: string): Promise<boolean> => {
+    try {
+      if (contractInstance && evmCollectionInstance) {
+        const approvedAddress = await (evmCollectionInstance.methods as EvmCollectionAbiMethods).getApproved(tokenId).call();
+
+        console.log('approvedAddress', approvedAddress);
+
+        return approvedAddress === account;
+      }
+    } catch (e) {
+      console.log('getUserDeposit Error: ', e);
+    }
+
+    return false;
+  }, [account, contractInstance, evmCollectionInstance]);
+
   // this method should be called from matcher owner
-  const approveTokenToContract = useCallback(async (collectionId: string, tokenId: string, failCallBack: () => void, successCallBack: () => void) => {
-    // await executeEthTxOnSub(web3, api, seller, evmCollection, m => m.approve(matcher.options.address, tokenId));
-    if (web3Instance) {
-      const matcherOwner = web3Instance.eth.accounts.privateKeyToAccount('8b9bcdcb9434d3584243f2ef066910f8f90b315b9b1cc79516f11a5a57db0a63').address;
-
-      console.log('matcherOwner', matcherOwner);
-
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      const evmCollection = new web3Instance.eth.Contract(nonFungibleAbi as any, collectionIdToAddress(parseInt(collectionId, 10)), { from: matcherOwner });
-
-      console.log('evmCollection', evmCollection, 'contractAddress', contractAddress, 'value', value);
-      // const ethAddress = subToEth(account);
-      // const addressBalance: string = await web3Instance.eth.getBalance(ethAddress);
-      // const evmSubAddress = evmToAddress(ethAddress, 42, 'blake2');
-      // const evmSubBalanse = await api.derive.balances?.all(evmSubAddress);
-
-      // console.log('evmSubAddress', evmSubAddress, 'evmSubBalanse', evmSubBalanse.availableBalance.toString());
-
+  const approveTokenToContract = useCallback(async (tokenId: string, failCallBack: () => void, successCallBack: () => void) => {
+    if (account && web3Instance && evmCollectionInstance) {
       try {
         if (contractInstance && web3Instance) {
           const extrinsic = api.tx.evm.call(
             subToEth(account),
-            evmCollection.options.address,
-            (evmCollection.methods as EvmCollectionAbiMethods).approve(contractAddress, tokenId).encodeABI(),
+            evmCollectionInstance.options.address,
+            (evmCollectionInstance.methods as EvmCollectionAbiMethods).approve(contractAddress, tokenId).encodeABI(),
             1,
             GAS_ARGS.gas,
             await web3Instance.eth.getGasPrice(),
@@ -217,7 +190,7 @@ export function useNftContract (account: string): useNftContractInterface {
         console.log('approveTokenToContract Error', e);
       }
     }
-  }, [account, api, contractInstance, queueExtrinsic, web3Instance]);
+  }, [account, api, contractInstance, evmCollectionInstance, queueExtrinsic, web3Instance]);
 
   const balanceTransfer = useCallback((recipient: string, amount: BN, failCallBack: () => void, successCallBack: () => void) => {
     const extrinsic = api.tx.balances.transfer(recipient, amount);
@@ -226,9 +199,9 @@ export function useNftContract (account: string): useNftContractInterface {
       accountId: account && account.toString(),
       extrinsic,
       isUnsigned: false,
-      txFailedCb: () => failCallBack,
+      txFailedCb: () => failCallBack(),
       txStartCb: () => { console.log('balanceTransfer start'); },
-      txSuccessCb: () => successCallBack,
+      txSuccessCb: () => successCallBack(),
       txUpdateCb: () => { console.log('balanceTransfer update'); }
     });
   }, [account, api, queueExtrinsic]);
@@ -238,24 +211,15 @@ export function useNftContract (account: string): useNftContractInterface {
   10n * KSM
   check orders: orders(orderNumber);
    */
-  const addAsk = useCallback(async (collectionId: string, tokenId: string, price: bigint, failCallBack: () => void, successCallBack: () => void) => {
+  const addAsk = useCallback(async (collectionId: string, tokenId: string, price: BN, failCallBack: () => void, successCallBack: () => void) => {
     //  await executeEthTxOnSub(web3, api, seller, matcher, m => m.addAsk(PRICE, '0x0000000000000000000000000000000000000001', evmCollection.options.address, tokenId));
-    if (web3Instance) {
-      const matcherOwner = web3Instance.eth.accounts.privateKeyToAccount('8b9bcdcb9434d3584243f2ef066910f8f90b315b9b1cc79516f11a5a57db0a63').address;
-
-      console.log('matcherOwner', matcherOwner);
-
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      const evmCollection = new web3Instance.eth.Contract(nonFungibleAbi as any, collectionIdToAddress(parseInt(collectionId, 10)), { from: matcherOwner });
-
-      console.log('evmCollection', evmCollection, 'contractAddress', contractAddress, 'value', value, 'evmCollection.options.address', evmCollection.options.address);
-
+    if (account && web3Instance && evmCollectionInstance) {
       try {
         if (contractInstance && web3Instance) {
           const extrinsic = api.tx.evm.call(
             subToEth(account),
             contractAddress,
-            (contractInstance.methods as MarketplaceAbiMethods).addAsk(price, '0x0000000000000000000000000000000000000001', evmCollection.options.address, tokenId).encodeABI(),
+            (contractInstance.methods as MarketplaceAbiMethods).addAsk(price.toString(), '0x0000000000000000000000000000000000000001', evmCollectionInstance.options.address, tokenId).encodeABI(),
             0,
             GAS_ARGS.gas,
             await web3Instance.eth.getGasPrice(),
@@ -266,9 +230,9 @@ export function useNftContract (account: string): useNftContractInterface {
             accountId: account && account.toString(),
             extrinsic,
             isUnsigned: false,
-            txFailedCb: () => { console.log('addAsk fail'); },
+            txFailedCb: () => failCallBack(),
             txStartCb: () => { console.log('addAsk start'); },
-            txSuccessCb: () => { console.log('addAsk success'); },
+            txSuccessCb: () => successCallBack(),
             txUpdateCb: () => { console.log('addAsk update'); }
           });
         }
@@ -276,77 +240,63 @@ export function useNftContract (account: string): useNftContractInterface {
         console.log('approveTokenToContract Error', e);
       }
     }
-  }, [account, api, contractInstance, queueExtrinsic, web3Instance]);
+  }, [account, api, contractInstance, evmCollectionInstance, queueExtrinsic, web3Instance]);
 
-  const buyToken = useCallback(async (collectionId: string, tokenId: string, price: bigint, failCallBack: () => void, successCallBack: () => void) => {
-    //  await executeEthTxOnSub(web3, api, seller, matcher, m => m.addAsk(PRICE, '0x0000000000000000000000000000000000000001', evmCollection.options.address, tokenId));
-    if (web3Instance) {
-      const matcherOwner = web3Instance.eth.accounts.privateKeyToAccount('8b9bcdcb9434d3584243f2ef066910f8f90b315b9b1cc79516f11a5a57db0a63').address;
-
-      console.log('matcherOwner', matcherOwner);
-
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      const evmCollection = new web3Instance.eth.Contract(nonFungibleAbi as any, collectionIdToAddress(parseInt(collectionId, 10)), { from: matcherOwner });
-
-      console.log('evmCollection', evmCollection, 'contractAddress', contractAddress, 'value', value, 'evmCollection.options.address', evmCollection.options.address);
-
+  const buyToken = useCallback(async (collectionId: string, tokenId: string, failCallBack: () => void, successCallBack: () => void) => {
+    if (account && web3Instance && evmCollectionInstance && contractInstance) {
       try {
-        if (contractInstance && web3Instance) {
-          const extrinsic = api.tx.evm.call(
-            subToEth(account),
-            contractAddress,
-            (contractInstance.methods as MarketplaceAbiMethods).buy(evmCollection.options.address, tokenId).encodeABI(),
-            0,
-            GAS_ARGS.gas,
-            await web3Instance.eth.getGasPrice(),
-            null
-          );
+        console.log('buyToken from', account, 'ehtAcc', subToEth(account), 'evmCollectionInstance.options.address', evmCollectionInstance.options.address, 'tokenId', tokenId);
 
-          queueExtrinsic({
-            accountId: account && account.toString(),
-            extrinsic,
-            isUnsigned: false,
-            txFailedCb: () => { console.log('buyToken fail'); },
-            txStartCb: () => { console.log('buyToken start'); },
-            txSuccessCb: () => { console.log('buyToken success'); },
-            txUpdateCb: () => { console.log('buyToken update'); }
-          });
-        }
+        const ethAccount = subToEth(account);
+        const extrinsic = api.tx.evm.call(
+          ethAccount,
+          contractAddress,
+          (contractInstance.methods as MarketplaceAbiMethods).buyKSM(evmCollectionInstance.options.address, tokenId, ethAccount, ethAccount).encodeABI(),
+          0,
+          GAS_ARGS.gas,
+          await web3Instance.eth.getGasPrice(),
+          null
+        );
+
+        console.log('extrinsic', extrinsic);
+
+        queueExtrinsic({
+          accountId: account && account.toString(),
+          extrinsic,
+          isUnsigned: false,
+          txFailedCb: () => failCallBack(),
+          txStartCb: () => { console.log('buyToken start'); },
+          txSuccessCb: () => successCallBack(),
+          txUpdateCb: () => { console.log('buyToken update'); }
+        });
       } catch (e) {
         console.log('approveTokenToContract Error', e);
       }
     }
-  }, [account, api, contractInstance, queueExtrinsic, web3Instance]);
+  }, [account, api, contractInstance, evmCollectionInstance, queueExtrinsic, web3Instance]);
 
-  const sellToken = useCallback((collectionId: string, tokenId: string, successCallBack: () => void, errorCallBack: () => void) => {
-    console.log('sellToken');
+  const transferToken = useCallback((collectionId: string, tokenId: string, address: { Ethereum?: string, Substrate?: string }, successCallBack: () => void, errorCallBack: () => void) => {
     // To transfer item to matcher it first needs to be transferred to Eth account-mirror
-    const ethAddress = subToEth(account);
-    const extrinsic = api.tx.unique.transfer({ Ethereum: ethAddress }, collectionId, tokenId, 1);
+    const extrinsic = api.tx.unique.transfer(address, collectionId, tokenId, 1);
 
     queueExtrinsic({
       accountId: account && account.toString(),
       extrinsic,
       isUnsigned: false,
       txFailedCb: () => errorCallBack,
-      txStartCb: () => { console.log('sellToken start'); },
-      txSuccessCb: () => successCallBack, // approveTokenToContract
-      txUpdateCb: () => { console.log('sellToken update'); }
+      txStartCb: () => { console.log('transferToken start'); },
+      txSuccessCb: () => successCallBack,
+      txUpdateCb: () => { console.log('transferToken update'); }
     });
   }, [account, api, queueExtrinsic]);
 
   const cancelAsk = useCallback(async (collectionId: string, tokenId: string, failCallBack: () => void, successCallBack: () => void) => {
     try {
-      if (contractInstance && web3Instance) {
-        const matcherOwner = web3Instance.eth.accounts.privateKeyToAccount('8b9bcdcb9434d3584243f2ef066910f8f90b315b9b1cc79516f11a5a57db0a63').address;
-
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        const evmCollection = new web3Instance.eth.Contract(nonFungibleAbi as any, collectionIdToAddress(parseInt(collectionId, 10)), { from: matcherOwner });
-
+      if (account && contractInstance && evmCollectionInstance && web3Instance) {
         const extrinsic = api.tx.evm.call(
           subToEth(account),
           contractAddress,
-          (contractInstance.methods as MarketplaceAbiMethods).cancelAsk(evmCollection.options.address, tokenId).encodeABI(),
+          (contractInstance.methods as MarketplaceAbiMethods).cancelAsk(evmCollectionInstance.options.address, tokenId).encodeABI(),
           0,
           GAS_ARGS.gas,
           await web3Instance.eth.getGasPrice(),
@@ -357,24 +307,20 @@ export function useNftContract (account: string): useNftContractInterface {
           accountId: account && account.toString(),
           extrinsic,
           isUnsigned: false,
-          txFailedCb: () => failCallBack,
+          txFailedCb: () => failCallBack(),
           txStartCb: () => { console.log('cancelAsk start'); },
-          txSuccessCb: () => successCallBack,
+          txSuccessCb: () => successCallBack(),
           txUpdateCb: () => { console.log('cancelAsk update'); }
         });
       }
     } catch (e) {
       console.log('cancelAsk error', e);
     }
-  }, [account, api, contractInstance, queueExtrinsic, web3Instance]);
+  }, [account, api, contractInstance, evmCollectionInstance, queueExtrinsic, web3Instance]);
 
   const withdrawKSM = useCallback(async (amount: number, failCallBack: () => void, successCallBack: () => void) => {
-    if (!amount) {
-      return;
-    }
-
     try {
-      if (contractInstance && web3Instance) {
+      if (account && amount && contractInstance && web3Instance) {
         // currency_code 0x0000000000000000000000000000000000000001
         // const extrinsic = (contractInstance.methods as MarketplaceAbiMethods).Withdrawn(amount.toString(), '0x0000000000000000000000000000000000000001', account);
         const extrinsic = api.tx.evm.call(
@@ -391,9 +337,9 @@ export function useNftContract (account: string): useNftContractInterface {
           accountId: account && account.toString(),
           extrinsic,
           isUnsigned: false,
-          txFailedCb: () => failCallBack,
+          txFailedCb: () => failCallBack(),
           txStartCb: () => { console.log('withdrawKSM start'); },
-          txSuccessCb: () => successCallBack,
+          txSuccessCb: () => successCallBack(),
           txUpdateCb: () => { console.log('withdrawKSM update'); }
         });
       }
@@ -408,7 +354,7 @@ export function useNftContract (account: string): useNftContractInterface {
 
   const getUserDeposit = useCallback(async (): Promise<BN | null> => {
     try {
-      if (contractInstance) {
+      if (account && contractInstance) {
         const ethAddress = subToEth(account);
         const result = await (contractInstance.methods as MarketplaceAbiMethods).balanceKSM(ethAddress).call();
 
@@ -460,7 +406,7 @@ export function useNftContract (account: string): useNftContractInterface {
     }
   }, [contractInstance, getTokenOrder]);
 
-  const getTokenAsk = useCallback(async (collectionId: string, tokenId: string) => {
+  const getTokenAsk = useCallback(async (collectionId: string, tokenId: string): Promise<TokenAskType | null> => {
     try {
       if (contractInstance) {
         const { flagActive, ownerAddr, price }: TokenAskType = await (contractInstance.methods as MarketplaceAbiMethods).getOrder(collectionIdToAddress(parseInt(collectionId, 10)), tokenId).call();
@@ -477,6 +423,8 @@ export function useNftContract (account: string): useNftContractInterface {
 
         setTokenAsk(ask);
         setDepositor(evmToAddress(ownerAddr, 42, 'blake2'));
+
+        return ask;
       }
     } catch (e) {
       console.log('getTokenAsk error', e);
@@ -487,40 +435,44 @@ export function useNftContract (account: string): useNftContractInterface {
     return null;
   }, [contractInstance]);
 
-  const getDepositor = useCallback(async (collectionId: string, tokenId: string) => {
-    await getTokenAsk(collectionId, tokenId);
-  }, [getTokenAsk]);
+  const initCollectionAbi = useCallback((collectionId) => {
+    if (web3Instance) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      const evmCollection = new web3Instance.eth.Contract(nonFungibleAbi as any, collectionIdToAddress(parseInt(collectionId, 10)), { from: matcherOwnerAddress });
+
+      setEvmCollectionInstance(evmCollection);
+    }
+  }, [web3Instance]);
 
   const initAbi = useCallback(() => {
     if (account) {
       const ethAddress = subToEth(account);
 
       console.log('account', account, 'ethAddress', ethAddress);
+      console.log('mySubEthAddress', evmToAddress(ethAddress, 42, 'blake2'));
 
-      console.log('mySubEthAddress', evmToAddress('0xCFB8D32364F173051C2CC43eB165701e9E6737DF', 42, 'blake2'));
+      const provider = new Web3.providers.HttpProvider(uniqueSubstrateApiRpc);
+      // const web3 = new Web3(window.ethereum);
+      const web3 = new Web3(provider);
 
-      const provider = new Web3.providers.HttpProvider('https://rpc-opal.unique.network');
+      try {
+        // await window.ethereum.enable();
 
-      const web3: Web3 = new Web3(provider);
+        setWeb3Instance(web3);
 
-      setWeb3Instance(web3);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        const newContractInstance: Contract = new web3.eth.Contract((marketplaceAbi as { abi: any }).abi, contractAddress, {
+          from: ethAddress
+        });
 
-      /* const evmSubBalanse = await api.derive.balances?.all(evmToAddress(subToEth(account), 42, 'blake2'));
+        setContractInstance(newContractInstance);
 
-      console.log('evmSubBalanse', evmSubBalanse.availableBalance.toString());
+        console.log('newContractInstance', newContractInstance);
 
-      const addressBalance: string = await web3.eth.getBalance(ethAddress);
-
-      console.log('addressBalance', addressBalance); */
-
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      const newContractInstance: Contract = new web3.eth.Contract((marketplaceAbi as { abi: any }).abi, contractAddress, {
-        from: ethAddress
-      });
-
-      setContractInstance(newContractInstance);
-
-      console.log('newContractInstance', newContractInstance);
+        // await newContractInstance.methods.depositKSM(2000n, ethAddress).send({ from: matcherOwnerAddress });
+      } catch (e) {
+        // User has denied account access to DApp...
+      }
     }
   }, [account]);
 
@@ -554,18 +506,20 @@ export function useNftContract (account: string): useNftContractInterface {
   return {
     addAsk,
     approveTokenToContract,
+    balanceTransfer,
     buyToken,
     cancelAsk,
     contractInstance,
     decimals,
     deposited,
     depositor,
-    getDepositor,
+    getApproved,
     getTokenAsk,
     getUserDeposit,
+    initCollectionAbi,
     isContractReady,
-    sellToken,
     tokenAsk,
+    transferToken,
     withdrawKSM
   };
 }

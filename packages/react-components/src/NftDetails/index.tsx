@@ -17,6 +17,7 @@ import { TransferModal } from '@polkadot/react-components';
 import formatPrice from '@polkadot/react-components/util/formatPrice';
 import { useBalance, useDecoder, useMarketplaceStages, useSchema } from '@polkadot/react-hooks';
 import { subToEth } from '@polkadot/react-hooks/utils';
+// import { evmToAddress } from '@polkadot/util-crypto';
 
 import BuySteps from './BuySteps';
 import SaleSteps from './SaleSteps';
@@ -33,15 +34,15 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
   const tokenId = query.get('tokenId') || '';
   const collectionId = query.get('collectionId') || '';
   const [showTransferForm, setShowTransferForm] = useState<boolean>(false);
+  const [ethAccount, setEthAccount] = useState<string>();
   const [lowKsmBalanceToBuy, setLowKsmBalanceToBuy] = useState<boolean>(false);
   const [kusamaFees, setKusamaFees] = useState<BN | null>(null);
   const { balance } = useBalance(account);
   const { hex2a } = useDecoder();
   const { attributes, collectionInfo, tokenUrl } = useSchema(account, collectionId, tokenId);
   const [tokenPriceForSale, setTokenPriceForSale] = useState<string>('');
-  const { cancelStep, deposited, escrowAddress, formatKsmBalance, getFee, getKusamaTransferFee, kusamaAvailableBalance, readyToAskPrice, sendCurrentUserAction, setPrice, setReadyToAskPrice, tokenAsk, tokenDepositor, tokenInfo, transferStep } = useMarketplaceStages(account, collectionInfo, tokenId);
+  const { cancelStep, deposited, escrowAddress, formatKsmBalance, getFee, getKusamaTransferFee, kusamaAvailableBalance, readyToAskPrice, sendCurrentUserAction, setPrice, setReadyToAskPrice, tokenAsk, tokenDepositor, tokenInfo, transferStep } = useMarketplaceStages(account, ethAccount, collectionInfo, tokenId);
 
-  const ethAccount = account ? subToEth(account).toLowerCase() : null;
   const uSellIt = tokenAsk && tokenAsk.ownerAddr.toLowerCase() === ethAccount && tokenAsk.flagActive === '1';
   const uOwnIt = tokenInfo?.owner?.Substrate === account || tokenInfo?.owner?.Ethereum?.toLowerCase() === ethAccount || uSellIt;
 
@@ -51,6 +52,8 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
   console.log('collectionInfo', collectionInfo, 'tokenAsk', tokenAsk, 'tokenPrice', tokenPrice, 'tokenInfo', tokenInfo, 'ethAccount', ethAccount);
 
   console.log('tokenAsk.owner === ethAccount', tokenAsk?.ownerAddr.toLowerCase() === ethAccount);
+
+  // console.log('SUB', evmToAddress('0xCFB8D32364F173051C2CC43eB165701e9E6737DF', 42, 'blake2'));
 
   const goBack = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
@@ -63,7 +66,7 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
     const priceRight = new BN(parseFloat(`0.${parts[1]}`) * Math.pow(10, kusamaDecimals));
     const price = priceLeft.add(priceRight);
 
-    setPrice(price.toNumber());
+    setPrice(price);
   }, [setPrice, tokenPriceForSale]);
 
   const onTransferSuccess = useCallback(() => {
@@ -121,6 +124,12 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
   useEffect(() => {
     void ksmFeesCheck();
   }, [ksmFeesCheck]);
+
+  useEffect(() => {
+    if (account) {
+      setEthAccount(subToEth(account).toLowerCase());
+    }
+  }, [account]);
 
   return (
     <div className='toke-details'>

@@ -58,6 +58,7 @@
     "test:skipped": "echo 'tests skipped'"
   },
   "dependencies": {
+    "@metamask/detect-provider": "^1.2.0",
     "@polkadot/api-contract": "^6.10.4-4",
     "@types/lodash": "^4.14.168",
     "@types/lodash.memoize": "^4.1.6",
@@ -74,7 +75,7 @@
     "style-loader": "^3.3.1",
     "thread-loader": "^3.0.1",
     "web3": "^1.6.1",
-    "xstate": "^4.15.0"
+    "xstate": "^4.26.1"
   },
   "devDependencies": {
     "@babel/core": "^7.16.0",
