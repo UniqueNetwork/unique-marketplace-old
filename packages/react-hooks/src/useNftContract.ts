@@ -98,6 +98,8 @@ export interface useNftContractInterface {
   depositor: string | undefined;
   getApproved: (tokenId: string) => Promise<boolean>;
   getTokenAsk: (collectionId: string, tokenId: string) => Promise<TokenAskType | null>;
+  getTokenOrder: (order: number) => void;
+  getTokenOrders: () => void;
   getUserDeposit: () => Promise<BN | null>;
   initCollectionAbi: (collectionId: string) => void;
   isContractReady: boolean;
@@ -283,9 +285,9 @@ export function useNftContract (account: string | undefined): useNftContractInte
       accountId: account && account.toString(),
       extrinsic,
       isUnsigned: false,
-      txFailedCb: () => errorCallBack,
+      txFailedCb: () => errorCallBack(),
       txStartCb: () => { console.log('transferToken start'); },
-      txSuccessCb: () => successCallBack,
+      txSuccessCb: () => successCallBack(),
       txUpdateCb: () => { console.log('transferToken update'); }
     });
   }, [account, api, queueExtrinsic]);
@@ -397,14 +399,12 @@ export function useNftContract (account: string | undefined): useNftContractInte
       try {
         const ordersLength: number = await (contractInstance.methods as MarketplaceAbiMethods).getOrdersLen().call();
 
-        await getTokenOrder(3);
-
         console.log('getTokenOrders ordersLength', ordersLength);
       } catch (e) {
         console.log('getTokenOrders error', e);
       }
     }
-  }, [contractInstance, getTokenOrder]);
+  }, [contractInstance]);
 
   const getTokenAsk = useCallback(async (collectionId: string, tokenId: string): Promise<TokenAskType | null> => {
     try {
@@ -435,7 +435,7 @@ export function useNftContract (account: string | undefined): useNftContractInte
     return null;
   }, [contractInstance]);
 
-  const initCollectionAbi = useCallback((collectionId) => {
+  const initCollectionAbi = useCallback(async (collectionId) => {
     if (web3Instance) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       const evmCollection = new web3Instance.eth.Contract(nonFungibleAbi as any, collectionIdToAddress(parseInt(collectionId, 10)), { from: matcherOwnerAddress });
@@ -499,10 +499,6 @@ export function useNftContract (account: string | undefined): useNftContractInte
     void getUserDeposit();
   }, [getUserDeposit]);
 
-  useEffect(() => {
-    void getTokenOrders();
-  }, [getTokenOrders]);
-
   return {
     addAsk,
     approveTokenToContract,
@@ -515,6 +511,8 @@ export function useNftContract (account: string | undefined): useNftContractInte
     depositor,
     getApproved,
     getTokenAsk,
+    getTokenOrder,
+    getTokenOrders,
     getUserDeposit,
     initCollectionAbi,
     isContractReady,

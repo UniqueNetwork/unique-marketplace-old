@@ -68,16 +68,8 @@ export function useToken (): UseTokenInterface {
       let tokenDetailsData: TokenDetailsInterface = {};
 
       const variableData = (await api.rpc.unique.variableMetadata(collectionId, tokenId)).toJSON() as string;
-
-      console.log('variableData', variableData);
-
-      const constData = (await api.rpc.unique.constMetadata(collectionId, tokenId)).toJSON();
-
-      console.log('constData', constData);
-
+      const constData: string = (await api.rpc.unique.constMetadata(collectionId, tokenId)).toJSON() as string;
       const crossAccount = normalizeAccountId((await api.rpc.unique.tokenOwner(collectionId, tokenId)).toJSON() as string) as { Substrate: string };
-
-      console.log('crossAccount', crossAccount);
 
       tokenDetailsData = {
         constData,

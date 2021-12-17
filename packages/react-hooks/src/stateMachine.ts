@@ -27,7 +27,8 @@ const marketplaceStateMachine = createMachine<Context>({
     buy: {
       on: {
         DEPOSIT_ENOUGH: 'checkDepositReady',
-        DEPOSIT_NOT_ENOUGH: 'sendKsmToContract'
+        SIGN_SUCCESS: 'checkDepositReady',
+        SIGN_TRANSACTION_FAIL: 'loadingTokenInfo'
       }
     },
     buyToken: {
@@ -86,12 +87,6 @@ const marketplaceStateMachine = createMachine<Context>({
         IS_ON_SUB_ADDRESS: 'transferToEth'
       }
     },
-    sendKsmToContract: {
-      on: {
-        SIGN_FAIL: 'loadingTokenInfo',
-        SIGN_SUCCESS: 'checkDepositReady'
-      }
-    },
     transferToEth: {
       on: {
         SIGN_SUCCESS: 'approveToken',
@@ -106,8 +101,8 @@ const marketplaceStateMachine = createMachine<Context>({
     },
     waitForTokenRevert: {
       on: {
-        IS_ON_ETH_ADDR: 'transferToSub',
-        IS_ON_SUB_ADDR: 'loadingTokenInfo'
+        IS_ON_ETH_ADDRESS: 'transferToSub',
+        IS_ON_SUB_ADDRESS: 'loadingTokenInfo'
       }
     }
   }

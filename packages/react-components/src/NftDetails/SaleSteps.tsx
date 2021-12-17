@@ -25,14 +25,14 @@ const SaleSteps: React.FC<StepsProps> = ({ step }) => {
           completed={step > 1}
           inactive={step < 1}
           numb={1}
-          text={'Send NFT to Escrow'}
+          text={'Send NFT to own ethAddress'}
         />
         <Step
           active={step === 2}
           completed={step > 2}
           inactive={step < 2}
           numb={2}
-          text={'Wait for Deposit Registry'}
+          text={'Approve NFT for sell'}
         />
         <Step
           active={step === 3}

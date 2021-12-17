@@ -13,6 +13,7 @@ import envConfig from '@polkadot/apps-config/envConfig';
 import { useKusamaApi, useNftContract, useToken } from '@polkadot/react-hooks';
 
 import marketplaceStateMachine from './stateMachine';
+import { normalizeAccountId } from './utils';
 
 const { commission, escrowAddress, kusamaDecimals } = envConfig;
 
@@ -49,7 +50,7 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
   const [tokenDepositor, setTokenDepositor] = useState<string>();
   const [tokenInfo, setTokenInfo] = useState<TokenDetailsInterface>();
   const { getTokenInfo } = useToken();
-  const { addAsk, approveTokenToContract, buyToken, cancelAsk, deposited, depositor, getApproved, getTokenAsk, getUserDeposit, initCollectionAbi, isContractReady, tokenAsk, withdrawKSM } = useNftContract(account);
+  const { addAsk, approveTokenToContract, buyToken, cancelAsk, deposited, depositor, getApproved, getTokenAsk, getUserDeposit, initCollectionAbi, isContractReady, transferToken, tokenAsk, withdrawKSM } = useNftContract(account);
   const [error, setError] = useState<string | null>(null);
   const [readyToAskPrice, setReadyToAskPrice] = useState<boolean>(false);
   const [tokenPriceForSale, setTokenPriceForSale] = useState<BN>();
@@ -120,16 +121,30 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
     }
   }, [account, collectionInfo, ethAccount, getTokenInfo, send, tokenId]);
 
+  const transferToEth = useCallback(() => {
+    if (collectionInfo && ethAccount) {
+      transferToken(collectionInfo.id, tokenId, normalizeAccountId({ Ethereum: ethAccount }), () => send('SIGN_SUCCESS'), () => send('SIGN_TRANSACTION_FAIL'));
+    }
+  }, [collectionInfo, ethAccount, send, transferToken, tokenId]);
+
+  const transferToSub = useCallback(() => {
+    if (collectionInfo && account) {
+      transferToken(collectionInfo.id, tokenId, normalizeAccountId({ Substrate: account }), () => send('SIGN_SUCCESS'), () => send('SIGN_TRANSACTION_FAIL'));
+    }
+  }, [account, collectionInfo, send, transferToken, tokenId]);
+
   const approveToken = useCallback(async () => {
     if (collectionInfo) {
       const approved = await getApproved(tokenId);
+
+      console.log('approved', approved);
 
       if (approved) {
         send('ALREADY_APPROVED');
       } else {
         approveTokenToContract(tokenId,
-          () => send('SIGN_TRANSACTION_SUCCESS'),
-          () => send('SIGN_TRANSACTION_FAIL'));
+          () => send('SIGN_TRANSACTION_FAIL'),
+          () => send('SIGN_TRANSACTION_SUCCESS'));
       }
     }
   }, [approveTokenToContract, collectionInfo, getApproved, send, tokenId]);
@@ -158,13 +173,13 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
 
       setTokenInfo(info);
 
-      if (info?.owner?.Substrate === account || info?.owner?.Ethereum === ethAccount) {
-        send('TOKEN_REVERT_SUCCESS');
+      if (info?.owner?.Substrate === account) {
+        send('IS_ON_SUB_ADDRESS');
       } else {
         if (info?.owner?.Ethereum?.toLowerCase() === ethAccount) {
           // revert to substratAccount
           console.log('ETH ACCOUNT');
-          send('TOKEN_REVERT_SUCCESS');
+          send('IS_ON_ETH_ADDRESS');
         } else {
           setTimeout(() => {
             void waitForTokenRevert();
@@ -173,6 +188,8 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
       }
     }
   }, [account, ethAccount, collectionInfo, getTokenInfo, send, tokenId]);
+
+
 
   const depositNeeded = useCallback((userDeposit: BN, tokenPrice: BN): BN => {
     const feeFull = getFee(tokenPrice);
@@ -189,30 +206,24 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
   const buy = useCallback(async () => {
     const userDeposit = await getUserDeposit();
 
-    if (!tokenAsk || !userDeposit) {
-      console.error('tokenAsk is undefined');
+    if (tokenAsk && userDeposit) {
+      console.log('userDeposit', userDeposit.toString(), 'tokenAsk.price', tokenAsk.price.toString(), 'isDepositEnough', isDepositEnough(userDeposit, tokenAsk.price));
 
-      send('WAIT_FOR_DEPOSIT');
+      if (!isDepositEnough(userDeposit, tokenAsk.price)) {
+        const needed = depositNeeded(userDeposit, tokenAsk.price);
 
-      return;
-    }
+        if (kusamaAvailableBalance?.lt(needed)) {
+          const err = `Your KSM balance is too low: ${formatKsmBalance(kusamaAvailableBalance)} KSM. You need at least: ${formatKsmBalance(needed)} KSM`;
 
-    console.log('userDeposit', userDeposit.toString(), 'tokenAsk.price', tokenAsk.price.toString(), 'isDepositEnough', isDepositEnough(userDeposit, tokenAsk.price));
+          setError(err);
 
-    if (!isDepositEnough(userDeposit, tokenAsk.price)) {
-      const needed = depositNeeded(userDeposit, tokenAsk.price);
+          return;
+        }
 
-      if (kusamaAvailableBalance?.lt(needed)) {
-        const err = `Your KSM balance is too low: ${formatKsmBalance(kusamaAvailableBalance)} KSM. You need at least: ${formatKsmBalance(needed)} KSM`;
-
-        setError(err);
-
-        return;
+        kusamaTransfer(escrowAddress, needed, send, send);
+      } else {
+        send('DEPOSIT_ENOUGH');
       }
-
-      kusamaTransfer(escrowAddress, needed, send, send);
-    } else {
-      send('WAIT_FOR_DEPOSIT');
     }
   }, [getUserDeposit, tokenAsk, isDepositEnough, send, depositNeeded, kusamaAvailableBalance, kusamaTransfer, formatKsmBalance]);
 
@@ -247,10 +258,10 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
       // check if we have ask
       const ask = await getTokenAsk(collectionInfo.id, tokenId);
 
-      if (ask?.ownerAddr === ethAccount) {
-        send('ASK_NOT_REGISTERED');
-      } else {
+      if (ask?.ownerAddr === ethAccount && ask?.flagActive === '1') {
         send('ASK_REGISTERED');
+      } else {
+        send('ASK_NOT_REGISTERED');
       }
     }
   }, [ethAccount, collectionInfo, getTokenAsk, send, tokenId]);
@@ -272,17 +283,6 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
     if (collectionInfo) {
       cancelAsk(collectionInfo.id, tokenId, () => send('CANCEL_SELL_FAIL'), () => send('CANCEL_SELL_SUCCESS'));
     }
-    /* if (contractInstance && collectionInfo) {
-      const extrinsic = contractInstance.tx.cancel({ gasLimit: maxGas, value: 0 }, collectionInfo.id, tokenId);
-
-      queueTransaction(
-        extrinsic,
-        'CANCEL_SELL_FAIL',
-        'cancelSell start',
-        'CANCEL_SELL_SUCCESS',
-        'cancelSell update'
-      );
-    } */
   }, [cancelAsk, collectionInfo, send, tokenId]);
 
   const setPrice = useCallback((price: BN) => {
@@ -294,12 +294,13 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
   const transferStep = useMemo((): number => {
     switch (state.value) {
       case 'sell':
-      case 'waitForSignTransfer':
+      case 'transferToEth':
         return 1;
-      case 'waitForNftDeposit':
+      case 'approveToken':
         return 2;
-      case 'askPrice':
-      case 'registerSale':
+      case 'checkAsk':
+      case 'addAsk':
+      case 'openAskModal':
         return 3;
       case 'buy':
         return 4;
@@ -315,7 +316,7 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
   }, [state.value]);
 
   const cancelStep = useMemo((): boolean => {
-    return state.matches('cancelSell') || state.matches('waitForTokenRevert');
+    return state.matches('cancelSell') || state.matches('waitForTokenRevert') || state.matches('transferToSub');
   }, [state]);
 
   const updateTokenInfo = useCallback(async () => {
@@ -343,6 +344,9 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
       case state.matches('sell'):
         void sell();
         break;
+      case state.matches('transferToEth'):
+        void transferToEth();
+        break;
       case state.matches('approveToken'):
         void approveToken();
         break;
@@ -362,13 +366,15 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
         void cancelSell();
         break;
       case state.matches('waitForTokenRevert'):
-      case state.matches('waitForTokenOwn'):
         void waitForTokenRevert();
+        break;
+      case state.matches('transferToSub'):
+        void transferToSub();
         break;
       default:
         break;
     }
-  }, [addTokenAsk, approveToken, checkAsk, openAskModal, state.value, state, cancelSell, revertMoney, waitForTokenRevert, sentTokenToAccount, sell, loadingTokenInfo]);
+  }, [addTokenAsk, approveToken, checkAsk, openAskModal, state.value, state, cancelSell, revertMoney, waitForTokenRevert, sentTokenToAccount, sell, loadingTokenInfo, transferToEth]);
 
   useEffect(() => {
     switch (true) {
