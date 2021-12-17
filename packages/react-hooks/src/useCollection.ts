@@ -10,7 +10,7 @@ import { ProtobufAttributeType } from '@polkadot/react-components/util/protobufU
 import { useApi } from '@polkadot/react-hooks/useApi';
 import { useDecoder } from '@polkadot/react-hooks/useDecoder';
 
-export type SchemaVersionTypes = 'ImageURL' | 'Unique' | 'Hash';
+export type SchemaVersionTypes = 'ImageURL' | 'Unique';
 // hash schema - offchain.unique.network/images/{collectionId}/token/{tokenId}
 // image hash - where to store?
 // ConstData or VariableData of token? For validation.

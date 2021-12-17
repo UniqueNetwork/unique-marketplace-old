@@ -43,7 +43,7 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
   const [tokenPriceForSale, setTokenPriceForSale] = useState<string>('');
   const { cancelStep, deposited, escrowAddress, formatKsmBalance, getFee, getKusamaTransferFee, kusamaAvailableBalance, readyToAskPrice, sendCurrentUserAction, setPrice, setReadyToAskPrice, tokenAsk, tokenDepositor, tokenInfo, transferStep } = useMarketplaceStages(account, ethAccount, collectionInfo, tokenId);
 
-  const uSellIt = tokenAsk && tokenAsk.ownerAddr.toLowerCase() === ethAccount && tokenAsk.flagActive === '1';
+  const uSellIt = tokenAsk && tokenAsk?.ownerAddr.toLowerCase() === ethAccount && tokenAsk.flagActive === '1';
   const uOwnIt = tokenInfo?.owner?.Substrate === account || tokenInfo?.owner?.Ethereum?.toLowerCase() === ethAccount || uSellIt;
 
   const tokenPrice = tokenAsk?.price && tokenAsk?.price.gtn(0) ? tokenAsk.price : 0;
