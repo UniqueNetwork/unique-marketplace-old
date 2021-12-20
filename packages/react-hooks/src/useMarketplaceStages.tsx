@@ -42,7 +42,6 @@ export interface MarketplaceStagesInterface {
   readyToAskPrice: boolean;
   withdrawAmount: string;
 }
-// getApproved(uint256 tokenId) == youAddress
 
 export const useMarketplaceStages = (account: string | undefined, ethAccount: string | undefined, collectionInfo: NftCollectionInterface | undefined, tokenId: string): MarketplaceStagesInterface => {
   const [state, send] = useMachine(marketplaceStateMachine);
@@ -50,7 +49,7 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
   const [tokenDepositor, setTokenDepositor] = useState<string>();
   const [tokenInfo, setTokenInfo] = useState<TokenDetailsInterface>();
   const { getTokenInfo } = useToken();
-  const { addAsk, approveTokenToContract, buyToken, cancelAsk, deposited, depositor, getApproved, getTokenAsk, getUserDeposit, initCollectionAbi, isContractReady, transferToken, tokenAsk, withdrawKSM } = useNftContract(account);
+  const { addAsk, approveTokenToContract, buyToken, cancelAsk, deposited, depositor, getApproved, getTokenAsk, getUserDeposit, initCollectionAbi, isContractReady, tokenAsk, transferToken, withdrawKSM } = useNftContract(account, ethAccount);
   const [error, setError] = useState<string | null>(null);
   const [readyToAskPrice, setReadyToAskPrice] = useState<boolean>(false);
   const [tokenPriceForSale, setTokenPriceForSale] = useState<BN>();
@@ -188,8 +187,6 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
       }
     }
   }, [account, ethAccount, collectionInfo, getTokenInfo, send, tokenId]);
-
-
 
   const depositNeeded = useCallback((userDeposit: BN, tokenPrice: BN): BN => {
     const feeFull = getFee(tokenPrice);

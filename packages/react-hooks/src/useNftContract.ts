@@ -135,7 +135,7 @@ to sell:
  */
 
 // https://docs.google.com/document/d/1WED9VP8Yj52Un4qmkGDpzjesQTzwwoDgYMk1Ty8yftQ/edit
-export function useNftContract (account: string | undefined): useNftContractInterface {
+export function useNftContract (account: string | undefined, ethAccount: string | undefined): useNftContractInterface {
   const { api } = useApi();
   const [decimals, setDecimals] = useState(new BN(15));
   const [web3Instance, setWeb3Instance] = useState<Web3>();
@@ -245,11 +245,10 @@ export function useNftContract (account: string | undefined): useNftContractInte
   }, [account, api, contractInstance, evmCollectionInstance, queueExtrinsic, web3Instance]);
 
   const buyToken = useCallback(async (collectionId: string, tokenId: string, failCallBack: () => void, successCallBack: () => void) => {
-    if (account && web3Instance && evmCollectionInstance && contractInstance) {
+    if (account && ethAccount && web3Instance && evmCollectionInstance && contractInstance) {
       try {
-        console.log('buyToken from', account, 'ehtAcc', subToEth(account), 'evmCollectionInstance.options.address', evmCollectionInstance.options.address, 'tokenId', tokenId);
+        console.log('ehtAcc', ethAccount, 'evmCollectionInstance.options.address', evmCollectionInstance.options.address, 'tokenId', tokenId);
 
-        const ethAccount = subToEth(account);
         const extrinsic = api.tx.evm.call(
           ethAccount,
           contractAddress,
@@ -275,7 +274,7 @@ export function useNftContract (account: string | undefined): useNftContractInte
         console.log('approveTokenToContract Error', e);
       }
     }
-  }, [account, api, contractInstance, evmCollectionInstance, queueExtrinsic, web3Instance]);
+  }, [account, ethAccount, api, contractInstance, evmCollectionInstance, queueExtrinsic, web3Instance]);
 
   const transferToken = useCallback((collectionId: string, tokenId: string, address: { Ethereum?: string, Substrate?: string }, successCallBack: () => void, errorCallBack: () => void) => {
     // To transfer item to matcher it first needs to be transferred to Eth account-mirror
@@ -356,9 +355,8 @@ export function useNftContract (account: string | undefined): useNftContractInte
 
   const getUserDeposit = useCallback(async (): Promise<BN | null> => {
     try {
-      if (account && contractInstance) {
-        const ethAddress = subToEth(account);
-        const result = await (contractInstance.methods as MarketplaceAbiMethods).balanceKSM(ethAddress).call();
+      if (ethAccount && contractInstance) {
+        const result = await (contractInstance.methods as MarketplaceAbiMethods).balanceKSM(ethAccount).call();
 
         console.log('userDeposit', result);
 
@@ -379,7 +377,7 @@ export function useNftContract (account: string | undefined): useNftContractInte
 
       return null;
     }
-  }, [account, contractInstance]);
+  }, [ethAccount, contractInstance]);
 
   const getTokenOrder = useCallback(async (orderNumber: number) => {
     if (contractInstance) {
@@ -435,7 +433,7 @@ export function useNftContract (account: string | undefined): useNftContractInte
     return null;
   }, [contractInstance]);
 
-  const initCollectionAbi = useCallback(async (collectionId) => {
+  const initCollectionAbi = useCallback((collectionId) => {
     if (web3Instance) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       const evmCollection = new web3Instance.eth.Contract(nonFungibleAbi as any, collectionIdToAddress(parseInt(collectionId, 10)), { from: matcherOwnerAddress });
@@ -445,11 +443,8 @@ export function useNftContract (account: string | undefined): useNftContractInte
   }, [web3Instance]);
 
   const initAbi = useCallback(() => {
-    if (account) {
-      const ethAddress = subToEth(account);
-
-      console.log('account', account, 'ethAddress', ethAddress);
-      console.log('mySubEthAddress', evmToAddress(ethAddress, 42, 'blake2'));
+    if (account && ethAccount) {
+      console.log('mySubEthAddress', evmToAddress(ethAccount, 42, 'blake2'));
 
       const provider = new Web3.providers.HttpProvider(uniqueSubstrateApiRpc);
       // const web3 = new Web3(window.ethereum);
@@ -462,19 +457,17 @@ export function useNftContract (account: string | undefined): useNftContractInte
 
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         const newContractInstance: Contract = new web3.eth.Contract((marketplaceAbi as { abi: any }).abi, contractAddress, {
-          from: ethAddress
+          from: ethAccount
         });
 
         setContractInstance(newContractInstance);
 
         console.log('newContractInstance', newContractInstance);
-
-        // await newContractInstance.methods.depositKSM(2000n, ethAddress).send({ from: matcherOwnerAddress });
       } catch (e) {
         // User has denied account access to DApp...
       }
     }
-  }, [account]);
+  }, [account, ethAccount]);
 
   const isContractReady = useMemo(() => {
     return !!(contractInstance);
@@ -486,6 +479,19 @@ export function useNftContract (account: string | undefined): useNftContractInte
 
     setDecimals(tokenDecimals[0]);
   }, [api]);
+
+  /* const registerDeposit = useCallback(async () => {
+    if (ethAccount && contractInstance && tokenAsk && web3Instance) {
+      console.log('tokenAsk.price.toNumber()', tokenAsk.price.toNumber());
+      // const gasPrice = await web3Instance.eth.getGasPrice();
+
+      // await contractInstance.methods.depositKSM('10000000000000000000', ethAccount).send({ from: matcherOwnerAddress });
+    }
+  }, [ethAccount, contractInstance, tokenAsk, web3Instance]); */
+
+  /* useEffect(() => {
+    void registerDeposit();
+  }, [registerDeposit]); */
 
   useEffect(() => {
     void initAbi();

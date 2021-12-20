@@ -32,7 +32,7 @@
     COMMISSION: defaults('${COMMISSION}', 10),
     CONTRACT_ADDRESS: defaults('${CONTRACT_ADDRESS}', '0x6656d857a8FA7F447E51f8dF83234dAcd1C74527'),
     DECIMALS: defaults('${DECIMALS}', 6),
-    ESCROW_ADDRESS: defaults('${ESCROW_ADDRESS}', '5DACuDR8CXXmQS3tpGyrHZXoJ6ds7bjdRb4wVqqSt2CMfAoG'),
+    ESCROW_ADDRESS: defaults('${ESCROW_ADDRESS}', '5DHbtZXFG9ZcvLqRECkYfzC3jSJktq1YB2KQrxQHdNV53pM7'),
     FAVICON_PATH: defaults('${FAVICON_PATH}', 'favicons/marketplace'),
     IPFS_GATEWAY: defaults('${IPFS_GATEWAY}', 'https://dev-ipfs.unique.network/ipfs'),
     KUSAMA_API: defaults('${KUSAMA_API}', 'wss://ws-relay-opal.unique.network'),

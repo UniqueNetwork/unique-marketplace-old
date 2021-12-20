@@ -6,7 +6,6 @@ import './styles.scss';
 import BN from 'bn.js';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-// import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import Image from 'semantic-ui-react/dist/commonjs/elements/Image';
@@ -17,7 +16,6 @@ import { TransferModal } from '@polkadot/react-components';
 import formatPrice from '@polkadot/react-components/util/formatPrice';
 import { useBalance, useDecoder, useMarketplaceStages, useSchema } from '@polkadot/react-hooks';
 import { subToEth } from '@polkadot/react-hooks/utils';
-// import { evmToAddress } from '@polkadot/util-crypto';
 
 import BuySteps from './BuySteps';
 import SaleSteps from './SaleSteps';
@@ -46,7 +44,7 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
   const uSellIt = tokenAsk && tokenAsk?.ownerAddr.toLowerCase() === ethAccount && tokenAsk.flagActive === '1';
   const uOwnIt = tokenInfo?.owner?.Substrate === account || tokenInfo?.owner?.Ethereum?.toLowerCase() === ethAccount || uSellIt;
 
-  const tokenPrice = tokenAsk?.price && tokenAsk?.price.gtn(0) ? tokenAsk.price : 0;
+  const tokenPrice = (tokenAsk?.flagActive === '1' && tokenAsk?.price && tokenAsk?.price.gtn(0)) ? tokenAsk.price : 0;
   const isOwnerEscrow = !!(!uOwnIt && tokenInfo && tokenInfo.owner && tokenInfo.owner.toString() === escrowAddress && tokenDepositor && (tokenAsk && (tokenAsk.ownerAddr.toLowerCase() !== ethAccount || tokenAsk.flagActive !== '1')));
 
   console.log('collectionInfo', collectionInfo, 'tokenAsk', tokenAsk, 'tokenPrice', tokenPrice, 'tokenInfo', tokenInfo, 'ethAccount', ethAccount);
