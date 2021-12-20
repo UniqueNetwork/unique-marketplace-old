@@ -238,9 +238,7 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
 
   const sentTokenToAccount = useCallback(() => {
     if (collectionInfo) {
-      console.log('buyToken');
-
-      buyToken(collectionInfo.id, tokenId, () => send('SEND_TOKEN_FAIL'), () => send('SEND_TOKEN_SUCCESS'));
+      buyToken(collectionInfo.id, tokenId, () => send('SIGN_FAIL'), () => send('SIGN_SUCCESS'));
     }
   }, [buyToken, collectionInfo, tokenId, send]);
 
@@ -303,9 +301,7 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
         return 4;
       case 'checkDepositReady':
         return 5;
-      case 'sentTokenToNewOwner':
-      case 'waitForSignTokenBuy':
-      case 'waitForTokenOwn':
+      case 'buyToken':
         return 6;
       default:
         return 0;
@@ -371,13 +367,16 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
       default:
         break;
     }
-  }, [addTokenAsk, approveToken, checkAsk, openAskModal, state.value, state, cancelSell, revertMoney, waitForTokenRevert, sentTokenToAccount, sell, loadingTokenInfo, transferToEth]);
+  }, [addTokenAsk, approveToken, checkAsk, openAskModal, state.value, state, cancelSell, revertMoney, waitForTokenRevert, sentTokenToAccount, sell, loadingTokenInfo, transferToEth, transferToSub]);
 
   useEffect(() => {
     switch (true) {
       // on load - update token state
       case state.matches('buy'):
         void buy(); // occurs unexpected change of ref (in deps)
+        break;
+      case state.matches('buyToken'):
+        void sentTokenToAccount();
         break;
       case state.matches('waitForNftDeposit'):
         void waitForNftDeposit(); // occurs unexpected change of ref (in deps)
@@ -388,7 +387,7 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
       default:
         break;
     }
-  }, [state.value, state, buy, waitForNftDeposit, checkDepositReady]);
+  }, [state.value, state, buy, waitForNftDeposit, checkDepositReady, sentTokenToAccount]);
 
   useEffect(() => {
     if (isContractReady) {

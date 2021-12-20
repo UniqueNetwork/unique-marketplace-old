@@ -442,16 +442,16 @@ export function useNftContract (account: string | undefined, ethAccount: string 
     }
   }, [web3Instance]);
 
-  const initAbi = useCallback(() => {
+  const initAbi = useCallback(async () => {
     if (account && ethAccount) {
       console.log('mySubEthAddress', evmToAddress(ethAccount, 42, 'blake2'));
 
       const provider = new Web3.providers.HttpProvider(uniqueSubstrateApiRpc);
-      // const web3 = new Web3(window.ethereum);
-      const web3 = new Web3(provider);
+      const web3 = new Web3(window.ethereum);
+      // const web3 = new Web3(provider);
 
       try {
-        // await window.ethereum.enable();
+        await window.ethereum.enable();
 
         setWeb3Instance(web3);
 
@@ -480,18 +480,18 @@ export function useNftContract (account: string | undefined, ethAccount: string 
     setDecimals(tokenDecimals[0]);
   }, [api]);
 
-  /* const registerDeposit = useCallback(async () => {
+  const registerDeposit = useCallback(async () => {
     if (ethAccount && contractInstance && tokenAsk && web3Instance) {
       console.log('tokenAsk.price.toNumber()', tokenAsk.price.toNumber());
       // const gasPrice = await web3Instance.eth.getGasPrice();
 
       // await contractInstance.methods.depositKSM('10000000000000000000', ethAccount).send({ from: matcherOwnerAddress });
     }
-  }, [ethAccount, contractInstance, tokenAsk, web3Instance]); */
+  }, [ethAccount, contractInstance, tokenAsk, web3Instance]);
 
-  /* useEffect(() => {
+  useEffect(() => {
     void registerDeposit();
-  }, [registerDeposit]); */
+  }, [registerDeposit]);
 
   useEffect(() => {
     void initAbi();
