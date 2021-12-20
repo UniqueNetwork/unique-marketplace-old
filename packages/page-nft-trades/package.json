@@ -1,14 +1,14 @@
 {
-  "name": "@polkadot/app-nft-trades",
-  "private": true,
-  "version": "2.01",
-  "description": "Nft token trades",
-  "main": "index.js",
-  "scripts": {},
   "author": "Konstantin Pozdnikin <kpozdnikin@usetech.com>",
+  "bugs": "https://github.com/UniqueNetwork/unique-marketplace/issues",
+  "description": "Nft token trades",
+  "homepage": "https://github.com/UniqueNetwork/unique-marketplace/tree/master/packages/page-nft-trades#readme",
+  "license": "Apache-2.0",
   "maintainers": [
     "Konstantin Pozdnikin <kpozdnikin@usetech.com>"
   ],
+  "name": "@polkadot/app-nft-trades",
+  "private": true,
   "repository": {
     "directory": "packages/page-nft-trades",
     "type": "git",
@@ -18,7 +18,8 @@
     "*.scss"
   ],
   "type": "module",
-  "license": "Apache-2.0",
+  "version": "2.01",
+  "main": "index.js",
   "dependencies": {
     "@babel/runtime": "^7.13.10",
     "@polkadot/react-components": "^0.83.2-28"

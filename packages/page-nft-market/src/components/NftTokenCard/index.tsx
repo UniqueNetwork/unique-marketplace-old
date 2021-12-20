@@ -57,8 +57,8 @@ const NftTokenCard = ({ account, collectionId, openDetailedInformationModal, tok
         <Card.Content>
           <Card.Description>
             <div className='card-name'>
-              <div className='card-name__title'>{hex2a(collectionInfo.TokenPrefix)} {`#${token.tokenId}`} {tokenName?.value}</div>
-              <div className='card-name__field'>{ collectionName16Decoder(collectionInfo.Name)}</div>
+              <div className='card-name__title'>{hex2a(collectionInfo.tokenPrefix)} {`#${token.tokenId}`} {tokenName?.value}</div>
+              <div className='card-name__field'>{ collectionName16Decoder(collectionInfo.name)}</div>
             </div>
             { token.price && (
               <div className='card-price'>

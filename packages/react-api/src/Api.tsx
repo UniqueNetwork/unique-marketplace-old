@@ -1,7 +1,6 @@
 // Copyright 2017-2021 @polkadot/react-api authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import type BN from 'bn.js';
 import type { InjectedExtension } from '@polkadot/extension-inject/types';
 import type { ChainProperties, ChainType } from '@polkadot/types/interfaces';
 import type { KeyringStore } from '@polkadot/ui-keyring/types';
@@ -10,6 +9,7 @@ import type { ApiProps, ApiState } from './types';
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import store from 'store';
 
+import { WsProvider } from '@polkadot/api';
 import { ApiPromise } from '@polkadot/api/promise';
 import { deriveMapCache, setDeriveCache } from '@polkadot/api-derive/util';
 import { ethereumChains, typesBundle, typesChain } from '@polkadot/apps-config';
@@ -18,11 +18,10 @@ import { web3Accounts, web3Enable } from '@polkadot/extension-dapp';
 import { TokenUnit } from '@polkadot/react-components/InputNumber';
 import { StatusContext } from '@polkadot/react-components/Status';
 import ApiSigner from '@polkadot/react-signer/signers/ApiSigner';
-import { WsProvider } from '@polkadot/rpc-provider';
 import { TypeRegistry } from '@polkadot/types/create';
 import { keyring } from '@polkadot/ui-keyring';
 import { settings } from '@polkadot/ui-settings';
-import { formatBalance, isTestChain } from '@polkadot/util';
+import { formatBalance, isTestChain, objectSpread, stringify } from '@polkadot/util';
 import { defaults as addressDefaults } from '@polkadot/util-crypto/address/defaults';
 
 import ApiContext from './ApiContext';
@@ -90,11 +89,10 @@ async function getInjectedAccounts (injectedPromise: Promise<InjectedExtension[]
 
     return accounts.map(({ address, meta }, whenCreated): InjectedAccountExt => ({
       address,
-      meta: {
-        ...meta,
+      meta: objectSpread({}, meta, {
         name: `${meta.name || 'unknown'} (${meta.source === 'polkadot-js' ? 'extension' : meta.source})`,
         whenCreated
-      }
+      })
     }));
   } catch (error) {
     console.error('web3Accounts', error);
@@ -104,8 +102,7 @@ async function getInjectedAccounts (injectedPromise: Promise<InjectedExtension[]
 }
 
 async function retrieve (api: ApiPromise, injectedPromise: Promise<InjectedExtension[]>): Promise<ChainData> {
-  const [chainProperties, systemChain, systemChainType, systemName, systemVersion, injectedAccounts] = await Promise.all([
-    api.rpc.system.properties(),
+  const [systemChain, systemChainType, systemName, systemVersion, injectedAccounts] = await Promise.all([
     api.rpc.system.chain(),
     api.rpc.system.chainType
       ? api.rpc.system.chainType()
@@ -118,9 +115,9 @@ async function retrieve (api: ApiPromise, injectedPromise: Promise<InjectedExten
   return {
     injectedAccounts,
     properties: registry.createType('ChainProperties', {
-      ss58Format: api.consts.system?.ss58Prefix || chainProperties.ss58Format,
-      tokenDecimals: chainProperties.tokenDecimals,
-      tokenSymbol: chainProperties.tokenSymbol
+      ss58Format: api.registry.chainSS58,
+      tokenDecimals: api.registry.chainDecimals,
+      tokenSymbol: api.registry.chainTokens
     }),
     systemChain: (systemChain || '<unknown>').toString(),
     systemChainType,
@@ -131,6 +128,7 @@ async function retrieve (api: ApiPromise, injectedPromise: Promise<InjectedExten
 
 async function loadOnReady (api: ApiPromise, injectedPromise: Promise<InjectedExtension[]>, store: KeyringStore | undefined, types: Record<string, Record<string, string>>): Promise<ApiState> {
   registry.register(types);
+
   const { injectedAccounts, properties, systemChain, systemChainType, systemName, systemVersion } = await retrieve(api, injectedPromise);
   const ss58Format = settings.prefix === -1
     ? properties.ss58Format.unwrapOr(DEFAULT_SS58).toNumber()
@@ -140,14 +138,14 @@ async function loadOnReady (api: ApiPromise, injectedPromise: Promise<InjectedEx
   const isEthereum = ethereumChains.includes(api.runtimeVersion.specName.toString());
   const isDevelopment = (systemChainType.isDevelopment || systemChainType.isLocal || isTestChain(systemChain));
 
-  console.log(`chain: ${systemChain} (${systemChainType.toString()}), ${JSON.stringify(properties)}`);
+  console.log(`chain: ${systemChain} (${systemChainType.toString()}), ${stringify(properties)}`);
 
   // explicitly override the ss58Format as specified
   registry.setChainProperties(registry.createType('ChainProperties', { ss58Format, tokenDecimals, tokenSymbol }));
 
   // first setup the UI helpers
   formatBalance.setDefaults({
-    decimals: (tokenDecimals as BN[]).map((b) => b.toNumber()),
+    decimals: tokenDecimals.map((b) => b.toNumber()),
     unit: tokenSymbol[0].toString()
   });
   TokenUnit.setAbbr(tokenSymbol[0].toString());
@@ -175,6 +173,9 @@ async function loadOnReady (api: ApiPromise, injectedPromise: Promise<InjectedEx
     isApiReady: true,
     isDevelopment: isEthereum ? false : isDevelopment,
     isEthereum,
+    isKusamaApiReady: false,
+    specName: api.runtimeVersion.specName.toString(),
+    specVersion: api.runtimeVersion.specVersion.toString(),
     systemChain,
     systemName,
     systemVersion
@@ -196,7 +197,7 @@ function Api ({ children, store, url }: Props): React.ReactElement<Props> | null
   const [extensions, setExtensions] = useState<InjectedExtension[] | undefined>();
 
   const value = useMemo<ApiProps>(
-    () => ({ ...state, api, apiError, extensions, isApiConnected, isApiInitialized, isKusamaApiConnected, isKusamaApiInitialized, isWaitingInjected: !extensions, kusamaApi, kusamaApiError }),
+    () => objectSpread({}, state, { api, apiError, extensions, isApiConnected, isApiInitialized, isKusamaApiConnected, isKusamaApiInitialized, isWaitingInjected: !extensions, kusamaApi, kusamaApiError }),
     [apiError, extensions, isApiConnected, isApiInitialized, isKusamaApiConnected, isKusamaApiInitialized, kusamaApiError, state]
   );
 
@@ -212,8 +213,8 @@ function Api ({ children, store, url }: Props): React.ReactElement<Props> | null
     kusamaApi.on('error', (error: Error) => setIsKusamaApiError(error.message));
     kusamaApi.on('ready', (): void => {
       setState((prevState) => ({
-        isKusamaApiReady: true,
-        ...prevState
+        ...prevState,
+        isKusamaApiReady: true
       }));
     });
 
@@ -253,8 +254,7 @@ function Api ({ children, store, url }: Props): React.ReactElement<Props> | null
     });
 
     setIsApiInitialized(true);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [initKusamaApi, queuePayload, queueSetTxStatus, store, url]);
 
   if (!value.isApiInitialized) {
     return null;

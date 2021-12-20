@@ -198,12 +198,14 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: BuyTokensProps): ReactE
                   hasMore={hasMore}
                   initialLoad={false}
                   loadMore={fetchScrolledData}
-                  loader={<Loader
-                    active
-                    className='load-more'
-                    inline='centered'
-                    key={'nft-market'}
-                  />}
+                  loader={(
+                    <Loader
+                      active
+                      className='load-more'
+                      inline='centered'
+                      key={'nft-market'}
+                    />
+                  )}
                   pageStart={1}
                   threshold={200}
                   useWindow={true}

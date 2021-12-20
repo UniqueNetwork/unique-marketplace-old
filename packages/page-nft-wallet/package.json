@@ -10,7 +10,7 @@
   "name": "@polkadot/app-nft-wallet",
   "private": true,
   "repository": {
-    "directory": "packages/page-nft-marketplace",
+    "directory": "packages/page-nft-wallet",
     "type": "git",
     "url": "https://github.com/UniqueNetwork/unique-marketplace.git"
   },

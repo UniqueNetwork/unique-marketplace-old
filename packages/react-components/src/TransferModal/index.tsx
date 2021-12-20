@@ -21,26 +21,25 @@ interface Props {
   account?: string;
   collection: NftCollectionInterface;
   closeModal: () => void;
-  reFungibleBalance: number;
   tokenId: string;
   updateTokens: (collectionId: string) => void;
 }
 
-function TransferModal ({ account, closeModal, collection, reFungibleBalance, tokenId, updateTokens }: Props): React.ReactElement<Props> {
+function TransferModal ({ account, closeModal, collection, tokenId, updateTokens }: Props): React.ReactElement<Props> {
   const { api } = useApi();
   const [recipient, setRecipient] = useState<string>();
   // const { balance } = useBalance(account);
   const { queueExtrinsic } = useContext(StatusContext);
-  const [tokenPart, setTokenPart] = useState<number>(1);
+  const [tokenPart] = useState<number>(1);
   // const [balanceTooLow, setBalanceTooLow] = useState<boolean>(false);
   const [isAddressError, setIsAddressError] = useState<boolean>(true);
-  const [isError, setIsError] = useState<boolean>(false);
-  const decimalPoints = collection?.DecimalPoints instanceof BN ? collection?.DecimalPoints.toNumber() : 1;
+  // const [isError, setIsError] = useState<boolean>(false);
+  const decimalPoints = collection?.decimalPoints instanceof BN ? collection?.decimalPoints.toNumber() : 1;
 
   const transferToken = useCallback(() => {
     queueExtrinsic({
       accountId: account && account.toString(),
-      extrinsic: api.tx.nft.transfer(recipient, collection.id, tokenId, (tokenPart * Math.pow(10, decimalPoints))),
+      extrinsic: api.tx.unique.transfer(recipient, collection.id, tokenId, (tokenPart * Math.pow(10, decimalPoints))),
       isUnsigned: false,
       txStartCb: () => { closeModal(); },
       txSuccessCb: () => { updateTokens(collection.id); }
@@ -58,7 +57,7 @@ function TransferModal ({ account, closeModal, collection, reFungibleBalance, to
     }
   }, [setIsAddressError, setRecipient]);
 
-  const setTokenPartToTransfer = useCallback((value) => {
+  /* const setTokenPartToTransfer = useCallback((value) => {
     const numberValue = parseFloat(value);
 
     if (!numberValue) {
@@ -72,7 +71,7 @@ function TransferModal ({ account, closeModal, collection, reFungibleBalance, to
     }
 
     setTokenPart(parseFloat(value));
-  }, [reFungibleBalance, decimalPoints]);
+  }, [reFungibleBalance, decimalPoints]); */
 
   /* const checkBalanceEnough = useCallback(async () => {
     if (account && recipient) {
@@ -117,7 +116,7 @@ function TransferModal ({ account, closeModal, collection, reFungibleBalance, to
               placeholder='Recipient address'
             />
           </Form.Field>
-          { Object.prototype.hasOwnProperty.call(collection.Mode, 'reFungible') && (
+          {/* { Object.prototype.hasOwnProperty.call(collection.Mode, 'reFungible') && (
             <Form.Field>
               <Label label={`Please enter part of token you want to transfer, your token balance is: ${reFungibleBalance}`} />
               <Input
@@ -130,7 +129,7 @@ function TransferModal ({ account, closeModal, collection, reFungibleBalance, to
                 type='number'
               />
             </Form.Field>
-          )}
+          )} */}
         </Form>
         {/* { balanceTooLow && (
           <div className='warning-block'>Your balance is too low to pay fees. <a href='https://t.me/unique2faucetbot'
