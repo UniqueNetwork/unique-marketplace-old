@@ -3,67 +3,65 @@
 
 import './styles.scss';
 
+import type { Contract } from 'web3-eth-contract';
+
 import BN from 'bn.js';
-import React, { useCallback, useContext, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form/Form';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button';
 import Modal from 'semantic-ui-react/dist/commonjs/modules/Modal/Modal';
 
-import { ContractPromise } from '@polkadot/api-contract';
 import envConfig from '@polkadot/apps-config/envConfig';
-import { Input, StatusContext } from '@polkadot/react-components';
+import { Input } from '@polkadot/react-components';
 import { formatKsmBalance } from '@polkadot/react-hooks/useKusamaApi';
-import { findCallMethodByName } from '@polkadot/react-hooks/utils';
+import { getFee } from '@polkadot/react-hooks/utils';
 
-const { commission, kusamaDecimals, maxGas, quoteId } = envConfig;
+const { kusamaDecimals } = envConfig;
 
 interface Props {
   account?: string;
   closeModal: () => void;
-  contractInstance: ContractPromise | null;
+  contractInstance: Contract | null;
   deposited: BN | undefined;
   updateDeposit: () => Promise<BN | null>;
+  withdrawKSM: (amount: string, failCallBack: () => void, successCallBack: () => void) => void;
 }
 
-function WithdrawModal ({ account, closeModal, contractInstance, deposited, updateDeposit }: Props): React.ReactElement<Props> {
-  const { queueExtrinsic } = useContext(StatusContext);
+function WithdrawModal ({ closeModal, deposited, updateDeposit, withdrawKSM }: Props): React.ReactElement<Props> {
   const [withdrawAmount, setWithdrawAmount] = useState<string>('');
 
   const revertMoney = useCallback(() => {
-    const message = findCallMethodByName(contractInstance, 'withdraw');
-
     // subtract commission from deposit
-    const depositValue = String(+withdrawAmount / (1 + commission / 100));
+    const withdrawAmountBn = new BN(withdrawAmount);
+    const depositValue = withdrawAmountBn.sub(getFee(withdrawAmountBn)); // String(+withdrawAmount / (1 + commission / 100));
 
-    if (message && contractInstance) {
-      const extrinsic = contractInstance.tx.withdraw({
-        gasLimit: maxGas,
-        value: 0
-      }, quoteId, (parseFloat(depositValue) * Math.pow(10, kusamaDecimals)));
+    const amountToWithdraw = parseFloat(depositValue.toString()) * Math.pow(10, kusamaDecimals);
 
-      queueExtrinsic({
-        accountId: account && account.toString(),
-        extrinsic: extrinsic,
-        isUnsigned: false,
-        txFailedCb: () => { console.log('fail withdraw'); },
-        txStartCb: () => { console.log('start withdraw'); },
-        txSuccessCb: () => { void updateDeposit(); closeModal(); },
-        txUpdateCb: () => { console.log('update withdraw'); }
-      });
-    }
-  }, [account, closeModal, contractInstance, queueExtrinsic, updateDeposit, withdrawAmount]);
+    console.log('depositValue', depositValue.toString(), 'amountToWithdraw', amountToWithdraw.toFixed(0));
+    // evm.ExecutedFailed
 
-  const setValue = (val: string) => {
+    withdrawKSM(amountToWithdraw.toFixed(0), () => closeModal(), () => { void updateDeposit(); closeModal(); });
+  }, [closeModal, withdrawAmount, updateDeposit, withdrawKSM]);
+
+  const setValue = useCallback((val: string) => {
     val = val.slice(0, 8);
 
     if (+val > 100000 || +val < 0) return;
     if (val.length === 2 && val[0] === '0' && val[1] !== '.') val = '0';
 
     setWithdrawAmount(val);
-  };
+  }, []);
 
-  const getFee = useCallback((price: BN): BN => {
-    return new BN(price).mul(new BN(commission)).div(new BN(100));
+  const setMax = useCallback(() => {
+    if (deposited) {
+      const depositedFee = getFee(deposited);
+
+      setWithdrawAmount(formatKsmBalance(new BN(deposited).add(depositedFee)));
+    }
+  }, [deposited]);
+
+  const onKeyDown = useCallback((event: React.KeyboardEvent) => {
+    ['e', 'E', '+', '-'].includes(event.key) && event.preventDefault();
   }, []);
 
   return (
@@ -89,14 +87,14 @@ function WithdrawModal ({ account, closeModal, contractInstance, deposited, upda
                   label={'amount'}
                   max={deposited && parseFloat(formatKsmBalance(new BN(deposited).add(getFee(deposited))))}
                   onChange={setValue}
-                  onKeyDown={(evt) => ['e', 'E', '+', '-'].includes(evt.key) && evt.preventDefault()}
+                  onKeyDown={onKeyDown}
                   placeholder='0'
                   type='number'
                   value={withdrawAmount}
                 />
                 <Button
                   content='Max'
-                  onClick={deposited ? setWithdrawAmount.bind(null, formatKsmBalance(new BN(deposited).add(getFee(deposited)))) : () => null}
+                  onClick={setMax}
                 />
               </div>
 

@@ -17,7 +17,7 @@ import { normalizeAccountId } from './utils';
 
 const { commission, escrowAddress, kusamaDecimals } = envConfig;
 
-type UserActionType = 'ASK_PRICE_FAIL' | 'BUY' | 'CANCEL' | 'SELL' | 'REVERT_UNUSED_MONEY' | 'UPDATE_TOKEN_STATE' | 'OFFER_TRANSACTION_FAIL' | 'SUBMIT_OFFER' | 'OFFER_TRANSACTION_SUCCESS';
+type UserActionType = 'BUY' | 'CANCEL' | 'SELL' | 'REVERT_UNUSED_MONEY' | 'UPDATE_TOKEN_STATE';
 
 export interface MarketplaceStagesInterface {
   cancelStep: boolean;
@@ -93,11 +93,7 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
   }, [collectionInfo, getTokenInfo, getUserDeposit, send, getTokenAsk, tokenId]);
 
   const getFee = useCallback((price: BN): BN => {
-    const newPrice = price.mul(new BN(commission)).div(new BN(100));
-
-    console.log('newPrice', newPrice.toString());
-
-    return newPrice;
+    return price.mul(new BN(commission)).div(new BN(100));
   }, []);
 
   /** user actions **/
@@ -113,10 +109,6 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
       } else if (info?.owner?.Ethereum?.toLowerCase() === ethAccount) {
         send('IS_ON_ETH_ADDRESS');
       }
-      // normalizeAccountId({ Ethereum: subToEth(seller.address) })
-      // sellToken(collectionInfo.id, tokenId, () => console.log('fail!!!'), () => console.log('success!!!'));
-      // approveTokenToContract(tokenId, () => console.log('fail!!!'),
-      // () => addAsk(collectionInfo.id, tokenId, (10n ** 12n) * 10n, () => console.log('fail!!!'), () => console.log('success!!!')));
     }
   }, [account, collectionInfo, ethAccount, getTokenInfo, send, tokenId]);
 
@@ -135,8 +127,6 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
   const approveToken = useCallback(async () => {
     if (collectionInfo) {
       const approved = await getApproved(tokenId);
-
-      console.log('approved', approved);
 
       if (approved) {
         send('ALREADY_APPROVED');
@@ -204,8 +194,6 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
     const userDeposit = await getUserDeposit();
 
     if (tokenAsk && userDeposit) {
-      console.log('userDeposit', userDeposit.toString(), 'tokenAsk.price', tokenAsk.price.toString(), 'isDepositEnough', isDepositEnough(userDeposit, tokenAsk.price));
-
       if (!isDepositEnough(userDeposit, tokenAsk.price)) {
         const needed = depositNeeded(userDeposit, tokenAsk.price);
 
@@ -245,7 +233,7 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
   const revertMoney = useCallback(() => {
     const amount = parseFloat(withdrawAmount) * Math.pow(10, kusamaDecimals);
 
-    withdrawKSM(amount, () => send('WITHDRAW_FAIL'), () => send('WITHDRAW_SUCCESS'));
+    withdrawKSM(amount.toString(), () => send('WITHDRAW_FAIL'), () => send('WITHDRAW_SUCCESS'));
   }, [send, withdrawKSM, withdrawAmount]);
 
   const checkAsk = useCallback(async () => {

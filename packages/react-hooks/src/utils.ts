@@ -1,14 +1,16 @@
 // Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import type { ContractPromise } from '@polkadot/api-contract';
-import type { AbiMessage } from '@polkadot/api-contract/types';
 import type { AccountId } from '@polkadot/types/interfaces';
 
+import BN from 'bn.js';
 import Web3 from 'web3';
 
+import envConfig from '@polkadot/apps-config/envConfig';
 import { IKeyringPair } from '@polkadot/types/types';
 import { addressToEvm } from '@polkadot/util-crypto';
+
+const { commission } = envConfig;
 
 export type CrossAccountId = {
   Substrate: string,
@@ -27,11 +29,7 @@ export function subToEth (eth: string): string {
   return Web3.utils.toChecksumAddress(subToEthLowercase(eth));
 }
 
-export const findCallMethodByName = (contractInstance: ContractPromise | null, methodName: string): AbiMessage | null => {
-  const message = contractInstance && Object.values(contractInstance.abi.messages).find((message) => message.identifier === methodName);
-
-  return message || null;
-};
+export const getFee = (price: BN): BN => price.mul(new BN(commission)).div(new BN(100));
 
 export function strToUTF16 (str: string): any {
   const buf: number[] = [];
