@@ -31,14 +31,7 @@ function WithdrawModal ({ closeModal, deposited, updateDeposit, withdrawKSM }: P
   const [withdrawAmount, setWithdrawAmount] = useState<string>('');
 
   const revertMoney = useCallback(() => {
-    // subtract commission from deposit
-    const withdrawAmountBn = new BN(withdrawAmount);
-    const depositValue = withdrawAmountBn.sub(getFee(withdrawAmountBn)); // String(+withdrawAmount / (1 + commission / 100));
-
-    const amountToWithdraw = parseFloat(depositValue.toString()) * Math.pow(10, kusamaDecimals);
-
-    console.log('depositValue', depositValue.toString(), 'amountToWithdraw', amountToWithdraw.toFixed(0));
-    // evm.ExecutedFailed
+    const amountToWithdraw = parseFloat(withdrawAmount) * Math.pow(10, kusamaDecimals);
 
     withdrawKSM(amountToWithdraw.toFixed(0), () => closeModal(), () => { void updateDeposit(); closeModal(); });
   }, [closeModal, withdrawAmount, updateDeposit, withdrawKSM]);
@@ -112,7 +105,7 @@ function WithdrawModal ({ closeModal, deposited, updateDeposit, withdrawKSM }: P
       <Modal.Actions>
         <Button
           content='Confirm'
-          disabled={!deposited || !parseFloat(withdrawAmount) || (parseFloat(withdrawAmount) > parseFloat(formatKsmBalance(new BN(deposited).add(getFee(deposited)))))}
+          disabled={!deposited || !parseFloat(withdrawAmount) || (parseFloat(withdrawAmount) > parseFloat(formatKsmBalance(new BN(deposited))))}
           onClick={revertMoney}
         />
       </Modal.Actions>
