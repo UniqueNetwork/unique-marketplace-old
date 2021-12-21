@@ -72,11 +72,10 @@ type MarketplaceAbiMethods = {
   setEscrow: (escrow: string) => {
     encodeABI: () => any;
   },
-  Withdrawn: (amount: string, currencyCode: string, address: string) => {
-    call: {
-      encodeABI: () => any;
-    }
-  }; // (amount: string, currencyCode: string, address: string) => any;
+  // (amount: string, currencyCode: string, address: string) => any;
+  withdraw: (amount: string, currencyCode: string, address: string) => {
+    encodeABI: () => any;
+  };
 }
 
 const { contractAddress, matcherOwnerAddress, minPrice, uniqueSubstrateApiRpc, value } = envConfig;
@@ -92,7 +91,7 @@ export interface useNftContractInterface {
   balanceTransfer: (recipient: string, amount: BN, failCallBack: () => void, successCallBack: () => void) => void;
   buyToken: (collectionId: string, tokenId: string, failCallBack: () => void, successCallBack: () => void) => void;
   cancelAsk: (collectionId: string, tokenId: string, failCallBack: () => void, successCallBack: () => void) => void;
-  contractInstance: any | null;
+  contractInstance: Contract | null;
   decimals: BN;
   deposited: BN | undefined;
   depositor: string | undefined;
@@ -105,7 +104,7 @@ export interface useNftContractInterface {
   isContractReady: boolean;
   tokenAsk: TokenAskType | undefined;
   transferToken: (collectionId: string, tokenId: string, address: { Ethereum?: string, Substrate?: string }, successCallBack: () => void, errorCallBack: () => void) => void;
-  withdrawKSM: (amount: number, failCallBack: () => void, successCallBack: () => void) => void;
+  withdrawKSM: (amount: string, failCallBack: () => void, successCallBack: () => void) => void;
 }
 
 export const GAS_ARGS = { gas: 2500000 };
@@ -319,15 +318,14 @@ export function useNftContract (account: string | undefined, ethAccount: string 
     }
   }, [account, api, contractInstance, evmCollectionInstance, queueExtrinsic, web3Instance]);
 
-  const withdrawKSM = useCallback(async (amount: number, failCallBack: () => void, successCallBack: () => void) => {
+  const withdrawKSM = useCallback(async (amount: string, failCallBack: () => void, successCallBack: () => void) => {
     try {
-      if (account && amount && contractInstance && web3Instance) {
+      if (account && ethAccount && amount && contractInstance && web3Instance) {
         // currency_code 0x0000000000000000000000000000000000000001
-        // const extrinsic = (contractInstance.methods as MarketplaceAbiMethods).Withdrawn(amount.toString(), '0x0000000000000000000000000000000000000001', account);
         const extrinsic = api.tx.evm.call(
-          subToEth(account),
+          ethAccount,
           contractAddress,
-          (contractInstance.methods as MarketplaceAbiMethods).Withdrawn(amount.toString(), '0x0000000000000000000000000000000000000001', account).call.encodeABI(),
+          (contractInstance.methods as MarketplaceAbiMethods).withdraw(amount, '0x0000000000000000000000000000000000000001', ethAccount).encodeABI(),
           value,
           GAS_ARGS.gas,
           await web3Instance.eth.getGasPrice(),
@@ -351,7 +349,7 @@ export function useNftContract (account: string | undefined, ethAccount: string 
 
       return null;
     }
-  }, [account, api, contractInstance, queueExtrinsic, web3Instance]);
+  }, [account, api, contractInstance, ethAccount, queueExtrinsic, web3Instance]);
 
   const getUserDeposit = useCallback(async (): Promise<BN | null> => {
     try {
@@ -442,16 +440,16 @@ export function useNftContract (account: string | undefined, ethAccount: string 
     }
   }, [web3Instance]);
 
-  const initAbi = useCallback(async () => {
+  const initAbi = useCallback(() => {
     if (account && ethAccount) {
       console.log('mySubEthAddress', evmToAddress(ethAccount, 42, 'blake2'));
 
       const provider = new Web3.providers.HttpProvider(uniqueSubstrateApiRpc);
-      const web3 = new Web3(window.ethereum);
-      // const web3 = new Web3(provider);
+      // const web3 = new Web3(window.ethereum);
+      const web3 = new Web3(provider);
 
       try {
-        await window.ethereum.enable();
+        // await window.ethereum.enable();
 
         setWeb3Instance(web3);
 
@@ -480,18 +478,18 @@ export function useNftContract (account: string | undefined, ethAccount: string 
     setDecimals(tokenDecimals[0]);
   }, [api]);
 
-  const registerDeposit = useCallback(async () => {
+  /* const registerDeposit = useCallback(async () => {
     if (ethAccount && contractInstance && tokenAsk && web3Instance) {
       console.log('tokenAsk.price.toNumber()', tokenAsk.price.toNumber());
       // const gasPrice = await web3Instance.eth.getGasPrice();
 
-      // await contractInstance.methods.depositKSM('10000000000000000000', ethAccount).send({ from: matcherOwnerAddress });
+      await contractInstance.methods.depositKSM('10000000000000000000', ethAccount).send({ from: matcherOwnerAddress });
     }
   }, [ethAccount, contractInstance, tokenAsk, web3Instance]);
 
   useEffect(() => {
     void registerDeposit();
-  }, [registerDeposit]);
+  }, [registerDeposit]); */
 
   useEffect(() => {
     void initAbi();
