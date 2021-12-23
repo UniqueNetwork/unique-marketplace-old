@@ -5,7 +5,6 @@ import './styles.scss';
 
 import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
 
-import BN from 'bn.js';
 import React, { useCallback, useContext, useState } from 'react';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form/Form';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button';
@@ -27,33 +26,32 @@ interface Props {
 
 function TransferModal ({ account, closeModal, collection, tokenId, updateTokens }: Props): React.ReactElement<Props> {
   const { api } = useApi();
-  const [recipient, setRecipient] = useState<string>();
+  const [recipient, setRecipient] = useState<{ Ethereum?: string, Substrate?: string }>({});
   // const { balance } = useBalance(account);
   const { queueExtrinsic } = useContext(StatusContext);
   const [tokenPart] = useState<number>(1);
   // const [balanceTooLow, setBalanceTooLow] = useState<boolean>(false);
   const [isAddressError, setIsAddressError] = useState<boolean>(true);
   // const [isError, setIsError] = useState<boolean>(false);
-  const decimalPoints = collection?.decimalPoints instanceof BN ? collection?.decimalPoints.toNumber() : 1;
 
   const transferToken = useCallback(() => {
     queueExtrinsic({
       accountId: account && account.toString(),
-      extrinsic: api.tx.unique.transfer(recipient, collection.id, tokenId, (tokenPart * Math.pow(10, decimalPoints))),
+      extrinsic: api.tx.unique.transfer(recipient, collection.id, tokenId, tokenPart),
       isUnsigned: false,
       txStartCb: () => { closeModal(); },
       txSuccessCb: () => { updateTokens(collection.id); }
     });
-  }, [account, api, closeModal, collection, decimalPoints, recipient, tokenId, tokenPart, updateTokens, queueExtrinsic]);
+  }, [account, api, closeModal, collection, recipient, tokenId, tokenPart, updateTokens, queueExtrinsic]);
 
   const setRecipientAddress = useCallback((value: string) => {
     try {
       keyring.decodeAddress(value);
       setIsAddressError(false);
-      setRecipient(value);
+      setRecipient({ Substrate: value });
     } catch (e) {
       setIsAddressError(true);
-      setRecipient(undefined);
+      setRecipient({});
     }
   }, [setIsAddressError, setRecipient]);
 
