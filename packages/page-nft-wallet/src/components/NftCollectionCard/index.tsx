@@ -14,7 +14,6 @@ import Item from 'semantic-ui-react/dist/commonjs/views/Item';
 
 import envConfig from '@polkadot/apps-config/envConfig';
 import { Expander, Tooltip } from '@polkadot/react-components';
-import trash from '@polkadot/react-components/ManageCollection/trash.svg';
 import { useDecoder, useMetadata, useMyTokens } from '@polkadot/react-hooks';
 
 import NftTokenCard from '../NftTokenCard';
@@ -111,13 +110,13 @@ function NftCollectionCard ({ account, canTransferTokens, collection, onHold, op
           </div>
           <div className='collection-info-row'>
             <div className='collection-info-attributes'>
-              <div className='collection-name'>{collectionName16Decoder(collection.Name)}
-                { Object.prototype.hasOwnProperty.call(collection.Mode, 'reFungible') &&
+              <div className='collection-name'>{collectionName16Decoder(collection.name)}
+                { Object.prototype.hasOwnProperty.call(collection.mode, 'reFungible') &&
                 <strong>, re-fungible. </strong>
                 }
               </div>
-              { collection.Description && (
-                <div className='collection-description'>{collectionName16Decoder(collection.Description)}</div>
+              { collection.description && (
+                <div className='collection-description'>{collectionName16Decoder(collection.description)}</div>
               )}
             </div>
           </div>
@@ -127,14 +126,14 @@ function NftCollectionCard ({ account, canTransferTokens, collection, onHold, op
           <div className='link-button'>
             { !uniqueCollectionIds.includes(collection.id) && (
               <div className='link-button-with-tooltip'>
-                <img
+                {/* <img
                   alt='delete'
                   className='red'
                   data-for='Delete collection from wallet'
                   data-tip='Delete collection from wallet'
                   onClick={toggleConfirmation.bind(null, true)}
                   src={trash as string}
-                />
+                /> */}
                 <Tooltip
                   arrowColor={'transparent'}
                   backgroundColor={'var(--border-color)'}

@@ -10,10 +10,8 @@ import { useHistory } from 'react-router';
 import Item from 'semantic-ui-react/dist/commonjs/views/Item';
 
 import { Tooltip } from '@polkadot/react-components';
-import transfer from '@polkadot/react-components/ManageCollection/transfer.svg';
 import { useSchema } from '@polkadot/react-hooks';
 import { HoldType } from '@polkadot/react-hooks/useCollections';
-
 
 interface Props {
   account: string;
@@ -26,7 +24,7 @@ interface Props {
 }
 
 function NftTokenCard ({ account, canTransferTokens, collection, onHold, openTransferModal, token, tokensSelling }: Props): React.ReactElement<Props> {
-  const { attributes, reFungibleBalance, tokenUrl } = useSchema(account, collection.id, token);
+  const { attributes, tokenUrl } = useSchema(account, collection.id, token);
   const [tokenState, setTokenState] = useState<'none' | 'selling' | 'onHold'>('none');
   const history = useHistory();
 
@@ -64,13 +62,17 @@ function NftTokenCard ({ account, canTransferTokens, collection, onHold, openTra
     setTokenState(tState);
   }, [onHold, token, tokensSelling]);
 
+  const onOpen = useCallback(() => {
+    openDetailedInformationModal(collection.id, token);
+  }, [collection, token, openDetailedInformationModal]);
+
+  const onOpenTransfer = useCallback(() => {
+    openTransferModal(collection, token, 1);
+  }, [collection, token, openTransferModal]);
+
   useEffect(() => {
     updateTokenState();
   }, [updateTokenState]);
-
-  if (!reFungibleBalance && collection?.Mode?.reFungible) {
-    return <></>;
-  }
 
   return (
     <div
@@ -79,7 +81,7 @@ function NftTokenCard ({ account, canTransferTokens, collection, onHold, openTra
     >
       <div
         className='token-image'
-        onClick={openDetailedInformationModal.bind(null, collection.id, token)}
+        onClick={onOpen}
       >
         { tokenUrl && (
           <Item.Image
@@ -90,13 +92,10 @@ function NftTokenCard ({ account, canTransferTokens, collection, onHold, openTra
       </div>
       <div
         className='token-info-attributes'
-        onClick={openDetailedInformationModal.bind(null, collection.id, token)}
+        onClick={onOpen}
       >
         <div className='token-name'>
           #{token.toString()}
-        </div>
-        <div className='token-balance'>
-          { collection && Object.prototype.hasOwnProperty.call(collection.Mode, 'reFungible') && <span>Balance: {reFungibleBalance}</span> }
         </div>
         <div className='token-attributes'>
           { attributes && Object.values(attributes).length > 0 && (
@@ -109,14 +108,14 @@ function NftTokenCard ({ account, canTransferTokens, collection, onHold, openTra
       <div className='token-actions'>
         { canTransferTokens && tokenState === 'none' && (
           <>
-            <img
+            {/* <img
               alt={'add'}
               data-for='Transfer nft'
               data-tip='Transfer nft'
-              onClick={openTransferModal.bind(null, collection, token, reFungibleBalance)}
+              onClick={onOpenTransfer}
               src={transfer as string}
               title='add'
-            />
+            /> */}
             <Tooltip
               arrowColor={'transparent'}
               backgroundColor={'var(--border-color)'}

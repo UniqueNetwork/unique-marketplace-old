@@ -92,7 +92,7 @@ function NftWallet ({ account, addCollection, collections, openPanel, removeColl
     setOpenTransfer({ balance, collection, tokenId });
   }, []);
 
-  const updateTokens = useCallback((collectionId) => {
+  const updateTokens = useCallback((collectionId: string) => {
     setShouldUpdateTokens(collectionId);
   }, [setShouldUpdateTokens]);
 
@@ -163,7 +163,6 @@ function NftWallet ({ account, addCollection, collections, openPanel, removeColl
           account={account}
           closeModal={setOpenTransfer.bind(null, null)}
           collection={openTransfer.collection}
-          reFungibleBalance={openTransfer.balance}
           tokenId={openTransfer.tokenId}
           updateTokens={updateTokens}
         />

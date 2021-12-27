@@ -39,7 +39,7 @@ const FilterContainerItem: React.FC<Props> = (props: Props) => {
             type='checkbox'
           />
         </div>
-        <div className='checkbox-title'>{collectionName16Decoder(collection.Name)}</div>
+        <div className='checkbox-title'>{collectionName16Decoder(collection.name)}</div>
       </div>
       { images.length === collections.length && images[index] !== '' && (
         <div

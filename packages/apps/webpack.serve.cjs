@@ -13,7 +13,7 @@ module.exports = merge(
   {
     devServer: {
       open: false,
-      port: 3000,
+      port: 3003,
       proxy: {
         '/offers': {
           changeOrigin: true,

@@ -27,12 +27,9 @@ interface Props {
 function TransferModal ({ account, closeModal, collection, tokenId, updateTokens }: Props): React.ReactElement<Props> {
   const { api } = useApi();
   const [recipient, setRecipient] = useState<{ Ethereum?: string, Substrate?: string }>({});
-  // const { balance } = useBalance(account);
   const { queueExtrinsic } = useContext(StatusContext);
   const [tokenPart] = useState<number>(1);
-  // const [balanceTooLow, setBalanceTooLow] = useState<boolean>(false);
   const [isAddressError, setIsAddressError] = useState<boolean>(true);
-  // const [isError, setIsError] = useState<boolean>(false);
 
   const transferToken = useCallback(() => {
     queueExtrinsic({
@@ -54,38 +51,6 @@ function TransferModal ({ account, closeModal, collection, tokenId, updateTokens
       setRecipient({});
     }
   }, [setIsAddressError, setRecipient]);
-
-  /* const setTokenPartToTransfer = useCallback((value) => {
-    const numberValue = parseFloat(value);
-
-    if (!numberValue) {
-      console.log('token part error');
-    }
-
-    if (numberValue > reFungibleBalance || numberValue > 1 || numberValue < (1 / Math.pow(10, decimalPoints))) {
-      setIsError(true);
-    } else {
-      setIsError(false);
-    }
-
-    setTokenPart(parseFloat(value));
-  }, [reFungibleBalance, decimalPoints]); */
-
-  /* const checkBalanceEnough = useCallback(async () => {
-    if (account && recipient) {
-      const transferFee = await api.tx.nft.transfer(recipient, collection.id, tokenId, (tokenPart * Math.pow(10, decimalPoints))).paymentInfo(account) as { partialFee: BN };
-
-      if (transferFee && (!balance?.free || balance?.free.sub(transferFee.partialFee).lt(api.consts.balances.existentialDeposit))) {
-        setBalanceTooLow(true);
-      } else {
-        setBalanceTooLow(false);
-      }
-    }
-  }, [account, api, balance, collection, decimalPoints, recipient, tokenId, tokenPart]); */
-
-  /* useEffect(() => {
-    void checkBalanceEnough();
-  }, [checkBalanceEnough]); */
 
   return (
     <Modal
@@ -114,20 +79,6 @@ function TransferModal ({ account, closeModal, collection, tokenId, updateTokens
               placeholder='Recipient address'
             />
           </Form.Field>
-          {/* { Object.prototype.hasOwnProperty.call(collection.Mode, 'reFungible') && (
-            <Form.Field>
-              <Label label={`Please enter part of token you want to transfer, your token balance is: ${reFungibleBalance}`} />
-              <Input
-                className='isSmall'
-                isError={isError}
-                label={`Please enter part of token you want to transfer, your token balance is: ${reFungibleBalance}`}
-                min={1 / (decimalPoints * 10)}
-                onChange={setTokenPartToTransfer}
-                placeholder='Part of re-fungible address'
-                type='number'
-              />
-            </Form.Field>
-          )} */}
         </Form>
         {/* { balanceTooLow && (
           <div className='warning-block'>Your balance is too low to pay fees. <a href='https://t.me/unique2faucetbot'

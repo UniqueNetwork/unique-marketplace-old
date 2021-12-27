@@ -33,7 +33,7 @@ function CollectionSearch ({ account, addCollection, collections }: Props): Reac
 
   const searchCollection = useCallback(() => {
     const filteredCollections = collectionsAvailable.filter((collection) => {
-      const collectionName = collectionName16Decoder(collection.Name).toLowerCase();
+      const collectionName = collectionName16Decoder(collection.name).toLowerCase();
 
       if (collectionName.indexOf(searchString.toLowerCase()) !== -1 || collection.id.toString().toLowerCase().indexOf(searchString.toLowerCase()) !== -1
       ) {
@@ -53,12 +53,12 @@ function CollectionSearch ({ account, addCollection, collections }: Props): Reac
   const addCollectionToAccount = useCallback((item: NftCollectionInterface) => {
     addCollection({
       ...item,
-      DecimalPoints: item.DecimalPoints,
-      Description: item.Description,
-      Name: item.Name,
-      OffchainSchema: item.OffchainSchema,
-      TokenPrefix: item.TokenPrefix,
-      id: item.id
+      decimalPoints: item.decimalPoints,
+      description: item.description,
+      id: item.id,
+      name: item.name,
+      offchainSchema: item.offchainSchema,
+      tokenPrefix: item.tokenPrefix
     });
   }, [addCollection]);
 
@@ -160,7 +160,7 @@ function CollectionSearch ({ account, addCollection, collections }: Props): Reac
                       key={item.id}
                     >
                       <span className='collection-name'>
-                        {collectionName16Decoder(item.Name)}
+                        {collectionName16Decoder(item.name)}
                       </span>
                       { hasThisCollection(item) && (
                         <span className='collection-added'>
