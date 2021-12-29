@@ -7,11 +7,11 @@ import type { TokenDetailsInterface } from '@polkadot/react-hooks/useToken';
 import type { u32 } from '@polkadot/types';
 
 import BN from 'bn.js';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import { Filters } from '@polkadot/app-nft-market/containers/NftMarket';
 import envConfig from '@polkadot/apps-config/envConfig';
-import { useApi, useCollection, useFetch } from '@polkadot/react-hooks';
+import { useApi, useCollection, useFetch, useIsMountedRef } from '@polkadot/react-hooks';
 
 const { uniqueApi, uniqueCollectionIds } = envConfig;
 
@@ -85,7 +85,7 @@ export function useCollections () {
   const [tradesCount, setTradesCount] = useState<number>(0);
   const [tradesLoading, setTradesLoading] = useState<boolean>(false);
   const [myTrades, setMyTrades] = useState<TradeType[]>();
-  const cleanup = useRef<boolean>(false);
+  const mountedRef = useIsMountedRef();
   const { getDetailedCollectionInfo } = useCollection();
 
   const getTokensOfCollection = useCallback(async (collectionId: string, ownerId: string) => {
@@ -94,7 +94,7 @@ export function useCollections () {
     }
 
     try {
-      return await api.query.unique.accountTokens(collectionId, { Substrate: ownerId });
+      return await api.rpc.unique.accountTokens(collectionId, { Substrate: ownerId });
     } catch (e) {
       console.log('getTokensOfCollection error', e);
     }
@@ -107,12 +107,12 @@ export function useCollections () {
    */
   const getOffers = useCallback((page: number, pageSize: number, filters?: Filters) => {
     try {
-      setOffersLoading(true);
+      mountedRef.current && setOffersLoading(true);
       let url = `${uniqueApi}/offers?page=${page}&pageSize=${pageSize}`;
 
       // reset offers before loading first page
       if (page === 1) {
-        setOffers({});
+        mountedRef.current && setOffers({});
       }
 
       if (filters) {
@@ -138,11 +138,11 @@ export function useCollections () {
       }
 
       fetchData<OffersResponseType>(url).subscribe((result: OffersResponseType | ErrorType) => {
-        if (cleanup.current) {
-          setOffersLoading(false);
-
+        if (!mountedRef.current) {
           return;
         }
+
+        setOffersLoading(false);
 
         if ('error' in result) {
           setError(result);
@@ -174,7 +174,7 @@ export function useCollections () {
       console.log('getOffers error', e);
       setOffersLoading(false);
     }
-  }, [fetchData]);
+  }, [fetchData, mountedRef]);
 
   /**
    * Return the list of token were hold on the escrow
@@ -189,9 +189,7 @@ export function useCollections () {
 
       setHoldLoading(true);
       fetchData<HoldResponseType>(url).subscribe((result: HoldResponseType | ErrorType) => {
-        if (cleanup.current) {
-          setHoldLoading(false);
-
+        if (!mountedRef.current) {
           return;
         }
 
@@ -224,7 +222,7 @@ export function useCollections () {
       console.log('getOffers error', e);
       setHoldLoading(false);
     }
-  }, [fetchData]);
+  }, [fetchData, mountedRef]);
 
   /**
    * Return the list of token trades
@@ -253,9 +251,7 @@ export function useCollections () {
 
       setTradesLoading(true);
       fetchData<TradesResponseType>(url).subscribe((result: TradesResponseType | ErrorType) => {
-        if (cleanup.current) {
-          setTradesLoading(false);
-
+        if (!mountedRef.current) {
           return;
         }
 
@@ -277,7 +273,7 @@ export function useCollections () {
       console.log('getTrades error', e);
       setTradesLoading(false);
     }
-  }, [fetchData]);
+  }, [fetchData, mountedRef]);
 
   const presetTokensCollections = useCallback(async (): Promise<NftCollectionInterface[]> => {
     if (!api) {
@@ -294,7 +290,7 @@ export function useCollections () {
       for (let i = 1; i <= collectionsCount; i++) {
         const collectionInf = await getDetailedCollectionInfo(i.toString()) as unknown as NftCollectionInterface;
 
-        if (cleanup.current) {
+        if (!mountedRef.current) {
           return [];
         }
 
@@ -309,7 +305,7 @@ export function useCollections () {
 
       return [];
     }
-  }, [api, getDetailedCollectionInfo]);
+  }, [api, getDetailedCollectionInfo, mountedRef]);
 
   const presetCollections = useCallback(async (): Promise<NftCollectionInterface[]> => {
     try {
@@ -317,9 +313,10 @@ export function useCollections () {
 
       if (uniqueCollectionIds && uniqueCollectionIds.length) {
         for (let i = 0; i < uniqueCollectionIds.length; i++) {
+          // use only collections that exists in the chain
           const mintCollectionInfo = await getDetailedCollectionInfo(uniqueCollectionIds[i]) as unknown as NftCollectionInterface;
 
-          if (cleanup.current) {
+          if (!mountedRef.current) {
             return [];
           }
 
@@ -327,8 +324,6 @@ export function useCollections () {
             collections.push({ ...mintCollectionInfo, id: uniqueCollectionIds[i] });
           }
         }
-
-        localStorage.setItem('tokenCollections', JSON.stringify(collections));
       }
 
       return collections;
@@ -337,13 +332,7 @@ export function useCollections () {
 
       return [];
     }
-  }, [getDetailedCollectionInfo]);
-
-  useEffect(() => {
-    return () => {
-      cleanup.current = true;
-    };
-  }, []);
+  }, [getDetailedCollectionInfo, mountedRef]);
 
   return {
     error,

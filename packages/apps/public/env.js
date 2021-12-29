@@ -47,7 +47,7 @@
     MIN_TED_COLLECTION: defaults('${MIN_TED_COLLECTION}', 1),
     QUOTE_ID: defaults('${QUOTE_ID}', 2),
     UNIQUE_API: defaults('${UNIQUE_API}', 'https://dev-api.unique.network'),
-    UNIQUE_COLLECTION_IDS: defaults('${UNIQUE_COLLECTION_IDS}', [23, 25, 155, 112, 113].join(',')),
+    UNIQUE_COLLECTION_IDS: defaults('${UNIQUE_COLLECTION_IDS}', [13, 22, 55, 224, 238, 273, 288].join(',')),
     UNIQUE_SUBSTRATE_API: defaults('${UNIQUE_SUBSTRATE_API}', 'wss://ws-opal.unique.network'),
     UNIQUE_SUBSTRATE_API_RPC: defaults('${UNIQUE_SUBSTRATE_API_RPC}', 'https://rpc-opal.unique.network'),
     VALUE: defaults('${VALUE}', 1),

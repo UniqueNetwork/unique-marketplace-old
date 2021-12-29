@@ -22,8 +22,7 @@ function PageNftWallet ({ account, basePath, openPanel, setOpenPanel }: Props): 
   const location = useLocation();
   const { isApiConnected, isApiReady } = useApi();
   const [shouldUpdateTokens, setShouldUpdateTokens] = useState<string>();
-  const collectionsStorage: NftCollectionInterface[] = JSON.parse(localStorage.getItem('tokenCollections') || '[]') as NftCollectionInterface[];
-  const [collections, setCollections] = useState<NftCollectionInterface[]>(collectionsStorage);
+  const [collections, setCollections] = useState<NftCollectionInterface[]>([]);
 
   const addCollection = useCallback((collection: NftCollectionInterface) => {
     setCollections((prevCollections: NftCollectionInterface[]) => {
@@ -33,8 +32,6 @@ function PageNftWallet ({ account, basePath, openPanel, setOpenPanel }: Props): 
         newCollections = [...prevCollections, collection];
       }
 
-      localStorage.setItem('tokenCollections', JSON.stringify(newCollections));
-
       return newCollections;
     });
   }, []);
@@ -43,7 +40,6 @@ function PageNftWallet ({ account, basePath, openPanel, setOpenPanel }: Props): 
     const newCollectionList = collections.filter((item: NftCollectionInterface) => item.id !== collectionToRemove);
 
     setCollections(newCollectionList);
-    localStorage.setItem('tokenCollections', JSON.stringify(newCollectionList));
   }, [collections]);
 
   return (
