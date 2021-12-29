@@ -40,6 +40,8 @@ export const useMetadata = (): UseMetadataInterface => {
         const schema = JSON.parse(attr) as ProtobufAttributeType;
 
         if (schema?.nested) {
+          console.log('schema', schema, 'deser', deserializeNft(schema, Buffer.from('0a00120018002a037272723000', 'hex'), 'en'), 'buf', Buffer.from('0a00120018002a037272723000', 'hex'));
+
           return deserializeNft(schema, Buffer.from(data.slice(2), 'hex'), 'en');
         }
       } catch (e) {
@@ -152,10 +154,7 @@ export const useMetadata = (): UseMetadataInterface => {
     const onChainSchema = getOnChainSchema(collectionInfo);
     const tokenDetails = await getTokenDetails(collectionInfo, tokenId);
 
-    return {
-      ...decodeStruct({ attr: onChainSchema.attributesConst, data: tokenDetails?.constData }),
-      ...decodeStruct({ attr: onChainSchema.attributesVar, data: tokenDetails?.variableData })
-    };
+    return { ...decodeStruct({ attr: onChainSchema.attributesConst, data: tokenDetails?.constData }) };
   }, [getOnChainSchema, getTokenDetails, decodeStruct]);
 
   useEffect(() => {

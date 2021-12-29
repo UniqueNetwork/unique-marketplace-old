@@ -1,6 +1,7 @@
 // Copyright 2017-2021 @polkadot/react-api authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import type BN from 'bn.js';
 import type { InjectedExtension } from '@polkadot/extension-inject/types';
 import type { ChainProperties, ChainType } from '@polkadot/types/interfaces';
 import type { KeyringStore } from '@polkadot/ui-keyring/types';
@@ -81,6 +82,46 @@ function getDevTypes (): Record<string, Record<string, string>> {
   return types;
 }
 
+const collectionParam = { name: 'collection', type: 'UpDataStructsCollectionId' };
+
+type RpcParam = {
+  name: string;
+  type: string;
+  isOptional?: true;
+};
+
+const atParam = { isOptional: true, name: 'at', type: 'Hash' };
+
+const fun = (description: string, params: RpcParam[], type: string) => ({
+  description,
+  params: [...params, atParam],
+  type
+});
+
+const CROSS_ACCOUNT_ID_TYPE = 'PalletCommonAccountBasicCrossAccountIdRepr';
+const TOKEN_ID_TYPE = 'UpDataStructsTokenId';
+
+const crossAccountParam = (name = 'account') => ({ name, type: CROSS_ACCOUNT_ID_TYPE });
+const tokenParam = { name: 'tokenId', type: TOKEN_ID_TYPE };
+
+const rpc = {
+  accountBalance: fun('Get amount of different user tokens', [collectionParam, crossAccountParam()], 'u32'),
+  accountTokens: fun('Get tokens owned by account', [collectionParam, crossAccountParam()], 'Vec<UpDataStructsTokenId>'),
+  adminlist: fun('Get admin list', [collectionParam], 'Vec<PalletCommonAccountBasicCrossAccountIdRepr>'),
+  allowance: fun('Get allowed amount', [collectionParam, crossAccountParam('sender'), crossAccountParam('spender'), tokenParam], 'u128'),
+  allowed: fun('Check if user is allowed to use collection', [collectionParam, crossAccountParam()], 'bool'),
+  allowlist: fun('Get allowlist', [collectionParam], 'Vec<PalletCommonAccountBasicCrossAccountIdRepr>'),
+  balance: fun('Get amount of specific account token', [collectionParam, crossAccountParam(), tokenParam], 'u128'),
+  collectionById: fun('Get collection by specified id', [collectionParam], 'Option<UpDataStructsCollection>'),
+  collectionStats: fun('Get collection stats', [], 'UpDataStructsCollectionStats'),
+  collectionTokens: fun('Get tokens contained in collection', [collectionParam], 'Vec<UpDataStructsTokenId>'),
+  constMetadata: fun('Get token constant metadata', [collectionParam, tokenParam], 'Vec<u8>'),
+  lastTokenId: fun('Get last token id', [collectionParam], TOKEN_ID_TYPE),
+  tokenExists: fun('Check if token exists', [collectionParam, tokenParam], 'bool'),
+  tokenOwner: fun('Get token owner', [collectionParam, tokenParam], CROSS_ACCOUNT_ID_TYPE),
+  variableMetadata: fun('Get token variable metadata', [collectionParam, tokenParam], 'Vec<u8>')
+};
+
 async function getInjectedAccounts (injectedPromise: Promise<InjectedExtension[]>): Promise<InjectedAccountExt[]> {
   try {
     await injectedPromise;
@@ -89,10 +130,11 @@ async function getInjectedAccounts (injectedPromise: Promise<InjectedExtension[]
 
     return accounts.map(({ address, meta }, whenCreated): InjectedAccountExt => ({
       address,
-      meta: objectSpread({}, meta, {
+      meta: {
+        ...meta,
         name: `${meta.name || 'unknown'} (${meta.source === 'polkadot-js' ? 'extension' : meta.source})`,
         whenCreated
-      })
+      }
     }));
   } catch (error) {
     console.error('web3Accounts', error);
@@ -102,7 +144,8 @@ async function getInjectedAccounts (injectedPromise: Promise<InjectedExtension[]
 }
 
 async function retrieve (api: ApiPromise, injectedPromise: Promise<InjectedExtension[]>): Promise<ChainData> {
-  const [systemChain, systemChainType, systemName, systemVersion, injectedAccounts] = await Promise.all([
+  const [chainProperties, systemChain, systemChainType, systemName, systemVersion, injectedAccounts] = await Promise.all([
+    api.rpc.system.properties(),
     api.rpc.system.chain(),
     api.rpc.system.chainType
       ? api.rpc.system.chainType()
@@ -115,9 +158,9 @@ async function retrieve (api: ApiPromise, injectedPromise: Promise<InjectedExten
   return {
     injectedAccounts,
     properties: registry.createType('ChainProperties', {
-      ss58Format: api.registry.chainSS58,
-      tokenDecimals: api.registry.chainDecimals,
-      tokenSymbol: api.registry.chainTokens
+      ss58Format: api.consts.system?.ss58Prefix || chainProperties.ss58Format,
+      tokenDecimals: chainProperties.tokenDecimals,
+      tokenSymbol: chainProperties.tokenSymbol
     }),
     systemChain: (systemChain || '<unknown>').toString(),
     systemChainType,
@@ -145,7 +188,7 @@ async function loadOnReady (api: ApiPromise, injectedPromise: Promise<InjectedEx
 
   // first setup the UI helpers
   formatBalance.setDefaults({
-    decimals: tokenDecimals.map((b) => b.toNumber()),
+    decimals: (tokenDecimals as BN[]).map((b) => b.toNumber()),
     unit: tokenSymbol[0].toString()
   });
   TokenUnit.setAbbr(tokenSymbol[0].toString());
@@ -228,7 +271,15 @@ function Api ({ children, store, url }: Props): React.ReactElement<Props> | null
     const signer = new ApiSigner(registry, queuePayload, queueSetTxStatus);
     const types = getDevTypes();
 
-    api = new ApiPromise({ provider, registry, signer, types, typesBundle, typesChain });
+    api = new ApiPromise({ provider,
+      registry,
+      rpc: {
+        unique: rpc
+      },
+      signer,
+      types,
+      typesBundle,
+      typesChain });
 
     api.on('connected', () => setIsApiConnected(true));
     api.on('disconnected', () => setIsApiConnected(false));

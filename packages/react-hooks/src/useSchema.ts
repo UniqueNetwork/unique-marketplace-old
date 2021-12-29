@@ -101,6 +101,8 @@ export function useSchema (account: string | undefined, collectionId: string, to
     if (collectionInfo && tokenId) {
       const attrs = await getTokenAttributes(collectionInfo, tokenId.toString());
 
+      console.log('attrs', attrs);
+
       mountedRef.current && setAttributes(attrs);
     }
   }, [collectionInfo, getTokenAttributes, mountedRef, tokenId]);

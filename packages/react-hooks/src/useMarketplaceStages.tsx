@@ -17,7 +17,7 @@ import { normalizeAccountId } from './utils';
 
 const { commission, escrowAddress, kusamaDecimals } = envConfig;
 
-type UserActionType = 'BUY' | 'CANCEL' | 'SELL' | 'REVERT_UNUSED_MONEY' | 'UPDATE_TOKEN_STATE';
+type UserActionType = 'BUY' | 'CANCEL' | 'SELL' | 'REVERT_UNUSED_MONEY' | 'UPDATE_TOKEN_STATE' | 'ASK_NOT_FILLED';
 
 export interface MarketplaceStagesInterface {
   cancelStep: boolean;

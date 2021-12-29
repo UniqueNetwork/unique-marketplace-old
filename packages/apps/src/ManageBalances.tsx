@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import BN from 'bn.js';
-import React, { memo, useCallback, useMemo, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 import Popup from 'semantic-ui-react/dist/commonjs/modules/Popup';
@@ -12,6 +12,7 @@ import { OpenPanelType } from '@polkadot/apps-routing/types';
 import { WithdrawModal } from '@polkadot/react-components';
 import { useBalances, useNftContract } from '@polkadot/react-hooks';
 import { formatKsmBalance, formatStrBalance } from '@polkadot/react-hooks/useKusamaApi';
+import { subToEth } from '@polkadot/react-hooks/utils';
 
 import question from './images/question.svg';
 
@@ -24,7 +25,8 @@ interface Props {
 
 const ManageBalances = (props: Props) => {
   const { account } = props;
-  const { contractInstance, getUserDeposit } = useNftContract(account || '');
+  const [ethAccount, setEthAccount] = useState<string>();
+  const { contractInstance, getUserDeposit, withdrawKSM } = useNftContract(account, ethAccount);
   const { freeBalance, freeKusamaBalance } = useBalances(account, getUserDeposit);
   const [showWithdrawModal, toggleWithdrawModal] = useState<boolean>(false);
   const deposited: BN|undefined = new BN(Number(localStorage.getItem('deposit')));
@@ -40,6 +42,12 @@ const ManageBalances = (props: Props) => {
   const getFee = useCallback((price: BN): BN => {
     return new BN(price).mul(new BN(commission)).div(new BN(100));
   }, []);
+
+  useEffect(() => {
+    if (account) {
+      setEthAccount(subToEth(account).toLowerCase());
+    }
+  }, [account]);
 
   const withdrawPopup = useMemo(() => {
     return (
@@ -106,6 +114,7 @@ const ManageBalances = (props: Props) => {
           contractInstance={contractInstance}
           deposited={deposited}
           updateDeposit={getUserDeposit}
+          withdrawKSM={withdrawKSM}
         />
       )}
     </div>

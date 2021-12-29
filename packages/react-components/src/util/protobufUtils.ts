@@ -106,6 +106,8 @@ export function deserializeNft (onChainSchema: ProtobufAttributeType, buffer: Ui
 
     // Decode a Uint8Array (browser) or Buffer (node) to a message
     const message = NFTMeta.decode(buffer);
+
+    console.log('message', message, 'buffer', buffer);
     // Maybe convert the message back to a plain object
     const objectItem = NFTMeta.toObject(message, {
       arrays: true, // populates empty arrays (repeated fields) even if defaults=false

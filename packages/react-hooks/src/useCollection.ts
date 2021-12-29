@@ -63,7 +63,7 @@ export function useCollection () {
     }
 
     try {
-      return await api.query.nft.itemListIndex(collectionId);
+      return (await api.rpc.unique.lastTokenId(collectionId)).toJSON() as number;
     } catch (e) {
       console.log('getTokensOfCollection error', e);
     }

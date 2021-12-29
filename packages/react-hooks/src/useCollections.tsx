@@ -4,6 +4,7 @@
 import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
 import type { ErrorType } from '@polkadot/react-hooks/useFetch';
 import type { TokenDetailsInterface } from '@polkadot/react-hooks/useToken';
+import type { u32 } from '@polkadot/types';
 
 import BN from 'bn.js';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -93,7 +94,7 @@ export function useCollections () {
     }
 
     try {
-      return await api.query.nft.addressTokens(collectionId, ownerId);
+      return await api.query.unique.accountTokens(collectionId, { Substrate: ownerId });
     } catch (e) {
       console.log('getTokensOfCollection error', e);
     }
@@ -284,8 +285,9 @@ export function useCollections () {
     }
 
     try {
-      const createdCollectionCount = (await api.query.nft.createdCollectionCount() as unknown as BN).toNumber();
-      const destroyedCollectionCount = (await api.query.nft.destroyedCollectionCount() as unknown as BN).toNumber();
+      const fullCount = (await api.rpc.unique.collectionStats()) as { created: u32, destroyed: u32 };
+      const createdCollectionCount = fullCount.created.toNumber();
+      const destroyedCollectionCount = fullCount.destroyed.toNumber();
       const collectionsCount = createdCollectionCount - destroyedCollectionCount;
       const collections: Array<NftCollectionInterface> = [];
 
@@ -308,29 +310,6 @@ export function useCollections () {
       return [];
     }
   }, [api, getDetailedCollectionInfo]);
-
-  const getCollectionWithTokenCount = useCallback(async (collectionId: string): Promise<CollectionWithTokensCount> => {
-    const info = (await getDetailedCollectionInfo(collectionId)) as unknown as NftCollectionInterface;
-    const tokenCount = ((await api.query.nft.itemListIndex(collectionId)) as unknown as BN).toNumber();
-
-    return {
-      info,
-      tokenCount
-    };
-  }, [api.query.nft, getDetailedCollectionInfo]);
-
-  /* const getAllCollectionsWithTokenCount = useCallback(async () => {
-    const createdCollectionCount = (await api.query.nft.createdCollectionCount() as unknown as BN).toNumber();
-    const destroyedCollectionCount = (await api.query.nft.destroyedCollectionCount() as unknown as BN).toNumber();
-    const collectionsCount = createdCollectionCount - destroyedCollectionCount;
-    const collectionWithTokensCount: { [key: string]: CollectionWithTokensCount } = {};
-
-    for (let i = 1; i <= collectionsCount; i++) {
-      collectionWithTokensCount[i] = await getCollectionWithTokenCount(i.toString());
-    }
-
-    return collectionWithTokensCount;
-  }, [api.query.nft, getCollectionWithTokenCount]); */
 
   const presetCollections = useCallback(async (): Promise<NftCollectionInterface[]> => {
     try {
@@ -368,7 +347,6 @@ export function useCollections () {
 
   return {
     error,
-    getCollectionWithTokenCount,
     getDetailedCollectionInfo,
     getHoldByMe,
     getOffers,

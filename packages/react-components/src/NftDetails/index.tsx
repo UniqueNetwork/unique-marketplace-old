@@ -49,10 +49,6 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
 
   console.log('collectionInfo', collectionInfo, 'tokenAsk', tokenAsk, 'tokenPrice', tokenPrice, 'tokenInfo', tokenInfo, 'ethAccount', ethAccount);
 
-  console.log('tokenAsk.owner === ethAccount', tokenAsk?.ownerAddr.toLowerCase() === ethAccount);
-
-  // console.log('SUB', evmToAddress('0xCFB8D32364F173051C2CC43eB165701e9E6737DF', 42, 'blake2'));
-
   const goBack = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     history.back();
@@ -76,7 +72,7 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
     setReadyToAskPrice(false);
 
     setTimeout(() => {
-      sendCurrentUserAction('ASK_PRICE_FAIL');
+      sendCurrentUserAction('ASK_NOT_FILLED');
     }, 1000);
   }, [setReadyToAskPrice, sendCurrentUserAction]);
 
