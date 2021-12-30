@@ -10,12 +10,8 @@ import React, { useCallback } from 'react';
 import Image from 'semantic-ui-react/dist/commonjs/elements/Image';
 import Card from 'semantic-ui-react/dist/commonjs/views/Card';
 
-import envConfig from '@polkadot/apps-config/envConfig';
-import formatPrice from '@polkadot/react-components/util/formatPrice';
 import { useDecoder, useSchema } from '@polkadot/react-hooks';
 import { formatKsmBalance } from '@polkadot/react-hooks/useKusamaApi';
-
-const { commission } = envConfig;
 
 interface Props {
   account: string | undefined;
@@ -27,14 +23,6 @@ interface Props {
 const NftTokenCard = ({ account, collectionId, openDetailedInformationModal, token }: Props): React.ReactElement<Props> => {
   const { collectionInfo, tokenName, tokenUrl } = useSchema(account, collectionId, token.tokenId);
   const { collectionName16Decoder, hex2a } = useDecoder();
-
-  const getFee = useCallback((price: BN): BN => {
-    return new BN(price).mul(new BN(commission)).div(new BN(100));
-  }, []);
-
-  const getMarketPrice = useCallback((price: BN) => {
-    return formatPrice(formatKsmBalance(new BN(price).add(getFee(price))));
-  }, [getFee]);
 
   const onCardClick = useCallback(() => {
     openDetailedInformationModal(collectionId, token.tokenId);
@@ -62,25 +50,31 @@ const NftTokenCard = ({ account, collectionId, openDetailedInformationModal, tok
             </div>
             { token.price && (
               <div className='card-price'>
-                <div className='card-price__title'> {getMarketPrice(token.price)} KSM</div>
+                <div className='card-price__title'> {formatKsmBalance(new BN(token.price))} KSM</div>
               </div>
             )}
           </Card.Description>
           <Card.Meta>
             <span className='link'>View
-              <svg fill='none'
+              <svg
+                fill='none'
                 height='16'
                 viewBox='0 0 16 16'
                 width='16'
-                xmlns='http://www.w3.org/2000/svg'>
-                <path d='M2.5 8H13.5'
+                xmlns='http://www.w3.org/2000/svg'
+              >
+                <path
+                  d='M2.5 8H13.5'
                   stroke='var(--card-link-color)'
                   strokeLinecap='round'
-                  strokeLinejoin='round'/>
-                <path d='M9 3.5L13.5 8L9 12.5'
+                  strokeLinejoin='round'
+                />
+                <path
+                  d='M9 3.5L13.5 8L9 12.5'
                   stroke='var(--card-link-color)'
                   strokeLinecap='round'
-                  strokeLinejoin='round'/>
+                  strokeLinejoin='round'
+                />
               </svg>
             </span>
           </Card.Meta>
