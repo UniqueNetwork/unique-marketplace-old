@@ -18,7 +18,7 @@ import { evmToAddress } from '@polkadot/util-crypto';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import nonFungibleAbi from './abi/nonFungibleAbi.json';
-import { subToEth } from './utils';
+import { CrossAccountId, normalizeAccountId, subToEth } from './utils';
 
 type EvmCollectionAbiMethods = {
   approve: (contractAddress: string, tokenId: string) => {
@@ -51,7 +51,7 @@ export interface AskOutputInterface {
 export interface useNftContractInterface {
   // abi: Abi | undefined;
   addAsk: (collectionId: string, tokenId: string, amount: BN, failCallBack: () => void, successCallBack: () => void) => void;
-  approveTokenToContract: (tokenId: string, failCallBack: () => void, successCallBack: () => void) => void;
+  approveTokenToContract: (tokenId: string, failCallBack: () => void, successCallBack: () => void, onlyGetFees?: boolean) => Promise<BN | null>;
   balanceTransfer: (recipient: string, amount: BN, failCallBack: () => void, successCallBack: () => void) => void;
   buyToken: (collectionId: string, tokenId: string, failCallBack: () => void, successCallBack: () => void) => void;
   cancelAsk: (collectionId: string, tokenId: string, failCallBack: () => void, successCallBack: () => void) => void;
@@ -60,6 +60,7 @@ export interface useNftContractInterface {
   deposited: BN | undefined;
   depositor: string | undefined;
   getApproved: (tokenId: string) => Promise<boolean>;
+  getMySubEthAddressBalance: (address: string) => Promise<BN>;
   getTokenAsk: (collectionId: string, tokenId: string) => Promise<TokenAskType | null>;
   getTokenOrder: (order: number) => void;
   getTokenOrders: () => void;
@@ -67,7 +68,7 @@ export interface useNftContractInterface {
   initCollectionAbi: (collectionId: string) => void;
   isContractReady: boolean;
   tokenAsk: TokenAskType | undefined;
-  transferToken: (collectionId: string, tokenId: string, address: { Ethereum?: string, Substrate?: string }, successCallBack: () => void, errorCallBack: () => void, account?: string) => void;
+  transferToken: (collectionId: string, tokenId: string, address: { Ethereum?: string, Substrate?: string }, successCallBack: () => void, errorCallBack: () => void, ethAccount?: string) => void;
   withdrawKSM: (amount: string, failCallBack: () => void, successCallBack: () => void) => void;
 }
 
@@ -100,7 +101,7 @@ to sell:
 // https://docs.google.com/document/d/1WED9VP8Yj52Un4qmkGDpzjesQTzwwoDgYMk1Ty8yftQ/edit
 export function useNftContract (account: string | undefined, ethAccount: string | undefined): useNftContractInterface {
   const { api } = useApi();
-  const [decimals, setDecimals] = useState(new BN(15));
+  const [decimals, setDecimals] = useState(new BN(18));
   const [depositor, setDepositor] = useState<string>();
   const { queueExtrinsic } = useContext(StatusContext);
   const { deposited, evmCollectionInstance, getUserDeposit, matcherContractInstance, setEvmCollectionInstance, web3Instance } = useContext(ContractContext);
@@ -122,8 +123,20 @@ export function useNftContract (account: string | undefined, ethAccount: string 
     return false;
   }, [account, matcherContractInstance, evmCollectionInstance]);
 
+  const getMySubEthAddressBalance = useCallback(async (mySubEthAddress: string): Promise<BN> => {
+    if (mySubEthAddress && api) {
+      const balancesAll = await api.derive.balances?.all(mySubEthAddress);
+
+      if (balancesAll) {
+        return balancesAll.availableBalance;
+      }
+    }
+
+    return new BN(0);
+  }, [api]);
+
   // this method should be called from matcher owner
-  const approveTokenToContract = useCallback(async (tokenId: string, failCallBack: () => void, successCallBack: () => void) => {
+  const approveTokenToContract = useCallback(async (tokenId: string, failCallBack: () => void, successCallBack: () => void, onlyGetFees?: boolean): Promise<BN | null> => {
     if (account && web3Instance && evmCollectionInstance) {
       try {
         if (matcherContractInstance && web3Instance) {
@@ -137,20 +150,28 @@ export function useNftContract (account: string | undefined, ethAccount: string 
             null
           );
 
-          queueExtrinsic({
-            accountId: account && account.toString(),
-            extrinsic,
-            isUnsigned: false,
-            txFailedCb: () => failCallBack(),
-            txStartCb: () => { console.log('approveTokenToContract start'); },
-            txSuccessCb: () => successCallBack(),
-            txUpdateCb: () => { console.log('approveTokenToContract update'); }
-          });
+          if (onlyGetFees) {
+            const { partialFee } = await extrinsic.paymentInfo(account) as { partialFee: BN };
+
+            return partialFee;
+          } else {
+            queueExtrinsic({
+              accountId: account && account.toString(),
+              extrinsic,
+              isUnsigned: false,
+              txFailedCb: () => failCallBack(),
+              txStartCb: () => { console.log('approveTokenToContract start'); },
+              txSuccessCb: () => successCallBack(),
+              txUpdateCb: () => { console.log('approveTokenToContract update'); }
+            });
+          }
         }
       } catch (e) {
         console.log('approveTokenToContract Error', e);
       }
     }
+
+    return null;
   }, [account, api, matcherContractInstance, evmCollectionInstance, queueExtrinsic, web3Instance]);
 
   const balanceTransfer = useCallback((recipient: string, amount: BN, failCallBack: () => void, successCallBack: () => void) => {
@@ -235,13 +256,16 @@ export function useNftContract (account: string | undefined, ethAccount: string 
     }
   }, [account, ethAccount, api, matcherContractInstance, evmCollectionInstance, queueExtrinsic, web3Instance]);
 
-  const transferToken = useCallback((collectionId: string, tokenId: string, address: { Ethereum?: string, Substrate?: string }, successCallBack: () => void, errorCallBack: () => void, accountFrom?: string) => {
+  const transferToken = useCallback((collectionId: string, tokenId: string, address: { Ethereum?: string, Substrate?: string }, successCallBack: () => void, errorCallBack: () => void, ethAccount?: string) => {
     // To transfer item to matcher it first needs to be transferred to Eth account-mirror
-    const extrinsic = api.tx.unique.transfer(address, collectionId, tokenId, 1);
-    const from = accountFrom || account;
+    let extrinsic = api.tx.unique.transfer(address, collectionId, tokenId, 1);
+
+    if (address.Substrate && ethAccount) {
+      extrinsic = api.tx.unique.transferFrom(normalizeAccountId({ Ethereum: ethAccount } as CrossAccountId), normalizeAccountId(address as CrossAccountId), collectionId, tokenId, 1);
+    }
 
     queueExtrinsic({
-      accountId: from,
+      accountId: account,
       extrinsic,
       isUnsigned: false,
       txFailedCb: () => errorCallBack(),
@@ -418,6 +442,7 @@ export function useNftContract (account: string | undefined, ethAccount: string 
     deposited,
     depositor,
     getApproved,
+    getMySubEthAddressBalance,
     getTokenAsk,
     getTokenOrder,
     getTokenOrders,

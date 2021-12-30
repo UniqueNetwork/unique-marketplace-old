@@ -11,6 +11,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import envConfig from '@polkadot/apps-config/envConfig';
 import { useKusamaApi, useNftContract, useToken } from '@polkadot/react-hooks';
+import { evmToAddress } from '@polkadot/util-crypto';
 
 import marketplaceStateMachine from './stateMachine';
 import { normalizeAccountId } from './utils';
@@ -50,7 +51,7 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
   const [tokenDepositor, setTokenDepositor] = useState<string>();
   const [tokenInfo, setTokenInfo] = useState<TokenDetailsInterface>();
   const { getTokenInfo } = useToken();
-  const { addAsk, approveTokenToContract, buyToken, cancelAsk, deposited, depositor, getApproved, getTokenAsk, getUserDeposit, initCollectionAbi, isContractReady, tokenAsk, transferToken, withdrawKSM } = useNftContract(account, ethAccount);
+  const { addAsk, approveTokenToContract, balanceTransfer, buyToken, cancelAsk, deposited, depositor, getApproved, getMySubEthAddressBalance, getTokenAsk, getUserDeposit, initCollectionAbi, isContractReady, tokenAsk, transferToken, withdrawKSM } = useNftContract(account, ethAccount);
   const [error, setError] = useState<string | null>(null);
   const [readyToAskPrice, setReadyToAskPrice] = useState<boolean>(false);
   const [tokenPriceForSale, setTokenPriceForSale] = useState<BN>();
@@ -101,11 +102,7 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
     return price.mul(new BN(commission)).div(new BN(100));
   }, []);
 
-  /** user actions **/
-  const sell = useCallback(async () => {
-    // send token to eth mirror
-    // approve tokenToContract
-    // add ask
+  const checkIsOnEthAddress = useCallback(async () => {
     if (collectionInfo) {
       const info: TokenDetailsInterface = await getTokenInfo(collectionInfo, tokenId);
 
@@ -117,35 +114,57 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
     }
   }, [account, collectionInfo, ethAccount, getTokenInfo, send, tokenId]);
 
+  const checkSubEthSubAccountBalance = useCallback(async () => {
+    if (ethAccount && collectionInfo) {
+      const mySubEthAddress = evmToAddress(ethAccount, 42, 'blake2');
+      const mySubEthAddressBalance = await getMySubEthAddressBalance(mySubEthAddress);
+      const approveTransactionFees = await approveTokenToContract(tokenId,
+        () => send('_'),
+        () => send('_'), true);
+
+      const neededFees = approveTransactionFees?.mul(new BN(100));
+
+      if (neededFees && !mySubEthAddressBalance.gte(neededFees)) {
+        console.log('we have to transfer some balance to mySubEthAddress to pay fees');
+        balanceTransfer(mySubEthAddress, neededFees, () => void loadingTokenInfo(), () => void checkIsOnEthAddress());
+      } else {
+        await checkIsOnEthAddress();
+      }
+    }
+
+    return null;
+  }, [approveTokenToContract, balanceTransfer, checkIsOnEthAddress, collectionInfo, ethAccount, getMySubEthAddressBalance, loadingTokenInfo, send, tokenId]);
+
+  const sell = useCallback(async () => {
+    await checkSubEthSubAccountBalance();
+  }, [checkSubEthSubAccountBalance]);
+
   const transferToEth = useCallback(() => {
     if (collectionInfo && ethAccount) {
-      transferToken(collectionInfo.id, tokenId, normalizeAccountId({ Ethereum: ethAccount }), () => send('SIGN_SUCCESS'), () => send('SIGN_TRANSACTION_FAIL'), account);
+      transferToken(collectionInfo.id, tokenId, normalizeAccountId({ Ethereum: ethAccount }), () => send('SIGN_SUCCESS'), () => send('SIGN_TRANSACTION_FAIL'));
     }
-  }, [account, collectionInfo, ethAccount, send, transferToken, tokenId]);
+  }, [collectionInfo, ethAccount, send, transferToken, tokenId]);
 
-  // @todo - fix no permissions bug - fixed?
   const transferToSub = useCallback(() => {
     if (account && collectionInfo && ethAccount) {
       // const mySubEthAddress = evmToAddress(ethAccount, 42, 'blake2');
-      transferToken(collectionInfo.id, tokenId, normalizeAccountId({ Substrate: account }), () => send('SIGN_SUCCESS'), () => send('SIGN_TRANSACTION_FAIL'), account);
+      transferToken(collectionInfo.id, tokenId, normalizeAccountId({ Substrate: account }), () => send('SIGN_SUCCESS'), () => send('SIGN_TRANSACTION_FAIL'), ethAccount);
     }
   }, [account, ethAccount, collectionInfo, send, transferToken, tokenId]);
 
   const approveToken = useCallback(async () => {
-    if (collectionInfo) {
+    if (collectionInfo && ethAccount) {
       const approved = await getApproved(tokenId);
 
       if (approved) {
         send('ALREADY_APPROVED');
       } else {
-        approveTokenToContract(tokenId,
+        await approveTokenToContract(tokenId,
           () => send('SIGN_TRANSACTION_FAIL'),
           () => send('SIGN_TRANSACTION_SUCCESS'));
       }
     }
-  }, [approveTokenToContract, collectionInfo, getApproved, send, tokenId]);
-
-  // addAsk(collectionInfo.id, tokenId, (10n ** 12n) * 10n, () => console.log('fail!!!'), () => console.log('success!!!'))
+  }, [approveTokenToContract, collectionInfo, ethAccount, getApproved, send, tokenId]);
 
   const waitForNftDeposit = useCallback(async () => {
     if (collectionInfo) {

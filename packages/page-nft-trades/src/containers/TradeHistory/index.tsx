@@ -65,7 +65,6 @@ function TradeHistory ({ account }: { account?: string }): React.ReactElement {
     <div
       className='trades'
     >
-
       <ListComponent
         empty={'No trades found'}
         header={headerRef.current}
