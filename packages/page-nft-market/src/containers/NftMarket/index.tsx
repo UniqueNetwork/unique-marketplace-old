@@ -125,6 +125,8 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: BuyTokensProps): ReactE
     page.current = 1;
   }, [filters, getOffers]);
 
+  console.log('offers', offers, 'filters', filters);
+
   return (
     <div className={marketClassName}>
       <Header as='h1'>Market</Header>
@@ -174,7 +176,7 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: BuyTokensProps): ReactE
         <div className={`marketplace-body ${openPanel === 'tokens' ? 'open' : ''}`}>
           <div className='collection-search-form'>
             <SearchForm
-              areFiltersActive = {areFiltersActive}
+              areFiltersActive={areFiltersActive}
               clearAllFilters={clearAllFilters}
               filters={filters}
               offersCount={offersCount}
@@ -182,13 +184,15 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: BuyTokensProps): ReactE
               setFilters={setFilters}
             />
           </div>
-          {(Object.keys(offers).length === 0 && filters.seller) && (
+          {!Object.keys(offers).length && (
             <div className='market-pallet empty'>
               <img
                 alt='no tokens'
                 src={noMyTokensIcon as string}
               />
-              <p className='no-tokens-text'>You have no tokens</p>
+              <p className='no-tokens-text'>
+                { filters.seller ? 'You have no tokens on sale' : 'No tokens on sale' }
+              </p>
             </div>
           )}
           { (Object.keys(offers).length > 0 || !offersLoading)

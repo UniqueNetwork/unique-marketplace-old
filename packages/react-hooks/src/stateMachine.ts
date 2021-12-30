@@ -34,7 +34,7 @@ const marketplaceStateMachine = createMachine<Context>({
     buyToken: {
       on: {
         SIGN_FAIL: 'loadingTokenInfo',
-        SIGN_SUCCESS: 'loadingTokenInfo'
+        SIGN_SUCCESS: 'waitForTokenRevert'
       }
     },
     cancelSell: {

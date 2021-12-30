@@ -39,7 +39,7 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
   const { hex2a } = useDecoder();
   const { attributes, collectionInfo, tokenUrl } = useSchema(account, collectionId, tokenId);
   const [tokenPriceForSale, setTokenPriceForSale] = useState<string>('');
-  const { cancelStep, deposited, escrowAddress, formatKsmBalance, getFee, getKusamaTransferFee, kusamaAvailableBalance, readyToAskPrice, sendCurrentUserAction, setPrice, setReadyToAskPrice, tokenAsk, tokenDepositor, tokenInfo, transferStep } = useMarketplaceStages(account, ethAccount, collectionInfo, tokenId);
+  const { cancelStep, deposited, escrowAddress, formatKsmBalance, getKusamaTransferFee, getRevertedFee, kusamaAvailableBalance, readyToAskPrice, sendCurrentUserAction, setPrice, setReadyToAskPrice, tokenAsk, tokenDepositor, tokenInfo, transferStep } = useMarketplaceStages(account, ethAccount, collectionInfo, tokenId);
 
   const uSellIt = tokenAsk && tokenAsk?.ownerAddr.toLowerCase() === ethAccount && tokenAsk.flagActive === '1';
   const uOwnIt = tokenInfo?.owner?.Substrate === account || tokenInfo?.owner?.Ethereum?.toLowerCase() === ethAccount || uSellIt;
@@ -83,17 +83,17 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
 
       if (kusamaFees) {
         setKusamaFees(kusamaFees);
-        const balanceNeeded = tokenAsk.price.add(getFee(tokenAsk.price)).add(kusamaFees.muln(2));
+        const balanceNeeded = tokenAsk.price.add(kusamaFees.muln(2));
         const isLow = !!kusamaAvailableBalance?.add(deposited || new BN(0)).lte(balanceNeeded);
 
         setLowKsmBalanceToBuy(isLow);
       }
     }
-  }, [deposited, escrowAddress, kusamaAvailableBalance, getFee, getKusamaTransferFee, tokenAsk]);
+  }, [deposited, escrowAddress, kusamaAvailableBalance, getKusamaTransferFee, tokenAsk]);
 
   const getMarketPrice = useCallback((price: BN) => {
-    return formatPrice(formatKsmBalance(new BN(price).add(getFee(price))));
-  }, [formatKsmBalance, getFee]);
+    return formatPrice(formatKsmBalance(price.sub(getRevertedFee(price))));
+  }, [formatKsmBalance, getRevertedFee]);
 
   const onCancel = useCallback(() => {
     sendCurrentUserAction('CANCEL');
@@ -188,9 +188,10 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
             { !!tokenPrice && (
               <>
                 <Header as={'h2'}>
-                  {getMarketPrice(tokenPrice)} KSM
+                  {formatPrice(formatKsmBalance(tokenPrice))} KSM
                 </Header>
-                <p>Fee: {formatKsmBalance(getFee(tokenPrice))} KSM, Price: {formatKsmBalance(tokenPrice)} KSM</p>
+                {/* @todo - substrate commission from price - fixed? */}
+                <p>Fee: {formatKsmBalance(getRevertedFee(tokenPrice))} KSM, Price: {getMarketPrice(tokenPrice)} KSM</p>
                 {/* { (!uOwnIt && !transferStep && tokenAsk) && lowBalanceToBuy && (
                   <div className='warning-block'>Your balance is too low to pay fees. <a href='https://t.me/unique2faucetbot'
                     rel='noreferrer nooperer'
@@ -212,11 +213,11 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
               <Header as='h5'>The owner is Escrow</Header>
             )}
 
-            { (!uOwnIt && tokenInfo && tokenInfo.owner && tokenInfo.owner.toString() !== escrowAddress && !tokenAsk?.ownerAddr) && (
+            { (!uOwnIt && tokenInfo?.owner && tokenInfo.owner?.Ethereum !== escrowAddress && tokenAsk?.flagActive !== '1') && (
               <Header as='h5'>The owner is {tokenInfo?.owner.Substrate || tokenInfo?.owner.Ethereum || ''}</Header>
             )}
 
-            { (!uOwnIt && tokenInfo && tokenInfo.owner && tokenInfo.owner.toString() === escrowAddress && tokenAsk?.ownerAddr) && (
+            { (!uOwnIt && tokenInfo && tokenInfo.owner && tokenInfo.owner.toString() === escrowAddress && tokenAsk?.ownerAddr && tokenAsk.flagActive) && (
               <Header as='h5'>The owner is {tokenAsk?.ownerAddr}</Header>
             )}
             <div className='buttons'>
@@ -242,7 +243,7 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
                     <div className='warning-block'>A small Kusama Network transaction fee up to {formatKsmBalance(kusamaFees.muln(2))} KSM will be
                       applied to the transaction</div>
                     <Button
-                      content={`Buy it - ${formatKsmBalance(tokenPrice.add(getFee(tokenPrice)).add(kusamaFees.muln(2)))} KSM`}
+                      content={`Buy it - ${formatKsmBalance(tokenPrice.add(kusamaFees.muln(2)))} KSM`}
                       disabled={lowKsmBalanceToBuy}
                       onClick={onBuy}
                     />

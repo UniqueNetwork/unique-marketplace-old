@@ -27,6 +27,7 @@ export interface MarketplaceStagesInterface {
   error: string | null;
   formatKsmBalance: (value: BN | undefined) => string;
   getFee: (price: BN) => BN;
+  getRevertedFee: (price: BN) => BN;
   getKusamaTransferFee: (recipient: string, value: BN) => Promise<BN | null>;
   kusamaAvailableBalance: BN | undefined;
   sendCurrentUserAction: (action: UserActionType) => void;
@@ -92,6 +93,10 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
     send('WAIT_FOR_USER_ACTION');
   }, [collectionInfo, getTokenInfo, getUserDeposit, send, getTokenAsk, tokenId]);
 
+  const getRevertedFee = useCallback((price: BN): BN => {
+    return price.div(new BN(commission + 100)).mul(new BN(commission));
+  }, []);
+
   const getFee = useCallback((price: BN): BN => {
     return price.mul(new BN(commission)).div(new BN(100));
   }, []);
@@ -114,15 +119,17 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
 
   const transferToEth = useCallback(() => {
     if (collectionInfo && ethAccount) {
-      transferToken(collectionInfo.id, tokenId, normalizeAccountId({ Ethereum: ethAccount }), () => send('SIGN_SUCCESS'), () => send('SIGN_TRANSACTION_FAIL'));
+      transferToken(collectionInfo.id, tokenId, normalizeAccountId({ Ethereum: ethAccount }), () => send('SIGN_SUCCESS'), () => send('SIGN_TRANSACTION_FAIL'), account);
     }
-  }, [collectionInfo, ethAccount, send, transferToken, tokenId]);
+  }, [account, collectionInfo, ethAccount, send, transferToken, tokenId]);
 
+  // @todo - fix no permissions bug - fixed?
   const transferToSub = useCallback(() => {
-    if (collectionInfo && account) {
-      transferToken(collectionInfo.id, tokenId, normalizeAccountId({ Substrate: account }), () => send('SIGN_SUCCESS'), () => send('SIGN_TRANSACTION_FAIL'));
+    if (account && collectionInfo && ethAccount) {
+      // const mySubEthAddress = evmToAddress(ethAccount, 42, 'blake2');
+      transferToken(collectionInfo.id, tokenId, normalizeAccountId({ Substrate: account }), () => send('SIGN_SUCCESS'), () => send('SIGN_TRANSACTION_FAIL'), account);
     }
-  }, [account, collectionInfo, send, transferToken, tokenId]);
+  }, [account, ethAccount, collectionInfo, send, transferToken, tokenId]);
 
   const approveToken = useCallback(async () => {
     if (collectionInfo) {
@@ -179,12 +186,8 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
   }, [account, ethAccount, collectionInfo, getTokenInfo, send, tokenId]);
 
   const depositNeeded = useCallback((userDeposit: BN, tokenPrice: BN): BN => {
-    const feeFull = getFee(tokenPrice);
-    const feePaid = getFee(userDeposit);
-    const fee = feeFull.sub(feePaid);
-
-    return tokenPrice.add(fee).sub(userDeposit);
-  }, [getFee]);
+    return tokenPrice.sub(userDeposit);
+  }, []);
 
   const isDepositEnough = useCallback((userDeposit: BN, tokenPrice: BN): boolean => {
     return !depositNeeded(userDeposit, tokenPrice).gtn(0);
@@ -250,13 +253,13 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
   }, [ethAccount, collectionInfo, getTokenAsk, send, tokenId]);
 
   const addTokenAsk = useCallback(() => {
+    // @todo - add commission to ask - fixed?
     if (collectionInfo && tokenPriceForSale) {
-      // (10n ** 12n) * 10n
-      addAsk(collectionInfo.id, tokenId, tokenPriceForSale,
+      addAsk(collectionInfo.id, tokenId, tokenPriceForSale.add(getFee(tokenPriceForSale)),
         () => send('SIGN_TRANSACTION_FAIL'),
         () => send('SIGN_TRANSACTION_SUCCESS'));
     }
-  }, [addAsk, collectionInfo, send, tokenPriceForSale, tokenId]);
+  }, [addAsk, collectionInfo, getFee, send, tokenPriceForSale, tokenId]);
 
   const openAskModal = useCallback(() => {
     setReadyToAskPrice(true);
@@ -406,6 +409,7 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
     formatKsmBalance,
     getFee,
     getKusamaTransferFee,
+    getRevertedFee,
     kusamaAvailableBalance,
     readyToAskPrice,
     sendCurrentUserAction,

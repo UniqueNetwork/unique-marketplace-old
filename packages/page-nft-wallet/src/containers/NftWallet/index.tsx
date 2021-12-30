@@ -67,8 +67,6 @@ function NftWallet ({ account, collections, openPanel, removeCollectionFromList,
   const addMintCollectionToList = useCallback(async () => {
     const firstCollections: NftCollectionInterface[] = await presetCollections();
 
-    console.log('firstCollections', firstCollections);
-
     mountedRef.current && setCollections((prevCollections: NftCollectionInterface[]) => {
       if (JSON.stringify(firstCollections) !== JSON.stringify(prevCollections)) {
         return [...firstCollections];

@@ -79,7 +79,6 @@ function SetPriceModal (props: Props): React.ReactElement<Props> {
         <Button
           content='Cancel'
           onClick={closeModal}
-          secondary
         />
         <Button
           content='Submit'

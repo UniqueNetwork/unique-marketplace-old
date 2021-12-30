@@ -83,7 +83,7 @@
                 align-items: center;
                 justify-content: center;
                 position: absolute;
-                right: 18px;
+                right: 15px;
                 transform: translateY(calc(100% - 16px));
               }
             }
@@ -119,8 +119,8 @@
   .ui.dropdown {
     width: 100%;
     border: 1px solid var(--border-color);
-    border-radius: 4px;
-    height: 40px;
+    border-radius: calc(var(--gap) / 2);
+    height: 38px;
     display: flex;
     align-items: center;
     padding: 8px 16px;
@@ -217,6 +217,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  min-height: 500px;
 
   .no-tokens-text{
     font-family: var(--font-roboto);

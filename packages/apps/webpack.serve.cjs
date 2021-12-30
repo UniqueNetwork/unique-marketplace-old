@@ -15,18 +15,22 @@ module.exports = merge(
       open: false,
       port: 3003,
       proxy: {
-        '/offers': {
+        '/Offers': {
           changeOrigin: true,
-          target: process.env.UNIQUE_API
+          target: 'https://market-api-opal.unique.network'
         },
-        '/trades': {
+        '/Trades': {
           changeOrigin: true,
-          target: process.env.UNIQUE_API
+          target: 'https://market-api-opal.unique.network'
         },
-        [process.env.UNIQUE_API]: {
+        '/OnHold': {
           changeOrigin: true,
-          target: process.env.UNIQUE_API
+          target: 'https://market-api-opal.unique.network'
         },
+        /* 'https://market-api-opal.unique.network': {
+          changeOrigin: true,
+          target: 'https://market-api-opal.unique.network'
+        }, */
         [process.env.WHITE_LABEL_URL]: {
           changeOrigin: true,
           target: process.env.WHITE_LABEL_URL

@@ -15,6 +15,8 @@ import { useApi, useCollection, useFetch, useIsMountedRef } from '@polkadot/reac
 
 const { uniqueApi, uniqueCollectionIds } = envConfig;
 
+const apiUrl = process.env.NODE_ENV === 'development' ? '' : uniqueApi;
+
 export type MetadataType = {
   metadata?: string;
 }
@@ -88,7 +90,7 @@ export function useCollections () {
   const mountedRef = useIsMountedRef();
   const { getDetailedCollectionInfo } = useCollection();
 
-  const getTokensOfCollection = useCallback(async (collectionId: string, ownerId: string) => {
+  const getTokensOfCollection = useCallback(async (collectionId: string, ownerId: string): Promise<string> => {
     if (!api || !collectionId || !ownerId) {
       return [];
     }
@@ -108,7 +110,7 @@ export function useCollections () {
   const getOffers = useCallback((page: number, pageSize: number, filters?: Filters) => {
     try {
       mountedRef.current && setOffersLoading(true);
-      let url = `${uniqueApi}/offers?page=${page}&pageSize=${pageSize}`;
+      let url = `${apiUrl}/Offers?page=${page}&pageSize=${pageSize}`;
 
       // reset offers before loading first page
       if (page === 1) {
@@ -181,7 +183,7 @@ export function useCollections () {
    */
   const getHoldByMe = useCallback((account: string, page: number, pageSize: number, collectionIds?: string[]) => {
     try {
-      let url = `${uniqueApi}/OnHold/${account}?page=${page}&pageSize=${pageSize}`;
+      let url = `${apiUrl}/OnHold/${account}?page=${page}&pageSize=${pageSize}`;
 
       if (collectionIds && collectionIds.length) {
         url = `${url}${collectionIds.map((item: string) => `&collectionId=${item}`).join('')}`;
@@ -233,7 +235,7 @@ export function useCollections () {
     pageSize,
     sort }: { account?: string, collectionIds?: string[], page: number, pageSize: number, sort?: string}) => {
     try {
-      let url = `${uniqueApi}/trades`;
+      let url = `${apiUrl}/Trades`;
 
       if (account && account.length) {
         url = `${url}/${account}`;

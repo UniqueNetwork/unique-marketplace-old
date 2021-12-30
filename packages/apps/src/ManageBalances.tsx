@@ -2,21 +2,21 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import BN from 'bn.js';
-import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { memo, useCallback, useContext, useMemo, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 import Popup from 'semantic-ui-react/dist/commonjs/modules/Popup';
 
+import ContractContext from '@polkadot/apps/ContractContext/ContractContext';
 import envConfig from '@polkadot/apps-config/envConfig';
 import { OpenPanelType } from '@polkadot/apps-routing/types';
 import { WithdrawModal } from '@polkadot/react-components';
-import { useBalances, useNftContract } from '@polkadot/react-hooks';
+import { useBalances } from '@polkadot/react-hooks';
 import { formatKsmBalance, formatStrBalance } from '@polkadot/react-hooks/useKusamaApi';
-import { subToEth } from '@polkadot/react-hooks/utils';
 
 import question from './images/question.svg';
 
-const { commission, minPrice } = envConfig;
+const { minPrice } = envConfig;
 
 interface Props {
   account?: string;
@@ -25,11 +25,10 @@ interface Props {
 
 const ManageBalances = (props: Props) => {
   const { account } = props;
-  const [ethAccount, setEthAccount] = useState<string>();
-  const { contractInstance, getUserDeposit, withdrawKSM } = useNftContract(account, ethAccount);
-  const { freeBalance, freeKusamaBalance } = useBalances(account, getUserDeposit);
+
+  const { deposited } = useContext(ContractContext);
+  const { freeBalance, freeKusamaBalance } = useBalances(account);
   const [showWithdrawModal, toggleWithdrawModal] = useState<boolean>(false);
-  const deposited: BN|undefined = new BN(Number(localStorage.getItem('deposit')));
 
   const closeModal = useCallback(() => {
     toggleWithdrawModal(false);
@@ -38,16 +37,6 @@ const ManageBalances = (props: Props) => {
   const openModal = useCallback(() => {
     toggleWithdrawModal(true);
   }, []);
-
-  const getFee = useCallback((price: BN): BN => {
-    return new BN(price).mul(new BN(commission)).div(new BN(100));
-  }, []);
-
-  useEffect(() => {
-    if (account) {
-      setEthAccount(subToEth(account).toLowerCase());
-    }
-  }, [account]);
 
   const withdrawPopup = useMemo(() => {
     return (
@@ -80,18 +69,20 @@ const ManageBalances = (props: Props) => {
           <span className='unit'>KSM</span>
         </div>
         <div className='balance-line'>
-          { +formatKsmBalance(deposited) > minPrice && deposited ? formatKsmBalance(new BN(deposited).add(getFee(deposited))) : 0}
+          { +formatKsmBalance(deposited) > minPrice && deposited ? formatKsmBalance(new BN(deposited)) : 0}
           <span className='unit'>KSM deposit</span>
-          { !!(deposited && deposited.div(new BN(1000000)).gt(new BN(1))) && (
+          { !!(deposited && +formatKsmBalance(deposited) > minPrice) && (
             <Popup
               className='mobile withdraw-popup'
               content={withdrawPopup}
               on='click'
               position='bottom left'
-              trigger={<img
-                alt='withdraw'
-                src={question as string}
-              />}
+              trigger={(
+                <img
+                  alt='withdraw'
+                  src={question as string}
+                />
+              )}
             />
           )}
         </div>
@@ -111,10 +102,6 @@ const ManageBalances = (props: Props) => {
         <WithdrawModal
           account={account}
           closeModal={closeModal}
-          contractInstance={contractInstance}
-          deposited={deposited}
-          updateDeposit={getUserDeposit}
-          withdrawKSM={withdrawKSM}
         />
       )}
     </div>

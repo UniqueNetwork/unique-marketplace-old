@@ -2,17 +2,17 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import BN from 'bn.js';
-import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { memo, useCallback, useContext, useMemo, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 import Popup from 'semantic-ui-react/dist/commonjs/modules/Popup';
 
+import ContractContext from '@polkadot/apps/ContractContext/ContractContext';
 import question from '@polkadot/apps/images/question.svg';
 import envConfig from '@polkadot/apps-config/envConfig';
 import { WithdrawModal } from '@polkadot/react-components';
-import { useBalances, useNftContract } from '@polkadot/react-hooks';
+import { useBalances } from '@polkadot/react-hooks';
 import { formatKsmBalance, formatStrBalance } from '@polkadot/react-hooks/useKusamaApi';
-import { subToEth } from '@polkadot/react-hooks/utils';
 
 const { minPrice } = envConfig;
 
@@ -23,9 +23,8 @@ interface Props {
 
 const PopupMenu = (props: Props) => {
   const { account, isPopupActive } = props;
-  const [ethAccount, setEthAccount] = useState<string>();
-  const { contractInstance, deposited, getUserDeposit, withdrawKSM } = useNftContract(account, ethAccount);
-  const { freeBalance, freeKusamaBalance } = useBalances(account, getUserDeposit);
+  const { deposited } = useContext(ContractContext);
+  const { freeBalance, freeKusamaBalance } = useBalances(account);
   const [showWithdrawModal, toggleWithdrawModal] = useState<boolean>(false);
 
   const closeModal = useCallback(() => {
@@ -55,12 +54,6 @@ const PopupMenu = (props: Props) => {
       </div>
     );
   }, [openModal]);
-
-  useEffect(() => {
-    if (account) {
-      setEthAccount(subToEth(account).toLowerCase());
-    }
-  }, [account]);
 
   return (
     <div className={`manage-balances ${isPopupActive ? 'popup active' : 'popup'}`}>
@@ -106,10 +99,6 @@ const PopupMenu = (props: Props) => {
         <WithdrawModal
           account={account}
           closeModal={closeModal}
-          contractInstance={contractInstance}
-          deposited={deposited}
-          updateDeposit={getUserDeposit}
-          withdrawKSM={withdrawKSM}
         />
       )}
     </div>

@@ -3,38 +3,36 @@
 
 import './styles.scss';
 
-import type { Contract } from 'web3-eth-contract';
-
 import BN from 'bn.js';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useContext, useState } from 'react';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form/Form';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button';
 import Modal from 'semantic-ui-react/dist/commonjs/modules/Modal/Modal';
 
+import ContractContext from '@polkadot/apps/ContractContext/ContractContext';
 import envConfig from '@polkadot/apps-config/envConfig';
 import { Input } from '@polkadot/react-components';
+import { useNftContract } from '@polkadot/react-hooks';
 import { formatKsmBalance } from '@polkadot/react-hooks/useKusamaApi';
-import { getFee } from '@polkadot/react-hooks/utils';
 
 const { kusamaDecimals } = envConfig;
 
 interface Props {
   account?: string;
   closeModal: () => void;
-  contractInstance: Contract | null;
-  deposited: BN | undefined;
-  updateDeposit: () => Promise<BN | null>;
-  withdrawKSM: (amount: string, failCallBack: () => void, successCallBack: () => void) => void;
 }
 
-function WithdrawModal ({ closeModal, deposited, updateDeposit, withdrawKSM }: Props): React.ReactElement<Props> {
+function WithdrawModal ({ closeModal }: Props): React.ReactElement<Props> {
   const [withdrawAmount, setWithdrawAmount] = useState<string>('');
+  const { account, deposited, ethAccount, getUserDeposit } = useContext(ContractContext);
+  const { withdrawKSM } = useNftContract(account, ethAccount);
 
   const revertMoney = useCallback(() => {
     const amountToWithdraw = parseFloat(withdrawAmount) * Math.pow(10, kusamaDecimals);
 
-    withdrawKSM(amountToWithdraw.toFixed(0), () => closeModal(), () => { void updateDeposit(); closeModal(); });
-  }, [closeModal, withdrawAmount, updateDeposit, withdrawKSM]);
+    closeModal();
+    withdrawKSM(amountToWithdraw.toFixed(0), () => closeModal(), () => void getUserDeposit());
+  }, [closeModal, withdrawAmount, getUserDeposit, withdrawKSM]);
 
   const setValue = useCallback((val: string) => {
     val = val.slice(0, 8);
@@ -47,9 +45,7 @@ function WithdrawModal ({ closeModal, deposited, updateDeposit, withdrawKSM }: P
 
   const setMax = useCallback(() => {
     if (deposited) {
-      const depositedFee = getFee(deposited);
-
-      setWithdrawAmount(formatKsmBalance(new BN(deposited).add(depositedFee)));
+      setWithdrawAmount(formatKsmBalance(new BN(deposited)));
     }
   }, [deposited]);
 
@@ -78,7 +74,7 @@ function WithdrawModal ({ closeModal, deposited, updateDeposit, withdrawKSM }: P
                   defaultValue={(withdrawAmount || 0).toString()}
                   isError={!!(!deposited || (withdrawAmount && parseFloat(withdrawAmount) > parseFloat(formatKsmBalance(deposited))))}
                   label={'amount'}
-                  max={deposited && parseFloat(formatKsmBalance(new BN(deposited).add(getFee(deposited))))}
+                  max={deposited && parseFloat(formatKsmBalance(new BN(deposited)))}
                   onChange={setValue}
                   onKeyDown={onKeyDown}
                   placeholder='0'

@@ -3,15 +3,12 @@
 
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form';
-import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 import Dropdown, { DropdownProps } from 'semantic-ui-react/dist/commonjs/modules/Dropdown';
 
 import ArrowDown from '@polkadot/app-nft-market/components/arrowDown';
 import ArrowUp from '@polkadot/app-nft-market/components/arrowUp';
 import { Filters } from '@polkadot/app-nft-market/containers/NftMarket';
-import { ClearIcon } from '@polkadot/app-nft-wallet/components/CollectionSearch/ClearIcon';
-import searchIcon from '@polkadot/app-nft-wallet/components/CollectionSearch/searchIcon.svg';
-import { Input } from '@polkadot/react-components';
+import { SearchFilter } from '@polkadot/react-components';
 
 export type SearchFormProps = {
   clearAllFilters: () => void;
@@ -134,36 +131,12 @@ const SearchForm = (props: SearchFormProps) => {
   return (
     <Form>
       <Form.Field className='search-field'>
-        <Input
-          className='isSmall'
-          icon={
-            <img
-              alt='search'
-              className='search-icon'
-              src={searchIcon as string}
-            />
-          }
-          onChange={setSearchString}
-          placeholder='Search for tokens or attributes'
-          value={searchString}
-          withLabel
-        >
-          { offersLoading && (
-            <Loader
-              active
-              inline='centered'
-              key='offers-loading'
-            />
-          )}
-          { searchString?.length > 0 && (
-            <div
-              className='clear-icon'
-              onClick={clearSearch}
-            >
-              <ClearIcon />
-            </div>
-          )}
-        </Input>
+        <SearchFilter
+          clearSearch={clearSearch}
+          loading={offersLoading}
+          searchString={searchString}
+          setSearchString={setSearchString}
+        />
       </Form.Field>
       <Form.Field className='sort-field'>
         <Dropdown
