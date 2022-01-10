@@ -9,7 +9,6 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useHistory } from 'react-router';
 import Item from 'semantic-ui-react/dist/commonjs/views/Item';
 
-import { Tooltip } from '@polkadot/react-components';
 import { useSchema } from '@polkadot/react-hooks';
 import { HoldType } from '@polkadot/react-hooks/useCollections';
 
@@ -23,7 +22,7 @@ interface Props {
   tokensSelling: string[];
 }
 
-function NftTokenCard ({ account, canTransferTokens, collection, onHold, openTransferModal, token, tokensSelling }: Props): React.ReactElement<Props> {
+function NftTokenCard ({ account, collection, onHold, token, tokensSelling }: Props): React.ReactElement<Props> {
   const { attributes, tokenUrl } = useSchema(account, collection.id, token);
   const [tokenState, setTokenState] = useState<'none' | 'selling' | 'onHold'>('none');
   const history = useHistory();
@@ -34,7 +33,7 @@ function NftTokenCard ({ account, canTransferTokens, collection, onHold, openTra
 
   const attrebutesToShow = useMemo(() => {
     if (attributes) {
-      return [...Object.keys(attributes).map((attr: string) => {
+      return [...Object.keys(attributes).filter((attr: string) => attr !== 'ipfsJson').map((attr: string) => {
         if (attr.toLowerCase().includes('hash')) {
           return `${attr}: ${(attributes[attr] as string).substring(0, 8)}...`;
         }
@@ -65,10 +64,6 @@ function NftTokenCard ({ account, canTransferTokens, collection, onHold, openTra
   const onOpen = useCallback(() => {
     openDetailedInformationModal(collection.id, token);
   }, [collection, token, openDetailedInformationModal]);
-
-  const onOpenTransfer = useCallback(() => {
-    openTransferModal(collection, token, 1);
-  }, [collection, token, openTransferModal]);
 
   useEffect(() => {
     updateTokenState();
@@ -106,26 +101,6 @@ function NftTokenCard ({ account, canTransferTokens, collection, onHold, openTra
         </div>
       </div>
       <div className='token-actions'>
-        { canTransferTokens && tokenState === 'none' && (
-          <>
-            {/* <img
-              alt={'add'}
-              data-for='Transfer nft'
-              data-tip='Transfer nft'
-              onClick={onOpenTransfer}
-              src={transfer as string}
-              title='add'
-            /> */}
-            <Tooltip
-              arrowColor={'transparent'}
-              backgroundColor={'var(--border-color)'}
-              place='bottom'
-              text={'Transfer nft'}
-              textColor={'var(--sub-header-text-transform)'}
-              trigger={'Transfer nft'}
-            />
-          </>
-        )}
         { tokenState === 'selling' && (
           <span className='token-state'>
             Selling

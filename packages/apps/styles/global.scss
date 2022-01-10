@@ -285,11 +285,11 @@ h4.ui.header {
   color: var(--text-color);
 
   &:after {
-    left: 40%;
+    left: calc(50% - 18px);
   }
 
   &:before {
-    left: 40%;
+    left: calc(50% - 18px);
   }
 
   .load-more {

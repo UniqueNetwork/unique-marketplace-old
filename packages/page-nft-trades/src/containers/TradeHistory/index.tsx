@@ -4,8 +4,7 @@
 import type { TradeType } from '@polkadot/react-hooks/useCollections';
 
 import moment from 'moment';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useHistory } from 'react-router';
+import React, { ReactText, useCallback, useEffect, useRef, useState } from 'react';
 
 import envConfig from '@polkadot/apps-config/envConfig';
 import { ListComponent } from '@polkadot/react-components';
@@ -20,7 +19,6 @@ function TradeHistory ({ account }: { account?: string }): React.ReactElement {
   const [page, setPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(20);
   const [sortedValue, setSortedValue] = useState<[string, string] | undefined>();
-  const history = useHistory();
 
   const fetchTrades = useCallback(() => {
     getTrades({ account, collectionIds: uniqueCollectionIds, page, pageSize, sort: sortedValue ? `${sortedValue[0]}(${sortedValue[1]})` : undefined });
@@ -47,10 +45,6 @@ function TradeHistory ({ account }: { account?: string }): React.ReactElement {
     }
   }, [account, myTrades, trades]);
 
-  const openDetailedInformationModal = useCallback((collectionId: string | number, tokenId: string | number) => {
-    history.push(`/wallet/token-details?collectionId=${collectionId}&tokenId=${tokenId}`);
-  }, [history]);
-
   const onSort = useCallback((newSort: string) => {
     setSortedValue((_value) => {
       const [order, sortedBy] = _value || [];
@@ -67,7 +61,7 @@ function TradeHistory ({ account }: { account?: string }): React.ReactElement {
     >
       <ListComponent
         empty={'No trades found'}
-        header={headerRef.current}
+        header={headerRef.current as ReactText[][]}
         onSort={onSort}
         sortedValue={sortedValue}
       >
@@ -78,9 +72,14 @@ function TradeHistory ({ account }: { account?: string }): React.ReactElement {
           >
             <td
               className='overflow tradeList token-id'
-              onClick={openDetailedInformationModal.bind(null, trade.collectionId, trade.tokenId)}
             >
-              {trade.tokenId}
+              <a
+                href={`#/wallet/token-details?collectionId=${trade.collectionId}&tokenId=${trade.tokenId}`}
+                rel='noopener noreferrer'
+                target='_blank'
+              >
+                {trade.tokenId}
+              </a>
             </td>
             <td className='overflow tradeList'>
               {trade.collectionId}
