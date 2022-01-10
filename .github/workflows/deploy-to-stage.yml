@@ -1,6 +1,11 @@
 name: Deploy to Stage cluster
 
-on: workflow-dispatch
+on:
+  push:
+    branches:
+      - release/**
+      - hotfix/**
+  workflow_dispatch:
 
 jobs:
   run-gitlab-pipeline:
