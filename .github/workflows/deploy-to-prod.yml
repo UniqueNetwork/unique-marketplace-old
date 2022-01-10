@@ -1,7 +1,6 @@
 name: Deploy to Production cluster
 
-on:
-  workflow-dispatch:
+on: workflow-dispatch
 
 jobs:
   run-gitlab-pipeline:
