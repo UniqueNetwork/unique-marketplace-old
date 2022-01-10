@@ -3,7 +3,6 @@ name: Deploy to Develop cluster
 on:
   push:
     branches:
-      - flant-add-workflow
       - develop
   workflow_dispatch:
 
