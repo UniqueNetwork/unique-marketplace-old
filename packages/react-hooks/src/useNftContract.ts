@@ -120,7 +120,7 @@ export function useNftContract (account: string | undefined, ethAccount: string 
     }
 
     return false;
-  }, [account, matcherContractInstance, evmCollectionInstance]);
+  }, [api, account, matcherContractInstance, evmCollectionInstance]);
 
   const getMySubEthAddressBalance = useCallback(async (mySubEthAddress: string): Promise<BN> => {
     if (mySubEthAddress && api) {
