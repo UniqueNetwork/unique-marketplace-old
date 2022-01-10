@@ -59,7 +59,7 @@ export interface useNftContractInterface {
   decimals: BN;
   deposited: BN | undefined;
   depositor: string | undefined;
-  getApproved: (tokenId: string) => Promise<boolean>;
+  getApproved: (collectionId: string, tokenId: string, tokenOwner: CrossAccountId) => Promise<boolean>;
   getMySubEthAddressBalance: (address: string) => Promise<BN>;
   getTokenAsk: (collectionId: string, tokenId: string) => Promise<TokenAskType | null>;
   getTokenOrder: (order: number) => void;
@@ -107,14 +107,13 @@ export function useNftContract (account: string | undefined, ethAccount: string 
   const { deposited, evmCollectionInstance, getUserDeposit, matcherContractInstance, setEvmCollectionInstance, web3Instance } = useContext(ContractContext);
   const [tokenAsk, setTokenAsk] = useState<TokenAskType>();
 
-  const getApproved = useCallback(async (tokenId: string): Promise<boolean> => {
+  const getApproved = useCallback(async (collectionId: string, tokenId: string, tokenOwner: CrossAccountId): Promise<boolean> => {
     try {
       if (matcherContractInstance && evmCollectionInstance) {
-        const approvedAddress = await (evmCollectionInstance.methods as EvmCollectionAbiMethods).getApproved(tokenId).call();
+        // const approvedAddress = await (evmCollectionInstance.methods as EvmCollectionAbiMethods).getApproved(tokenId).call();
+        const approvedCount = (await api.rpc.unique.allowance(collectionId, tokenOwner, { Substrate: account }, tokenId)).toJSON() as number;
 
-        console.log('approvedAddress', approvedAddress);
-
-        return approvedAddress === account;
+        return approvedCount === 1;
       }
     } catch (e) {
       console.log('getUserDeposit Error: ', e);

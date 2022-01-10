@@ -14,7 +14,7 @@ import { useKusamaApi, useNftContract, useToken } from '@polkadot/react-hooks';
 import { evmToAddress } from '@polkadot/util-crypto';
 
 import marketplaceStateMachine from './stateMachine';
-import { normalizeAccountId } from './utils';
+import { CrossAccountId, normalizeAccountId } from './utils';
 
 const { commission, escrowAddress, kusamaDecimals } = envConfig;
 
@@ -153,8 +153,9 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
   }, [account, ethAccount, collectionInfo, send, transferToken, tokenId]);
 
   const approveToken = useCallback(async () => {
-    if (collectionInfo && ethAccount) {
-      const approved = await getApproved(tokenId);
+    if (collectionInfo && ethAccount && tokenInfo) {
+      const tokenOwner = tokenInfo.owner as CrossAccountId;
+      const approved = await getApproved(collectionInfo.id, tokenId, tokenOwner);
 
       if (approved) {
         send('ALREADY_APPROVED');
@@ -164,7 +165,7 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
           () => send('SIGN_TRANSACTION_SUCCESS'));
       }
     }
-  }, [approveTokenToContract, collectionInfo, ethAccount, getApproved, send, tokenId]);
+  }, [approveTokenToContract, collectionInfo, ethAccount, getApproved, send, tokenId, tokenInfo]);
 
   const waitForNftDeposit = useCallback(async () => {
     if (collectionInfo) {
