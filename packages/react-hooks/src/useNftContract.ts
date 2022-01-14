@@ -10,9 +10,9 @@ import Web3 from 'web3';
 
 import ContractContext from '@polkadot/apps/ContractContext/ContractContext';
 import envConfig from '@polkadot/apps-config/envConfig';
-import { DEFAULT_DECIMALS } from '@polkadot/react-api';
 import { StatusContext } from '@polkadot/react-components';
 import { useApi } from '@polkadot/react-hooks';
+import { formatBalance } from '@polkadot/util';
 import { evmToAddress } from '@polkadot/util-crypto';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -56,7 +56,7 @@ export interface useNftContractInterface {
   buyToken: (collectionId: string, tokenId: string, failCallBack: () => void, successCallBack: () => void) => void;
   cancelAsk: (collectionId: string, tokenId: string, failCallBack: () => void, successCallBack: () => void) => void;
   contractInstance: Contract | null;
-  decimals: BN;
+  decimals: number;
   deposited: BN | undefined;
   depositor: string | undefined;
   getApproved: (collectionId: string, tokenId: string, tokenOwner: CrossAccountId) => Promise<boolean>;
@@ -101,11 +101,11 @@ to sell:
 // https://docs.google.com/document/d/1WED9VP8Yj52Un4qmkGDpzjesQTzwwoDgYMk1Ty8yftQ/edit
 export function useNftContract (account: string | undefined, ethAccount: string | undefined): useNftContractInterface {
   const { api } = useApi();
-  const [decimals, setDecimals] = useState(new BN(18));
   const [depositor, setDepositor] = useState<string>();
   const { queueExtrinsic } = useContext(StatusContext);
   const { deposited, evmCollectionInstance, getUserDeposit, matcherContractInstance, setEvmCollectionInstance, web3Instance } = useContext(ContractContext);
   const [tokenAsk, setTokenAsk] = useState<TokenAskType>();
+  const decimals = formatBalance.getDefaults().decimals;
 
   const getApproved = useCallback(async (collectionId: string, tokenId: string, tokenOwner: CrossAccountId): Promise<boolean> => {
     try {
@@ -402,13 +402,6 @@ export function useNftContract (account: string | undefined, ethAccount: string 
     return !!(matcherContractInstance);
   }, [matcherContractInstance]);
 
-  const fetchSystemProperties = useCallback(async () => {
-    const properties = await api.rpc.system.properties();
-    const tokenDecimals = properties.tokenDecimals.unwrapOr([DEFAULT_DECIMALS]);
-
-    setDecimals(tokenDecimals[0]);
-  }, [api]);
-
   /* const registerDeposit = useCallback(async () => {
     if (ethAccount && contractInstance && tokenAsk && web3Instance) {
       console.log('tokenAsk.price.toNumber()', tokenAsk.price.toNumber());
@@ -421,10 +414,6 @@ export function useNftContract (account: string | undefined, ethAccount: string 
   useEffect(() => {
     void registerDeposit();
   }, [registerDeposit]); */
-
-  useEffect(() => {
-    void fetchSystemProperties();
-  }, [fetchSystemProperties]);
 
   useEffect(() => {
     void getUserDeposit();

@@ -10,9 +10,9 @@ import Popup from 'semantic-ui-react/dist/commonjs/modules/Popup';
 import ContractContext from '@polkadot/apps/ContractContext/ContractContext';
 import question from '@polkadot/apps/images/question.svg';
 import envConfig from '@polkadot/apps-config/envConfig';
-import { WithdrawModal } from '@polkadot/react-components';
+import { ChainBalance, WithdrawModal } from '@polkadot/react-components';
 import { useBalances } from '@polkadot/react-hooks';
-import { formatKsmBalance, formatStrBalance } from '@polkadot/react-hooks/useKusamaApi';
+import { formatKsmBalance } from '@polkadot/react-hooks/useKusamaApi';
 
 const { minPrice } = envConfig;
 
@@ -58,8 +58,7 @@ const PopupMenu = (props: Props) => {
   return (
     <div className={`manage-balances ${isPopupActive ? 'popup active' : 'popup'}`}>
       <div className='main-balance'>
-        {formatStrBalance(15, freeBalance)}
-        <span className='unit'>UNQ</span>
+        <ChainBalance value={freeBalance} />
       </div>
       <div className='other-balance'>
         <div className='balance-line'>

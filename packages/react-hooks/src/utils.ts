@@ -8,9 +8,10 @@ import Web3 from 'web3';
 
 import envConfig from '@polkadot/apps-config/envConfig';
 import { IKeyringPair } from '@polkadot/types/types';
+import { formatBalance } from '@polkadot/util';
 import { addressToEvm } from '@polkadot/util-crypto';
 
-const { commission } = envConfig;
+const { commission, decimals, minPrice } = envConfig;
 
 export type CrossAccountId = {
   Substrate: string,
@@ -76,4 +77,36 @@ export function normalizeAccountId (input: string | AccountId | CrossAccountId |
 
   // AccountId
   return { Substrate: input.toString() };
+}
+
+export function formatStrBalance (value: BN | undefined = new BN(0), incomeDecimals?: number): string {
+  if (!value) {
+    return '';
+  }
+
+  const tokenDecimals = incomeDecimals || formatBalance.getDefaults().decimals;
+
+  if (value.lte(new BN(minPrice * Math.pow(10, tokenDecimals)))) {
+    return ` ${minPrice}`;
+  }
+
+  // calculate number after decimal point
+  const decNum = value?.toString().length - tokenDecimals;
+  let balanceStr = '';
+
+  if (decNum < 0) {
+    balanceStr = [...Array.from('0'.repeat(Math.abs(decNum))), '.', ...value.toString()].join('');
+  }
+
+  if (decNum > 0) {
+    balanceStr = [...value.toString().substr(0, decNum), '.', ...value.toString().substr(decNum, tokenDecimals - decNum)].join('');
+  }
+
+  if (decNum === 0) {
+    balanceStr = ['0', '.', ...value.toString().substr(decNum, tokenDecimals - decNum)].join('');
+  }
+
+  const arr = balanceStr.toString().split('.');
+
+  return `${arr[0]}${arr[1] ? `.${arr[1].substr(0, decimals)}` : ''}`;
 }

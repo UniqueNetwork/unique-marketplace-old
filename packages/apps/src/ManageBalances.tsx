@@ -10,9 +10,9 @@ import Popup from 'semantic-ui-react/dist/commonjs/modules/Popup';
 import ContractContext from '@polkadot/apps/ContractContext/ContractContext';
 import envConfig from '@polkadot/apps-config/envConfig';
 import { OpenPanelType } from '@polkadot/apps-routing/types';
-import { WithdrawModal } from '@polkadot/react-components';
+import { ChainBalance, WithdrawModal } from '@polkadot/react-components';
 import { useBalances } from '@polkadot/react-hooks';
-import { formatKsmBalance, formatStrBalance } from '@polkadot/react-hooks/useKusamaApi';
+import { formatKsmBalance } from '@polkadot/react-hooks/useKusamaApi';
 
 import question from './images/question.svg';
 
@@ -60,8 +60,7 @@ const ManageBalances = (props: Props) => {
   return (
     <div className='manage-balances mobile'>
       <div className='main-balance'>
-        {formatStrBalance(15, freeBalance)}
-        <span className='unit'>UNQ</span>
+        <ChainBalance value={freeBalance} />
       </div>
       <div className='other-balance'>
         <div className='balance-line'>

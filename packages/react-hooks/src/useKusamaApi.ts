@@ -9,9 +9,10 @@ import envConfig from '@polkadot/apps-config/envConfig';
 import { StatusContext } from '@polkadot/react-components';
 import { useApi } from '@polkadot/react-hooks/useApi';
 import { useKusamaBalance } from '@polkadot/react-hooks/useKusamaBalance';
+import { formatStrBalance } from '@polkadot/react-hooks/utils';
 import { encodeAddress } from '@polkadot/util-crypto';
 
-const { kusamaDecimals, minPrice } = envConfig;
+const { kusamaDecimals } = envConfig;
 
 interface UseKusamaApiInterface {
   encodedKusamaAccount: string | undefined;
@@ -23,22 +24,7 @@ interface UseKusamaApiInterface {
 }
 
 export function formatKsmBalance (value: BN | undefined = new BN(0)): string {
-  return formatStrBalance(kusamaDecimals, value);
-}
-
-export function formatStrBalance (decimals: number, value: BN | undefined = new BN(0)): string {
-  const floatValue = parseFloat(value.toString()) / Math.pow(10, decimals);
-  const arr = floatValue.toString().split('.');
-
-  if (floatValue === 0) {
-    return '0';
-  }
-
-  if (floatValue < minPrice && floatValue > 0) {
-    return `< ${minPrice}`;
-  }
-
-  return `${arr[0]}${arr[1] ? `.${arr[1].substr(0, 6)}` : ''}`;
+  return formatStrBalance(value, kusamaDecimals);
 }
 
 export const useKusamaApi = (account?: string): UseKusamaApiInterface => {

@@ -2,12 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import type { OpenPanelType } from '@polkadot/apps-routing/types';
+
 import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 
 import menuArrow from '@polkadot/apps/images/menu-arrow.svg';
-import { PopupMenu } from '@polkadot/react-components';
-import { useApi, useBalances } from '@polkadot/react-hooks';
-import { formatKsmBalance, formatStrBalance } from '@polkadot/react-hooks/useKusamaApi';
+import { ChainBalance, PopupMenu } from '@polkadot/react-components';
+import { useBalances } from '@polkadot/react-hooks';
+import { formatKsmBalance } from '@polkadot/react-hooks/useKusamaApi';
 
 interface Props {
   account?: string,
@@ -18,10 +19,6 @@ interface Props {
 function BalancesHeader (props: Props): React.ReactElement<{ account?: string }> {
   const { account, isMobileMenu, setOpenPanel } = props;
   const { freeBalance, freeKusamaBalance } = useBalances(account);
-  const { api } = useApi();
-
-  const chainName = api?.registry.chainTokens[0];
-
   const [isPopupActive, setIsPopupActive] = useState<boolean>(false);
 
   const headerRef = useRef<HTMLDivElement>(null);
@@ -60,8 +57,7 @@ function BalancesHeader (props: Props): React.ReactElement<{ account?: string }>
         onClick={onClick}
       >
         <div className='app-balances-items-item'>
-          {formatStrBalance(15, freeBalance)}
-          <span className='unit'>{chainName}</span>
+          <ChainBalance value={freeBalance} />
         </div>
         {freeKusamaBalance && (
           <div className='app-balances-items-item'>

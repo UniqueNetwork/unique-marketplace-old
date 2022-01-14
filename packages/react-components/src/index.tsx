@@ -18,6 +18,7 @@ export { default as Bonded } from './Bonded';
 export { default as Button } from './Button';
 export { default as ButtonCancel } from './ButtonCancel';
 export { default as Call } from './Call';
+export { default as ChainBalance } from './ChainBalance';
 export { default as ChainImg } from './ChainImg';
 export { default as Checkbox } from './Checkbox';
 export { default as Columar } from './Columar';
