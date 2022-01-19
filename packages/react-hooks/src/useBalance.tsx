@@ -19,30 +19,28 @@ export interface UseBalanceInterface {
   balance: BalanceInterface | null;
   balanceError: boolean;
   existentialDeposit: BN | null;
+  kusamaExistentialDeposit: BN | null;
 }
 
 export function useBalance (accountId?: string): UseBalanceInterface {
-  const { api } = useApi();
+  const { api, kusamaApi } = useApi();
   const [balance, setBalance] = useState<BalanceInterface | null>(null);
   const [balanceError, setBalanceError] = useState<boolean>(false);
-  const [existentialDeposit, setExistentialDeposit] = useState<BN | null>(null);
   const accountInfo = useCall<AccountInfoWithProviders | AccountInfoWithRefCount>(api.query.system.account, [accountId]);
+  const existentialDeposit = api?.consts.balances.existentialDeposit;
+  const kusamaExistentialDeposit = kusamaApi?.consts.balances?.existentialDeposit;
 
   const getAccountBalance = useCallback(() => {
     if (accountInfo) {
-      console.log('accountInfo', accountInfo);
       setBalance(accountInfo.data);
 
       setBalanceError(false);
-      const existentialDeposit = api.consts.balances.existentialDeposit;
-
-      setExistentialDeposit(existentialDeposit);
     }
-  }, [accountInfo, api]);
+  }, [accountInfo]);
 
   useEffect(() => {
     getAccountBalance();
   }, [getAccountBalance]);
 
-  return { balance, balanceError, existentialDeposit };
+  return { balance, balanceError, existentialDeposit, kusamaExistentialDeposit };
 }

@@ -1,0 +1,27 @@
+.warning-text {
+  display: flex;
+  background-color: var(--modal-warning-background-color);
+  align-items: center;
+  padding: calc(var(--gap) / 2);
+  border-radius: calc(var(--gap) / 4);
+  margin: calc((var(--gap) / 2) * 3) 0;
+
+  font-family: var(--font-roboto);
+  font-size: 14px;
+  line-height: 22px;
+  margin-bottom: 0;
+
+  &.warning {
+    color: var(--warning-text-color);
+    background-color: var(--warning-background-color);
+  }
+
+  &.info {
+    color: var(--info-text-color);
+    background-color: var(--info-background-color);
+  }
+
+  img {
+    margin: 0 calc(var(--gap) / 2) ;
+  }
+}

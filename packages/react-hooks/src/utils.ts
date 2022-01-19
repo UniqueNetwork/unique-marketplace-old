@@ -80,8 +80,8 @@ export function normalizeAccountId (input: string | AccountId | CrossAccountId |
 }
 
 export function formatStrBalance (value: BN | undefined = new BN(0), incomeDecimals?: number): string {
-  if (!value) {
-    return '';
+  if (!value || value.toString() === '0') {
+    return '0';
   }
 
   const tokenDecimals = incomeDecimals || formatBalance.getDefaults().decimals;
@@ -95,7 +95,7 @@ export function formatStrBalance (value: BN | undefined = new BN(0), incomeDecim
   let balanceStr = '';
 
   if (decNum < 0) {
-    balanceStr = [...Array.from('0'.repeat(Math.abs(decNum))), '.', ...value.toString()].join('');
+    balanceStr = ['0', '.', ...Array.from('0'.repeat(Math.abs(decNum))), ...value.toString()].join('');
   }
 
   if (decNum > 0) {

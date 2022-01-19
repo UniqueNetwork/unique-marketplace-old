@@ -12,7 +12,7 @@ import Image from 'semantic-ui-react/dist/commonjs/elements/Image';
 import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
 import envConfig from '@polkadot/apps-config/envConfig';
-import { TransferModal } from '@polkadot/react-components';
+import { TransferModal, WarningText } from '@polkadot/react-components';
 import formatPrice from '@polkadot/react-components/util/formatPrice';
 import { useBalance, useDecoder, useMarketplaceStages, useSchema } from '@polkadot/react-hooks';
 import { subToEth } from '@polkadot/react-hooks/utils';
@@ -33,13 +33,14 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
   const collectionId = query.get('collectionId') || '';
   const [showTransferForm, setShowTransferForm] = useState<boolean>(false);
   const [ethAccount, setEthAccount] = useState<string>();
+  const [isInWhiteList, setIsInWhiteList] = useState<boolean>(false);
   const [lowKsmBalanceToBuy, setLowKsmBalanceToBuy] = useState<boolean>(false);
   const [kusamaFees, setKusamaFees] = useState<BN | null>(null);
-  const { balance } = useBalance(account);
+  const { balance, kusamaExistentialDeposit } = useBalance(account);
   const { hex2a } = useDecoder();
   const { attributes, collectionInfo, tokenUrl } = useSchema(account, collectionId, tokenId);
   const [tokenPriceForSale, setTokenPriceForSale] = useState<string>('');
-  const { cancelStep, deposited, escrowAddress, formatKsmBalance, getKusamaTransferFee, getRevertedFee, kusamaAvailableBalance, readyToAskPrice, sendCurrentUserAction, setPrice, setReadyToAskPrice, tokenAsk, tokenDepositor, tokenInfo, transferStep } = useMarketplaceStages(account, ethAccount, collectionInfo, tokenId);
+  const { cancelStep, checkWhiteList, deposited, escrowAddress, formatKsmBalance, getKusamaTransferFee, getRevertedFee, kusamaAvailableBalance, readyToAskPrice, sendCurrentUserAction, setPrice, setReadyToAskPrice, tokenAsk, tokenDepositor, tokenInfo, transferStep } = useMarketplaceStages(account, ethAccount, collectionInfo, tokenId);
 
   const uSellIt = tokenAsk && tokenAsk?.ownerAddr.toLowerCase() === ethAccount && tokenAsk.flagActive === '1';
   const uOwnIt = tokenInfo?.owner?.Substrate === account || tokenInfo?.owner?.Ethereum?.toLowerCase() === ethAccount || uSellIt;
@@ -115,9 +116,24 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
     setShowTransferForm(false);
   }, []);
 
+  const checkIsInWhiteList = useCallback(async () => {
+    if (ethAccount) {
+      // check white list
+      const result = await checkWhiteList(ethAccount);
+
+      setIsInWhiteList(result);
+
+      console.log('checkIsWhiteListed', result);
+    }
+  }, [checkWhiteList, ethAccount]);
+
   useEffect(() => {
     void ksmFeesCheck();
   }, [ksmFeesCheck]);
+
+  useEffect(() => {
+    void checkIsInWhiteList();
+  }, [checkIsInWhiteList]);
 
   useEffect(() => {
     if (account) {
@@ -134,17 +150,21 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
           href='/'
           onClick={goBack}
         >
-          <svg fill='none'
+          <svg
+            fill='none'
             height='16'
             viewBox='0 0 16 16'
             width='16'
-            xmlns='http://www.w3.org/2000/svg'>
-            <path d='M13.5 8H2.5'
+            xmlns='http://www.w3.org/2000/svg'
+          >
+            <path
+              d='M13.5 8H2.5'
               stroke='var(--card-link-color)'
               strokeLinecap='round'
               strokeLinejoin='round'
             />
-            <path d='M7 3.5L2.5 8L7 12.5'
+            <path
+              d='M7 3.5L2.5 8L7 12.5'
               stroke='var(--card-link-color)'
               strokeLinecap='round'
               strokeLinejoin='round'
@@ -252,6 +272,7 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
 
                 { (uOwnIt && !uSellIt) && (
                   <Button
+                    disabled={!!(!isInWhiteList && kusamaExistentialDeposit && !kusamaAvailableBalance?.gte(kusamaExistentialDeposit.muln(2)))}
                     content='Sell'
                     onClick={onSell}
                   />
@@ -274,6 +295,24 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
                 )}
               </>
             </div>
+
+            { !!(uOwnIt && !uSellIt && !isInWhiteList && kusamaExistentialDeposit) && (
+              <>
+                { kusamaAvailableBalance?.gte(kusamaExistentialDeposit.muln(2))
+                  ? (
+                    <WarningText
+                      color='info'
+                      text={`A fee of ~ ${formatKsmBalance(kusamaExistentialDeposit)} KSM may be applied to the transaction. Your address will be added to the whitelist, allowing you to make transactions without network fees.`}
+                    />
+                  )
+                  : (
+                    <WarningText
+                      color='warning'
+                      text={`A fee of ~ ${formatKsmBalance(kusamaExistentialDeposit)} KSM may be applied to the transaction. Your address will be added to the whitelist, allowing you to make transactions without network fees.`}
+                    />
+                  )}
+              </>
+            )}
 
             { (showTransferForm && collectionInfo) && (
               <TransferModal

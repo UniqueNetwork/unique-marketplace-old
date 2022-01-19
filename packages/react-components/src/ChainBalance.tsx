@@ -7,7 +7,7 @@ import React, { memo } from 'react';
 import { useApi } from '@polkadot/react-hooks';
 import { formatStrBalance } from '@polkadot/react-hooks/utils';
 
-const ChainBalance = ({ value }: { value: BN | undefined }) => {
+const ChainBalance = ({ value }: { value: BN | undefined | null }) => {
   const { api } = useApi();
   const chainName = api?.registry.chainTokens[0];
 

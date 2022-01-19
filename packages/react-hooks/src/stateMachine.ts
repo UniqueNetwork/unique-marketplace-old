@@ -83,8 +83,20 @@ const marketplaceStateMachine = createMachine<Context>({
     },
     sell: {
       on: {
+        HAS_MINT_DEPOSIT: 'checkIsOnEth',
+        NO_MIN_DEPOSIT: 'transferMinDeposit'
+      }
+    },
+    checkIsOnEth: {
+      on: {
         IS_ON_ETH_ADDRESS: 'approveToken',
         IS_ON_SUB_ADDRESS: 'transferToEth'
+      }
+    },
+    transferMinDeposit: {
+      on: {
+        SIGN_SUCCESS: 'sell',
+        SIGN_TRANSACTION_FAIL: 'loadingTokenInfo'
       }
     },
     transferToEth: {

@@ -55,6 +55,7 @@ export interface useNftContractInterface {
   balanceTransfer: (recipient: string, amount: BN, failCallBack: () => void, successCallBack: () => void) => void;
   buyToken: (collectionId: string, tokenId: string, failCallBack: () => void, successCallBack: () => void) => void;
   cancelAsk: (collectionId: string, tokenId: string, failCallBack: () => void, successCallBack: () => void) => void;
+  checkWhiteList: (ethAddress: string) => Promise<boolean>;
   contractInstance: Contract | null;
   decimals: number;
   deposited: BN | undefined;
@@ -106,6 +107,19 @@ export function useNftContract (account: string | undefined, ethAccount: string 
   const { deposited, evmCollectionInstance, getUserDeposit, matcherContractInstance, setEvmCollectionInstance, web3Instance } = useContext(ContractContext);
   const [tokenAsk, setTokenAsk] = useState<TokenAskType>();
   const decimals = formatBalance.getDefaults().decimals;
+
+  const checkWhiteList = useCallback(async (ethAccount: string): Promise<boolean> => {
+    try {
+      console.log('contractAddress', contractAddress, 'ethAccount', ethAccount);
+
+      return (await api.query.evmContractHelpers.allowlist(contractAddress, ethAccount)).toJSON() as boolean;
+      // api.query.evmContractHelpers.allowlist(contract, user)
+    } catch (e) {
+      console.log('checkWhiteList Error: ', e);
+    }
+
+    return false;
+  }, [api]);
 
   const getApproved = useCallback(async (collectionId: string, tokenId: string, tokenOwner: CrossAccountId): Promise<boolean> => {
     try {
@@ -425,6 +439,7 @@ export function useNftContract (account: string | undefined, ethAccount: string 
     balanceTransfer,
     buyToken,
     cancelAsk,
+    checkWhiteList,
     contractInstance: matcherContractInstance,
     decimals,
     deposited,
