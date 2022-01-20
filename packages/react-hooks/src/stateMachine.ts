@@ -95,8 +95,14 @@ const marketplaceStateMachine = createMachine<Context>({
     },
     transferMinDeposit: {
       on: {
-        SIGN_SUCCESS: 'sell',
-        SIGN_TRANSACTION_FAIL: 'loadingTokenInfo'
+        SIGN_SUCCESS: 'waitForWhiteListing',
+        SIGN_TRANSACTION_FAIL: 'loadingTokenInfo',
+        TRANSFER_SUCCESS: 'waitForWhiteListing'
+      }
+    },
+    waitForWhiteListing: {
+      on: {
+        HAS_MINT_DEPOSIT: 'checkIsOnEth'
       }
     },
     transferToEth: {
@@ -113,8 +119,9 @@ const marketplaceStateMachine = createMachine<Context>({
     },
     waitForTokenRevert: {
       on: {
-        IS_ON_ETH_ADDRESS: 'transferToSub',
-        IS_ON_SUB_ADDRESS: 'loadingTokenInfo'
+        IS_ON_SUB_ADDRESS: 'loadingTokenInfo',
+        SIGN_SUCCESS: 'loadingTokenInfo',
+        SIGN_TRANSACTION_FAIL: 'loadingTokenInfo',
       }
     }
   }

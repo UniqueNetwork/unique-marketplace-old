@@ -69,7 +69,7 @@ export interface useNftContractInterface {
   initCollectionAbi: (collectionId: string) => void;
   isContractReady: boolean;
   tokenAsk: TokenAskType | undefined;
-  transferToken: (collectionId: string, tokenId: string, address: { Ethereum?: string, Substrate?: string }, successCallBack: () => void, errorCallBack: () => void, ethAccount?: string) => void;
+  transferToken: (collectionId: string, tokenId: string, address: { Ethereum?: string, Substrate?: string }, successCallBack: () => void, errorCallBack: () => void, ethAccount?: string, onlyGetFees?: boolean) => void;
   withdrawKSM: (amount: string, failCallBack: () => void, successCallBack: () => void) => void;
 }
 
@@ -110,10 +110,7 @@ export function useNftContract (account: string | undefined, ethAccount: string 
 
   const checkWhiteList = useCallback(async (ethAccount: string): Promise<boolean> => {
     try {
-      console.log('contractAddress', contractAddress, 'ethAccount', ethAccount);
-
       return (await api.query.evmContractHelpers.allowlist(contractAddress, ethAccount)).toJSON() as boolean;
-      // api.query.evmContractHelpers.allowlist(contract, user)
     } catch (e) {
       console.log('checkWhiteList Error: ', e);
     }
@@ -148,16 +145,55 @@ export function useNftContract (account: string | undefined, ethAccount: string 
     return new BN(0);
   }, [api]);
 
+  const setCollectionSponsor = useCallback((collectionId: string, sponsorAddress: string) => {
+    if (account && api) {
+      try {
+        const extrinsic1 = api.tx.unique.setCollectionLimits(collectionId, { sponsorApproveTimeout: 0 });
+        const extrinsic2 = api.tx.unique.setCollectionSponsor(collectionId, sponsorAddress);
+        const extrinsic3 = api.tx.unique.confirmSponsorship(collectionId);
+
+        queueExtrinsic({
+          accountId: account,
+          extrinsic: extrinsic1,
+          isUnsigned: false,
+          txFailedCb: () => { console.log('setCollectionLimits start'); },
+          txStartCb: () => { console.log('setCollectionLimits start'); },
+          txSuccessCb: () => queueExtrinsic({
+            accountId: account,
+            extrinsic: extrinsic2,
+            isUnsigned: false,
+            txFailedCb: () => { console.log('setCollectionSponsor fail'); },
+            txStartCb: () => { console.log('setCollectionSponsor start'); },
+            txSuccessCb: () => queueExtrinsic({
+              accountId: account,
+              extrinsic: extrinsic3,
+              isUnsigned: false,
+              txFailedCb: () => { console.log('confirmSponsorship fail'); },
+              txStartCb: () => { console.log('confirmSponsorship start'); },
+              txSuccessCb: () => { console.log('confirmSponsorship success'); },
+              txUpdateCb: () => { console.log('confirmSponsorship update'); }
+            }),
+            txUpdateCb: () => { console.log('setCollectionSponsor update'); }
+          }),
+          txUpdateCb: () => { console.log('setCollectionLimits update'); }
+        });
+      } catch (e) {
+        console.log('setCollectionSponsor error', e);
+      }
+    }
+  }, [account, api, queueExtrinsic]);
+
   // this method should be called from matcher owner
   const approveTokenToContract = useCallback(async (tokenId: string, failCallBack: () => void, successCallBack: () => void, onlyGetFees?: boolean): Promise<BN | null> => {
     if (account && web3Instance && evmCollectionInstance) {
       try {
+        // value = 0 | 1
         if (matcherContractInstance && web3Instance) {
           const extrinsic = api.tx.evm.call(
             subToEth(account),
             evmCollectionInstance.options.address,
             (evmCollectionInstance.methods as EvmCollectionAbiMethods).approve(contractAddress, tokenId).encodeABI(),
-            1,
+            0,
             GAS_ARGS.gas,
             await web3Instance.eth.getGasPrice(),
             null
@@ -232,7 +268,7 @@ export function useNftContract (account: string | undefined, ethAccount: string 
           });
         }
       } catch (e) {
-        console.log('approveTokenToContract Error', e);
+        console.log('addAsk Error', e);
       }
     }
   }, [account, api, matcherContractInstance, evmCollectionInstance, queueExtrinsic, web3Instance]);
@@ -264,28 +300,42 @@ export function useNftContract (account: string | undefined, ethAccount: string 
           txUpdateCb: () => { console.log('buyToken update'); }
         });
       } catch (e) {
-        console.log('approveTokenToContract Error', e);
+        console.log('buyToken Error', e);
       }
     }
   }, [account, ethAccount, api, matcherContractInstance, evmCollectionInstance, queueExtrinsic, web3Instance]);
 
-  const transferToken = useCallback((collectionId: string, tokenId: string, address: { Ethereum?: string, Substrate?: string }, successCallBack: () => void, errorCallBack: () => void, ethAccount?: string) => {
-    // To transfer item to matcher it first needs to be transferred to Eth account-mirror
-    let extrinsic = api.tx.unique.transfer(address, collectionId, tokenId, 1);
+  const transferToken = useCallback(async (collectionId: string, tokenId: string, address: { Ethereum?: string, Substrate?: string }, successCallBack: () => void, errorCallBack: () => void, ethAccount?: string, onlyGetFees?: boolean) => {
+    if (account) {
+      try {
+        // To transfer item to matcher it first needs to be transferred to Eth account-mirror
+        let extrinsic = api.tx.unique.transfer(address, collectionId, tokenId, 1);
 
-    if (address.Substrate && ethAccount) {
-      extrinsic = api.tx.unique.transferFrom(normalizeAccountId({ Ethereum: ethAccount } as CrossAccountId), normalizeAccountId(address as CrossAccountId), collectionId, tokenId, 1);
+        if (address.Substrate && ethAccount) {
+          extrinsic = api.tx.unique.transferFrom(normalizeAccountId({ Ethereum: ethAccount } as CrossAccountId), normalizeAccountId(address as CrossAccountId), collectionId, tokenId, 1);
+        }
+
+        if (onlyGetFees) {
+          const { partialFee } = await extrinsic.paymentInfo(account) as { partialFee: BN };
+
+          return partialFee;
+        } else {
+          queueExtrinsic({
+            accountId: account,
+            extrinsic,
+            isUnsigned: false,
+            txFailedCb: () => errorCallBack(),
+            txStartCb: () => { console.log('transferToken start'); },
+            txSuccessCb: () => successCallBack(),
+            txUpdateCb: () => { console.log('transferToken update'); }
+          });
+        }
+      } catch (e) {
+        console.log('transferToken error', e);
+      }
     }
 
-    queueExtrinsic({
-      accountId: account,
-      extrinsic,
-      isUnsigned: false,
-      txFailedCb: () => errorCallBack(),
-      txStartCb: () => { console.log('transferToken start'); },
-      txSuccessCb: () => successCallBack(),
-      txUpdateCb: () => { console.log('transferToken update'); }
-    });
+    return null;
   }, [account, api, queueExtrinsic]);
 
   const cancelAsk = useCallback(async (collectionId: string, tokenId: string, failCallBack: () => void, successCallBack: () => void) => {
@@ -432,6 +482,10 @@ export function useNftContract (account: string | undefined, ethAccount: string 
   useEffect(() => {
     void getUserDeposit();
   }, [getUserDeposit]);
+
+  /* useEffect(() => {
+    setCollectionSponsor('13', '5ELgyTdWdPoDuGb8CizikC5GW5pCHgCWiMfXJn1FfYKYrJEA');
+  }, [setCollectionSponsor]); */
 
   return {
     addAsk,

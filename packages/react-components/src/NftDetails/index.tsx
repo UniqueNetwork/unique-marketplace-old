@@ -308,7 +308,7 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
                   : (
                     <WarningText
                       color='warning'
-                      text={`A fee of ~ ${formatKsmBalance(kusamaExistentialDeposit)} KSM may be applied to the transaction. Your address will be added to the whitelist, allowing you to make transactions without network fees.`}
+                      text={'Your balance is too low to pay fees.'}
                     />
                   )}
               </>

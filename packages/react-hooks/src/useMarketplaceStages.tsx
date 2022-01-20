@@ -117,23 +117,21 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
 
   const checkMinDeposit = useCallback(async () => {
     if (ethAccount && collectionInfo) {
-      const result = await checkWhiteList(ethAccount);
-
-      console.log('checkIsWhiteListed', result);
-
-      if (result) {
-        send('HAS_MINT_DEPOSIT');
-      } else {
-        send('NO_MIN_DEPOSIT');
-      }
+      return await checkWhiteList(ethAccount);
     }
 
-    return null;
-  }, [checkWhiteList, collectionInfo, ethAccount, send]);
+    return false;
+  }, [checkWhiteList, collectionInfo, ethAccount]);
 
   const sell = useCallback(async () => {
-    await checkMinDeposit();
-  }, [checkMinDeposit]);
+    const isInWhiteList = await checkMinDeposit();
+
+    if (isInWhiteList) {
+      send('HAS_MINT_DEPOSIT');
+    } else {
+      send('NO_MIN_DEPOSIT');
+    }
+  }, [checkMinDeposit, send]);
 
   const transferMinDeposit = useCallback(() => {
     if (kusamaExistentialDeposit) {
@@ -169,21 +167,19 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
     }
   }, [approveTokenToContract, collectionInfo, ethAccount, getApproved, send, tokenId, tokenInfo]);
 
-  const waitForNftDeposit = useCallback(async () => {
-    if (collectionInfo) {
-      const ask = await getTokenAsk(collectionInfo.id, tokenId);
+  const waitForWhiteListing = useCallback(async () => {
+    if (ethAccount && collectionInfo) {
+      const result = await checkWhiteList(ethAccount);
 
-      if (ask?.ownerAddr === ethAccount) {
-        send('NFT_DEPOSIT_READY');
-      } else if (ask && ask.flagActive) {
-        send('NFT_DEPOSIT_OTHER');
+      if (result) {
+        send('HAS_MINT_DEPOSIT');
       } else {
         setTimeout(() => {
-          void waitForNftDeposit();
+          void waitForWhiteListing();
         }, 5000);
       }
     }
-  }, [collectionInfo, ethAccount, getTokenAsk, send, tokenId]);
+  }, [checkWhiteList, collectionInfo, ethAccount, send]);
 
   const waitForTokenRevert = useCallback(async () => {
     if (collectionInfo && ethAccount && account) {
@@ -197,7 +193,8 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
         if (info?.owner?.Ethereum?.toLowerCase() === ethAccount) {
           // revert to substratAccount
           console.log('ETH ACCOUNT');
-          send('IS_ON_ETH_ADDRESS');
+          // send('IS_ON_ETH_ADDRESS');
+          transferToSub();
         } else {
           setTimeout(() => {
             void waitForTokenRevert();
@@ -302,6 +299,8 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
   const transferStep = useMemo((): number => {
     switch (state.value) {
       case 'sell':
+      case 'transferMinDeposit':
+      case 'waitForWhiteListing':
       case 'transferToEth':
         return 1;
       case 'approveToken':
@@ -390,8 +389,8 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
       case state.matches('buyToken'):
         void sentTokenToAccount();
         break;
-      case state.matches('waitForNftDeposit'):
-        void waitForNftDeposit(); // occurs unexpected change of ref (in deps)
+      case state.matches('waitForWhiteListing'):
+        void waitForWhiteListing(); // occurs unexpected change of ref (in deps)
         break;
       case state.matches('checkDepositReady'):
         void checkDepositReady(); // occurs unexpected change of ref (in deps)
@@ -399,7 +398,7 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
       default:
         break;
     }
-  }, [addTokenAsk, approveToken, checkAsk, openAskModal, state.value, state, cancelSell, revertMoney, waitForTokenRevert, sentTokenToAccount, sell, loadingTokenInfo, transferToEth, transferToSub, transferMinDeposit, checkIsOnEthAddress, buy, waitForNftDeposit, checkDepositReady]);
+  }, [addTokenAsk, approveToken, checkAsk, openAskModal, state.value, state, cancelSell, revertMoney, waitForTokenRevert, sentTokenToAccount, sell, loadingTokenInfo, transferToEth, transferToSub, transferMinDeposit, checkIsOnEthAddress, buy, checkDepositReady, waitForWhiteListing]);
 
   useEffect(() => {
     if (isContractReady) {
