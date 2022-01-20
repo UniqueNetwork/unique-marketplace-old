@@ -21,6 +21,10 @@
   --divider-color: #f5f5f5;
   --tabs-color: #81858e;
   --table-row-hover: #eef0f7;
+  --warning-background-color: #FFF2EC;
+  --warning-text-color: #FF6335;
+  --info-background-color: #EBF8FF;
+  --info-text-color: #66C9FF;
 
   --gap: 16px;
   --bradius: 4px;

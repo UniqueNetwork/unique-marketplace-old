@@ -11,7 +11,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import envConfig from '@polkadot/apps-config/envConfig';
 import { useKusamaApi, useNftContract, useToken } from '@polkadot/react-hooks';
-import { evmToAddress } from '@polkadot/util-crypto';
 
 import marketplaceStateMachine from './stateMachine';
 import { CrossAccountId, normalizeAccountId } from './utils';
@@ -22,6 +21,7 @@ type UserActionType = 'BUY' | 'CANCEL' | 'SELL' | 'REVERT_UNUSED_MONEY' | 'UPDAT
 
 export interface MarketplaceStagesInterface {
   cancelStep: boolean;
+  checkWhiteList: (ethAddress: string) => Promise<boolean>;
   deposited: BN | undefined;
   depositor: string | undefined;
   escrowAddress: string;
@@ -51,11 +51,12 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
   const [tokenDepositor, setTokenDepositor] = useState<string>();
   const [tokenInfo, setTokenInfo] = useState<TokenDetailsInterface>();
   const { getTokenInfo } = useToken();
-  const { addAsk, approveTokenToContract, balanceTransfer, buyToken, cancelAsk, deposited, depositor, getApproved, getMySubEthAddressBalance, getTokenAsk, getUserDeposit, initCollectionAbi, isContractReady, tokenAsk, transferToken, withdrawKSM } = useNftContract(account, ethAccount);
+  const { addAsk, approveTokenToContract, buyToken, cancelAsk, checkWhiteList, deposited, depositor, getApproved, getTokenAsk, getUserDeposit, initCollectionAbi, isContractReady, tokenAsk, transferToken, withdrawKSM } = useNftContract(account, ethAccount);
   const [error, setError] = useState<string | null>(null);
   const [readyToAskPrice, setReadyToAskPrice] = useState<boolean>(false);
   const [tokenPriceForSale, setTokenPriceForSale] = useState<BN>();
-  const { formatKsmBalance, getKusamaTransferFee, kusamaAvailableBalance, kusamaTransfer } = useKusamaApi(account);
+  const { formatKsmBalance, getKusamaTransferFee, kusamaApi, kusamaAvailableBalance, kusamaTransfer } = useKusamaApi(account);
+  const kusamaExistentialDeposit = kusamaApi?.consts.balances?.existentialDeposit;
 
   console.log('state', state.value);
 
@@ -114,30 +115,29 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
     }
   }, [account, collectionInfo, ethAccount, getTokenInfo, send, tokenId]);
 
-  const checkSubEthSubAccountBalance = useCallback(async () => {
+  const checkMinDeposit = useCallback(async () => {
     if (ethAccount && collectionInfo) {
-      const mySubEthAddress = evmToAddress(ethAccount, 42, 'blake2');
-      const mySubEthAddressBalance = await getMySubEthAddressBalance(mySubEthAddress);
-      const approveTransactionFees = await approveTokenToContract(tokenId,
-        () => send('_'),
-        () => send('_'), true);
-
-      const neededFees = approveTransactionFees?.mul(new BN(100));
-
-      if (neededFees && !mySubEthAddressBalance.gte(neededFees)) {
-        console.log('we have to transfer some balance to mySubEthAddress to pay fees');
-        balanceTransfer(mySubEthAddress, neededFees, () => void loadingTokenInfo(), () => void checkIsOnEthAddress());
-      } else {
-        await checkIsOnEthAddress();
-      }
+      return await checkWhiteList(ethAccount);
     }
 
-    return null;
-  }, [approveTokenToContract, balanceTransfer, checkIsOnEthAddress, collectionInfo, ethAccount, getMySubEthAddressBalance, loadingTokenInfo, send, tokenId]);
+    return false;
+  }, [checkWhiteList, collectionInfo, ethAccount]);
 
   const sell = useCallback(async () => {
-    await checkSubEthSubAccountBalance();
-  }, [checkSubEthSubAccountBalance]);
+    const isInWhiteList = await checkMinDeposit();
+
+    if (isInWhiteList) {
+      send('HAS_MINT_DEPOSIT');
+    } else {
+      send('NO_MIN_DEPOSIT');
+    }
+  }, [checkMinDeposit, send]);
+
+  const transferMinDeposit = useCallback(() => {
+    if (kusamaExistentialDeposit) {
+      kusamaTransfer(escrowAddress, kusamaExistentialDeposit, send, send);
+    }
+  }, [kusamaExistentialDeposit, kusamaTransfer, send]);
 
   const transferToEth = useCallback(() => {
     if (collectionInfo && ethAccount) {
@@ -167,21 +167,19 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
     }
   }, [approveTokenToContract, collectionInfo, ethAccount, getApproved, send, tokenId, tokenInfo]);
 
-  const waitForNftDeposit = useCallback(async () => {
-    if (collectionInfo) {
-      const ask = await getTokenAsk(collectionInfo.id, tokenId);
+  const waitForWhiteListing = useCallback(async () => {
+    if (ethAccount && collectionInfo) {
+      const result = await checkWhiteList(ethAccount);
 
-      if (ask?.ownerAddr === ethAccount) {
-        send('NFT_DEPOSIT_READY');
-      } else if (ask && ask.flagActive) {
-        send('NFT_DEPOSIT_OTHER');
+      if (result) {
+        send('HAS_MINT_DEPOSIT');
       } else {
         setTimeout(() => {
-          void waitForNftDeposit();
+          void waitForWhiteListing();
         }, 5000);
       }
     }
-  }, [collectionInfo, ethAccount, getTokenAsk, send, tokenId]);
+  }, [checkWhiteList, collectionInfo, ethAccount, send]);
 
   const waitForTokenRevert = useCallback(async () => {
     if (collectionInfo && ethAccount && account) {
@@ -195,7 +193,8 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
         if (info?.owner?.Ethereum?.toLowerCase() === ethAccount) {
           // revert to substratAccount
           console.log('ETH ACCOUNT');
-          send('IS_ON_ETH_ADDRESS');
+          // send('IS_ON_ETH_ADDRESS');
+          transferToSub();
         } else {
           setTimeout(() => {
             void waitForTokenRevert();
@@ -300,6 +299,8 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
   const transferStep = useMemo((): number => {
     switch (state.value) {
       case 'sell':
+      case 'transferMinDeposit':
+      case 'waitForWhiteListing':
       case 'transferToEth':
         return 1;
       case 'approveToken':
@@ -348,6 +349,12 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
       case state.matches('sell'):
         void sell();
         break;
+      case state.matches('transferMinDeposit'):
+        void transferMinDeposit();
+        break;
+      case state.matches('checkIsOnEth'):
+        void checkIsOnEthAddress();
+        break;
       case state.matches('transferToEth'):
         void transferToEth();
         break;
@@ -375,13 +382,6 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
       case state.matches('transferToSub'):
         void transferToSub();
         break;
-      default:
-        break;
-    }
-  }, [addTokenAsk, approveToken, checkAsk, openAskModal, state.value, state, cancelSell, revertMoney, waitForTokenRevert, sentTokenToAccount, sell, loadingTokenInfo, transferToEth, transferToSub]);
-
-  useEffect(() => {
-    switch (true) {
       // on load - update token state
       case state.matches('buy'):
         void buy(); // occurs unexpected change of ref (in deps)
@@ -389,8 +389,8 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
       case state.matches('buyToken'):
         void sentTokenToAccount();
         break;
-      case state.matches('waitForNftDeposit'):
-        void waitForNftDeposit(); // occurs unexpected change of ref (in deps)
+      case state.matches('waitForWhiteListing'):
+        void waitForWhiteListing(); // occurs unexpected change of ref (in deps)
         break;
       case state.matches('checkDepositReady'):
         void checkDepositReady(); // occurs unexpected change of ref (in deps)
@@ -398,7 +398,7 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
       default:
         break;
     }
-  }, [state.value, state, buy, waitForNftDeposit, checkDepositReady, sentTokenToAccount]);
+  }, [addTokenAsk, approveToken, checkAsk, openAskModal, state.value, state, cancelSell, revertMoney, waitForTokenRevert, sentTokenToAccount, sell, loadingTokenInfo, transferToEth, transferToSub, transferMinDeposit, checkIsOnEthAddress, buy, checkDepositReady, waitForWhiteListing]);
 
   useEffect(() => {
     if (isContractReady) {
@@ -422,6 +422,7 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
 
   return {
     cancelStep,
+    checkWhiteList,
     deposited,
     depositor,
     error,
