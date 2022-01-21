@@ -49,7 +49,7 @@ export const useMyTokens = (
     }
     // get own tokens for given collection
 
-    const tokens = (await getTokensOfCollection(collection.id, account))as string[];
+    const tokens = await getTokensOfCollection(collection.id, account);
     const allTokens = [...holdingTokens, ...tokensSelling, ...tokens];
 
     setOwnTokensCount(tokens.length);

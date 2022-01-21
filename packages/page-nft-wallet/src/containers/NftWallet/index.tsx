@@ -10,7 +10,7 @@ import Header from 'semantic-ui-react/dist/commonjs/elements/Header/Header';
 
 import { OpenPanelType } from '@polkadot/apps-routing/types';
 import { Table, TransferModal } from '@polkadot/react-components';
-import {useCollections, useIsMountedRef} from '@polkadot/react-hooks';
+import { useCollections, useIsMountedRef } from '@polkadot/react-hooks';
 
 import NftCollectionCard from '../../components/NftCollectionCard';
 
@@ -42,6 +42,7 @@ function NftWallet ({ account, collections, openPanel, removeCollectionFromList,
       const filters = { collectionIds: targetCollectionIds, sort: '', traitsCount: [] };
 
       getOffers(1, 20000, filters);
+      // @todo remove this?
       getHoldByMe(account, 1, 20000, targetCollectionIds);
     }
   }, [account, collections, getHoldByMe, getOffers]);
@@ -86,6 +87,10 @@ function NftWallet ({ account, collections, openPanel, removeCollectionFromList,
 
   const openTransferModal = useCallback((collection: NftCollectionInterface, tokenId: string, balance: number) => {
     setOpenTransfer({ balance, collection, tokenId });
+  }, []);
+
+  const closeTransferModal = useCallback(() => {
+    setOpenTransfer(null);
   }, []);
 
   const updateTokens = useCallback((collectionId: string) => {
@@ -151,7 +156,7 @@ function NftWallet ({ account, collections, openPanel, removeCollectionFromList,
       { openTransfer && openTransfer.tokenId && openTransfer.collection && (
         <TransferModal
           account={account}
-          closeModal={setOpenTransfer.bind(null, null)}
+          closeModal={closeTransferModal}
           collection={openTransfer.collection}
           tokenId={openTransfer.tokenId}
           updateTokens={updateTokens}

@@ -9,7 +9,7 @@ import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection
 // @ts-ignore
 import equal from 'deep-equal';
 // external imports
-import React, { memo, ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { memo, ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
 import { useHistory } from 'react-router';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
@@ -47,6 +47,7 @@ export interface Filters {
 }
 
 const perPage = 20;
+
 const defaultFilters = {
   collectionIds: [...envConfig.uniqueCollectionIds],
   sort: 'desc(creationDate)',
@@ -62,12 +63,13 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: BuyTokensProps): ReactE
   const [allowClearFilters, setAllowClearFilters] = useState<boolean>(false);
   const [areFiltersActive, setAreFiltersActive] = useState<boolean>(false);
   const [collections, setCollections] = useState<NftCollectionInterface[]>([]);
+  const [page, setPage] = useState<number>(1);
   const [filters, setFilters] = useState<Filters>(initialFilters);
   const [loadingCollections, setLoadingCollections] = useState<boolean>(false);
   const mountedRef = useIsMountedRef();
-  const page = useRef<number>(1);
 
-  const hasMore = !!(offers && offersCount) && Object.keys(offers).length < offersCount;
+  const hasMore = !!(offers && offersCount) && offers.length < offersCount;
+
   const openDetailedInformationModal = useCallback((collectionId: string, tokenId: string) => {
     history.push(`/market/token-details?collectionId=${collectionId}&tokenId=${tokenId}`);
   }, [history]);
@@ -85,8 +87,10 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: BuyTokensProps): ReactE
   }, [mountedRef, presetCollections]);
 
   const fetchScrolledData = useCallback(() => {
-    getOffers(++page.current, perPage, filters);
-  }, [filters, getOffers]);
+    if (!offersLoading && hasMore) {
+      setPage((prevPage: number) => prevPage + 1);
+    }
+  }, [hasMore, offersLoading]);
 
   const clearAllFilters = useCallback(() => {
     if (!mountedRef.current) {
@@ -121,11 +125,10 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: BuyTokensProps): ReactE
   }, [addMintCollectionToList]);
 
   useEffect(() => {
-    void getOffers(1, perPage, filters);
-    page.current = 1;
-  }, [filters, getOffers]);
+    void getOffers(page, perPage, filters);
+  }, [filters, getOffers, page]);
 
-  console.log('offers', offers, 'filters', filters);
+  console.log('offers', offers, 'filters', filters, 'hasMore', hasMore, 'offersCount', offersCount);
 
   return (
     <div className={marketClassName}>
@@ -184,7 +187,7 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: BuyTokensProps): ReactE
               setFilters={setFilters}
             />
           </div>
-          {!Object.keys(offers).length && (
+          { !Object.keys(offers).length && (
             <div className='market-pallet empty'>
               <img
                 alt='no tokens'
@@ -195,47 +198,38 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: BuyTokensProps): ReactE
               </p>
             </div>
           )}
-          { (Object.keys(offers).length > 0 || !offersLoading)
-            ? (
-              <div className='market-pallet'>
-                <InfiniteScroll
-                  hasMore={hasMore}
-                  initialLoad={false}
-                  loadMore={fetchScrolledData}
-                  loader={(
-                    <Loader
-                      active
-                      className='load-more'
-                      inline='centered'
-                      key={'nft-market'}
+          { offers.length > 0 && (
+            <div className='market-pallet'>
+              <InfiniteScroll
+                hasMore={hasMore}
+                initialLoad={false}
+                loadMore={fetchScrolledData}
+                loader={(
+                  <Loader
+                    active
+                    className='load-more'
+                    inline='centered'
+                    key={'nft-market'}
+                  />
+                )}
+                pageStart={1}
+                threshold={200}
+                useWindow={true}
+              >
+                <div className='market-pallet__item'>
+                  { offers.map((token) => (
+                    <NftTokenCard
+                      account={account}
+                      collectionId={token.collectionId.toString()}
+                      key={`${token.collectionId}-${token.tokenId}`}
+                      openDetailedInformationModal={openDetailedInformationModal}
+                      token={token}
                     />
-                  )}
-                  pageStart={1}
-                  threshold={200}
-                  useWindow={true}
-                >
-                  <div className='market-pallet__item'>
-                    {Object.values(offers).map((token) => (
-                      <NftTokenCard
-                        account={account}
-                        collectionId={token.collectionId.toString()}
-                        key={`${token.collectionId}-${token.tokenId}`}
-                        openDetailedInformationModal={openDetailedInformationModal}
-                        token={token}
-                      />
-                    ))}
-                  </div>
-                </InfiniteScroll>
-              </div>
-            )
-            : <div className='market-pallet empty'>
-              <Loader
-                active
-                className='load-more'
-                inline='centered'
-                key={'nft-market'}
-              />
-            </div>}
+                  ))}
+                </div>
+              </InfiniteScroll>
+            </div>
+          )}
         </div>
       </div>
       <div className={`nft-market--footer ${openPanel === 'sort' ? 'hide' : ''}`}>

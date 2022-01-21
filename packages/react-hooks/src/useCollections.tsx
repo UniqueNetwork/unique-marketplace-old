@@ -7,7 +7,10 @@ import type { TokenDetailsInterface } from '@polkadot/react-hooks/useToken';
 import type { u32 } from '@polkadot/types';
 
 import BN from 'bn.js';
-import { useCallback, useState } from 'react';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import equal from 'deep-equal';
+import { useCallback, useRef, useState } from 'react';
 
 import { Filters } from '@polkadot/app-nft-market/containers/NftMarket';
 import envConfig from '@polkadot/apps-config/envConfig';
@@ -78,7 +81,7 @@ export function useCollections () {
   const { api } = useApi();
   const { fetchData } = useFetch();
   const [error, setError] = useState<ErrorType>();
-  const [offers, setOffers] = useState<{ [key: string]: OfferType }>({});
+  const [offers, setOffers] = useState<OfferType[]>([]);
   const [myHold, setMyHold] = useState<{ [key: string]: HoldType[] }>({});
   const [offersLoading, setOffersLoading] = useState<boolean>(false);
   const [holdLoading, setHoldLoading] = useState<boolean>(false);
@@ -88,15 +91,16 @@ export function useCollections () {
   const [tradesLoading, setTradesLoading] = useState<boolean>(false);
   const [myTrades, setMyTrades] = useState<TradeType[]>();
   const mountedRef = useIsMountedRef();
+  const filtersRef = useRef<Filters>();
   const { getDetailedCollectionInfo } = useCollection();
 
-  const getTokensOfCollection = useCallback(async (collectionId: string, ownerId: string): Promise<string> => {
+  const getTokensOfCollection = useCallback(async (collectionId: string, ownerId: string): Promise<string[]> => {
     if (!api || !collectionId || !ownerId) {
       return [];
     }
 
     try {
-      return await api.rpc.unique.accountTokens(collectionId, { Substrate: ownerId });
+      return (await api.rpc.unique.accountTokens(collectionId, { Substrate: ownerId })) as string[];
     } catch (e) {
       console.log('getTokensOfCollection error', e);
     }
@@ -114,7 +118,7 @@ export function useCollections () {
 
       // reset offers before loading first page
       if (page === 1) {
-        mountedRef.current && setOffers({});
+        mountedRef.current && setOffers([]);
       }
 
       if (filters) {
@@ -153,19 +157,14 @@ export function useCollections () {
             setOffersCount(result.itemsCount);
 
             if (result.itemsCount === 0) {
-              setOffers({});
+              setOffers([]);
             } else if (result.items.length) {
-              setOffers((prevState: {[key: string]: OfferType}) => {
-                const newState = { ...prevState };
-
-                result.items.forEach((offer: OfferType) => {
-                  if (!newState[`${offer.collectionId}-${offer.tokenId}`]) {
-                    newState[`${offer.collectionId}-${offer.tokenId}`] = { ...offer, seller: offer.seller };
-                  }
-                });
-
-                return newState;
-              });
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+              if (!equal(filters, filtersRef.current)) {
+                setOffers(result.items);
+              } else {
+                setOffers((prevOffers) => [...prevOffers, ...result.items]);
+              }
             }
           }
         }
@@ -176,6 +175,8 @@ export function useCollections () {
       console.log('getOffers error', e);
       setOffersLoading(false);
     }
+
+    filtersRef.current = filters;
   }, [fetchData, mountedRef]);
 
   /**
