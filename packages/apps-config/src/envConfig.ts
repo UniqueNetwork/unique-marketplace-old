@@ -30,7 +30,7 @@ export type EnvConfigType = {
 
 declare global {
   interface Window {
-    ENV: {
+    ENV?: {
       COMMISSION: number;
       CONTRACT_ADDRESS: string;
       DECIMALS: number;
@@ -60,30 +60,30 @@ declare global {
 }
 
 const envConfig: EnvConfigType = {
-  commission: +window.ENV.COMMISSION,
-  contractAddress: window.ENV.CONTRACT_ADDRESS,
-  decimals: +window.ENV.DECIMALS,
-  environment: window.ENV.ENVIRONMENT,
-  escrowAddress: window.ENV.ESCROW_ADDRESS,
-  faviconPath: window.ENV.FAVICON_PATH,
-  graphQlAdminSecret: window.ENV.GRAPH_QL_ADMIN_SECRET,
-  graphQlApi: window.ENV.GRAPH_QL_API,
-  imageServerUrl: window.ENV.IMAGE_SERVER_URL,
-  ipfsGateway: window.ENV.IPFS_GATEWAY,
-  kusamaApiUrl: window.ENV.KUSAMA_API,
-  kusamaBackupApiUrl: window.ENV.KUSAMA_BACKUP_API,
-  kusamaDecimals: +window.ENV.KUSAMA_DECIMALS,
-  matcherOwnerAddress: window.ENV.MATCHER_OWNER_ADDRESS,
-  maxGas: +window.ENV.MAX_GAS,
-  minPrice: +window.ENV.MIN_PRICE,
-  quoteId: +window.ENV.QUOTE_ID,
-  uniqueApi: window.ENV.UNIQUE_API,
-  uniqueCollectionIds: window.ENV.UNIQUE_COLLECTION_IDS.split(','),
-  uniqueSubstrateApi: window.ENV.UNIQUE_SUBSTRATE_API,
-  uniqueSubstrateApiRpc: window.ENV.UNIQUE_SUBSTRATE_API_RPC,
-  value: +window.ENV.VALUE,
-  version: window.ENV.VERSION,
-  whiteLabelUrl: window.ENV.WHITE_LABEL_URL
+  commission: +(window.ENV?.COMMISSION || process.env.COMMISSION) ,
+  contractAddress: window.ENV?.CONTRACT_ADDRESS || process.env.CONTRACT_ADDRESS,
+  decimals: +(window.ENV?.DECIMALS || process.env.DECIMALS),
+  environment: window.ENV?.ENVIRONMENT || process.env.ENVIRONMENT,
+  escrowAddress: window.ENV?.ESCROW_ADDRESS || process.env.ESCROW_ADDRESS,
+  faviconPath: window.ENV?.FAVICON_PATH || process.env.FAVICON_PATH,
+  graphQlAdminSecret: window.ENV?.GRAPH_QL_ADMIN_SECRET || process.env.GRAPH_QL_ADMIN_SECRET,
+  graphQlApi: window.ENV?.GRAPH_QL_API || process.env.GRAPH_QL_API,
+  imageServerUrl: window.ENV?.IMAGE_SERVER_URL || process.env.IMAGE_SERVER_URL,
+  ipfsGateway: window.ENV?.IPFS_GATEWAY || process.env.IPFS_GATEWAY,
+  kusamaApiUrl: window.ENV?.KUSAMA_API || process.env.KUSAMA_API,
+  kusamaBackupApiUrl: window.ENV?.KUSAMA_BACKUP_API || process.env.KUSAMA_BACKUP_API,
+  kusamaDecimals: +window.ENV?.KUSAMA_DECIMALS || process.env.KUSAMA_DECIMALS,
+  matcherOwnerAddress: window.ENV?.MATCHER_OWNER_ADDRESS || process.env.MATCHER_OWNER_ADDRESS,
+  maxGas: +window.ENV?.MAX_GAS || process.env.MAX_GAS,
+  minPrice: +window.ENV?.MIN_PRICE || process.env.MIN_PRICE,
+  quoteId: +window.ENV?.QUOTE_ID || process.env.QUOTE_ID,
+  uniqueApi: window.ENV?.UNIQUE_API || process.env.UNIQUE_API,
+  uniqueCollectionIds: (window.ENV?.UNIQUE_COLLECTION_IDS  || process.env.UNIQUE_COLLECTION_IDS).split(',').map(Number),
+  uniqueSubstrateApi: window.ENV?.UNIQUE_SUBSTRATE_API || process.env.UNIQUE_SUBSTRATE_API,
+  uniqueSubstrateApiRpc: window.ENV?.UNIQUE_SUBSTRATE_API_RPC || process.env.UNIQUE_SUBSTRATE_API_RPC,
+  value: +window.ENV?.VALUE || process.env.VALUE,
+  version: window.ENV?.VERSION || process.env.VERSION,
+  whiteLabelUrl: window.ENV?.WHITE_LABEL_URL || process.env.WHITE_LABEL_URL
 };
 
 export default envConfig;
