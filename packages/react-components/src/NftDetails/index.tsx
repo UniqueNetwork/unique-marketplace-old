@@ -260,8 +260,11 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
               <>
                 { (!uOwnIt && !transferStep && !!tokenPrice && kusamaFees) && (
                   <>
-                    <div className='warning-block'>A small Kusama Network transaction fee up to {formatKsmBalance(kusamaFees.muln(2))} KSM will be
-                      applied to the transaction</div>
+                    <WarningText
+                      className='info'
+                      text={`A small Kusama Network transaction fee up to ${formatKsmBalance(kusamaFees.muln(2))} KSM will be
+                      applied to the transaction`}
+                    />
                     <Button
                       content={`Buy it - ${formatKsmBalance(tokenPrice.add(kusamaFees.muln(2)))} KSM`}
                       disabled={lowKsmBalanceToBuy}
@@ -301,13 +304,13 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
                 { kusamaAvailableBalance?.gte(kusamaExistentialDeposit.muln(2))
                   ? (
                     <WarningText
-                      color='info'
+                      className='info'
                       text={`A fee of ~ ${formatKsmBalance(kusamaExistentialDeposit)} KSM may be applied to the transaction. Your address will be added to the whitelist, allowing you to make transactions without network fees.`}
                     />
                   )
                   : (
                     <WarningText
-                      color='warning'
+                      className='warning'
                       text={'Your balance is too low to pay fees.'}
                     />
                   )}

@@ -69,7 +69,7 @@ export interface useNftContractInterface {
   initCollectionAbi: (collectionId: string) => void;
   isContractReady: boolean;
   tokenAsk: TokenAskType | undefined;
-  transferToken: (collectionId: string, tokenId: string, address: { Ethereum?: string, Substrate?: string }, successCallBack: () => void, errorCallBack: () => void, ethAccount?: string, onlyGetFees?: boolean) => void;
+  transferToken: (collectionId: string, tokenId: string, address: { Ethereum?: string, Substrate?: string }, startCallBack: () => void, successCallBack: () => void, errorCallBack: () => void, ethAccount?: string, onlyGetFees?: boolean) => void;
   withdrawKSM: (amount: string, failCallBack: () => void, successCallBack: () => void) => void;
 }
 
@@ -305,7 +305,7 @@ export function useNftContract (account: string | undefined, ethAccount: string 
     }
   }, [account, ethAccount, api, matcherContractInstance, evmCollectionInstance, queueExtrinsic, web3Instance]);
 
-  const transferToken = useCallback(async (collectionId: string, tokenId: string, address: { Ethereum?: string, Substrate?: string }, successCallBack: () => void, errorCallBack: () => void, ethAccount?: string, onlyGetFees?: boolean) => {
+  const transferToken = useCallback(async (collectionId: string, tokenId: string, address: { Ethereum?: string, Substrate?: string }, startCallBack: () => void, successCallBack: () => void, errorCallBack: () => void, ethAccount?: string, onlyGetFees?: boolean) => {
     if (account) {
       try {
         // To transfer item to matcher it first needs to be transferred to Eth account-mirror
@@ -325,7 +325,7 @@ export function useNftContract (account: string | undefined, ethAccount: string 
             extrinsic,
             isUnsigned: false,
             txFailedCb: () => errorCallBack(),
-            txStartCb: () => { console.log('transferToken start'); },
+            txStartCb: () => startCallBack(),
             txSuccessCb: () => successCallBack(),
             txUpdateCb: () => { console.log('transferToken update'); }
           });

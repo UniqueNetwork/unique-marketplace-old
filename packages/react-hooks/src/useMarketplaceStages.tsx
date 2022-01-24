@@ -141,14 +141,14 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
 
   const transferToEth = useCallback(() => {
     if (collectionInfo && ethAccount) {
-      transferToken(collectionInfo.id, tokenId, normalizeAccountId({ Ethereum: ethAccount }), () => send('SIGN_SUCCESS'), () => send('SIGN_TRANSACTION_FAIL'));
+      transferToken(collectionInfo.id, tokenId, normalizeAccountId({ Ethereum: ethAccount }), () => send('TRANSFER_START'), () => send('SIGN_SUCCESS'), () => send('SIGN_TRANSACTION_FAIL'));
     }
   }, [collectionInfo, ethAccount, send, transferToken, tokenId]);
 
   const transferToSub = useCallback(() => {
     if (account && collectionInfo && ethAccount) {
       // const mySubEthAddress = evmToAddress(ethAccount, 42, 'blake2');
-      transferToken(collectionInfo.id, tokenId, normalizeAccountId({ Substrate: account }), () => send('SIGN_SUCCESS'), () => send('SIGN_TRANSACTION_FAIL'), ethAccount);
+      transferToken(collectionInfo.id, tokenId, normalizeAccountId({ Substrate: account }), () => send('TRANSFER_START'), () => send('SIGN_SUCCESS'), () => send('SIGN_TRANSACTION_FAIL'), ethAccount);
     }
   }, [account, ethAccount, collectionInfo, send, transferToken, tokenId]);
 
@@ -189,17 +189,13 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
 
       if (info?.owner?.Substrate === account) {
         send('IS_ON_SUB_ADDRESS');
+      } else if (info?.owner?.Ethereum?.toLowerCase() === ethAccount) {
+        // revert to substrate account
+        send('IS_ON_ETH_ADDRESS');
       } else {
-        if (info?.owner?.Ethereum?.toLowerCase() === ethAccount) {
-          // revert to substratAccount
-          console.log('ETH ACCOUNT');
-          // send('IS_ON_ETH_ADDRESS');
-          transferToSub();
-        } else {
-          setTimeout(() => {
-            void waitForTokenRevert();
-          }, 5000);
-        }
+        setTimeout(() => {
+          void waitForTokenRevert();
+        }, 5000);
       }
     }
   }, [account, ethAccount, collectionInfo, getTokenInfo, send, tokenId]);
@@ -376,9 +372,6 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
       case state.matches('cancelSell'):
         void cancelSell();
         break;
-      case state.matches('waitForTokenRevert'):
-        void waitForTokenRevert();
-        break;
       case state.matches('transferToSub'):
         void transferToSub();
         break;
@@ -398,7 +391,13 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
       default:
         break;
     }
-  }, [addTokenAsk, approveToken, checkAsk, openAskModal, state.value, state, cancelSell, revertMoney, waitForTokenRevert, sentTokenToAccount, sell, loadingTokenInfo, transferToEth, transferToSub, transferMinDeposit, checkIsOnEthAddress, buy, checkDepositReady, waitForWhiteListing]);
+  }, [addTokenAsk, approveToken, checkAsk, openAskModal, state.value, state, cancelSell, revertMoney, sentTokenToAccount, sell, loadingTokenInfo, transferToEth, transferToSub, transferMinDeposit, checkIsOnEthAddress, buy, checkDepositReady, waitForWhiteListing]);
+
+  useEffect(() => {
+    if (state.matches('waitForTokenRevert')) {
+      void waitForTokenRevert();
+    }
+  }, [state, waitForTokenRevert]);
 
   useEffect(() => {
     if (isContractReady) {

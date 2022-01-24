@@ -17,7 +17,7 @@ import Status from '@polkadot/apps/Status';
 import { useTranslation } from '@polkadot/apps/translate';
 import { getSystemChainColor } from '@polkadot/apps-config';
 import createRoutes from '@polkadot/apps-routing';
-import { AccountSelector, ErrorBoundary, StatusContext } from '@polkadot/react-components';
+import {AccountSelector, ErrorBoundary, StatusContext, WarningText} from '@polkadot/react-components';
 import PageNotFound from '@polkadot/react-components/PageNotFound';
 import GlobalStyle from '@polkadot/react-components/styles';
 import { useApi } from '@polkadot/react-hooks';
@@ -198,19 +198,17 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                   <main className={`app-main ${openPanel || ''} ${noAccounts ? 'no-accounts' : ''} ${!isPageFound ? 'page-no-found' : ''}`}>
                     <div className={`app-container ${openPanel === 'balances' ? 'is-balance-active' : ''}`}>
                       { isApiConnected && isApiReady && noAccounts && (
-                        <div className='no-account'>
-                          <div className='error-info-svg'>
-                            <img src = {String(infoSvg)} />
-                          </div>
-                          <div className='error-message-info'>
-                            <div>
-                              <p> Some features are currently hidden and will only become available once you connect your wallet.  </p>
-                              <p> You can create new or add your existing substrate account on the
-                                <Link to='accounts'> <span> account page</span> </Link>
-                              </p>
-                            </div>
-                          </div>
-                        </div>
+                        <>
+                          <WarningText
+                            className='warning no-margin'
+                            text={(
+                              <>
+                                Some features are currently hidden and will only become available once you connect your wallet. You can create new or add your existing substrate account on the <Link to='accounts'><span>account page</span></Link>
+                              </>
+                            )}
+                          />
+                          <br />
+                        </>
                       )}
                       {
                         isPageFound

@@ -107,11 +107,23 @@ const marketplaceStateMachine = createMachine<Context>({
     },
     transferToEth: {
       on: {
+        SIGN_TRANSACTION_FAIL: 'loadingTokenInfo',
+        TRANSFER_START: 'transferToEthStart'
+      }
+    },
+    transferToEthStart: {
+      on: {
         SIGN_SUCCESS: 'approveToken',
         SIGN_TRANSACTION_FAIL: 'loadingTokenInfo'
       }
     },
     transferToSub: {
+      on: {
+        SIGN_TRANSACTION_FAIL: 'loadingTokenInfo',
+        TRANSFER_START: 'transferToSubStart'
+      }
+    },
+    transferToSubStart: {
       on: {
         SIGN_SUCCESS: 'loadingTokenInfo',
         SIGN_TRANSACTION_FAIL: 'loadingTokenInfo'
@@ -119,9 +131,8 @@ const marketplaceStateMachine = createMachine<Context>({
     },
     waitForTokenRevert: {
       on: {
-        IS_ON_SUB_ADDRESS: 'loadingTokenInfo',
-        SIGN_SUCCESS: 'loadingTokenInfo',
-        SIGN_TRANSACTION_FAIL: 'loadingTokenInfo',
+        IS_ON_ETH_ADDRESS: 'transferToSub',
+        IS_ON_SUB_ADDRESS: 'loadingTokenInfo'
       }
     }
   }
