@@ -143,7 +143,6 @@ function NftWallet ({ account, collections, openPanel, removeCollectionFromList,
                   account={account}
                   canTransferTokens={canTransferTokens}
                   collection={collection}
-                  onHold={myHold[collection.id] || []}
                   openTransferModal={openTransferModal}
                   removeCollection={removeCollection}
                   tokensSelling={tokensSelling[collection.id] || []}
