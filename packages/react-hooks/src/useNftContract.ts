@@ -42,7 +42,7 @@ export type TokenFullAskType = {
 }
 export type TokenAskType = { flagActive: '0' | '1', ownerAddr: string, price: BN };
 
-const { contractAddress, matcherOwnerAddress, value } = envConfig;
+const { contractAddress, contractOwner, value } = envConfig;
 
 export interface AskOutputInterface {
   output: [string, string, string, BN, string]
@@ -456,7 +456,7 @@ export function useNftContract (account: string | undefined, ethAccount: string 
   const initCollectionAbi = useCallback((collectionId) => {
     if (web3Instance) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      const evmCollection: Contract = new web3Instance.eth.Contract(nonFungibleAbi as any, collectionIdToAddress(parseInt(collectionId, 10)), { from: matcherOwnerAddress });
+      const evmCollection: Contract = new web3Instance.eth.Contract(nonFungibleAbi as any, collectionIdToAddress(parseInt(collectionId, 10)), { from: contractOwner });
 
       setEvmCollectionInstance(evmCollection);
     }
