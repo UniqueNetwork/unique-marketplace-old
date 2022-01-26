@@ -12,6 +12,7 @@ export { useBlockTime } from './useBlockTime';
 export { useCacheKey } from './useCacheKey';
 export { useCall } from './useCall';
 export { useCollection } from './useCollection';
+export { useCollectionCover } from './useCollectionCover';
 export { useCollections } from './useCollections';
 export { useDecoder } from './useDecoder';
 export { useFetch } from './useFetch';

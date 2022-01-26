@@ -89,8 +89,6 @@ function Contracts ({ account, children }: Props): React.ReactElement<Props> | n
     }
   }, [ethAccount, matcherContractInstance, setDeposited]);
 
-  console.log('userDeposit', deposited);
-
   const value = useMemo(() => ({
     account,
     deposited,

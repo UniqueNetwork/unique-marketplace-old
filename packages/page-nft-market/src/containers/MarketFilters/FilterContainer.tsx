@@ -11,7 +11,6 @@ import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
 import { Filters } from '@polkadot/app-nft-market/containers/NftMarket';
 import envConfig from '@polkadot/apps-config/envConfig';
-import { useMetadata } from '@polkadot/react-hooks';
 
 import { SESSION_STORAGE_KEYS } from './constants';
 import FilterContainerItem from './FilterContainerItem';
@@ -47,8 +46,6 @@ const setInStorage = (storageKey: string, data: Filters | boolean | PricesTypes)
 const defaultPrices: PricesTypes = { maxPrice: '', minPrice: '' };
 
 const FilterContainer: React.FC<PropTypes> = ({ account, allowClearFilters, collections, filters, loadingCollections, setAllowClearFilters, setAreFiltersActive, setFilters }) => {
-  const { getTokenImageUrl } = useMetadata();
-  const [images, setImages] = useState<string[]>([]);
   const [KSMPrices, setKSMPrices] = useState<PricesTypes>(defaultPrices);
   const [isShowCollection, setIsShowCollection] = useState<boolean>(true);
   const [isShowPrice, setIsShowPrice] = useState<boolean>(true);
@@ -161,17 +158,6 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearFilters, coll
     setInStorage(SESSION_STORAGE_KEYS.ARE_ALL_COLLECTIONS_CHECKED, false);
   }, [filters, setFilters]);
 
-  const updateImageUrl = useCallback(() => {
-    collections.forEach((element) => {
-      void getTokenImageUrl(element, '1')
-        .then((res) => {
-          if (res) {
-            setImages((prev) => [...prev, res]);
-          } else setImages((prev) => ['', ...prev]);
-        });
-    });
-  }, [collections, getTokenImageUrl]);
-
   const onSetCurrentFilter = useCallback(() => {
     setIsShowCollection(!isShowCollection);
   }, [isShowCollection, setIsShowCollection]);
@@ -208,10 +194,6 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearFilters, coll
   }, [account, updateSeller]);
 
   useEffect(() => {
-    void updateImageUrl();
-  }, [updateImageUrl]);
-
-  useEffect(() => {
     const storagePrices = getFromStorage(SESSION_STORAGE_KEYS.PRICES) as PricesTypes;
 
     storagePrices && setKSMPrices(storagePrices);
@@ -232,6 +214,8 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearFilters, coll
     // listen changes of filters and show or hide <Clear all filters> button.
     setAreFiltersActive(!!filters.seller || !!filters.minPrice || !!filters.maxPrice || !!collectionsChecked.length || !!filters.traitsCount.length);
   }, [collectionsChecked.length, filters.maxPrice, filters.minPrice, filters.seller, filters.traitsCount.length, setAreFiltersActive]);
+
+  console.log('collectionsChecked', collectionsChecked, 'collections', collections, 'filters', filters);
 
   return (
     <>
@@ -280,15 +264,12 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearFilters, coll
                   inline='centered'
                 />
               )}
-              {collections.map((collection, index) => {
+              {collections.map((collection) => {
                 return (
                   <FilterContainerItem
                     collection={collection}
-                    collections={collections}
                     collectionsChecked={collectionsChecked}
                     filterCurrent={filterCurrent}
-                    images={images}
-                    index={index}
                     key={collection.id}
                     onCheckBoxMockFunc={onCheckBoxMockFunc}
                   />
