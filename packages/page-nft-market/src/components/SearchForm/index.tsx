@@ -146,11 +146,9 @@ const SearchForm = (props: SearchFormProps) => {
         />
       </Form.Field>
       <Form.Field className='search-results'>
-        { !!(offersCount && offersCount > 0) && (
-          <span>
-            {offersCount} items
-          </span>
-        )}
+        <span>
+          {offersCount} {`${offersCount === 1 ? 'item' : 'items'}`}
+        </span>
         { areFiltersActive && <a onClick={clearFilters}>Clear all filters</a> }
       </Form.Field>
     </Form>

@@ -18,23 +18,24 @@ import NftMarket from './containers/NftMarket';
 function PageNftMarketplace ({ account, basePath, openPanel, setOpenPanel }: Props): React.ReactElement<Props> {
   const { isApiConnected, isApiReady } = useApi();
 
+  if (!isApiReady || !isApiConnected) {
+    return (
+      <div className='accounts-preloader'>
+        <Loader
+          active
+        >
+          Loading data from chain...
+        </Loader>
+      </div>
+    );
+  }
+
   return (
     <Switch>
       <Route path={`${basePath}/token-details`}>
-        { (!isApiReady || !isApiConnected) && (
-          <div className='accounts-preloader'>
-            <Loader
-              active
-            >
-              Loading data from chain...
-            </Loader>
-          </div>
-        )}
-        { (isApiConnected && isApiReady) && (
-          <NftDetails
-            account={account || ''}
-          />
-        )}
+        <NftDetails
+          account={account || ''}
+        />
       </Route>
       <Route path={basePath}>
         <NftMarket

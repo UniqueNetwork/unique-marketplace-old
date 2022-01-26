@@ -10,21 +10,19 @@ import { useHistory } from 'react-router';
 import Item from 'semantic-ui-react/dist/commonjs/views/Item';
 
 import { useSchema } from '@polkadot/react-hooks';
-import { HoldType } from '@polkadot/react-hooks/useCollections';
 
 interface Props {
   account: string;
   canTransferTokens: boolean;
   collection: NftCollectionInterface;
-  onHold: HoldType[];
   openTransferModal: (collection: NftCollectionInterface, tokenId: string, balance: number) => void;
   token: string;
   tokensSelling: string[];
 }
 
-function NftTokenCard ({ account, collection, onHold, token, tokensSelling }: Props): React.ReactElement<Props> {
+function NftTokenCard ({ account, collection, token, tokensSelling }: Props): React.ReactElement<Props> {
   const { attributes, tokenUrl } = useSchema(account, collection.id, token);
-  const [tokenState, setTokenState] = useState<'none' | 'selling' | 'onHold'>('none');
+  const [tokenState, setTokenState] = useState<'none' | 'selling'>('none');
   const history = useHistory();
 
   const openDetailedInformationModal = useCallback((collectionId: string | number, tokenId: string) => {
@@ -50,16 +48,14 @@ function NftTokenCard ({ account, collection, onHold, token, tokensSelling }: Pr
   }, [attributes]);
 
   const updateTokenState = useCallback(() => {
-    let tState: 'none' | 'selling' | 'onHold' = 'none';
+    let tState: 'none' | 'selling' = 'none';
 
     if (tokensSelling.indexOf(token) !== -1) {
       tState = 'selling';
-    } else if (onHold.find((item) => item.tokenId === token)) {
-      tState = 'onHold';
     }
 
     setTokenState(tState);
-  }, [onHold, token, tokensSelling]);
+  }, [token, tokensSelling]);
 
   const onOpen = useCallback(() => {
     openDetailedInformationModal(collection.id, token);
@@ -104,11 +100,6 @@ function NftTokenCard ({ account, collection, onHold, token, tokensSelling }: Pr
         { tokenState === 'selling' && (
           <span className='token-state'>
             Selling
-          </span>
-        )}
-        { tokenState === 'onHold' && (
-          <span className='token-state'>
-            On hold
           </span>
         )}
       </div>

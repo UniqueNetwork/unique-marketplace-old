@@ -3,21 +3,19 @@
 
 import React, { memo, useCallback } from 'react';
 
-import { useDecoder } from '@polkadot/react-hooks';
+import { useCollectionCover, useDecoder } from '@polkadot/react-hooks';
 import { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
 
 interface Props {
   collection: NftCollectionInterface;
-  collections: NftCollectionInterface[];
   collectionsChecked: string[];
   filterCurrent: (id: string) => void;
-  images: string[];
-  index: number;
   onCheckBoxMockFunc: () => void;
 }
 
 const FilterContainerItem: React.FC<Props> = (props: Props) => {
-  const { collection, collections, collectionsChecked, filterCurrent, images, index, onCheckBoxMockFunc } = props;
+  const { collection, collectionsChecked, filterCurrent, onCheckBoxMockFunc } = props;
+  const { imgUrl } = useCollectionCover(collection);
   const { collectionName16Decoder } = useDecoder();
 
   const onFilterCurrent = useCallback(() => {
@@ -26,14 +24,14 @@ const FilterContainerItem: React.FC<Props> = (props: Props) => {
 
   return (
     <div
-      className={`collections-main ${collectionsChecked.includes(String(collection.id)) ? 'collections-main-background' : ''}`}
+      className={`collections-main ${collectionsChecked.includes(collection.id) ? 'collections-main-background' : ''}`}
       key={collection.id}
       onClick={onFilterCurrent}
     >
       <div className='custom-checkbox'>
         <div className='checkbox-input'>
           <input
-            checked={collectionsChecked.includes(String(collection.id))}
+            checked={collectionsChecked.includes(collection.id)}
             data-current={collection.id}
             onChange={onCheckBoxMockFunc}
             type='checkbox'
@@ -41,12 +39,10 @@ const FilterContainerItem: React.FC<Props> = (props: Props) => {
         </div>
         <div className='checkbox-title'>{collectionName16Decoder(collection.name)}</div>
       </div>
-      { images.length === collections.length && images[index] !== '' && (
-        <div
-          className='collection-img'
-          style={ { backgroundImage: `url(${images.length === collections.length ? images[index] : ''})` }}
-        />
-      )}
+      <div
+        className='collection-img'
+        style={ { backgroundImage: `url(${imgUrl || ''})` }}
+      />
     </div>
   );
 };

@@ -23,10 +23,6 @@ module.exports = merge(
           changeOrigin: true,
           target: 'https://market-api-opal.unique.network'
         },
-        '/OnHold': {
-          changeOrigin: true,
-          target: 'https://market-api-opal.unique.network'
-        },
         /* 'https://market-api-opal.unique.network': {
           changeOrigin: true,
           target: 'https://market-api-opal.unique.network'

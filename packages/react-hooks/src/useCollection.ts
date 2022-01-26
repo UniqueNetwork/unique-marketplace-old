@@ -114,10 +114,10 @@ export function useCollection () {
     return {};
   }, [api]);
 
-  const getCollectionOnChainSchema = useCallback((collectionInfo: NftCollectionInterface): { constSchema: ProtobufAttributeType | undefined, variableSchema: ProtobufAttributeType | undefined } => {
+  const getCollectionOnChainSchema = useCallback((collectionInfo: NftCollectionInterface): { constSchema: ProtobufAttributeType | undefined, variableSchema: { collectionCover: string } | undefined } => {
     const result: {
       constSchema: ProtobufAttributeType | undefined,
-      variableSchema: ProtobufAttributeType | undefined,
+      variableSchema: { collectionCover: string } | undefined
     } = {
       constSchema: undefined,
       variableSchema: undefined
@@ -132,7 +132,7 @@ export function useCollection () {
       }
 
       if (varSchema && varSchema.length) {
-        result.variableSchema = JSON.parse(varSchema) as ProtobufAttributeType;
+        result.variableSchema = JSON.parse(varSchema) as { collectionCover: string } | undefined;
       }
 
       return result;

@@ -68,8 +68,6 @@ export function useToken (): UseTokenInterface {
 
     if (tokenId && collectionInfo) {
       tokenDetailsData = await getDetailedTokenInfo(collectionInfo.id, tokenId);
-
-      console.log('tokenDetailsData', tokenDetailsData);
     }
 
     return tokenDetailsData;

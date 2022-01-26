@@ -28,7 +28,7 @@ import { SESSION_STORAGE_KEYS } from '../MarketFilters/constants';
 import noMyTokensIcon from '../MarketFilters/noMyTokens.svg';
 import MarketSort from '../MarketSort';
 
-interface BuyTokensProps {
+interface NftMarketProps {
   account?: string | undefined;
   openPanel?: OpenPanelType;
   setOpenPanel?: (openPanel: OpenPanelType) => void;
@@ -54,7 +54,7 @@ const defaultFilters = {
   traitsCount: []
 };
 
-const NftMarket = ({ account, openPanel, setOpenPanel }: BuyTokensProps): ReactElement => {
+const NftMarket = ({ account, openPanel, setOpenPanel }: NftMarketProps): ReactElement => {
   const history = useHistory();
   const storageFilters = JSON.parse(sessionStorage.getItem(SESSION_STORAGE_KEYS.FILTERS) as string) as Filters;
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
@@ -76,13 +76,22 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: BuyTokensProps): ReactE
 
   const addMintCollectionToList = useCallback(async () => {
     mountedRef.current && setLoadingCollections(true);
+
     const firstCollections: NftCollectionInterface[] = await presetCollections();
+
+    console.log('firstCollections', firstCollections);
 
     if (!mountedRef.current) {
       return;
     }
 
-    setCollections(() => [...firstCollections]);
+    setCollections((prevCollections) => {
+      if (JSON.stringify(firstCollections) !== JSON.stringify(prevCollections)) {
+        return [...firstCollections];
+      } else {
+        return prevCollections;
+      }
+    });
     setLoadingCollections(false);
   }, [mountedRef, presetCollections]);
 

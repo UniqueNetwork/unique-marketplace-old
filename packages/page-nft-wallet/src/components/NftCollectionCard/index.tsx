@@ -4,7 +4,6 @@
 import './styles.scss';
 
 import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
-import type { HoldType } from '@polkadot/react-hooks/useCollections';
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
@@ -25,14 +24,13 @@ interface Props {
   canTransferTokens: boolean;
   collection: NftCollectionInterface;
   removeCollection: (collection: string) => void;
-  onHold: HoldType[];
   openTransferModal: (collection: NftCollectionInterface, tokenId: string, balance: number) => void;
   tokensSelling: string[];
 }
 
 const perPage = 5;
 
-function NftCollectionCard ({ account, canTransferTokens, collection, onHold, openTransferModal, removeCollection, tokensSelling }: Props): React.ReactElement<Props> {
+function NftCollectionCard ({ account, canTransferTokens, collection, openTransferModal, removeCollection, tokensSelling }: Props): React.ReactElement<Props> {
   const [opened, setOpened] = useState(true);
   const [currentPerPage, setCurrentPerPage] = useState(5);
   const [collectionImageUrl, setCollectionImageUrl] = useState<string>();
@@ -40,12 +38,12 @@ function NftCollectionCard ({ account, canTransferTokens, collection, onHold, op
   const { collectionName16Decoder } = useDecoder();
   const cleanup = useRef<boolean>(false);
   const { getTokenImageUrl } = useMetadata();
-  const { allMyTokens, allTokensCount, ownTokensCount, tokensOnPage } = useMyTokens(account, collection, onHold, tokensSelling, currentPerPage);
+  const { allMyTokens, allTokensCount, ownTokensCount, tokensOnPage } = useMyTokens(account, collection, tokensSelling, currentPerPage);
   const nftWalletPanel = useRef<HTMLDivElement>(null);
 
   const hasMore = tokensOnPage.length < allMyTokens.length;
 
-  const openCollection = useCallback((isOpen) => {
+  const toggleCollection = useCallback((isOpen: boolean) => {
     setOpened(isOpen);
   }, []);
 
@@ -59,7 +57,7 @@ function NftCollectionCard ({ account, canTransferTokens, collection, onHold, op
     setCollectionImageUrl(collectionImage);
   }, [collection, getTokenImageUrl]);
 
-  const toggleConfirmation = useCallback((status, e: React.MouseEvent<any>) => {
+  const toggleConfirmation = useCallback((status: boolean, e: React.MouseEvent<any>) => {
     e.stopPropagation();
 
     setConfirmDeleteCollection(status);
@@ -97,7 +95,7 @@ function NftCollectionCard ({ account, canTransferTokens, collection, onHold, op
     <Expander
       className='nft-collection-item'
       isOpen={opened}
-      onClick={openCollection}
+      onClick={toggleCollection}
       summary={
         <div className='expander-content'>
           <div className='token-image'>
@@ -121,7 +119,7 @@ function NftCollectionCard ({ account, canTransferTokens, collection, onHold, op
             </div>
           </div>
           <div className='tokens-count'>
-            <span>Total: {allTokensCount} {!allTokensCount || allTokensCount > 1 ? 'items' : 'item'} (own: {ownTokensCount || 0}, selling: {tokensSelling.length}, on hold: {onHold.length})</span>
+            <span>Total: {allTokensCount} {!allTokensCount || allTokensCount > 1 ? 'items' : 'item'} (own: {ownTokensCount || 0}, selling: {tokensSelling.length})</span>
           </div>
           <div className='link-button'>
             { !uniqueCollectionIds.includes(collection.id) && (
@@ -180,7 +178,6 @@ function NftCollectionCard ({ account, canTransferTokens, collection, onHold, op
                 canTransferTokens={canTransferTokens}
                 collection={collection}
                 key={`${token}-${index}`}
-                onHold={onHold}
                 openTransferModal={openTransferModal}
                 token={token}
                 tokensSelling={tokensSelling}

@@ -4,7 +4,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { NftCollectionInterface, useCollection } from '@polkadot/react-hooks/useCollection';
-import { HoldType, useCollections } from '@polkadot/react-hooks/useCollections';
+import { useCollections } from '@polkadot/react-hooks/useCollections';
 
 interface UseMyTokensInterface {
   allMyTokens: string[];
@@ -16,7 +16,6 @@ interface UseMyTokensInterface {
 export const useMyTokens = (
   account: string | undefined,
   collection: NftCollectionInterface,
-  onHold: HoldType[],
   tokensSelling: string[],
   perPage: number
 ): UseMyTokensInterface => {
@@ -24,7 +23,6 @@ export const useMyTokens = (
   const [ownTokensCount, setOwnTokensCount] = useState<number>(0);
   const [allMyTokens, setAllMyTokens] = useState<string[]>([]);
   const [tokensOnPage, setTokensOnPage] = useState<string[]>([]);
-  const [holdingTokens, setHoldingTokens] = useState<string[]>([]);
   const { getTokensOfCollection } = useCollections();
   const { getCollectionTokensCount } = useCollection();
   const cleanup = useRef<boolean>(false);
@@ -50,12 +48,12 @@ export const useMyTokens = (
     // get own tokens for given collection
 
     const tokens = await getTokensOfCollection(collection.id, account);
-    const allTokens = [...holdingTokens, ...tokensSelling, ...tokens];
+    const allTokens = [...tokensSelling, ...tokens];
 
     setOwnTokensCount(tokens.length);
     setAllMyTokens(allTokens);
     setTokensOnPage(allTokens.slice(0, perPage));
-  }, [account, collection.id, getTokensOfCollection, holdingTokens, perPage, tokensSelling]);
+  }, [account, collection.id, getTokensOfCollection, perPage, tokensSelling]);
 
   useEffect(() => {
     if (collection && allTokensCount === 0) {
@@ -68,16 +66,12 @@ export const useMyTokens = (
   }, [allMyTokens, perPage]);
 
   useEffect(() => {
-    setHoldingTokens(onHold.map((item) => item.tokenId));
-  }, [onHold]);
-
-  useEffect(() => {
     void updateTokens();
   }, [updateTokens]);
 
   return {
     allMyTokens,
-    allTokensCount: ownTokensCount + tokensSelling.length + holdingTokens.length,
+    allTokensCount: ownTokensCount + tokensSelling.length,
     ownTokensCount,
     tokensOnPage
   };
