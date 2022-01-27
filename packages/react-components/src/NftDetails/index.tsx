@@ -225,15 +225,8 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
             { uSellIt && (
               <Header as='h4'>You`re selling it!</Header>
             )}
-            { isOwnerContract && (
-              <Header as='h5'>The owner is Contract</Header>
-            )}
-
             { (!uOwnIt && !isOwnerContract && tokenInfo?.owner && tokenAsk?.flagActive !== '1') && (
               <Header as='h5'>The owner is {tokenInfo?.owner.Substrate || tokenInfo?.owner.Ethereum || ''}</Header>
-            )}
-            { tokenAsk?.flagActive === '1' && (
-              <Header as='h5'>The owner is {tokenAsk?.ownerAddr}</Header>
             )}
             <div className='buttons'>
               { (uOwnIt && !uSellIt) && (
