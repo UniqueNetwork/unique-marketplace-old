@@ -82,15 +82,21 @@ const AccountButtonsGroup: React.FC<AccountButtonsGroupProps> = ({ onStatusChang
           <span
             className='option'
             onClick={toggleRestore}
-          >Seed phrase</span>
+          >
+            Seed phrase
+          </span>
           <span
             className='option'
             onClick={toggleImport}
-          >Backup JSON file</span>
+          >
+            Backup JSON file
+          </span>
           <span
             className='option'
             onClick={toggleQr}
-          >QR-code</span>
+          >
+            QR-code
+          </span>
         </div>
         <button
           className='btn'

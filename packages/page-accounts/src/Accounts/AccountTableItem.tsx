@@ -3,8 +3,9 @@
 
 import type { KeyringAddress } from '@polkadot/ui-keyring/types';
 
-import React, { useCallback, useContext } from 'react';
+import React, { useCallback, useContext, useState } from 'react';
 import { useHistory } from 'react-router';
+import Confirm from 'semantic-ui-react/dist/commonjs/addons/Confirm';
 
 import { AddressSmall, Button, CopyIcon, StatusContext } from '@polkadot/react-components';
 
@@ -14,11 +15,12 @@ interface Props {
   account: KeyringAddress;
   setAccount?: (account?: string) => void;
   exportAccount?: (account?: string) => void;
-  forgetAccount?: (account?: string) => void;
+  forgetAccount: (account: string) => void;
 }
 
 function AccountTableItem ({ account, exportAccount, forgetAccount, setAccount }: Props): React.ReactElement<Props> | null {
   const history = useHistory();
+  const [confirmDeleteAccount, setConfirmDeleteAccount] = useState<boolean>(false);
   const { queueAction } = useContext(StatusContext);
 
   const copyAddress = useCallback(
@@ -49,7 +51,16 @@ function AccountTableItem ({ account, exportAccount, forgetAccount, setAccount }
 
   const _onForget = useCallback(() => {
     forgetAccount && forgetAccount(account.address);
+    setConfirmDeleteAccount(false);
   }, [account.address, forgetAccount]);
+
+  const closeConfirmation = useCallback(() => {
+    setConfirmDeleteAccount(false);
+  }, []);
+
+  const openConfirmation = useCallback(() => {
+    setConfirmDeleteAccount(true);
+  }, []);
 
   return (
     <div className='accounts-table-item'>
@@ -86,7 +97,13 @@ function AccountTableItem ({ account, exportAccount, forgetAccount, setAccount }
         <Button
           className={'btn-outlined'}
           label={'Forget'}
-          onClick={_onForget}
+          onClick={openConfirmation}
+        />
+        <Confirm
+          content='Are you sure to delete address from the wallet?'
+          onCancel={closeConfirmation}
+          onConfirm={_onForget}
+          open={confirmDeleteAccount}
         />
       </div>
     </div>

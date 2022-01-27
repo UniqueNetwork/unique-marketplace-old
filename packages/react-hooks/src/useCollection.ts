@@ -1,7 +1,7 @@
 // Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// import '@unique-nft/types/augment-api-rpc';
+import '@unique-nft/types/augment-api-rpc';
 
 import BN from 'bn.js';
 import { useCallback } from 'react';
@@ -11,9 +11,6 @@ import { useApi } from '@polkadot/react-hooks/useApi';
 import { useDecoder } from '@polkadot/react-hooks/useDecoder';
 
 export type SchemaVersionTypes = 'ImageURL' | 'Unique';
-// hash schema - offchain.unique.network/images/{collectionId}/token/{tokenId}
-// image hash - where to store?
-// ConstData or VariableData of token? For validation.
 
 export interface NftCollectionInterface {
   access?: 'Normal' | 'WhiteList'

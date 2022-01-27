@@ -79,8 +79,6 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: NftMarketProps): ReactE
 
     const firstCollections: NftCollectionInterface[] = await presetCollections();
 
-    console.log('firstCollections', firstCollections);
-
     if (!mountedRef.current) {
       return;
     }

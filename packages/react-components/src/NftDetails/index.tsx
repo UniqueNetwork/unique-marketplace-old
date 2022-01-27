@@ -270,8 +270,8 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
 
                 { (uOwnIt && !uSellIt) && (
                   <Button
-                    disabled={!!(!isInWhiteList && kusamaExistentialDeposit && !kusamaAvailableBalance?.gte(kusamaExistentialDeposit.muln(2)))}
                     content='Sell'
+                    disabled={!!(!isInWhiteList && kusamaExistentialDeposit && !kusamaAvailableBalance?.gte(kusamaExistentialDeposit.muln(2)))}
                     onClick={onSell}
                   />
                 )}
