@@ -17,8 +17,6 @@ import FilterContainerItem from './FilterContainerItem';
 
 const { commission, uniqueCollectionIds } = envConfig;
 
-// type FiltersCallBackType = (prevFilters: Filters) => Filters;
-
 interface PropTypes {
   account: string|undefined;
   allowClearFilters: boolean;
@@ -214,8 +212,6 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearFilters, coll
     // listen changes of filters and show or hide <Clear all filters> button.
     setAreFiltersActive(!!filters.seller || !!filters.minPrice || !!filters.maxPrice || !!collectionsChecked.length || !!filters.traitsCount.length);
   }, [collectionsChecked.length, filters.maxPrice, filters.minPrice, filters.seller, filters.traitsCount.length, setAreFiltersActive]);
-
-  console.log('collectionsChecked', collectionsChecked, 'collections', collections, 'filters', filters);
 
   return (
     <>

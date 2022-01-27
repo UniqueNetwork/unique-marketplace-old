@@ -17,7 +17,6 @@ interface Props {
 
 function KeyPair ({ address, className = '' }: Props): React.ReactElement<Props> {
   const onIconClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    console.log('onIconClick', e.target);
     const target = e.target as HTMLElement;
 
     if (target.classList.contains('ui--AccountName') || target.classList.contains('address') || target.classList.contains('name')) {

@@ -6,6 +6,7 @@ import type { KeyringAddress } from '@polkadot/ui-keyring/types';
 import React, { useCallback } from 'react';
 
 import { HelpTooltip } from '@polkadot/react-components';
+import { keyring } from '@polkadot/ui-keyring';
 
 import { SortedAccount } from '../types';
 import AccountTableItem from './AccountTableItem';
@@ -31,15 +32,21 @@ function AccountTable ({ accounts, setAccount }: Props): React.ReactElement<Prop
     );
   }, []);
 
+  const forgetAccount = useCallback((address: string) => {
+    keyring.forgetAddress(address);
+  }, []);
+
   return (
     <div className='accounts-table'>
       <div className='accounts-table--header'>
         <span className='with-tooltip'>
           Accounts
-          {<HelpTooltip
-            className={'help'}
-            content={content()}
-          />}
+          {
+            <HelpTooltip
+              className={'help'}
+              content={content()}
+            />
+          }
         </span>
         <span>
           Explorer
@@ -55,6 +62,7 @@ function AccountTable ({ accounts, setAccount }: Props): React.ReactElement<Prop
         { accounts?.map(({ account }: { account: KeyringAddress }) => (
           <AccountTableItem
             account={account}
+            forgetAccount={forgetAccount}
             key={account.address}
             setAccount={setAccount}
           />
