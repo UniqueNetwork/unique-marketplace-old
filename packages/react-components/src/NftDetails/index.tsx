@@ -207,7 +207,7 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
                   {formatPrice(formatKsmBalance(tokenPrice))} KSM
                 </Header>
                 {/* @todo - substrate commission from price - fixed? */}
-                <p>Fee: {formatKsmBalance(getRevertedFee(tokenPrice))} KSM, Price: {getMarketPrice(tokenPrice)} KSM</p>
+                <p>Price: {getMarketPrice(tokenPrice)} KSM, Fee: {formatKsmBalance(getRevertedFee(tokenPrice))} KSM</p>
                 {/* { (!uOwnIt && !transferStep && tokenAsk) && lowBalanceToBuy && (
                   <div className='warning-block'>Your balance is too low to pay fees. <a href='https://t.me/unique2faucetbot'
                     rel='noreferrer nooperer'
