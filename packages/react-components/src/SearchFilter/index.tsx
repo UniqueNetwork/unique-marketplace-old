@@ -32,7 +32,7 @@ function SearchFilter (props: Props): React.ReactElement<Props> {
         />
       }
       onChange={setSearchString}
-      placeholder='Search by account name'
+      placeholder='Search by token name/attributes'
       value={searchString}
       withLabel
     >
