@@ -26,8 +26,6 @@ function AccountTableItem ({ account, exportAccount, forgetAccount, setAccount }
   const pair = keyring.getAddress(account.address, null);
   const isInjected = pair?.meta?.isInjected;
 
-  console.log('isInjected', isInjected);
-
   const copyAddress = useCallback(
     (account: string) => () => {
       void navigator.clipboard.writeText(account);
