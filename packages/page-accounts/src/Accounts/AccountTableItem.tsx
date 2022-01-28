@@ -6,6 +6,7 @@ import type { KeyringAddress } from '@polkadot/ui-keyring/types';
 import React, { useCallback, useContext, useState } from 'react';
 import { useHistory } from 'react-router';
 import Confirm from 'semantic-ui-react/dist/commonjs/addons/Confirm';
+import { keyring } from '@polkadot/ui-keyring';
 
 import { AddressSmall, Button, CopyIcon, StatusContext } from '@polkadot/react-components';
 
@@ -22,6 +23,10 @@ function AccountTableItem ({ account, exportAccount, forgetAccount, setAccount }
   const history = useHistory();
   const [confirmDeleteAccount, setConfirmDeleteAccount] = useState<boolean>(false);
   const { queueAction } = useContext(StatusContext);
+  const pair = keyring.getAddress(account.address, null);
+  const isInjected = pair?.meta?.isInjected;
+
+  console.log('isInjected', isInjected);
 
   const copyAddress = useCallback(
     (account: string) => () => {
@@ -88,24 +93,26 @@ function AccountTableItem ({ account, exportAccount, forgetAccount, setAccount }
       >
         View All Tokens
       </a>
-      <div className={'actions btn-container'}>
-        <Button
-          className={'btn-outlined'}
-          label={'Export'}
-          onClick={_onExport}
-        />
-        <Button
-          className={'btn-outlined'}
-          label={'Forget'}
-          onClick={openConfirmation}
-        />
-        <Confirm
-          content='Are you sure to delete address from the wallet?'
-          onCancel={closeConfirmation}
-          onConfirm={_onForget}
-          open={confirmDeleteAccount}
-        />
-      </div>
+      { !isInjected && (
+        <div className={'actions btn-container'}>
+          <Button
+            className={'btn-outlined'}
+            label={'Export'}
+            onClick={_onExport}
+          />
+          <Button
+            className={'btn-outlined'}
+            label={'Forget'}
+            onClick={openConfirmation}
+          />
+          <Confirm
+            content='Are you sure to delete address from the wallet?'
+            onCancel={closeConfirmation}
+            onConfirm={_onForget}
+            open={confirmDeleteAccount}
+          />
+        </div>
+      )}
     </div>
   );
 }
