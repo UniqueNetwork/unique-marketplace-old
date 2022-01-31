@@ -40,8 +40,7 @@ function AccountTable ({ accounts, setAccount }: Props): React.ReactElement<Prop
     };
 
     try {
-      console.log('forgetAccount');
-      keyring.forgetAddress(address);
+      keyring.forgetAccount(address);
       status.status = 'success';
       status.message = 'account forgotten';
     } catch (e) {
@@ -49,7 +48,6 @@ function AccountTable ({ accounts, setAccount }: Props): React.ReactElement<Prop
       status.status = 'error';
       status.message = (e as Error).message;
     }
-    console.log('forgetAccount', status);
   }, []);
 
   return (
