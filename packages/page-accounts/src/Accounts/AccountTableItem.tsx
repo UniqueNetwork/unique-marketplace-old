@@ -56,7 +56,6 @@ function AccountTableItem ({ account, forgetAccount, setAccount }: Props): React
   const _onForget = useCallback(() => {
     forgetAccount && forgetAccount(account.address);
     setConfirmDeleteAccount(false);
-
   }, [account.address, forgetAccount]);
 
   const closeConfirmation = useCallback(() => {

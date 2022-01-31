@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import type { KeyringAddress } from '@polkadot/ui-keyring/types';
+import type { ActionStatus } from '@polkadot/react-components/Status/types';
 
 import React, { useCallback } from 'react';
 
@@ -33,7 +34,22 @@ function AccountTable ({ accounts, setAccount }: Props): React.ReactElement<Prop
   }, []);
 
   const forgetAccount = useCallback((address: string) => {
-    keyring.forgetAddress(address);
+    const status: Partial<ActionStatus> = {
+      account: address,
+      action: 'forget'
+    };
+
+    try {
+      console.log('forgetAccount');
+      keyring.forgetAddress(address);
+      status.status = 'success';
+      status.message = 'account forgotten';
+    } catch (e) {
+      console.log('forget account error', e);
+      status.status = 'error';
+      status.message = (e as Error).message;
+    }
+    console.log('forgetAccount', status);
   }, []);
 
   return (
