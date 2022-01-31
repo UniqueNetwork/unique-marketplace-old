@@ -64,6 +64,7 @@ function Overview ({ className = 'page-accounts', onStatusChange, setAccount }: 
               clearSearch={clearSearch}
               searchString={filterOn}
               setSearchString={setFilter}
+              placeholder='Search by account name'
             />
           </div>
         </div>

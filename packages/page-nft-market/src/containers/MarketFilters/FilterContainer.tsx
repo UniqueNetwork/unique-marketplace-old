@@ -15,7 +15,7 @@ import envConfig from '@polkadot/apps-config/envConfig';
 import { SESSION_STORAGE_KEYS } from './constants';
 import FilterContainerItem from './FilterContainerItem';
 
-const { commission, uniqueCollectionIds } = envConfig;
+const { kusamaDecimals, uniqueCollectionIds } = envConfig;
 
 interface PropTypes {
   account: string|undefined;
@@ -56,17 +56,13 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearFilters, coll
     if (minPrice === '') {
       delete filtersCopy.minPrice;
     } else {
-      const currentMinPrice = new BN(Number(minPrice) * 10000000000);
-
-      filtersCopy.minPrice = String(currentMinPrice.mul(new BN(10)).div(new BN(1000 + commission * 10))) + '0000';
+      filtersCopy.minPrice = (new BN(Number(minPrice) * Math.pow(10, kusamaDecimals))).toString();
     }
 
     if (maxPrice === '') {
       delete filtersCopy.maxPrice;
     } else {
-      const currentMaxPrice = new BN(Number(maxPrice) * 10000000000);
-
-      filtersCopy.maxPrice = String(currentMaxPrice.mul(new BN(10)).div(new BN(1000 + commission * 10))) + '0000';
+      filtersCopy.maxPrice = (new BN(Number(maxPrice) * Math.pow(10, kusamaDecimals))).toString();
     }
 
     setFilters(filtersCopy);
@@ -167,13 +163,6 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearFilters, coll
   const onKeyDown = useCallback((evt: React.KeyboardEvent) => {
     ['e', 'E', '+', '-'].includes(evt.key) && evt.preventDefault();
   }, []);
-
-  /* const onKeyPress = useCallback((evt: KeyPressEvent) => {
-    if (evt.charCode === 13) {
-
-    }
-    evt.charCode === 13 ? changePrices(KSMPrices.minPrice, KSMPrices.maxPrice) : null;
-  }, [changePrices, KSMPrices]); */
 
   const onSetShowPrices = useCallback(() => {
     setIsShowPrice(!isShowPrice);
