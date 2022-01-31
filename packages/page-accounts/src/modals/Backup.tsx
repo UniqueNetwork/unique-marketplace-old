@@ -1,13 +1,12 @@
-// Copyright 2017-2021 @polkadot/app-accounts authors & contributors
+// Copyright 2017-2022 @polkadot/app-accounts authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import FileSaver from 'file-saver';
 import React, { useCallback, useState } from 'react';
 
-import { AddressRow, Button, Modal, Password } from '@polkadot/react-components';
+import { AddressRow, Button, Label, Modal, Password } from '@polkadot/react-components';
+import Form from 'semantic-ui-react/dist/commonjs/collections/Form/Form';
 import { keyring } from '@polkadot/ui-keyring';
-
-import { useTranslation } from '../translate';
 
 interface Props {
   onClose: () => void;
@@ -15,7 +14,6 @@ interface Props {
 }
 
 function Backup ({ address, onClose }: Props): React.ReactElement<Props> {
-  const { t } = useTranslation();
   const [isBusy, setIsBusy] = useState(false);
   const [{ isPassTouched, password }, setPassword] = useState({ isPassTouched: false, password: '' });
   const [backupFailed, setBackupFailed] = useState(false);
@@ -56,28 +54,33 @@ function Backup ({ address, onClose }: Props): React.ReactElement<Props> {
 
   return (
     <Modal
-      className='app--accounts-Modal'
-      header={t<string>('Backup account')}
+      className='unique-modal'
+      header={'Export account'}
+      onClose={onClose}
     >
       <Modal.Content>
         <AddressRow
           isInline
           value={address}
         >
-          <p>{t<string>('An encrypted backup file will be created once you have pressed the "Download" button. This can be used to re-import your account on any other machine.')}</p>
-          <p>{t<string>('Save this backup file in a secure location. Additionally, the password associated with this account is needed together with this backup file in order to restore your account.')}</p>
-          <div>
-            <Password
-              autoFocus
-              help={t<string>('The account password as specified when creating the account. This is used to encrypt the backup file and subsequently decrypt it when restoring the account.')}
-              isError={isPassTouched && !isPassValid}
-              label={t<string>('password')}
-              onChange={_onChangePass}
-              onEnter={_doBackup}
-              tabIndex={0}
-              value={password}
-            />
-          </div>
+          <p>An encrypted backup file will be created once you have pressed the "Download" button. This can be used to re-import your account on any other machine.</p>
+          <p>Save this backup file in a secure location. Additionally, the password associated with this account is needed together with this backup file in order to restore your account.</p>
+          <Form className='backup-form'>
+            <Form.Field>
+              <Label label={'Please enter a password'} />
+              <Password
+                autoFocus
+                className='isSmall'
+                help='The account password as specified when creating the account. This is used to encrypt the backup file and subsequently decrypt it when restoring the account.'
+                isError={isPassTouched && !isPassValid}
+                label={'password'}
+                onChange={_onChangePass}
+                onEnter={_doBackup}
+                tabIndex={0}
+                value={password}
+              />
+            </Form.Field>
+          </Form>
         </AddressRow>
       </Modal.Content>
       <Modal.Actions onCancel={onClose}>
@@ -85,7 +88,7 @@ function Backup ({ address, onClose }: Props): React.ReactElement<Props> {
           icon='download'
           isBusy={isBusy}
           isDisabled={!isPassValid}
-          label={t<string>('Download')}
+          label='Download'
           onClick={_doBackup}
         />
       </Modal.Actions>
