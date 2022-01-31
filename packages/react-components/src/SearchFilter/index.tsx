@@ -15,10 +15,11 @@ interface Props {
   loading?: boolean;
   searchString: string;
   setSearchString: (str: string) => void;
+  placeholder: string;
 }
 
 function SearchFilter (props: Props): React.ReactElement<Props> {
-  const { clearSearch, loading, searchString, setSearchString } = props;
+  const { clearSearch, loading, searchString, setSearchString, placeholder } = props;
 
   return (
     <Input
@@ -32,7 +33,7 @@ function SearchFilter (props: Props): React.ReactElement<Props> {
         />
       }
       onChange={setSearchString}
-      placeholder='Search by token name/attributes'
+      placeholder={placeholder}
       value={searchString}
       withLabel
     >
