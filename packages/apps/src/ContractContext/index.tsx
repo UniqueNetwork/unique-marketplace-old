@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import BN from 'bn.js';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState, useRef } from 'react';
 import Web3 from 'web3';
 import { Contract } from 'web3-eth-contract';
 
@@ -64,6 +64,7 @@ function Contracts ({ account, children }: Props): React.ReactElement<Props> | n
   const [deposited, setDeposited] = useState<BN>();
   const [web3Instance, setWeb3Instance] = useState<Web3>();
   const [ethAccount, setEthAccount] = useState<string>();
+  const abiRef = useRef<Contract>();
 
   const getUserDeposit = useCallback(async (): Promise<BN | null> => {
     try {
@@ -109,12 +110,11 @@ function Contracts ({ account, children }: Props): React.ReactElement<Props> | n
   }, [account]);
 
   const initAbi = useCallback(() => {
-    if (account && ethAccount) {
-      console.log('mySubEthAddress', evmToAddress(ethAccount, 42, 'blake2'));
-
+    if (account && ethAccount && !abiRef.current) {
       const provider = new Web3.providers.HttpProvider(uniqueSubstrateApiRpc);
       // const web3 = new Web3(window.ethereum);
       const web3 = new Web3(provider);
+      console.log('mySubEthAddress', evmToAddress(ethAccount, 42, 'blake2'));
 
       try {
         // await window.ethereum.enable();
@@ -127,6 +127,8 @@ function Contracts ({ account, children }: Props): React.ReactElement<Props> | n
         });
 
         setMatcherContractInstance(newContractInstance);
+
+        abiRef.current = newContractInstance;
 
         console.log('newContractInstance', newContractInstance);
       } catch (e) {
