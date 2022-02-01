@@ -17,7 +17,7 @@ import { evmToAddress } from '@polkadot/util-crypto';
 
 import ContractContext from './ContractContext';
 
-const { contractAddress, minPrice, uniqueSubstrateApiRpc } = envConfig;
+const { contractAddress, minPrice, uniqueSubstrateApi } = envConfig;
 
 export type MarketplaceAbiMethods = {
   addAsk: (price: string, currencyCode: string, address: string, tokenId: string) => {
@@ -111,7 +111,7 @@ function Contracts ({ account, children }: Props): React.ReactElement<Props> | n
 
   const initAbi = useCallback(() => {
     if (account && ethAccount && !abiRef.current) {
-      const provider = new Web3.providers.HttpProvider(uniqueSubstrateApiRpc);
+      const provider = new Web3.providers.WebsocketProvider(uniqueSubstrateApi);
       // const web3 = new Web3(window.ethereum);
       const web3 = new Web3(provider);
       console.log('mySubEthAddress', evmToAddress(ethAccount, 42, 'blake2'));
