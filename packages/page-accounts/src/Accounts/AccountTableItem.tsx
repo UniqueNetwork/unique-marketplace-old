@@ -96,26 +96,26 @@ function AccountTableItem ({ account, forgetAccount, setAccount }: Props): React
       >
         View All Tokens
       </a>
-      { !isInjected && (
-        <div className={'actions btn-container'}>
-          <Button
-            className={'btn-outlined'}
-            label={'Export'}
-            onClick={_onExport}
-          />
-          <Button
-            className={'btn-outlined'}
-            label={'Forget'}
-            onClick={openConfirmation}
-          />
-          <Confirm
-            content='Are you sure to delete address from the wallet?'
-            onCancel={closeConfirmation}
-            onConfirm={_onForget}
-            open={confirmDeleteAccount}
-          />
-        </div>
-      )}
+      <div className={'actions btn-container'}>
+        <Button
+          className={'btn-outlined primary'}
+          isDisabled={isInjected}
+          label={'Export'}
+          onClick={_onExport}
+        />
+        <Button
+          className={'btn-outlined error'}
+          isDisabled={isInjected}
+          label={'Forget'}
+          onClick={openConfirmation}
+        />
+        <Confirm
+          content='Are you sure to delete address from the wallet?'
+          onCancel={closeConfirmation}
+          onConfirm={_onForget}
+          open={confirmDeleteAccount}
+        />
+      </div>
       { backupModalOpened && (
         <Backup
           address={account.address}

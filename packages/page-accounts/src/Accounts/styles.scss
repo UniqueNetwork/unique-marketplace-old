@@ -100,10 +100,6 @@
 
           .actions {
             display: flex;
-            button:last-child {
-              color: var(--error-color);
-              border: 1px solid var(--error-color);
-            }
           }
 
           a {
