@@ -79,6 +79,19 @@ export function normalizeAccountId (input: string | AccountId | CrossAccountId |
   return { Substrate: input.toString() };
 }
 
+export function fromStringToBnString (value: string, decimals: number): string {
+  if (!value || !value.length) {
+    return '0';
+  }
+
+  const numStringValue = value.replace(',', '.');
+  const [left, right] = numStringValue.split('.');
+  const decimalsFromLessZeroString = right?.length || 0;
+  const bigValue = [...(left || []), ...(right || [])].join('').replace(/^0+/, '');
+
+  return (Number(bigValue) * Math.pow(10, decimals - decimalsFromLessZeroString)).toString();
+}
+
 export function formatStrBalance (value: BN | undefined = new BN(0), incomeDecimals?: number): string {
   if (!value || value.toString() === '0') {
     return '0';

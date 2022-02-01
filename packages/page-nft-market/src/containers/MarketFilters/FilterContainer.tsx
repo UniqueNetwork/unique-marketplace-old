@@ -5,12 +5,12 @@ import './styles.scss';
 
 import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
 
-import BN from 'bn.js';
 import React, { useCallback, useEffect, useState } from 'react';
 import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
 import { Filters } from '@polkadot/app-nft-market/containers/NftMarket';
 import envConfig from '@polkadot/apps-config/envConfig';
+import { fromStringToBnString } from '@polkadot/react-hooks/utils';
 
 import { SESSION_STORAGE_KEYS } from './constants';
 import FilterContainerItem from './FilterContainerItem';
@@ -42,6 +42,7 @@ const setInStorage = (storageKey: string, data: Filters | boolean | PricesTypes)
 };
 
 const defaultPrices: PricesTypes = { maxPrice: '', minPrice: '' };
+const maxFilterValue = 100000;
 
 const FilterContainer: React.FC<PropTypes> = ({ account, allowClearFilters, collections, filters, loadingCollections, setAllowClearFilters, setAreFiltersActive, setFilters }) => {
   const [KSMPrices, setKSMPrices] = useState<PricesTypes>(defaultPrices);
@@ -53,16 +54,17 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearFilters, coll
   const changePrices = useCallback((minPrice: string | undefined, maxPrice: string | undefined) => {
     const filtersCopy = { ...filters };
 
-    if (minPrice === '') {
+    if (!minPrice?.length) {
       delete filtersCopy.minPrice;
     } else {
-      filtersCopy.minPrice = (new BN(Number(minPrice) * Math.pow(10, kusamaDecimals))).toString();
+      filtersCopy.minPrice = fromStringToBnString(minPrice, kusamaDecimals);
     }
 
-    if (maxPrice === '') {
+    if (!maxPrice?.length) {
       delete filtersCopy.maxPrice;
     } else {
-      filtersCopy.maxPrice = (new BN(Number(maxPrice) * Math.pow(10, kusamaDecimals))).toString();
+      filtersCopy.maxPrice = fromStringToBnString(maxPrice, kusamaDecimals);
+
     }
 
     setFilters(filtersCopy);
@@ -83,7 +85,7 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearFilters, coll
 
     val = val.slice(0, 8);
 
-    if (+val > 100000 || +val < 0) {
+    if (+val > maxFilterValue || +val < 0) {
       return;
     }
 

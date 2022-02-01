@@ -54,28 +54,6 @@ export function useSchema (account: string | undefined, collectionId: string, to
     return null;
   }, [attributes]);
 
-  /* const getReFungibleDetails = useCallback(() => {
-    try {
-      if (account && tokenDetails?.owner) {
-        if (Object.prototype.hasOwnProperty.call(collectionInfo?.mode, 'reFungible')) {
-          const owner = tokenDetails.owner.find((item: { fraction: BN, owner: string }) => item.owner.toString() === account) as { fraction: BN, owner: string } | undefined;
-
-          if (typeof collectionInfo?.decimalPoints === 'number') {
-            const balance = owner && owner.fraction.toNumber() / Math.pow(10, collectionInfo.decimalPoints);
-
-            if (cleanup.current) {
-              return;
-            }
-
-            setReFungibleBalance(balance || 0);
-          }
-        }
-      }
-    } catch (e) {
-      console.error('token balance calculation error', e);
-    }
-  }, [account, collectionInfo, tokenDetails?.Owner]); */
-
   const getCollectionInfo = useCallback(async () => {
     if (collectionId) {
       const info: NftCollectionInterface = await getDetailedCollectionInfo(collectionId) as unknown as NftCollectionInterface;
