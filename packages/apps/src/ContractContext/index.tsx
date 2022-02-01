@@ -121,7 +121,7 @@ function Contracts ({ account, children }: Props): React.ReactElement<Props> | n
         }
       }
        */
-      const provider = new Web3.providers.WebsocketProvider(uniqueSubstrateApiRpc);
+      const provider = new Web3.providers.HttpProvider(uniqueSubstrateApiRpc);
       // const web3 = new Web3(window.ethereum);
       const web3 = new Web3(provider);
 
