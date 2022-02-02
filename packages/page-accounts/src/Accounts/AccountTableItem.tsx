@@ -6,11 +6,11 @@ import type { KeyringAddress } from '@polkadot/ui-keyring/types';
 import React, { useCallback, useContext, useState } from 'react';
 import { useHistory } from 'react-router';
 import Confirm from 'semantic-ui-react/dist/commonjs/addons/Confirm';
-import { keyring } from '@polkadot/ui-keyring';
 
 import { AddressSmall, Button, CopyIcon, StatusContext } from '@polkadot/react-components';
-import Backup from '../modals/Backup';
+import { keyring } from '@polkadot/ui-keyring';
 
+import Backup from '../modals/Backup';
 import blockExplorerIcon from './block-explorer.svg';
 
 interface Props {
@@ -89,7 +89,7 @@ function AccountTableItem ({ account, forgetAccount, setAccount }: Props): React
           className='explorer-icon'
           src={blockExplorerIcon as string}
         />
-        <span>UNIQUE block explorer</span>
+        <a href = 'https://scan-quartz.unique.network/'>UNIQUE block explorer</a>
       </div>
       <a
         onClick={viewAllTokens}
