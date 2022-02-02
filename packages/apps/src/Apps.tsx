@@ -17,11 +17,12 @@ import Status from '@polkadot/apps/Status';
 import { useTranslation } from '@polkadot/apps/translate';
 import { getSystemChainColor } from '@polkadot/apps-config';
 import createRoutes from '@polkadot/apps-routing';
-import {AccountSelector, ErrorBoundary, StatusContext, WarningText} from '@polkadot/react-components';
+import { AccountSelector, ErrorBoundary, StatusContext } from '@polkadot/react-components';
 import PageNotFound from '@polkadot/react-components/PageNotFound';
 import GlobalStyle from '@polkadot/react-components/styles';
 import { useApi } from '@polkadot/react-hooks';
 import Signer from '@polkadot/react-signer';
+
 
 import infoSvg from '../src/images/info.svg';
 import BalancesHeader from './BalancesHeader';
@@ -33,6 +34,10 @@ import MobileMenu from './MobileMenu';
 import MobileMenuHeader from './MobileMenuHeader';
 import ScrollToTop from './ScrollToTop';
 import WarmUp from './WarmUp';
+
+
+import sniLogo from '../src/images/-SNIlogo.svg';
+import { Parallax, Background } from 'react-parallax';
 
 export const PORTAL_ID = 'portals';
 
@@ -48,7 +53,7 @@ const NOT_FOUND: Route = {
   text: 'Unknown'
 };
 
-function Apps ({ className = '' }: Props): React.ReactElement<Props> {
+function Apps({ className = '' }: Props): React.ReactElement<Props> {
   const location = useLocation();
   const { t } = useTranslation();
   const theme = useContext<ThemeDef>(ThemeContext);
@@ -79,164 +84,174 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
     <>
       <GlobalStyle uiHighlight={uiHighlight} />
       <ScrollToTop />
-      <div className={`app-wrapper theme--${theme.theme} ${className}`}>
-        <Signer>
-          <ErrorBoundary
-            isPageFound={isPageFound}
-            setIsPageFound={setIsPageFound}
-            trigger={name}
-          >
-            <Contracts account={account}>
-              <header className='app-header'>
-                <div className='app-container app-container--header'>
-                  <MobileMenuHeader
-                    isMobileMenu={openPanel}
-                    setIsMobileMenu={setOpenPanel}
-                    theme={theme}
-                  />
-                  <Menu
-                    className='header-menu'
-                    tabular
-                  >
-                    { theme.logo && (
+      <Parallax strength={400}>
+        <Background className="custom-bg">
+          <img src="https://lh3.googleusercontent.com/Zbg9B1U1QG3TzDzwQs4Y7YWW47kJEczibf7Tr8S2XvUmbFhOlsaGipVepBGVwBkkG1L6yuOBArF9LxGiX328WE02FQrRooRa7jPk-oSLNJ-PCPn-j0iznhIY46miO3EPclKAsSCF8A=w2400" />
+        </Background>
+
+        <div className={`app-wrapper theme--${theme.theme} ${className}`}>
+          <Signer>
+            <ErrorBoundary
+              isPageFound={isPageFound}
+              setIsPageFound={setIsPageFound}
+              trigger={name}
+            >
+              <Contracts account={account}>
+                <header className='app-header'>
+                  <div className='app-container app-container--header'>
+                    <MobileMenuHeader
+                      isMobileMenu={openPanel}
+                      setIsMobileMenu={setOpenPanel}
+                      theme={theme}
+                    />
+
+                    <Menu
+                      className='header-menu'
+                      tabular
+                    >
+                      {theme.logo && (
+                        <Menu.Item
+                          active={location.pathname === '/'}
+                          as={NavLink}
+                          className='app-logo'
+                          icon={
+                            <img
+                              alt={`logo SNI`}
+                              src={String(sniLogo)} />
+
+                          }
+                          to='/'
+                        />
+                      )}
                       <Menu.Item
-                        active={location.pathname === '/'}
+                        active={location.pathname === '/market'}
                         as={NavLink}
-                        className='app-logo'
-                        icon={
-                          <img
-                            alt={`logo ${theme.theme}`}
-                            src={theme.logo}
-                          />
-                        }
-                        to='/'
+                        name='market'
+                        to='/market'
                       />
-                    )}
-                    <Menu.Item
-                      active={location.pathname === '/market'}
-                      as={NavLink}
-                      name='market'
-                      to='/market'
-                    />
-                    <Menu.Item
-                      active={location.pathname === '/wallet'}
-                      as={NavLink}
-                      name='myTokens'
-                      to='/wallet'
-                    />
-                    <Menu.Item
-                      active={location.pathname === '/trades'}
-                      as={NavLink}
-                      name='trades'
-                      to='/trades'
-                    />
-                    <Menu.Item
-                      active={location.pathname === '/accounts'}
-                      as={NavLink}
-                      name='accounts'
-                      to='/accounts'
-                    />
-                    <Menu.Item
-                      active={location.pathname === '/faq'}
-                      as={NavLink}
-                      name='FAQ'
-                      to='/faq'
-                    />
-                  </Menu>
-                  <div className='app-user'>
-                    { (!isApiReady || !isApiConnected) && (
-                      <div>
-                        <Loader
-                          active
-                          className='centered'
-                          inline='centered'
-                        />
-                      </div>
-                    )}
-                    { (isApiReady && isApiConnected) && (
-                      <>
-                        <BalancesHeader
-                          account={account}
-                          isMobileMenu={openPanel}
-                          setOpenPanel={setOpenPanel}
-                        />
-                        <div className='account-selector-block'>
-                          <AccountSelector onChange={setAccount} />
-                          <MobileAccountSelector
-                            address={account}
-                            openPanel={openPanel}
-                            setOpenPanel={setOpenPanel}
+                      <Menu.Item
+                        active={location.pathname === '/wallet'}
+                        as={NavLink}
+                        name='myTokens'
+                        to='/wallet'
+                      />
+                      <Menu.Item
+                        active={location.pathname === '/trades'}
+                        as={NavLink}
+                        name='trades'
+                        to='/trades'
+                      />
+                      <Menu.Item
+                        active={location.pathname === '/accounts'}
+                        as={NavLink}
+                        name='accounts'
+                        to='/accounts'
+                      />
+                      <Menu.Item
+                        active={location.pathname === '/faq'}
+                        as={NavLink}
+                        name='FAQ'
+                        to='/faq'
+                      />
+                    </Menu>
+                    <div className='app-user'>
+                      {(!isApiReady || !isApiConnected) && (
+                        <div>
+                          <Loader
+                            active
+                            className='centered'
+                            inline='centered'
                           />
                         </div>
-                      </>
-                    )}
-                  </div>
-                </div>
-              </header>
-              { openPanel === 'menu' && (
-                <MobileMenu
-                  account={account}
-                  setOpenPanel={setOpenPanel}
-                  theme={theme}
-                />
-              )}
-              { openPanel === 'accounts' && (
-                <ManageAccounts
-                  account={account}
-                  setAccount={setAccount}
-                  setIsMobileMenu={setOpenPanel}
-                />
-              )}
-              { openPanel === 'balances' && (
-                <ManageBalances
-                  account={account}
-                  setOpenPanel={setOpenPanel}
-                />
-              )}
-              { (openPanel !== 'accounts') && (
-                <Suspense fallback=''>
-                  <main className={`app-main ${openPanel || ''} ${noAccounts ? 'no-accounts' : ''} ${!isPageFound ? 'page-no-found' : ''}`}>
-                    <div className={`app-container ${openPanel === 'balances' ? 'is-balance-active' : ''}`}>
-                      { isApiConnected && isApiReady && noAccounts && (
+                      )}
+                      {(isApiReady && isApiConnected) && (
                         <>
-                          <WarningText
-                            className='warning no-margin'
-                            text={(
-                              <>
-                                Some features are currently hidden and will only become available once you connect your wallet. You can create new or add your existing substrate account on the <Link to='accounts'><span>account page</span></Link>
-                              </>
-                            )}
+                          <BalancesHeader
+                            account={account}
+                            isMobileMenu={openPanel}
+                            setOpenPanel={setOpenPanel}
                           />
-                          <br />
+                          <div className='account-selector-block'>
+                            <AccountSelector onChange={setAccount} />
+                            <MobileAccountSelector
+                              address={account}
+                              openPanel={openPanel}
+                              setOpenPanel={setOpenPanel}
+                            />
+                          </div>
                         </>
                       )}
-                      {
-                        isPageFound
-                          ? (
-                            <>
-                              <Component
-                                account={account}
-                                basePath={`/${name}`}
-                                location={location}
-                                onStatusChange={queueAction}
-                                openPanel={openPanel}
-                                setOpenPanel={setOpenPanel}
-                              />
-                              <div id={PORTAL_ID} />
-                            </>
-                          )
-                          : <PageNotFound />
-                      }
                     </div>
-                  </main>
-                </Suspense>
-              )}
-            </Contracts>
-          </ErrorBoundary>
-          <Status />
-        </Signer>
-      </div>
+                  </div>
+                </header>
+                {openPanel === 'menu' && (
+                  <MobileMenu
+                    account={account}
+                    setOpenPanel={setOpenPanel}
+                    theme={theme}
+                  />
+                )}
+                {openPanel === 'accounts' && (
+                  <ManageAccounts
+                    account={account}
+                    setAccount={setAccount}
+                    setIsMobileMenu={setOpenPanel}
+                  />
+                )}
+                {openPanel === 'balances' && (
+                  <ManageBalances
+                    account={account}
+                    setOpenPanel={setOpenPanel}
+                  />
+                )}
+                {(openPanel !== 'accounts') && (
+                  <Suspense fallback=''>
+                    <main className={`app-main ${openPanel || ''} ${noAccounts ? 'no-accounts' : ''} ${!isPageFound ? 'page-no-found' : ''}`}>
+                      <div className={`app-container ${openPanel === 'balances' ? 'is-balance-active' : ''}`}>
+                        {isApiConnected && isApiReady && noAccounts && (
+                          <div className='no-account'>
+                            <div className='error-info-svg'>
+                              <img src={String(infoSvg)} />
+                            </div>
+                            <div className='error-message-info'>
+                              <div>
+                                <p> Some features are currently hidden and will only become available once you connect your wallet.  </p>
+                                <p> You can create new or add your existing substrate account on the
+                                  <Link to='accounts'> <span> account page</span> </Link>
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                        {
+                          isPageFound
+                            ? (
+                              <>
+                                <Component
+                                  account={account}
+                                  basePath={`/${name}`}
+                                  location={location}
+                                  onStatusChange={queueAction}
+                                  openPanel={openPanel}
+                                  setOpenPanel={setOpenPanel}
+                                />
+                                <div id={PORTAL_ID} />
+                              </>
+                            )
+                            : <PageNotFound />
+                        }
+                      </div>
+                    </main>
+                  </Suspense>
+                )}
+              </Contracts>
+            </ErrorBoundary>
+            <Status />
+          </Signer>
+        </div>
+      </Parallax>
       <WarmUp />
+
     </>
   );
 }

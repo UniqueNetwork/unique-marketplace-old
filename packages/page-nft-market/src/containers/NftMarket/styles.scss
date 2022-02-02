@@ -10,11 +10,141 @@
     min-height: 100vh;
   }
 
+  .filter {
+    border-top: none;
+  }
+
+
+  .filter-main {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    background-color: rgba(0, 0, 0, 0.486);
+    backdrop-filter: blur(10px);
+    border-radius: 4px;
+    color: darkgray;
+
+
+
+
+    input[type=checkbox]:before {
+      content: "";
+      display: block;
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: #322222;
+      border: 1px solid #322222;
+      border-radius: 5px;
+      box-shadow: inset 0px 2px 4px rgba(0, 0, 0, 0.25);
+    }
+
+
+    .filter--title {
+      display: flex;
+      font-family: Roboto;
+      font-style: normal;
+      font-weight: 400;
+      font-size: 16px;
+      line-height: 24px;
+      justify-content: space-between;
+      color: #F4F4F4;
+
+
+      .clear-title-active {
+        cursor: pointer;
+        color: #AAE6B9;
+        display: inline-block;
+      }
+    }
+
+    .filter--body {
+
+      .price-main input {
+        width: 106px;
+        padding: 5px 8px;
+        background: #322222;
+        border: none;
+        box-sizing: border-box;
+        border-radius: 4px;
+        font-family: var(--font-roboto);
+        font-style: normal;
+        font-weight: 300;
+        font-size: 15px;
+        line-height: 22px;
+        box-shadow: inset 0px 2px 4px rgba(0, 0, 0, 0.25);
+        color: #F4F4F4;
+      }
+
+      .price-btn {
+        display: flex;
+        flex-direction: row;
+        font-family: Roboto;
+        font-style: normal;
+        font-weight: 500;
+        font-size: 16px;
+        line-height: 24px;
+        text-align: center;
+        align-items: center;
+        padding: 8px 24px;
+        border: 1px solid #AAE6B9;
+        box-sizing: border-box;
+        color: #231F20;
+        border-radius: 4px;
+        background-color: #AAE6B9;
+        width: 89px;
+        height: 32px;
+        box-shadow: 0px 0px 5px rgb(0 0 0 / 25%);
+        backdrop-filter: blur(10px);
+      }
+
+      .collections-main {
+        background-color: rgba(0, 0, 0, 0);
+      }
+
+
+    }
+
+    .custom-checkbox .checkbox-title {
+      font-weight: 300;
+      color: #F4F4F4;
+    }
+
+
+    .disable-token {
+      background-color: #00000000 !important;
+      border: 2px solid #AAE6B9;
+      cursor: default;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 14px;
+      top: 1px;
+      left: 1px;
+      width: 14px;
+      background-color: #AAE6B9;
+      border: 2px solid #AAE6B9;
+      -webkit-transition: 0.4s;
+      transition: 0.4s;
+    }
+
+
+    .switch-my-tokens .title {
+      font-family: Roboto;
+      font-style: normal;
+      font-weight: 400;
+      font-size: 15px;
+      line-height: 18px;
+      color: #F4F4F4;
+    }
+  }
+
   .marketplace-body {
     .collection-search-form {
       padding: 32px;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-      background-color: var(--card-background);
+      background-color: rgba(0, 0, 0, 0.486);
+      backdrop-filter: blur(10px);
       border-radius: 4px;
       margin-bottom: 16px;
 
@@ -25,68 +155,80 @@
 
         .search-field {
 
-            .clear-icon {
-              cursor: pointer;
-              width: 20px;
+          .clear-icon {
+            cursor: pointer;
+            width: 20px;
 
+            & svg {
+              fill: var(--input-placeholder-search-color)
+            }
+
+            &:hover {
               & svg {
-                fill: var(--input-placeholder-search-color)
-              }
-
-              &:hover{
-                & svg {
-                  fill: var(--black-color)
-                }
+                fill: var(--black-color)
               }
             }
-            .ui.input.ui--Input {
+          }
 
-              input {
+          .ui.input.ui--Input {
 
-                &:hover {
-                  border: 1px solid var(--input-border-color-hover);
-                }
+            input {
+              border: none;
+              border-radius: 9px;
+              color: #898989;
+              background: #231F20;
+              padding: 8px 16px;
+              width: 100%;
+              font-size: 16px;
+              box-shadow: inset 0px 2px 4px rgba(0, 0, 0, 0.25);
 
-                &:focus {
-                  outline: none;
-                  border: 1px solid var(--input-border-color-outline);
-                }
 
+              &:hover {
+                border: 1px solid var(--input-border-color-hover);
+              }
+
+              &:focus {
+                outline: none;
+                border: 1px solid var(--input-border-color-outline);
+              }
+
+              &::-webkit-input-placeholder {
+                color: var(--input-placeholder-search-color);
+              }
+
+              &::-moz-placeholder {
+                color: var(--input-placeholder-search-color);
+              }
+
+              &:-ms-input-placeholder {
+                color: var(--input-placeholder-search-color);
+              }
+
+              &:active,
+              &:focus {
                 &::-webkit-input-placeholder {
-                  color: var(--input-placeholder-search-color);
+                  color: var(--input-border-color-outline);
                 }
 
                 &::-moz-placeholder {
-                  color: var(--input-placeholder-search-color);
+                  color: var(--input-border-color-outline);
                 }
 
                 &:-ms-input-placeholder {
-                  color: var(--input-placeholder-search-color);
+                  color: var(--input-border-color-outline);
                 }
-
-                &:active, &:focus {
-                  &::-webkit-input-placeholder {
-                    color: var(--input-border-color-outline);
-                  }
-
-                  &::-moz-placeholder {
-                    color: var(--input-border-color-outline);
-                  }
-
-                  &:-ms-input-placeholder {
-                    color: var(--input-border-color-outline);
-                  }
-                }
-              }
-              .clear-icon{
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                position: absolute;
-                right: 15px;
-                transform: translateY(calc(100% - 16px));
               }
             }
+
+            .clear-icon {
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              position: absolute;
+              right: 15px;
+              transform: translateY(calc(100% - 16px));
+            }
+          }
         }
 
         .search-results {
@@ -96,17 +238,17 @@
           margin-left: 16px;
 
           a {
-            color: var(--error-color);
+            color: #AAE6B9;
             font-weight: 500;
             margin-left: 16px;
             cursor: pointer;
 
-            &:hover{
+            &:hover {
               text-decoration: underline;
             }
 
-            &:active{
-              color:  var(--error-color-dark);
+            &:active {
+              color: var(--error-color-dark);
             }
           }
         }
@@ -118,7 +260,7 @@
 .sort-field {
   .ui.dropdown {
     width: 100%;
-    border: 1px solid var(--border-color);
+    border: 1px solid #AAE6B9;
     border-radius: calc(var(--gap) / 2);
     height: 38px;
     display: flex;
@@ -129,13 +271,13 @@
       display: flex;
       align-items: center;
       grid-column-gap: 8px;
-      color: var(--black-color);
+      color: #AAE6B9;
     }
 
     .dropdown.icon {
       position: absolute;
       right: 18px;
-      color: var(--tabs-color);
+      color: #AAE6B9;
     }
 
     &.active {
@@ -146,24 +288,26 @@
     .menu {
       width: calc(100% + 2px);
       left: -1px;
-      background-color: var(--card-background);
-      border: 1px solid var(--border-color);
+      background-color: #AAE6B9;
+      border: 1px solid #AAE6B9;
       border-top-right-radius: 0;
       border-top-left-radius: 0;
       box-shadow: none;
+      z-index: 9;
 
       .item {
-        .text{
-          color: var(--black-color);
+        .text {
+          color: #231F20;
 
           & svg {
             fill: var(--black-color);
           }
         }
 
-        &:hover{
+        &:hover {
           background-color: transparent;
-          .text{
+
+          .text {
             color: var(--link-color);
 
             & svg {
@@ -176,12 +320,14 @@
           background-color: transparent;
         }
 
-        &.active, &active.selected {
+        &.active,
+        &active.selected {
           background-color: var(--link-light-color);
-          .text{
+
+          .text {
             color: var(--link-color);
 
-            &.current{
+            &.current {
               font-weight: normal;
             }
 
@@ -196,7 +342,10 @@
 }
 
 .market-pallet {
-  background-color: var(--card-background);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  background-color: rgba(0, 0, 0, 0.486);
+  backdrop-filter: blur(10px);
+  border-radius: 4px;
   width: 100%;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   border-radius: 4px;
@@ -212,14 +361,15 @@
     }
   }
 }
-.empty{
+
+.empty {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   min-height: 500px;
 
-  .no-tokens-text{
+  .no-tokens-text {
     font-family: var(--font-roboto);
     font-size: 18px;
     line-height: 26px;
@@ -266,6 +416,9 @@
   }
 }
 
+
+
+//--------------------------- Device I -------------//
 @media (min-width: 1024px) and (max-width: 1279px) {
   .nft-market {
     &--panel {
@@ -278,8 +431,14 @@
       }
     }
   }
+
+
+
 }
 
+
+
+//--------------------------- Device II -------------//
 @media (min-width: 1025px) {
   .nft-market {
     h1.ui.header {
@@ -321,7 +480,18 @@
   }
 }
 
+
+
+//--------------------------- Device III -------------//
+
 @media (max-width: 1024px) {
+
+  .nft-market--panel {
+    box-shadow: 0 2px 8px rgb(0 0 0 / 6%);
+    background-color: rgba(0, 0, 0, 0.486);
+    backdrop-filter: blur(10px);
+  }
+
   .market-pallet {
     margin-left: 90px;
     width: 85%;
@@ -333,6 +503,7 @@
 
   .filter-main {
     display: none;
+
 
     &.open {
       display: block;
@@ -385,6 +556,7 @@
             border-bottom-right-radius: 0 !important;
             border-right: none;
           }
+
           &:last-child {
             border-top-left-radius: 0 !important;
             border-bottom-left-radius: 0 !important;
@@ -440,8 +612,12 @@
         padding: 0 0 var(--gap) 0 !important;
         margin-bottom: 0;
 
+
+
         .ui.form {
           display: block;
+
+
 
           .search-field .ui--Labelled .input {
             input {
@@ -494,7 +670,21 @@
     }
   }
 }
+
+
+
+
+//--------------------------- Device IV -------------//
+
 @media (max-width: 768px) {
+
+  .nft-market .marketplace-body {
+    padding: calc(var(--gap) / 2 * 3) var(--gap);
+    display: none;
+
+  }
+
+
   .market-pallet {
     margin: 40px 0 0 0;
     width: 52%;

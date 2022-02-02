@@ -1,4 +1,35 @@
 .app-trades {
+
+  .hUXagm .ui--Tab.tabLinkActive {
+    color: #AAE6B9 !important;
+    border-bottom: 1px solid #AAE6B9 !important;
+  }
+
+  .ikEZvn {
+    max-width: 100%;
+    width: 100%;
+    padding: var(--gap);
+    /* background-color: var(--card-background); */
+    color: #f4f4f4;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 6%);
+    background-color: rgba(0, 0, 0, 0.486);
+    backdrop-filter: blur(10px);
+    border-radius: 4px;
+
+    a {
+      color: #AAE6B9;
+    }
+  }
+
+  .pagination {
+    box-shadow: 0 2px 8px rgb(0 0 0 / 6%);
+    background-color: rgba(0, 0, 0, 0.486);
+    backdrop-filter: blur(10px);
+    border-radius: 4px;
+    color: #f4f4f4;
+  }
+
+
 }
 
 @media (max-width: 1279px) {
@@ -23,11 +54,7 @@
   }
 }
 
-@media (min-width: 1024px) {
-  .app-trades {
-
-  }
-}
+@media (min-width: 1024px) {}
 
 @media (max-width: 1024px) {
   .app-trades {
@@ -44,6 +71,4 @@
   }
 }
 
-@media (max-width: 768px) {
-
-}
+@media (max-width: 768px) {}

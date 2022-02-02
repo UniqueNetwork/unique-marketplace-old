@@ -12,6 +12,11 @@ import Card from 'semantic-ui-react/dist/commonjs/views/Card';
 
 import { useDecoder, useSchema } from '@polkadot/react-hooks';
 import { formatKsmBalance } from '@polkadot/react-hooks/useKusamaApi';
+//===================================================//
+
+import Tilt from 'react-parallax-tilt';
+//===============================================//
+
 
 interface Props {
   account: string | undefined;
@@ -28,59 +33,79 @@ const NftTokenCard = ({ account, collectionId, openDetailedInformationModal, tok
     openDetailedInformationModal(collectionId, token.tokenId);
   }, [collectionId, openDetailedInformationModal, token]);
 
+
+
+
+  //==================================//
+
+
+
+  //================================//
   return (
-    <Card
-      className='token-card'
-      key={token.tokenId}
-      onClick={onCardClick}
+    <Tilt
+      className="parallax-effect"
+      perspective={500}
+      glareEnable={true} glareMaxOpacity={0.6} glareColor="#057453" glarePosition="all" glareBorderRadius="1px"
     >
-      { token && (
-        <Image
-          src={tokenUrl}
-          ui={false}
-          wrapped
-        />
-      )}
-      { !!(token && collectionInfo) && (
-        <Card.Content>
-          <Card.Description>
-            <div className='card-name'>
-              <div className='card-name__title'>{hex2a(collectionInfo.tokenPrefix)} {`#${token.tokenId}`} {tokenName?.value}</div>
-              <div className='card-name__field'>{ collectionName16Decoder(collectionInfo.name)}</div>
-            </div>
-            { token.price && (
-              <div className='card-price'>
-                <div className='card-price__title'> {formatKsmBalance(new BN(token.price))} KSM</div>
-              </div>
-            )}
-          </Card.Description>
-          <Card.Meta>
-            <span className='link'>View
-              <svg
-                fill='none'
-                height='16'
-                viewBox='0 0 16 16'
-                width='16'
-                xmlns='http://www.w3.org/2000/svg'
-              >
-                <path
-                  d='M2.5 8H13.5'
-                  stroke='var(--card-link-color)'
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                />
-                <path
-                  d='M9 3.5L13.5 8L9 12.5'
-                  stroke='var(--card-link-color)'
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                />
-              </svg>
-            </span>
-          </Card.Meta>
-        </Card.Content>
-      )}
-    </Card>
+      <div className="inner-element">
+        <Card
+          raised
+          className='token-card'
+          key={token.tokenId}
+          onClick={onCardClick}
+
+        >
+
+
+          {token && (
+
+            <Image
+              src={tokenUrl}
+              ui={false}
+              size='medium'
+              centered
+
+            />
+
+          )}
+          {!!(token && collectionInfo) && (
+
+
+
+            <Card.Content>
+              <Card.Description>
+
+                <div className='card-name'>
+                  <div className='card-name__title'>{hex2a(collectionInfo.tokenPrefix)} {`#${token.tokenId}`} {tokenName?.value}</div>
+                  <div className='card-name__field'>{collectionName16Decoder(collectionInfo.name)}</div>
+                </div>
+                {token.price && (
+                  <div className='card-price'>
+                    <div className='card-price__title'> {formatKsmBalance(new BN(token.price))} KSM</div>
+                  </div>
+                )}
+
+              </Card.Description>
+
+              <Card.Meta>
+                <span className='link'>View
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 14L8 10H16L12 14Z" fill="black" />
+                  </svg>
+
+                </span>
+              </Card.Meta>
+
+
+            </Card.Content>
+
+
+          )}
+
+        </Card >
+
+      </div>
+    </Tilt>
   );
 };
 

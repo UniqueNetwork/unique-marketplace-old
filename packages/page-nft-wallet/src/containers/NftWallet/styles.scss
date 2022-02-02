@@ -1,14 +1,16 @@
 .nft-wallet {
   min-height: 637px;
 
-  h3, h3.ui.header {
+  h3,
+  h3.ui.header {
     font-family: var(--font-inter);
     font-size: 18px;
     font-weight: 700;
+    color: #AAE6B9;
   }
 
   .empty-label {
-    color: var(--tabs-color);
+    color: #f4f4f4;
     font-size: 16px;
   }
 
@@ -21,9 +23,7 @@
   }
 }
 
-@media (min-width: 1024px) and (max-width: 1279px) {
-
-}
+@media (min-width: 1024px) and (max-width: 1279px) {}
 
 @media (min-width: 1024px) {
 
@@ -75,7 +75,7 @@
             max-height: none;
 
             &::-webkit-scrollbar {
-             display: none;
+              display: none;
             }
           }
         }
@@ -84,6 +84,4 @@
   }
 }
 
-@media (max-width: 768px) {
-
-}
+@media (max-width: 768px) {}

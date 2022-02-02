@@ -1,3 +1,20 @@
+.nft-wallet {
+  min-height: 637px;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 6%);
+  background-color: rgba(0, 0, 0, 0.486);
+  backdrop-filter: blur(10px);
+  border-radius: 4px;
+
+
+  .ikEZvn {
+    max-width: 100%;
+    width: 100%;
+    padding: var(--gap);
+    background-color: transparent;
+    color: #f4f4f4;
+  }
+}
+
 .nft-collection-item {
 
   .table {
