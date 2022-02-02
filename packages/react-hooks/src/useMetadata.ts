@@ -60,6 +60,9 @@ export const useMetadata = (): UseMetadataInterface => {
 
   // uses for token image path
   const setUnique = useCallback(async (collectionInfo: NftCollectionInterface, tokenId: string): Promise<string> => {
+    if (!collectionInfo.offchainSchema || collectionInfo.offchainSchema === '0x') {
+      return '';
+    }
     try {
       const collectionMetadata = JSON.parse(hex2a(collectionInfo.offchainSchema)) as MetadataType;
 

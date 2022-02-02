@@ -23,7 +23,6 @@ import GlobalStyle from '@polkadot/react-components/styles';
 import { useApi } from '@polkadot/react-hooks';
 import Signer from '@polkadot/react-signer';
 
-import infoSvg from '../src/images/info.svg';
 import BalancesHeader from './BalancesHeader';
 import Contracts from './ContractContext';
 import ManageAccounts from './ManageAccounts';

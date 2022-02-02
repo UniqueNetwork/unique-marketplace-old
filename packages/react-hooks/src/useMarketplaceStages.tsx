@@ -56,7 +56,7 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
   const [readyToAskPrice, setReadyToAskPrice] = useState<boolean>(false);
   const [tokenPriceForSale, setTokenPriceForSale] = useState<BN>();
   const { formatKsmBalance, getKusamaTransferFee, kusamaApi, kusamaAvailableBalance, kusamaTransfer } = useKusamaApi(account);
-  const kusamaExistentialDeposit = kusamaApi?.consts.balances?.existentialDeposit;
+  const kusamaExistentialDeposit = kusamaApi?.consts.balances?.existentialDeposit as unknown as BN;
 
   console.log('state', state.value);
 
@@ -295,9 +295,10 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
   const transferStep = useMemo((): number => {
     switch (state.value) {
       case 'sell':
+      case 'checkIsOnEth':
+      case 'transferToEth':
       case 'transferMinDeposit':
       case 'waitForWhiteListing':
-      case 'transferToEth':
         return 1;
       case 'approveToken':
         return 2;
@@ -339,15 +340,6 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
   useEffect(() => {
     switch (true) {
       // on load - update token state
-      case state.matches('loadingTokenInfo'):
-        void loadingTokenInfo();
-        break;
-      case state.matches('sell'):
-        void sell();
-        break;
-      case state.matches('transferMinDeposit'):
-        void transferMinDeposit();
-        break;
       case state.matches('checkIsOnEth'):
         void checkIsOnEthAddress();
         break;
@@ -382,16 +374,46 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
       case state.matches('buyToken'):
         void sentTokenToAccount();
         break;
-      case state.matches('waitForWhiteListing'):
-        void waitForWhiteListing(); // occurs unexpected change of ref (in deps)
-        break;
-      case state.matches('checkDepositReady'):
-        void checkDepositReady(); // occurs unexpected change of ref (in deps)
-        break;
       default:
         break;
     }
   }, [addTokenAsk, approveToken, checkAsk, openAskModal, state.value, state, cancelSell, revertMoney, sentTokenToAccount, sell, loadingTokenInfo, transferToEth, transferToSub, transferMinDeposit, checkIsOnEthAddress, buy, checkDepositReady, waitForWhiteListing]);
+
+  useEffect(() => {
+    if (state.matches('checkDepositReady')) {
+      void checkDepositReady();
+    }
+  }, [state, checkDepositReady]);
+
+  useEffect(() => {
+    if (state.matches('waitForWhiteListing')) {
+      void waitForWhiteListing();
+    }
+  }, [state, waitForWhiteListing]);
+
+  useEffect(() => {
+    if (state.matches('transferMinDeposit')) {
+      void transferMinDeposit();
+    }
+  }, [state, transferMinDeposit]);
+
+  useEffect(() => {
+    if (state.matches('sell')) {
+      void sell();
+    }
+  }, [state, sell]);
+
+  useEffect(() => {
+    if (state.matches('loadingTokenInfo')) {
+      void loadingTokenInfo();
+    }
+  }, [state, loadingTokenInfo]);
+
+  useEffect(() => {
+    if (state.matches('loadingTokenInfo')) {
+      void loadingTokenInfo();
+    }
+  }, [state, loadingTokenInfo]);
 
   useEffect(() => {
     if (state.matches('waitForTokenRevert')) {
