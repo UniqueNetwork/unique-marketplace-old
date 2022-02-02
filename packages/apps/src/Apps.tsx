@@ -36,7 +36,7 @@ import ScrollToTop from './ScrollToTop';
 import WarmUp from './WarmUp';
 
 
-import sniLogo from '../src/images/-SNIlogo.svg';
+import sniLogo from '../src/images/SNIlogo.svg';
 import { Parallax, Background } from 'react-parallax';
 
 export const PORTAL_ID = 'portals';

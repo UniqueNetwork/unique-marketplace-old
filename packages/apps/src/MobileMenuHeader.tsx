@@ -7,7 +7,7 @@ import React, { memo } from 'react';
 import { NavLink } from 'react-router-dom';
 import Menu from 'semantic-ui-react/dist/commonjs/collections/Menu';
 
-import sniLogo from '../src/images/-SNIlogo.svg';
+import sniLogo from '../src/images/SNIlogo.svg';
 
 interface Props {
   isMobileMenu: OpenPanelType;

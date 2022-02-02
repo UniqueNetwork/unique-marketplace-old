@@ -4,7 +4,7 @@
 import React, { memo, useEffect, useRef } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 
-import sniLogo from '../src/images/-SNIlogo.svg';
+import sniLogo from '../src/images/SNIlogo.svg';
 import { OpenPanelType } from '@polkadot/apps-routing/types';
 
 
