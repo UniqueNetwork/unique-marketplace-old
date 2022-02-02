@@ -7,6 +7,7 @@ import React, { useCallback, useContext, useState } from 'react';
 import { useHistory } from 'react-router';
 import Confirm from 'semantic-ui-react/dist/commonjs/addons/Confirm';
 
+import envConfig from '@polkadot/apps-config/envConfig';
 import { AddressSmall, Button, CopyIcon, StatusContext } from '@polkadot/react-components';
 import { keyring } from '@polkadot/ui-keyring';
 
@@ -26,6 +27,7 @@ function AccountTableItem ({ account, forgetAccount, setAccount }: Props): React
   const { queueAction } = useContext(StatusContext);
   const pair = keyring.getAddress(account.address, null);
   const isInjected = pair?.meta?.isInjected;
+  const { uniqueBlockExplorer } = envConfig;
 
   const copyAddress = useCallback(
     (account: string) => () => {
@@ -89,7 +91,7 @@ function AccountTableItem ({ account, forgetAccount, setAccount }: Props): React
           className='explorer-icon'
           src={blockExplorerIcon as string}
         />
-        <a href = 'https://scan-quartz.unique.network/'>UNIQUE block explorer</a>
+        <a href = {uniqueBlockExplorer}>UNIQUE block explorer</a>
       </div>
       <a
         onClick={viewAllTokens}
