@@ -111,6 +111,7 @@ function Contracts ({ account, children }: Props): React.ReactElement<Props> | n
 
   const initAbi = useCallback(() => {
     if (account && ethAccount && !abiRef.current) {
+      console.log('mySubEthAddress', evmToAddress(ethAccount, 42, 'blake2'));
       /* options
       {
         reconnect: {
@@ -138,13 +139,9 @@ function Contracts ({ account, children }: Props): React.ReactElement<Props> | n
         setMatcherContractInstance(newContractInstance);
 
         abiRef.current = newContractInstance;
-
-        console.log('newContractInstance', newContractInstance);
       } catch (e) {
         // User has denied account access to DApp...
       }
-
-      console.log('mySubEthAddress', evmToAddress(ethAccount, 42, 'blake2'));
     }
   }, [account, ethAccount]);
 
