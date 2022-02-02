@@ -297,6 +297,7 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
       case 'sell':
       case 'checkIsOnEth':
       case 'transferToEth':
+      case 'transferToEthStart':
       case 'transferMinDeposit':
       case 'waitForWhiteListing':
         return 1;

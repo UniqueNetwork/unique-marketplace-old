@@ -137,6 +137,8 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
     }
   }, [account]);
 
+  console.log('transferStep', transferStep);
+
   return (
     <div className='toke-details'>
       <div
