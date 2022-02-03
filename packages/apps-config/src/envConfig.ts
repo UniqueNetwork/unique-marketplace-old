@@ -21,6 +21,7 @@ export type EnvConfigType = {
   quoteId: number; // 2
   uniqueCollectionIds: string[]; // ['23']
   uniqueApi: string;
+  uniqueBlockExplorer: string;
   uniqueSubstrateApi: string;
   uniqueSubstrateApiRpc: string;
   value: number; // 0
@@ -49,6 +50,7 @@ declare global {
       MIN_PRICE: number;
       QUOTE_ID: number; // 2
       UNIQUE_API: string;
+      UNIQUE_BLOCK_EXPLORER: string;
       UNIQUE_COLLECTION_IDS: string; // ['23']
       UNIQUE_SUBSTRATE_API: string;
       UNIQUE_SUBSTRATE_API_RPC: string;
@@ -78,6 +80,7 @@ const envConfig: EnvConfigType = {
   minPrice: +window.ENV?.MIN_PRICE || process.env.MIN_PRICE,
   quoteId: +window.ENV?.QUOTE_ID || process.env.QUOTE_ID,
   uniqueApi: window.ENV?.UNIQUE_API || process.env.UNIQUE_API,
+  uniqueBlockExplorer: window.ENV?.UNIQUE_BLOCK_EXPLORER || process.env.UNIQUE_BLOCK_EXPLORER,
   uniqueCollectionIds: (window.ENV?.UNIQUE_COLLECTION_IDS  || process.env.UNIQUE_COLLECTION_IDS).split(',').map(Number),
   uniqueSubstrateApi: window.ENV?.UNIQUE_SUBSTRATE_API || process.env.UNIQUE_SUBSTRATE_API,
   uniqueSubstrateApiRpc: window.ENV?.UNIQUE_SUBSTRATE_API_RPC || process.env.UNIQUE_SUBSTRATE_API_RPC,

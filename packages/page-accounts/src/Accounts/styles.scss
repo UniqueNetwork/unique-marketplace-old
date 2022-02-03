@@ -216,6 +216,16 @@
       }
     }
 
+@media (max-width: 1023px) {
+    span {
+      &:nth-child(2),
+      &:nth-child(3),
+      &:nth-child(4) {
+        display: none;
+    }
+  }
+}
+
 @media (max-width: 1024px) {
     span {
       &:nth-child(2),
