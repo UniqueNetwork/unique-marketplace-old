@@ -31,7 +31,6 @@ const Switcher: VFC<SwitcherProps> = (props) => {
 
 export default styled(Switcher)`
   display: flex;
-  padding: 10px;
   align-items: center;
   padding: 20px;
 
