@@ -88,7 +88,13 @@ function AccountTableItem ({ account, forgetAccount }: Props): React.ReactElemen
           className='explorer-icon'
           src={blockExplorerIcon as string}
         />
-        <a href = {uniqueBlockExplorer}>UNIQUE block explorer</a>
+        <a
+          href={uniqueBlockExplorer}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          UNIQUE block explorer
+        </a>
       </div>
       <a
         onClick={viewAllTokens}

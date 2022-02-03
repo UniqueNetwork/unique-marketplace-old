@@ -87,6 +87,9 @@
             .ui--AccountName {
               font-size: 16px;
               font-weight: 500;
+              word-break: break-all;
+              overflow: unset;
+              white-space: break-spaces;
             }
           }
 

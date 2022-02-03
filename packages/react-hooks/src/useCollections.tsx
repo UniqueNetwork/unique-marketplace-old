@@ -159,14 +159,13 @@ export function useCollections () {
           }
         }
 
+        filtersRef.current = filters;
         setOffersLoading(false);
       });
     } catch (e) {
       console.log('getOffers error', e);
       setOffersLoading(false);
     }
-
-    filtersRef.current = filters;
   }, [fetchData, mountedRef]);
 
   /**
