@@ -137,6 +137,8 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
     }
   }, [account]);
 
+  console.log('transferStep', transferStep);
+
   return (
     <div className='toke-details'>
       <div
@@ -311,6 +313,7 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
                 closeModal={closeTransferModal}
                 collection={collectionInfo}
                 tokenId={tokenId}
+                tokenOwner={tokenInfo?.owner}
                 updateTokens={onTransferSuccess}
               />
             )}

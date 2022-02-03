@@ -15,6 +15,7 @@ import { useCallback, useRef, useState } from 'react';
 import { Filters } from '@polkadot/app-nft-market/containers/NftMarket';
 import envConfig from '@polkadot/apps-config/envConfig';
 import { useApi, useCollection, useFetch, useIsMountedRef } from '@polkadot/react-hooks';
+import { subToEth } from '@polkadot/react-hooks/utils';
 
 const { uniqueApi, uniqueCollectionIds } = envConfig;
 
@@ -85,7 +86,9 @@ export function useCollections () {
     }
 
     try {
-      return (await api.rpc.unique.accountTokens(collectionId, { Substrate: ownerId })) as string[];
+      const ethAccount = subToEth(ownerId).toLowerCase();
+
+      return (await api.rpc.unique.accountTokens(collectionId, { Ethereum: ethAccount, Substrate: ownerId })) as string[];
     } catch (e) {
       console.log('getTokensOfCollection error', e);
     }

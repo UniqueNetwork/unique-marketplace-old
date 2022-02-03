@@ -26,8 +26,8 @@ function subToEthLowercase (eth: string): string {
   return '0x' + Buffer.from(bytes).toString('hex');
 }
 
-export function subToEth (eth: string): string {
-  return Web3.utils.toChecksumAddress(subToEthLowercase(eth));
+export function subToEth (substrateAccount: string): string {
+  return Web3.utils.toChecksumAddress(subToEthLowercase(substrateAccount));
 }
 
 export const getFee = (price: BN): BN => price.mul(new BN(commission)).div(new BN(100));
