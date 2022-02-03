@@ -15,26 +15,43 @@ import { useApi } from '@polkadot/react-hooks';
 import { keyring } from '@polkadot/ui-keyring';
 
 import closeIcon from './closeIconBlack.svg';
+import { CrossAccountId, normalizeAccountId, subToEth } from '@polkadot/react-hooks/utils';
 
 interface Props {
   account?: string;
   collection: NftCollectionInterface;
   closeModal: () => void;
   tokenId: string;
+  tokenOwner?: { Ethereum?: string, Substrate?: string };
   updateTokens: (collectionId: string) => void;
 }
 
-function TransferModal ({ account, closeModal, collection, tokenId, updateTokens }: Props): React.ReactElement<Props> {
+function TransferModal ({ account, closeModal, collection, tokenId, tokenOwner, updateTokens }: Props): React.ReactElement<Props> {
   const { api } = useApi();
   const [recipient, setRecipient] = useState<{ Ethereum?: string, Substrate?: string }>({});
   const { queueExtrinsic } = useContext(StatusContext);
   const [tokenPart] = useState<number>(1);
   const [isAddressError, setIsAddressError] = useState<boolean>(true);
+  console.log('tokenOwner', tokenOwner, 'account', account, 'recipient', recipient);
 
   const transferToken = useCallback(() => {
+    if (!account) {
+      return;
+    }
+
+    let extrinsic = api.tx.unique.transfer(recipient, collection.id, tokenId, tokenPart);
+
+    if (!tokenOwner?.Substrate || tokenOwner?.Substrate !== account) {
+      const ethAccount = subToEth(account).toLowerCase();
+
+      if (tokenOwner?.Ethereum === ethAccount) {
+        extrinsic = api.tx.unique.transferFrom(normalizeAccountId({ Ethereum: ethAccount } as CrossAccountId), normalizeAccountId(recipient as CrossAccountId), collection.id, tokenId, 1);
+      }
+    }
+
     queueExtrinsic({
-      accountId: account && account.toString(),
-      extrinsic: api.tx.unique.transfer(recipient, collection.id, tokenId, tokenPart),
+      accountId: account,
+      extrinsic,
       isUnsigned: false,
       txStartCb: () => { closeModal(); },
       txSuccessCb: () => { updateTokens(collection.id); }
