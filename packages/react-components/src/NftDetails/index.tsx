@@ -315,7 +315,6 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
                 updateTokens={onTransferSuccess}
               />
             )}
-            <SaleSteps step={1} />
             { !!(transferStep && transferStep <= 3) && (
               <SaleSteps step={transferStep} />
             )}
