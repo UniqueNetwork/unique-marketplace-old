@@ -87,8 +87,10 @@ export function useCollections () {
 
     try {
       const ethAccount = subToEth(ownerId).toLowerCase();
+      const subTokens = (await api.rpc.unique.accountTokens(collectionId, { Substrate: ownerId })) as string[];
+      const ehtTokens = (await api.rpc.unique.accountTokens(collectionId, { Ethereum: ethAccount })) as string[];
 
-      return (await api.rpc.unique.accountTokens(collectionId, { Ethereum: ethAccount, Substrate: ownerId })) as string[];
+      return [...ehtTokens, ...subTokens];
     } catch (e) {
       console.log('getTokensOfCollection error', e);
     }

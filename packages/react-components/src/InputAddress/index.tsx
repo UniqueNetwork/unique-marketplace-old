@@ -133,6 +133,22 @@ class InputAddress extends React.PureComponent<Props, State> {
     }
   }
 
+  private changeAccountListener = (e: CustomEvent<string>) => {
+    const newAccount = e.detail;
+
+    this.onChange(newAccount);
+    this.setState({
+      ...this.state,
+      value: newAccount
+    });
+
+    console.log('changeAccountListener', newAccount);
+  }
+
+  override componentDidMount() {
+    document.addEventListener('account changed', (e) => this.changeAccountListener(e as CustomEvent<string>));
+  }
+
   public override render (): React.ReactNode {
     const { className = '', defaultValue, help, hideAddress = false, isDisabled = false, isError, isMultiple, label, labelExtra, options, optionsAll, placeholder, type = DEFAULT_TYPE, withEllipsis, withLabel } = this.props;
     const hasOptions = (options && options.length !== 0) || (optionsAll && Object.keys(optionsAll[type]).length !== 0);

@@ -68,6 +68,7 @@ export { default as Spinner } from './Spinner';
 export { default as StakingUnbonding } from './StakingUnbonding';
 export { default as Static } from './Static';
 export { default as Status, StatusContext } from './Status';
+export { default as Switcher } from './Switcher';
 export { default as Table } from './Table';
 export { default as Tabs } from './Tabs';
 export { default as Tag } from './Tag';

@@ -7,6 +7,7 @@ import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection
 
 import React, { useCallback, useEffect, useState } from 'react';
 import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
+import { Switcher } from '@polkadot/react-components';
 
 import { Filters } from '@polkadot/app-nft-market/containers/NftMarket';
 import envConfig from '@polkadot/apps-config/envConfig';
@@ -206,19 +207,13 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearFilters, coll
 
   return (
     <>
-      <div className='switch-my-tokens'>
-        <label className='switch'>
-          <input
-            checked={!!filters.seller}
-            disabled={!account}
-            onChange={handleOnlyMyToken}
-            type='checkbox'
-          />
-          <span className={`slider round ${account ? '' : 'disable-token'}`} />
-        </label>
-        <div className='title'>Only my tokens</div>
-      </div>
-
+      <Switcher
+        checked={!!filters.seller}
+        childClassName={`${account ? '' : 'disable-token'}`}
+        disabled={!account}
+        onChange={handleOnlyMyToken}
+        text='Only my tokens'
+      />
       <div className='filter'>
         <div className='filter--title'>
           <div>Collections</div>

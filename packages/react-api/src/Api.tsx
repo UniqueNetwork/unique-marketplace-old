@@ -10,8 +10,7 @@ import type { ApiProps, ApiState } from './types';
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import store from 'store';
 
-import { WsProvider } from '@polkadot/api';
-import { ApiPromise } from '@polkadot/api/promise';
+import { ApiPromise, WsProvider } from '@polkadot/api';
 import { deriveMapCache, setDeriveCache } from '@polkadot/api-derive/util';
 import { ethereumChains, typesBundle, typesChain } from '@polkadot/apps-config';
 import envConfig from '@polkadot/apps-config/envConfig';
@@ -245,6 +244,8 @@ function Api ({ children, store, url }: Props): React.ReactElement<Props> | null
   );
 
   const initKusamaApi = useCallback(() => {
+    console.log('kusamaApiInitialized!!!');
+
     const provider = new WsProvider(kusamaApiUrl);
     const signer = new ApiSigner(registry, queuePayload, queueSetTxStatus);
     const types = getDevTypes();
@@ -267,6 +268,8 @@ function Api ({ children, store, url }: Props): React.ReactElement<Props> | null
 
   // initial initialization
   useEffect((): void => {
+    console.log('setIsApiInitialized!!!');
+
     const provider = new WsProvider(url);
     const signer = new ApiSigner(registry, queuePayload, queueSetTxStatus);
     const types = getDevTypes();

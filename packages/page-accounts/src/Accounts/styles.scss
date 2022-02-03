@@ -87,9 +87,6 @@
             .ui--AccountName {
               font-size: 16px;
               font-weight: 500;
-              word-break: break-all;
-              overflow: unset;
-              white-space: break-spaces;
             }
           }
 
@@ -121,13 +118,8 @@
   }
 }
 
-@media (max-width: 320px) {
-  .page-accounts--card {
-    padding: 16px;
-  }
-}
+@media (max-width: 1023px) {
 
-@media (max-width: 1024px) {
   .page-accounts--card--header {
     grid-template-columns: 5fr 3fr;
   }
@@ -138,6 +130,8 @@
   }
 
   .accounts-table {
+
+    &--body {
 
       .accounts-table-item {
         display: flex !important;
@@ -158,6 +152,10 @@
           width: 100%;
           flex-direction: row;
           margin-top: var(--gap);
+          button {
+            flex-grow: 1;
+          }
+        }
       }
     }
   }
@@ -193,55 +191,5 @@
 
   .ui.bottom.left.popup{
     margin: 5px 16px 0 0 !important;
-  }
-}
-
-@media (max-width: 768px) {
-    .accounts-table-item {
-          padding: var(--gap) !important;
-          border: 1px solid var(--border-color);
-          border-bottom: none;
-          display: grid;
-          grid-template-columns: 40% 1fr 1fr 230px;
-          align-items: center;
-          overflow: hidden;
-        }
-      }
-    
-    span {
-      &:nth-child(2),
-      &:nth-child(3),
-      &:nth-child(4) {
-        display: none;
-      }
-    }
-
-@media (max-width: 1023px) {
-    span {
-      &:nth-child(2),
-      &:nth-child(3),
-      &:nth-child(4) {
-        display: none;
-    }
-  }
-}
-
-@media (max-width: 1024px) {
-    span {
-      &:nth-child(2),
-      &:nth-child(3),
-      &:nth-child(4) {
-        display: none;
-    }
-  }
-}
-
-  @media (max-width: 1440px) {
-    span {
-      &:nth-child(2),
-      &:nth-child(3),
-      &:nth-child(4) {
-        display: none;
-    }
   }
 }

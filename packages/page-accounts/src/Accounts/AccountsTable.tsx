@@ -14,10 +14,9 @@ import AccountTableItem from './AccountTableItem';
 
 interface Props {
   accounts: SortedAccount[] | undefined;
-  setAccount?: (account?: string) => void;
 }
 
-function AccountTable ({ accounts, setAccount }: Props): React.ReactElement<Props> | null {
+function AccountTable ({ accounts }: Props): React.ReactElement<Props> | null {
   const content = useCallback(() => {
     return (
       <span>
@@ -78,7 +77,6 @@ function AccountTable ({ accounts, setAccount }: Props): React.ReactElement<Prop
             account={account}
             forgetAccount={forgetAccount}
             key={account.address}
-            setAccount={setAccount}
           />
         ))}
       </div>

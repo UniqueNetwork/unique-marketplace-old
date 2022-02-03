@@ -16,11 +16,10 @@ import blockExplorerIcon from './block-explorer.svg';
 
 interface Props {
   account: KeyringAddress;
-  setAccount?: (account?: string) => void;
   forgetAccount: (account: string) => void;
 }
 
-function AccountTableItem ({ account, forgetAccount, setAccount }: Props): React.ReactElement<Props> | null {
+function AccountTableItem ({ account, forgetAccount }: Props): React.ReactElement<Props> | null {
   const history = useHistory();
   const [confirmDeleteAccount, setConfirmDeleteAccount] = useState<boolean>(false);
   const [backupModalOpened, setBackupModalOpened] = useState<boolean>(false);
@@ -44,12 +43,10 @@ function AccountTableItem ({ account, forgetAccount, setAccount }: Props): React
   );
 
   const viewAllTokens = useCallback(() => {
-    if (setAccount) {
-      setAccount(account.address);
-    }
+    document.dispatchEvent(new CustomEvent('account changed', { detail: account.address }));
 
     history.push('/wallet');
-  }, [account.address, history, setAccount]);
+  }, [account.address, history]);
 
   const _onExport = useCallback(() => {
     setBackupModalOpened(true);
