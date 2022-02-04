@@ -122,7 +122,6 @@
 }
 
 @media (max-width: 1023px) {
-
   .page-accounts--card--header {
     grid-template-columns: 5fr 3fr;
   }
@@ -134,7 +133,20 @@
 
   .accounts-table {
 
+    &--header {
+      span {
+        &:nth-child(2),
+        &:nth-child(3),
+        &:nth-child(4) {
+          display: none;
+        }
+      }
+    }
+
     &--body {
+      .actions {
+        margin-top: var(--gap);
+      }
 
       .accounts-table-item {
         display: flex !important;
@@ -150,14 +162,6 @@
           margin-top: var(--gap);
           display: block;
           margin-top: 16px;
-        }
-        .actions {
-          width: 100%;
-          flex-direction: row;
-          margin-top: var(--gap);
-          button {
-            flex-grow: 1;
-          }
         }
       }
     }
@@ -179,15 +183,38 @@
       margin-top: 32px;
     }
   }
-  .accounts-table--header {
-    background: transparent !important;
-    padding: 0 !important;
 
-    span {
-      &:nth-child(2),
-      &:nth-child(3),
-      &:nth-child(4) {
-        display: none;
+  .accounts-table {
+    &--header {
+      background: transparent !important;
+      padding: 0 !important;
+
+      span {
+        &:nth-child(2),
+        &:nth-child(3),
+        &:nth-child(4) {
+          display: none;
+        }
+      }
+      span {
+        &:nth-child(2),
+        &:nth-child(3),
+        &:nth-child(4) {
+          display: none;
+        }
+      }
+    }
+
+    &--body {
+
+      .actions {
+        width: 100%;
+        flex-direction: row;
+        margin-top: var(--gap);
+
+        button {
+          flex-grow: 1;
+        }
       }
     }
   }

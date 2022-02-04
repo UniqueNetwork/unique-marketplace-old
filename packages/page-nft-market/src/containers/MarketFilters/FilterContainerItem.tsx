@@ -5,6 +5,7 @@ import React, { memo, useCallback } from 'react';
 
 import { useCollectionCover, useDecoder } from '@polkadot/react-hooks';
 import { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
+import { Checkbox } from '@polkadot/react-components';
 
 interface Props {
   collection: NftCollectionInterface;
@@ -28,17 +29,11 @@ const FilterContainerItem: React.FC<Props> = (props: Props) => {
       key={collection.id}
       onClick={onFilterCurrent}
     >
-      <div className='custom-checkbox'>
-        <div className='checkbox-input'>
-          <input
-            checked={collectionsChecked.includes(collection.id)}
-            data-current={collection.id}
-            onChange={onCheckBoxMockFunc}
-            type='checkbox'
-          />
-        </div>
-        <div className='checkbox-title'>{collectionName16Decoder(collection.name)}</div>
-      </div>
+      <Checkbox
+        label={collectionName16Decoder(collection.name)}
+        onChange={onCheckBoxMockFunc}
+        value={collectionsChecked.includes(collection.id)}
+      />
       <div
         className='collection-img'
         style={ { backgroundImage: `url(${imgUrl || ''})` }}

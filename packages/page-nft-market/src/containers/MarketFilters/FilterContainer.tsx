@@ -232,12 +232,6 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearFilters, coll
         </div>
         { isShowCollection && (
           <div className='filter--body'>
-            {/* <div className='collection-filter'>
-          <input className='collection-search'
-            placeholder='Search'
-            type='text'>
-          </input>
-        </div> */}
             <div className='collection-list'>
               { loadingCollections && (
                 <Loader

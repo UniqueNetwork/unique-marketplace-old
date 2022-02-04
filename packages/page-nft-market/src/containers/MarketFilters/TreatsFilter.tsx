@@ -6,6 +6,7 @@ import React, { memo, ReactElement, useCallback, useState } from 'react';
 import { Filters } from '@polkadot/app-nft-market/containers/NftMarket';
 
 import { SESSION_STORAGE_KEYS } from './constants';
+import {Checkbox} from "@polkadot/react-components";
 
 interface PropTypes {
   filters: Filters;
@@ -75,17 +76,11 @@ const TreatsFilter = ({ filters, setFilters }: PropTypes): ReactElement => {
               key={item}
               onClick={onClickCheckbox.bind(null, index.toString())}
             >
-              <div className='custom-checkbox'>
-                <div className='checkbox-input'>
-                  <input
-                    checked={filters.traitsCount.includes(index.toString())}
-                    data-current={'1'}
-                    onChange={() => null}
-                    type='checkbox'
-                  />
-                </div>
-                <div className='checkbox-title'>{item}</div>
-              </div>
+              <Checkbox
+                label={item}
+                onChange={onClickCheckbox.bind(null, index.toString())}
+                value={filters.traitsCount.includes(index.toString())}
+              />
             </div>
           ))}
         </div>
