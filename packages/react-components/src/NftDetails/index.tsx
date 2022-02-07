@@ -12,7 +12,7 @@ import Image from 'semantic-ui-react/dist/commonjs/elements/Image';
 import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
 import envConfig from '@polkadot/apps-config/envConfig';
-import { TransferModal, StartAuctionModal, WarningText } from '@polkadot/react-components';
+import { TransferModal, StartAuctionModal, PlaceABetModal, WarningText } from '@polkadot/react-components';
 import formatPrice from '@polkadot/react-components/util/formatPrice';
 import { useBalance, useDecoder, useMarketplaceStages, useSchema } from '@polkadot/react-hooks';
 import { subToEth } from '@polkadot/react-hooks/utils';
@@ -32,7 +32,8 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
   const tokenId = query.get('tokenId') || '';
   const collectionId = query.get('collectionId') || '';
   const [showTransferForm, setShowTransferForm] = useState<boolean>(false);
-  const [showAuctionForm, setShowAuctionForm] = useState<boolean>(true);
+  const [showAuctionForm, setShowAuctionForm] = useState<boolean>(false);
+  const [showBetForm, setShowBetForm] = useState<boolean>(false);
   const [ethAccount, setEthAccount] = useState<string>();
   const [isInWhiteList, setIsInWhiteList] = useState<boolean>(false);
   const [lowKsmBalanceToBuy, setLowKsmBalanceToBuy] = useState<boolean>(false);
@@ -111,12 +112,24 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
     setShowAuctionForm(!showAuctionForm);
   }, [showAuctionForm]);
 
+  const toggleBetForm = useCallback(() => {
+    setShowBetForm(!showBetForm);
+  }, [showBetForm]);
+
   const onSell = useCallback(() => {
     sendCurrentUserAction('SELL');
   }, [sendCurrentUserAction]);
 
   const closeTransferModal = useCallback(() => {
     setShowTransferForm(false);
+  }, []);
+
+  const closeAuctionModal = useCallback(() => {
+    setShowAuctionForm(false);
+  }, []);
+
+  const closeBetModal = useCallback(() => {
+    setShowBetForm(false);
   }, []);
 
   const checkIsInWhiteList = useCallback(async () => {
@@ -235,16 +248,16 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
             )}
             <div className='buttons'>
               { (uOwnIt && !uSellIt) && (
-                <Button
-                  content='Transfer'
-                  onClick={toggleTransferForm}
-                />
-              )}
-              { (uOwnIt && !uSellIt) && (
-                <Button
-                  content='Sell on Auction'
-                  onClick={toggleAuctionForm}
-                />
+                <>
+                  <Button
+                    content='Transfer'
+                    onClick={toggleTransferForm}
+                  />
+                  <Button
+                    content='Sell on Auction'
+                    onClick={toggleAuctionForm}
+                  />
+                </>
               )}
               {(!account && !!tokenPrice) && (
                 <div>
@@ -279,6 +292,14 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
                     onClick={onSell}
                   />
                 )}
+                {
+                  (!uOwnIt) && (
+                    <Button
+                      content='Place A Bet'
+                      onClick={toggleBetForm}
+                    />
+                  )
+                }
                 { (uSellIt && !transferStep) && (
                   <Button
                     content={
@@ -329,7 +350,17 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
             { (showAuctionForm && collectionInfo) && (
               <StartAuctionModal
                 account={account}
-                closeModal={closeTransferModal}
+                closeModal={closeAuctionModal}
+                collection={collectionInfo}
+                tokenId={tokenId}
+                tokenOwner={tokenInfo?.owner}
+                updateTokens={onTransferSuccess}
+              />
+            )}
+            { (showBetForm && collectionInfo) && (
+              <PlaceABetModal
+                account={account}
+                closeModal={closeBetModal}
                 collection={collectionInfo}
                 tokenId={tokenId}
                 tokenOwner={tokenInfo?.owner}
