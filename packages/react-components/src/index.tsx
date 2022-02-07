@@ -76,6 +76,7 @@ export { default as Tags } from './Tags';
 export { default as Toggle } from './Toggle';
 export { default as Tooltip } from './Tooltip';
 export { default as TransferModal } from './TransferModal';
+export { default as StartAuctionModal } from './StartAuctionModal';
 export { default as TxButton } from './TxButton';
 export { default as TextArea } from './TextArea';
 export { default as WarningText } from './WarningText';

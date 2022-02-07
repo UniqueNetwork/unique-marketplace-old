@@ -12,7 +12,7 @@ import Image from 'semantic-ui-react/dist/commonjs/elements/Image';
 import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
 import envConfig from '@polkadot/apps-config/envConfig';
-import { TransferModal, WarningText } from '@polkadot/react-components';
+import { TransferModal, StartAuctionModal, WarningText } from '@polkadot/react-components';
 import formatPrice from '@polkadot/react-components/util/formatPrice';
 import { useBalance, useDecoder, useMarketplaceStages, useSchema } from '@polkadot/react-hooks';
 import { subToEth } from '@polkadot/react-hooks/utils';
@@ -32,6 +32,7 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
   const tokenId = query.get('tokenId') || '';
   const collectionId = query.get('collectionId') || '';
   const [showTransferForm, setShowTransferForm] = useState<boolean>(false);
+  const [showAuctionForm, setShowAuctionForm] = useState<boolean>(true);
   const [ethAccount, setEthAccount] = useState<string>();
   const [isInWhiteList, setIsInWhiteList] = useState<boolean>(false);
   const [lowKsmBalanceToBuy, setLowKsmBalanceToBuy] = useState<boolean>(false);
@@ -105,6 +106,10 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
   const toggleTransferForm = useCallback(() => {
     setShowTransferForm(!showTransferForm);
   }, [showTransferForm]);
+
+  const toggleAuctionForm = useCallback(() => {
+    setShowAuctionForm(!showAuctionForm);
+  }, [showAuctionForm]);
 
   const onSell = useCallback(() => {
     sendCurrentUserAction('SELL');
@@ -235,6 +240,12 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
                   onClick={toggleTransferForm}
                 />
               )}
+              { (uOwnIt && !uSellIt) && (
+                <Button
+                  content='Sell on Auction'
+                  onClick={toggleAuctionForm}
+                />
+              )}
               {(!account && !!tokenPrice) && (
                 <div>
                   <Button
@@ -307,6 +318,16 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
 
             { (showTransferForm && collectionInfo) && (
               <TransferModal
+                account={account}
+                closeModal={closeTransferModal}
+                collection={collectionInfo}
+                tokenId={tokenId}
+                tokenOwner={tokenInfo?.owner}
+                updateTokens={onTransferSuccess}
+              />
+            )}
+            { (showAuctionForm && collectionInfo) && (
+              <StartAuctionModal
                 account={account}
                 closeModal={closeTransferModal}
                 collection={collectionInfo}

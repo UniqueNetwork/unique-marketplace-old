@@ -1,0 +1,37 @@
+.ui.modal.unique-modal {
+  .header {
+    padding: 1.5rem 1.5rem 16px 1.5rem !important;
+
+    img {
+      position: absolute;
+      right: 24px;
+      top: 24px;
+    }
+  }
+
+  .content {
+    padding: 0 1.5rem 1.5rem 1.5rem !important;
+
+    .warning-block {
+      font-size: 18px;
+    }
+  }
+
+  .field {
+    label {
+      font-family: var(--font-roboto);
+      font-weight: 400;
+      font-size: 18px;
+      margin-bottom: 16px;
+    }
+  }
+
+  .actions {
+    padding: 1rem !important;
+    float: right;
+  }
+}
+
+.transfer-form {
+  width: 100%;
+}
