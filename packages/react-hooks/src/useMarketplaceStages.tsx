@@ -51,7 +51,7 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
   const [tokenDepositor, setTokenDepositor] = useState<string>();
   const [tokenInfo, setTokenInfo] = useState<TokenDetailsInterface>();
   const { getTokenInfo } = useToken();
-  const { addAsk, approveTokenToContract, buyToken, cancelAsk, checkWhiteList, deposited, depositor, getApproved, getTokenAsk, getUserDeposit, initCollectionAbi, isContractReady, tokenAsk, transferToken, withdrawKSM } = useNftContract(account, ethAccount);
+  const { addAsk, approveTokenToContract, buyToken, cancelAsk, checkWhiteList, deposited, depositor, evmCollectionInstance, getApproved, getTokenAsk, getUserDeposit, initCollectionAbi, isContractReady, tokenAsk, transferToken, withdrawKSM } = useNftContract(account, ethAccount);
   const [error, setError] = useState<string | null>(null);
   const [readyToAskPrice, setReadyToAskPrice] = useState<boolean>(false);
   const [tokenPriceForSale, setTokenPriceForSale] = useState<BN>();
@@ -65,13 +65,22 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
   }, [send]);
 
   const loadingTokenInfo = useCallback(async () => {
-    if (!collectionInfo) {
+    if (!collectionInfo || !evmCollectionInstance) {
       return;
     }
 
     const info: TokenDetailsInterface = await getTokenInfo(collectionInfo, tokenId);
 
     setTokenInfo(info);
+
+    const tokenOwner = info.owner as CrossAccountId;
+    const approved = await getApproved(collectionInfo.id, tokenId, tokenOwner);
+
+    if (approved) {
+      send('ALREADY_APPROVED');
+    }
+
+    console.log('approved', approved);
 
     const ask = await getTokenAsk(collectionInfo.id, tokenId);
 
@@ -93,7 +102,7 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
     }
 
     send('WAIT_FOR_USER_ACTION');
-  }, [collectionInfo, getTokenInfo, getUserDeposit, send, getTokenAsk, tokenId]);
+  }, [collectionInfo, evmCollectionInstance, getTokenInfo, tokenId, getApproved, getTokenAsk, getUserDeposit, send]);
 
   const getRevertedFee = useCallback((price: BN): BN => {
     return price.div(new BN(commission + 100)).mul(new BN(commission));

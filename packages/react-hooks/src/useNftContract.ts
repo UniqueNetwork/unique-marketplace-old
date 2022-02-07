@@ -60,6 +60,7 @@ export interface useNftContractInterface {
   decimals: number;
   deposited: BN | undefined;
   depositor: string | undefined;
+  evmCollectionInstance: Contract | null;
   getApproved: (collectionId: string, tokenId: string, tokenOwner: CrossAccountId) => Promise<boolean>;
   getMySubEthAddressBalance: (address: string) => Promise<BN>;
   getTokenAsk: (collectionId: string, tokenId: string) => Promise<TokenAskType | null>;
@@ -120,9 +121,8 @@ export function useNftContract (account: string | undefined, ethAccount: string 
 
   const getApproved = useCallback(async (collectionId: string, tokenId: string, tokenOwner: CrossAccountId): Promise<boolean> => {
     try {
-      if (matcherContractInstance && evmCollectionInstance) {
-        // const approvedAddress = await (evmCollectionInstance.methods as EvmCollectionAbiMethods).getApproved(tokenId).call();
-        const approvedCount = (await api.rpc.unique.allowance(collectionId, tokenOwner, { Substrate: account }, tokenId)).toJSON() as number;
+      if (account && matcherContractInstance && evmCollectionInstance) {
+        const approvedCount = (await api.rpc.unique.allowance(collectionId, normalizeAccountId(tokenOwner), normalizeAccountId({ Ethereum: contractAddress }), tokenId)).toJSON() as number;
 
         return approvedCount === 1;
       }
@@ -498,6 +498,7 @@ export function useNftContract (account: string | undefined, ethAccount: string 
     decimals,
     deposited,
     depositor,
+    evmCollectionInstance,
     getApproved,
     getMySubEthAddressBalance,
     getTokenAsk,

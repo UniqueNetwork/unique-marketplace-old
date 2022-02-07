@@ -66,6 +66,7 @@ const marketplaceStateMachine = createMachine<Context>({
     },
     loadingTokenInfo: {
       on: {
+        ALREADY_APPROVED: 'checkAsk',
         WAIT_FOR_USER_ACTION: 'idle'
       }
     },

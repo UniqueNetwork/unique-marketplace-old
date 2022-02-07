@@ -23,72 +23,6 @@
         grid-template-columns: 1fr 192px;
         grid-column-gap: 24px;
 
-        .search-field {
-
-            .clear-icon {
-              cursor: pointer;
-              width: 20px;
-
-              & svg {
-                fill: var(--input-placeholder-search-color)
-              }
-
-              &:hover{
-                & svg {
-                  fill: var(--black-color)
-                }
-              }
-            }
-            .ui.input.ui--Input {
-
-              input {
-
-                &:hover {
-                  border: 1px solid var(--input-border-color-hover);
-                }
-
-                &:focus {
-                  outline: none;
-                  border: 1px solid var(--input-border-color-outline);
-                }
-
-                &::-webkit-input-placeholder {
-                  color: var(--input-placeholder-search-color);
-                }
-
-                &::-moz-placeholder {
-                  color: var(--input-placeholder-search-color);
-                }
-
-                &:-ms-input-placeholder {
-                  color: var(--input-placeholder-search-color);
-                }
-
-                &:active, &:focus {
-                  &::-webkit-input-placeholder {
-                    color: var(--input-border-color-outline);
-                  }
-
-                  &::-moz-placeholder {
-                    color: var(--input-border-color-outline);
-                  }
-
-                  &:-ms-input-placeholder {
-                    color: var(--input-border-color-outline);
-                  }
-                }
-              }
-              .clear-icon{
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                position: absolute;
-                right: 15px;
-                transform: translateY(calc(100% - 16px));
-              }
-            }
-        }
-
         .search-results {
           font-size: 16px;
           line-height: 40px;
@@ -442,18 +376,6 @@
 
         .ui.form {
           display: block;
-
-          .search-field .ui--Labelled .input {
-            input {
-              padding: 5px calc(var(--gap) * 2) 5px 48px !important;
-            }
-
-            .search-icon {
-              width: 24px;
-              height: 20px;
-              margin: 6px 16px;
-            }
-          }
 
           .field {
             margin-bottom: var(--gap);

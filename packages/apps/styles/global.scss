@@ -695,40 +695,6 @@ button.ui.button,.ui--Button,.button-link {
         }
       }
     }
-
-    .ui--Labelled {
-      .input {
-        .loader {
-          position: absolute;
-          left: 95%;
-          top: 7px;
-
-          &:after, &:before {
-            left: 0;
-          }
-        }
-
-        /* img {
-          position: absolute;
-          &.search-icon {
-            left: var(--gap);
-            top: calc(var(--gap) / 2);
-          }
-
-          &.clear-icon {
-            cursor: pointer;
-            right: var(--gap);
-            top: calc(var(--gap) / 2);
-          }
-        } */
-
-        /* input {
-          border-radius: 4px;
-          padding-right: 4rem !important;
-          height: 40px;
-        } */
-      }
-    }
   }
 }
 .modalDescription {
