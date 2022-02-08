@@ -40,7 +40,7 @@ const marketplaceStateMachine = createMachine<Context>({
     cancelSell: {
       on: {
         CANCEL_SELL_FAIL: 'loadingTokenInfo',
-        CANCEL_SELL_SUCCESS: 'waitForTokenRevert'
+        CANCEL_SELL_SUCCESS: 'waitForToken'
       }
     },
     checkAsk: {
@@ -128,6 +128,24 @@ const marketplaceStateMachine = createMachine<Context>({
       on: {
         SIGN_SUCCESS: 'loadingTokenInfo',
         SIGN_TRANSACTION_FAIL: 'loadingTokenInfo'
+      }
+    },
+    transferBackToSub: {
+      on: {
+        SIGN_TRANSACTION_FAIL: 'loadingTokenInfo',
+        TRANSFER_START: 'transferBackToSubStart'
+      }
+    },
+    transferBackToSubStart: {
+      on: {
+        SIGN_SUCCESS: 'loadingTokenInfo',
+        SIGN_TRANSACTION_FAIL: 'loadingTokenInfo'
+      }
+    },
+    waitForToken: {
+      on: {
+        IS_ON_ETH_ADDRESS: 'transferBackToSub',
+        IS_ON_SUB_ADDRESS: 'loadingTokenInfo'
       }
     },
     waitForTokenRevert: {

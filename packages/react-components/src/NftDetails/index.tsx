@@ -40,7 +40,7 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
   const { hex2a } = useDecoder();
   const { attributes, collectionInfo, tokenUrl } = useSchema(account, collectionId, tokenId);
   const [tokenPriceForSale, setTokenPriceForSale] = useState<string>('');
-  const { cancelStep, checkWhiteList, deposited, formatKsmBalance, getKusamaTransferFee, getRevertedFee, kusamaAvailableBalance, readyToAskPrice, sendCurrentUserAction, setPrice, setReadyToAskPrice, tokenAsk, tokenInfo, transferStep } = useMarketplaceStages(account, ethAccount, collectionInfo, tokenId);
+  const { checkWhiteList, deposited, formatKsmBalance, getKusamaTransferFee, getRevertedFee, kusamaAvailableBalance, readyToAskPrice, sendCurrentUserAction, setPrice, setReadyToAskPrice, tokenAsk, tokenInfo, transferStep } = useMarketplaceStages(account, ethAccount, collectionInfo, tokenId);
 
   const uSellIt = tokenAsk && tokenAsk?.ownerAddr.toLowerCase() === ethAccount && tokenAsk.flagActive === '1';
   const uOwnIt = tokenInfo?.owner?.Substrate === account || tokenInfo?.owner?.Ethereum?.toLowerCase() === ethAccount || uSellIt;
@@ -273,12 +273,6 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
                     content={
                       <>
                         Delist
-                        { cancelStep && (
-                          <Loader
-                            active
-                            inline='centered'
-                          />
-                        )}
                       </>
                     }
                     onClick={onCancel}

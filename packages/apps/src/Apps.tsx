@@ -32,6 +32,7 @@ import MobileMenu from './MobileMenu';
 import MobileMenuHeader from './MobileMenuHeader';
 import ScrollToTop from './ScrollToTop';
 import WarmUp from './WarmUp';
+import Transactions from './TransactionContext';
 
 export const PORTAL_ID = 'portals';
 
@@ -86,6 +87,7 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
             trigger={name}
           >
             <Contracts account={account}>
+              <Transactions>
               <header className='app-header'>
                 <div className='app-container app-container--header'>
                   <MobileMenuHeader
@@ -230,6 +232,7 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                   </main>
                 </Suspense>
               )}
+              </Transactions>
             </Contracts>
           </ErrorBoundary>
           <Status />

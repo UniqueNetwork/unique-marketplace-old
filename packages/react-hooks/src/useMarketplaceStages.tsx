@@ -1,4 +1,4 @@
-// Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
+// Copyright 2017-2022 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
@@ -7,8 +7,9 @@ import type { TokenDetailsInterface } from '@polkadot/react-hooks/useToken';
 
 import { useMachine } from '@xstate/react';
 import BN from 'bn.js';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
+import TransactionContext from '@polkadot/apps/TransactionContext/TransactionContext';
 import envConfig from '@polkadot/apps-config/envConfig';
 import { useKusamaApi, useNftContract, useToken } from '@polkadot/react-hooks';
 
@@ -20,7 +21,6 @@ const { commission, escrowAddress, kusamaDecimals } = envConfig;
 type UserActionType = 'BUY' | 'CANCEL' | 'SELL' | 'REVERT_UNUSED_MONEY' | 'UPDATE_TOKEN_STATE' | 'ASK_NOT_FILLED';
 
 export interface MarketplaceStagesInterface {
-  cancelStep: boolean;
   checkWhiteList: (ethAddress: string) => Promise<boolean>;
   deposited: BN | undefined;
   depositor: string | undefined;
@@ -57,6 +57,7 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
   const [tokenPriceForSale, setTokenPriceForSale] = useState<BN>();
   const { formatKsmBalance, getKusamaTransferFee, kusamaApi, kusamaAvailableBalance, kusamaTransfer } = useKusamaApi(account);
   const kusamaExistentialDeposit = kusamaApi?.consts.balances?.existentialDeposit as unknown as BN;
+  const { setTransactions } = useContext(TransactionContext);
 
   console.log('state', state.value);
 
@@ -327,9 +328,67 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
     }
   }, [state.value]);
 
-  const cancelStep = useMemo((): boolean => {
-    return state.matches('cancelSell') || state.matches('waitForTokenRevert') || state.matches('transferToSub');
-  }, [state]);
+  const transactionStepper = useCallback(() => {
+    switch (state.value) {
+      case 'cancelSell':
+      case 'waitForToken':
+        setTransactions([
+          {
+            state: 'active',
+            step: 1,
+            text: 'Unlocking NFT'
+          },
+          {
+            state: 'not-active',
+            step: 2,
+            text: 'Sending NFT to wallet'
+          }
+        ]);
+        break;
+      case 'transferBackToSub':
+      case 'transferBackToSubStart':
+        setTransactions([
+          {
+            state: 'finished',
+            step: 1,
+            text: 'Unlocking NFT'
+          },
+          {
+            state: 'active',
+            step: 2,
+            text: 'Sending NFT to wallet'
+          }
+        ]);
+        break;
+      case 'sell':
+        setTransactions([
+          {
+            state: 'active',
+            step: 1,
+            text: 'Approving sponsorship'
+          },
+          {
+            state: 'not-active',
+            step: 2,
+            text: 'Locking NFT for sale'
+          },
+          {
+            state: 'not-active',
+            step: 3,
+            text: 'Sending NFT to Smart contract'
+          },
+          {
+            state: 'not-active',
+            step: 4,
+            text: 'Setting price'
+          }
+        ]);
+        break;
+      default:
+        setTransactions([]);
+        break;
+    }
+  }, [setTransactions, state.value]);
 
   const updateTokenInfo = useCallback(async () => {
     if (!collectionInfo) {
@@ -374,10 +433,6 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
       case state.matches('cancelSell'):
         void cancelSell();
         break;
-      case state.matches('transferToSub'):
-        void transferToSub();
-        break;
-      // on load - update token state
       case state.matches('buy'):
         void buy(); // occurs unexpected change of ref (in deps)
         break;
@@ -388,6 +443,22 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
         break;
     }
   }, [addTokenAsk, approveToken, checkAsk, openAskModal, state.value, state, cancelSell, revertMoney, sentTokenToAccount, sell, loadingTokenInfo, transferToEth, transferToSub, transferMinDeposit, checkIsOnEthAddress, buy, checkDepositReady, waitForWhiteListing]);
+
+  useEffect(() => {
+    transactionStepper();
+  }, [transactionStepper]);
+
+  useEffect(() => {
+    if (state.matches('transferToSub')) {
+      void transferToSub();
+    }
+  }, [state, checkDepositReady, transferToSub]);
+
+  useEffect(() => {
+    if (state.matches('transferBackToSub')) {
+      void transferToSub();
+    }
+  }, [state, checkDepositReady, transferToSub]);
 
   useEffect(() => {
     if (state.matches('checkDepositReady')) {
@@ -426,6 +497,12 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
   }, [state, loadingTokenInfo]);
 
   useEffect(() => {
+    if (state.matches('waitForToken')) {
+      void waitForTokenRevert();
+    }
+  }, [state, waitForTokenRevert]);
+
+  useEffect(() => {
     if (state.matches('waitForTokenRevert')) {
       void waitForTokenRevert();
     }
@@ -454,7 +531,6 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
   console.log('state', state.value);
 
   return {
-    cancelStep,
     checkWhiteList,
     deposited,
     depositor,
