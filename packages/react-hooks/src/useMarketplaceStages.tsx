@@ -328,6 +328,13 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
     }
   }, [state.value]);
 
+  /*
+    Transactions:
+    1. Transfer min deposit for whitelisting
+    2. Transfer token to eth mirror
+    3. Approve token to contract
+    4. Set price
+  */
   const transactionStepper = useCallback(() => {
     switch (state.value) {
       case 'cancelSell':
@@ -361,6 +368,11 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
         ]);
         break;
       case 'sell':
+      case 'transferMinDeposit':
+      case 'waitForWhiteListing':
+      case 'transferToEth':
+      case 'transferToEthStart':
+      case 'approveToken':
         setTransactions([
           {
             state: 'active',
@@ -369,6 +381,30 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
           },
           {
             state: 'not-active',
+            step: 2,
+            text: 'Locking NFT for sale'
+          },
+          {
+            state: 'not-active',
+            step: 3,
+            text: 'Sending NFT to Smart contract'
+          },
+          {
+            state: 'not-active',
+            step: 4,
+            text: 'Setting price'
+          }
+        ]);
+        break;
+      case 'checkAsk':
+        setTransactions([
+          {
+            state: 'finished',
+            step: 1,
+            text: 'Approving sponsorship'
+          },
+          {
+            state: 'active',
             step: 2,
             text: 'Locking NFT for sale'
           },
