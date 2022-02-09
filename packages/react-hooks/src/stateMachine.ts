@@ -72,7 +72,7 @@ const marketplaceStateMachine = createMachine<Context>({
     openAskModal: {
       on: {
         ASK_FILLED: 'addAsk',
-        ASK_NOT_FILLED: 'checkAsk'
+        ASK_NOT_FILLED: 'loadingTokenInfo'
       }
     },
     revertMoney: {

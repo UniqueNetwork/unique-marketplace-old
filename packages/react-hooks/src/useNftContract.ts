@@ -5,7 +5,7 @@ import type { Contract } from 'web3-eth-contract';
 import type { MarketplaceAbiMethods } from '@polkadot/apps/ContractContext';
 
 import BN from 'bn.js';
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { useCallback, useContext, useMemo, useState } from 'react';
 import Web3 from 'web3';
 
 import ContractContext from '@polkadot/apps/ContractContext/ContractContext';
@@ -478,10 +478,6 @@ export function useNftContract (account: string | undefined, ethAccount: string 
   useEffect(() => {
     void registerDeposit();
   }, [registerDeposit]); */
-
-  useEffect(() => {
-    void getUserDeposit();
-  }, [getUserDeposit]);
 
   /* useEffect(() => {
     setCollectionSponsor('13', '5ELgyTdWdPoDuGb8CizikC5GW5pCHgCWiMfXJn1FfYKYrJEA');
