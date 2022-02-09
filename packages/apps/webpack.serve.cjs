@@ -13,15 +13,15 @@ module.exports = merge(
   {
     devServer: {
       open: false,
-      port: 3003,
+      port: process?.env?.UNIQUE_SERVE_PORT || 3003,
       proxy: {
         '/Offers': {
           changeOrigin: true,
-          target: 'https://market-api-opal.unique.network'
+          target: process?.env?.UNIQUE_API || 'https://market-api-opal.unique.network'
         },
         '/Trades': {
           changeOrigin: true,
-          target: 'https://market-api-opal.unique.network'
+          target: process?.env?.UNIQUE_API || 'https://market-api-opal.unique.network'
         },
         /* 'https://market-api-opal.unique.network': {
           changeOrigin: true,
