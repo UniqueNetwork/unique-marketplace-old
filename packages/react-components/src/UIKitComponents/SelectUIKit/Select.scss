@@ -1,0 +1,196 @@
+@import '../styles.scss';
+
+.unique-select {
+    font-family: $font-family;
+    font-size: $font-size;
+    font-weight: $font-weight;
+    position: relative;
+    width: 100%;
+
+    label {
+        color: $color-secondary-500;
+        display: block;
+        font-size: 16px;
+        font-weight: 600;
+        height: 24px;
+        line-height: 24px;
+        margin-bottom: 5px;
+        overflow: hidden;
+        position: relative;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        width: 100%;
+    }
+
+    .additional-text {
+        color: $color-grey-500;
+        font-size: 14px;
+        height: 22px;
+        line-height: 22px;
+        margin-bottom: 12px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        width: 100%;
+    }
+
+    .status-text {
+        color: $color-grey-500;
+        font-size: 14px;
+        line-height: 22px;
+        margin-top: 8px;
+        min-height: 22px;
+        width: 100%;
+    }
+
+    .select-wrapper {
+        position: relative;
+        width: 100%;
+        height: 40px;
+
+        &.dropped {
+            .select-value {
+                border: 1px solid $color-grey-400;
+            }
+        }
+
+        .select-value {
+            display: flex;
+            align-items: center;
+            border: 1px solid $color-grey-300;
+            border-radius: $border-radius;
+            cursor: pointer;
+            outline: none;
+            height: 16px;
+            padding: 11px 16px;
+            position: relative;
+            width: 100%;
+            height:100%;
+
+            &.with-icon {
+                &.to-right {
+                    flex-direction: row;
+                    svg,
+                    img {
+                        margin-left: 5px;
+                    }
+                }
+                &.to-left {
+                    flex-direction: row-reverse;
+                    justify-content: flex-end;
+                    svg,
+                    img {
+                        margin-right: 5px;
+                    }
+                }
+            }
+
+            .select-placeholder {
+                color: $color-grey-400;
+            }
+
+            &:focus {
+                border: 1px solid $color-grey-400;
+            }
+        }
+
+        .select-dropdown {
+            background-color: $color-additional-light;
+            border: 1px solid $color-grey-300;
+            border-radius: $border-radius;
+            padding: 8px;
+            position: absolute;
+            left: 0;
+            top: 46px;
+            width: 100%;
+            z-index: 1;
+
+            .dropdown-option {
+                display: flex;
+                align-items: center;
+                cursor: pointer;
+                height: 32px;
+                line-height: 32px;
+                padding: 0 8px;
+                position: relative;
+                width: 100%;
+
+                &.with-icon {
+                    &.to-right {
+                        flex-direction: row;
+                        svg,
+                        img {
+                            margin-left: 5px;
+                        }
+                    }
+                    &.to-left {
+                        flex-direction: row-reverse;
+                        justify-content: flex-end;
+                        svg,
+                        img {
+                            margin-right: 5px;
+                        }
+                    }
+                }
+
+                &:not(:last-child) {
+                    margin-bottom: 3px;
+                }
+
+                &:hover,
+                &.selected {
+                    background-color: $color-primary-100;
+                    color: $color-primary-500;
+
+                    svg {
+                        fill: $color-primary-500;
+                    }
+                }
+            }
+        }
+
+        .icon-wrapper { 
+            position: absolute;
+            top: 0;
+            right: 0;
+            
+            svg {
+            margin: 17px;
+            cursor: pointer;
+            fill: $color-blue-grey-500;
+            z-index: -1;
+            }
+        }
+
+        &.dropped > svg {
+            transform: rotate(180deg);
+        }
+
+        &.disabled {
+            background-color: $color-grey-100;
+            color: $color-blue-grey-400;
+            .select-value {
+                cursor: default;
+                .select-placeholder {
+                    color: $color-grey-400;
+                }
+            }
+            svg {
+                cursor: initial;
+                fill: $color-blue-grey-400;
+                z-index: 0;
+            }
+        }
+    }
+
+    &.error {
+        .select-wrapper {
+            .select-value {
+                border: 1px solid $color-coral-500;
+            }
+        }
+        .status-text {
+            color: $color-coral-500;
+        }
+    }
+}

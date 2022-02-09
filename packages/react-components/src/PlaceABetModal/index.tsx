@@ -1,26 +1,28 @@
 // Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import './styles.scss';
-
 import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
 
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useState } from 'react';
+import styled from 'styled-components';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form/Form';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button';
 import Modal from 'semantic-ui-react/dist/commonjs/modules/Modal/Modal';
 
-import { Input, Label, StatusContext } from '@polkadot/react-components';
+import { DeriveBalancesAll } from '@polkadot/api-derive/types';
+import envConfig from '@polkadot/apps-config/envConfig';
+import { web3Accounts, web3FromSource } from '@polkadot/extension-dapp';
+import { Input } from '@polkadot/react-components';
 import { useApi, useCall, useKusamaApi } from '@polkadot/react-hooks';
-import { keyring } from '@polkadot/ui-keyring';
+import { formatKsmBalance } from '@polkadot/react-hooks/useKusamaApi';
+import { fromStringToBnString } from '@polkadot/react-hooks/utils';
+import { encodeAddress } from '@polkadot/util-crypto/address/encode';
 
 import closeIcon from './closeIconBlack.svg';
-import { CrossAccountId, fromStringToBnString, normalizeAccountId, subToEth } from '@polkadot/react-hooks/utils';
-import { web3Accounts, web3FromSource } from '@polkadot/extension-dapp';
-import { formatKsmBalance } from '@polkadot/react-hooks/useKusamaApi';
-import { DeriveBalancesAll } from '@polkadot/api-derive/types';
-import { encodeAddress } from '@polkadot/util-crypto/address/encode';
-import envConfig from '@polkadot/apps-config/envConfig';
+
+const { uniqueApi } = envConfig;
+const apiUrl = process.env.NODE_ENV === 'development' ? '' : uniqueApi;
+
 const { kusamaDecimals, uniqueCollectionIds } = envConfig;
 
 interface Props {
@@ -32,90 +34,216 @@ interface Props {
   updateTokens: (collectionId: string) => void;
 }
 
-function PlaceABetModal ({ account, closeModal, collection, tokenId, tokenOwner, updateTokens }: Props): React.ReactElement<Props> {
+function PlaceABetModal({ account, closeModal, collection, tokenId, tokenOwner, updateTokens }: Props): React.ReactElement<Props> {
   const { api } = useApi();
-  const { kusamaApi } = useKusamaApi(account || '');
+  const { kusamaApi, getKusamaTransferFee } = useKusamaApi(account || '');
+
+  console.log('kusamaApi', kusamaApi);
   // const balancesAll = useCall<DeriveBalancesAll>(api.derive.balances?.all, [account]);
   // const kusamaBalancesAll = useCall<DeriveBalancesAll>(kusamaApi?.derive.balances?.all, [account]);
-  const [bid, setBid] = useState<string>(String(1));
+
+  const minBid = 123 // todo get from backend;
+  const lastBid = 456 // todo get from backend;
+  const minStep = 1 // todo get from backend;
+  const startBid = lastBid ? lastBid + minStep : minBid;
+
+  const [bid, setBid] = useState<string>(String(startBid));
+
+  const kusamaTransferFee = 0.123; // todo getKusamaTransferFee(recipient, value)
 
   const placeABid = async () => {
-
     if (!account) {
       return;
     }
 
     const recipient = {
-      Substrate: '5CJZRtf2V2ntkzzFzXjgRBSLbCnLvQUqvdnD5abLX3V7RTiA', // todo get address from auction seed
+      Substrate: '5CJZRtf2V2ntkzzFzXjgRBSLbCnLvQUqvdnD5abLX3V7RTiA' // todo get address from auction seed
     };
 
-    let extrinsic = kusamaApi.tx.balances.transfer(
+    const extrinsic = kusamaApi.tx.balances.transfer(
       encodeAddress(recipient.Substrate),
-      fromStringToBnString(bid, kusamaDecimals),
+      fromStringToBnString(bid, kusamaDecimals)
     );
 
     const accounts = await web3Accounts();
-    const signer = accounts.find(a => a.address === account);
+    const signer = accounts.find((a) => a.address === account);
+
     if (!signer) {
       return;
     }
+
     const injector = await web3FromSource(signer.meta.source);
 
     await extrinsic.signAsync(signer.address, { signer: injector.signer });
     const tx = extrinsic.toJSON();
+
     console.log('txHex', JSON.stringify({
       tokenId,
       tx,
-      collectionId: collection.id,
+      collectionId: collection.id
     }, null, ' '));
-    // todo send this body to backend
+
+    // send data to backend
+    const url = `${apiUrl}/auction/place_bid`;
+    const data = {
+      tokenId,
+      tx,
+      collectionId: collection.id
+    };
+
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      const json = await response.json();
+      alert(`Token is up for sale ${JSON.stringify(json)}`);
+    } catch (error) {
+      console.error('Ошибка:', error);
+    }
   };
 
   return (
-    <Modal
-      className='unique-modal'
+    <ModalStyled
       onClose={closeModal}
       open
       size='tiny'
     >
-      <Modal.Header>
-        <h2>Place A Bet Modal</h2>
+      <ModalHeader>
+        <h2>Place a bid</h2>
         <img
           alt='Close modal'
           onClick={closeModal}
           src={closeIcon as string}
         />
-      </Modal.Header>
-      <Modal.Content>
-        <Form className='transfer-form'>
-          <Form.Field>
-            <Label label={'Bid'} />
-            <Input
-              className='isSmall'
-              onChange={setBid}
-              placeholder='Bid'
-              value={bid}
-            />
-          </Form.Field>
-        </Form>
-      </Modal.Content>
-      <Modal.Description className='modalDescription'>
-        <div>
-          <p> Be careful, the transaction cannot be reverted.</p>
-          <p> Make sure to use the Substrate address created with polkadot.js or this marketplace.</p>
-          <p> Do not use address of third party wallets, exchanges or hardware signers, like ledger nano.</p>
-        </div>
-      </Modal.Description>
-
-      <Modal.Actions>
-        <Button
-          content='Place a Bid'
-          onClick={placeABid}
+      </ModalHeader>
+      <ModalContent>
+        <InputWrapper
+          className='is-small'
+          onChange={setBid}
+          placeholder='Bid'
+          type='number'
+          value={bid}
         />
-      </Modal.Actions>
-    </Modal>
+        <InputDescription className='input-description'>{`Минимальная ставка ${minBid} KSM (последняя ${lastBid} KSM + шаг ${minStep} KSM)`} </InputDescription>
+        <WarningText>
+          <span>
+            A fee of ~ {kusamaTransferFee} KSM can be applied to the transaction
+          </span>
+        </WarningText>
+      </ModalContent>
+      <ModalActions>
+        <ButtonWrapper>
+          <Button
+            content='Confirm'
+            disabled={parseInt(bid) < startBid}
+            onClick={placeABid}
+          />
+        </ButtonWrapper>
+      </ModalActions>
+    </ModalStyled>
   );
 }
 
-export default React.memo(PlaceABetModal);
+const InputDescription = styled.div`
+  color: #81858e;
+  font-family: var(--font-inter);
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 22px;
+  margin: 8px 0 32px;
+`;
 
+const InputWrapper = styled(Input)`
+  &&& .input {
+    margin:0;
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    
+    input {
+      font-family: var(--font-inter) !important;
+      padding: 8px 16px !important;
+      line-height: 24px;
+      border-radius: 4px;
+      border-color: #d2d3d6;
+      box-sizing: border-box;
+      height: 40px;
+    }
+  }
+`;
+
+const WarningText = styled.div`
+  box-sizing: border-box;
+  display: flex;
+  padding: 8px 16px;
+  margin-bottom: 24px;
+  border-radius: 4px;
+  background-color: #FFF4E0;
+  width: 100%;
+
+  span {
+    color: #F9A400;
+    font: 500 14px/22px var(--font-inter);
+  }
+`;
+
+const ModalStyled = styled(Modal)`
+  &&& {
+  padding: 1.5rem !important;
+  background-color: #fff;
+  width: 640px;
+
+  .unique-select .select-wrapper > svg {
+    z-index: 20;
+  }
+}
+  
+`;
+
+const ModalHeader = styled(Modal.Header)`
+  &&&& { 
+    padding: 0;
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+      h2 {
+      margin-bottom:0
+      }
+
+      img {
+        cursor: pointer;
+      }
+    }
+`;
+
+const ModalContent = styled(Modal.Content)`
+  &&&& { 
+    padding: 0;
+    }
+`;
+
+const ModalActions = styled(Modal.Actions)`
+  &&&& { 
+    padding: 0 !important;
+    }
+`;
+
+const ButtonWrapper = styled.div`
+  display: flex;
+  justify-content: flex-end;
+
+  &&& button {
+    font-family: var(--font-inter) !important;
+    margin-right: 0;
+  }
+`;
+
+export default React.memo(PlaceABetModal);

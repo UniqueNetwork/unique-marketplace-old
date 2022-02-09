@@ -1,22 +1,22 @@
 // Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import './styles.scss';
-
 import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
+import envConfig from '@polkadot/apps-config/envConfig';
 
-import React, { useCallback, useContext, useEffect, useState } from 'react';
-import Form from 'semantic-ui-react/dist/commonjs/collections/Form/Form';
+import React, { useCallback, useState } from 'react';
+import styled from 'styled-components';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button';
 import Modal from 'semantic-ui-react/dist/commonjs/modules/Modal/Modal';
+import { Input } from '@polkadot/react-components';
 
-import { Input, Label, StatusContext } from '@polkadot/react-components';
 import { useApi } from '@polkadot/react-hooks';
-import { keyring } from '@polkadot/ui-keyring';
 
 import closeIcon from './closeIconBlack.svg';
 import { CrossAccountId, normalizeAccountId, subToEth } from '@polkadot/react-hooks/utils';
 import { web3Accounts, web3FromSource } from '@polkadot/extension-dapp';
+import Select from '../UIKitComponents/SelectUIKit/Select';
+
 
 interface Props {
   account?: string;
@@ -27,12 +27,59 @@ interface Props {
   updateTokens: (collectionId: string) => void;
 }
 
-function StartAuctionModal ({ account, closeModal, collection, tokenId, tokenOwner, updateTokens }: Props): React.ReactElement<Props> {
+function StartAuctionModal({ account, closeModal, collection, tokenId, tokenOwner, updateTokens }: Props): React.ReactElement<Props> {
   const { api } = useApi();
-  const [daysCount, setDaysCount] = useState<number>(7);
-  const [minPrice, setMinPrice] = useState<number>(100);
-  const [minStep, setMinStep] = useState<number>(10);
   const [tokenPart] = useState<number>(1);
+
+  const [minStep, setMinStep] = useState<string>();
+  const [startingPrice, setStartingPrice] = useState<string>();
+  const [duration, setDuration] = useState<string>();
+
+  const { uniqueApi } = envConfig;
+  const apiUrl = process.env.NODE_ENV === 'development' ? '' : uniqueApi;
+
+  const kusamaTransferFee = 0.123; // todo getKusamaTransferFee(recipient, value)
+
+  const onMinStepInputChange = useCallback(
+    (value: string) => {
+      setMinStep(value);
+    },
+    [setMinStep]
+  );
+
+  const onInputStartingPriceChange = useCallback(
+    (value: string) => {
+      setStartingPrice(value);
+    },
+    [setStartingPrice]
+  );
+
+  const onDurationSelectChange = useCallback(
+    (value: string) => {
+      setDuration(value);
+    },
+    [setDuration]
+  );
+
+  const durationOptions = [
+    {
+      id: '3 days',
+      title: '3 days'
+    },
+    {
+      id: '7 days',
+      title: '7 days'
+    },
+    {
+      id: '14 days',
+      title: '14 days'
+    },
+    {
+      id: '21 days',
+      title: '21 days'
+    }
+  ];
+
   const startAuction = async () => {
 
     if (!account) {
@@ -64,83 +111,207 @@ function StartAuctionModal ({ account, closeModal, collection, tokenId, tokenOwn
     const tx = extrinsic.toJSON();
     console.log('txHex', JSON.stringify({
       tx,
-      days: daysCount,
-      startPrice: minPrice,
+      days: parseInt(duration as string),
+      startPrice: startingPrice,
       priceStep: minStep,
     }, null, ' '));
-    // todo send this body to backend
+    // send data to backend
+    const url = `${apiUrl}/auction/create_auction`;
+    const data = {
+      tx,
+      days: parseInt(duration as string),
+      startPrice: startingPrice,
+      priceStep: minStep,
+    };
+
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      const json = await response.json();
+      alert(`Token put up for auction ${JSON.stringify(json)}`);
+    } catch (error) {
+      console.error('Ошибка:', error);
+    }
   };
 
   return (
-    <Modal
-      className='unique-modal'
+    <SellModalStyled
       onClose={closeModal}
       open
       size='tiny'
     >
-      <Modal.Header>
-        <h2>Start Auction</h2>
+      <ModalHeader>
+        <h2>Start auction</h2>
         <img
           alt='Close modal'
           onClick={closeModal}
           src={closeIcon as string}
         />
-      </Modal.Header>
-      <Modal.Content>
-        <Form className='transfer-form'>
-          <Form.Field>
-            <Label label={'Days'} />
-            <Input
-              className='isSmall'
-              onChange={setDaysCount}
-              placeholder='Days'
-              value={daysCount}
-            />
-          </Form.Field>
-        </Form>
-        <Form className='transfer-form'>
-          <Form.Field>
-            <Label label={'Min Price'} />
-            <Input
-              className='isSmall'
-              onChange={setMinPrice}
-              placeholder='Days'
-              value={minPrice}
-            />
-          </Form.Field>
-        </Form>
-        <Form className='transfer-form'>
-          <Form.Field>
-            <Label label={'Min Step'} />
-            <Input
-              className='isSmall'
-              onChange={setMinStep}
-              placeholder='Days'
-              value={minStep}
-            />
-          </Form.Field>
-        </Form>
-      </Modal.Content>
-      <Modal.Description className='modalDescription'>
-        <div>
-          <p> Be careful, the transaction cannot be reverted.</p>
-          <p> Make sure to use the Substrate address created with polkadot.js or this marketplace.</p>
-          <p> Do not use address of third party wallets, exchanges or hardware signers, like ledger nano.</p>
-        </div>
-      </Modal.Description>
-
-      <Modal.Actions>
-        <Button
-          content='Start Auction'
-          onClick={startAuction}
+      </ModalHeader>
+      <ModalContent>
+        <LabelText>
+          Minimum step*
+        </LabelText>
+        <InputWrapper
+          onChange={onMinStepInputChange}
+          type='number'
+          value={minStep}
         />
-      </Modal.Actions>
-    </Modal>
+        <Row>
+          <Col>
+            <LabelText>
+              Starting Price
+            </LabelText>
+            <InputWrapper
+              onChange={onInputStartingPriceChange}
+              type='number'
+              value={startingPrice}
+            />
+          </Col>
+          <SelectWrapper
+            label='Duration*'
+            onChange={onDurationSelectChange}
+            options={durationOptions}
+            value={duration}
+          />
+        </Row>
+        <WarningText>
+          <span>
+            A fee of ~ {kusamaTransferFee} KSM can be applied to the transaction
+          </span>
+        </WarningText>
+        <ButtonWrapper>
+          <Button
+            content='Confirm'
+            disabled={!minStep || !duration}
+            onClick={startAuction}
+          />
+        </ButtonWrapper>
+      </ModalContent>
+    </SellModalStyled>
   );
 }
 
+const WarningText = styled.div`
+  box-sizing: border-box;
+  display: flex;
+  padding: 8px 16px;
+  margin-bottom: 24px;
+  border-radius: 4px;
+  background-color: #FFF4E0;
+  width: 100%;
+
+  span {
+    color: #F9A400;
+    font: 500 14px/22px var(--font-inter);
+  }
+`;
+
+const LabelText = styled.div`
+  margin-bottom: 5px;
+  width: 100%;
+  color: #040b1d;
+  font: 600 16px/24px var(--font-inter);
+`;
+
+const InputWrapper = styled(Input)`
+  margin-bottom: 32px;
+
+  &&& .input {
+    margin:0;
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    
+    input {
+      font-family: var(--font-inter) !important;
+      padding: 8px 16px !important;
+      line-height: 24px;
+      border-radius: 4px;
+      border-color: #d2d3d6;
+      box-sizing: border-box;
+      height: 40px;
+    }
+  }
+`;
+
+const SelectWrapper = styled(Select)`
+   && {
+     margin-bottom: 32px;
+
+     .menu {
+       background-color: #fff;
+     }
+   }
+`;
+
+const ButtonWrapper = styled.div`
+  display: flex;
+  justify-content: flex-end;
+
+  &&& button {
+    font-family: var(--font-inter) !important;
+    margin-right: 0;
+  }
+`;
+
+const Row = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+const Col = styled.div`
+  width: 100%; 
+  margin-right: 24px;
+`;
+
+const SellModalStyled = styled(Modal)`
+&&& {
+  padding: 1.5rem !important;
+  background-color: #fff;
+  width: 640px;
+
+  .unique-select .select-wrapper > svg {
+    z-index: 20;
+  }
+}
+  
+`;
+
+const ModalHeader = styled(Modal.Header)`
+  &&&& { 
+    padding: 0;
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+      h2 {
+      margin-bottom:0
+      }
+
+      img {
+        cursor: pointer;
+      }
+    }
+`;
+
+const ModalContent = styled(Modal.Content)`
+  &&&& { 
+    padding: 0;
+    }
+`;
+
 export default React.memo(StartAuctionModal);
 function web3Enable(arg0: string) {
-    throw new Error('Function not implemented.');
+  throw new Error('Function not implemented.');
 }
 
