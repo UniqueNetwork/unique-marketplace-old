@@ -73,15 +73,6 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
 
     setTokenInfo(info);
 
-    const tokenOwner = info.owner as CrossAccountId;
-    const approved = await getApproved(collectionInfo.id, tokenId, tokenOwner);
-
-    if (approved) {
-      send('ALREADY_APPROVED');
-    }
-
-    console.log('approved', approved);
-
     const ask = await getTokenAsk(collectionInfo.id, tokenId);
 
     if (ask?.ownerAddr && ask.flagActive) {
@@ -102,7 +93,7 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
     }
 
     send('WAIT_FOR_USER_ACTION');
-  }, [collectionInfo, evmCollectionInstance, getTokenInfo, tokenId, getApproved, getTokenAsk, getUserDeposit, send]);
+  }, [collectionInfo, evmCollectionInstance, getTokenInfo, tokenId, getTokenAsk, getUserDeposit, send]);
 
   const getRevertedFee = useCallback((price: BN): BN => {
     return price.div(new BN(commission + 100)).mul(new BN(commission));

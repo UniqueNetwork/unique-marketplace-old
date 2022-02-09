@@ -1,4 +1,4 @@
-// Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
+// Copyright 2017-2022 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import type { Contract } from 'web3-eth-contract';
@@ -71,7 +71,7 @@ export interface useNftContractInterface {
   isContractReady: boolean;
   tokenAsk: TokenAskType | undefined;
   transferToken: (collectionId: string, tokenId: string, address: { Ethereum?: string, Substrate?: string }, startCallBack: () => void, successCallBack: () => void, errorCallBack: () => void, ethAccount?: string, onlyGetFees?: boolean) => void;
-  withdrawKSM: (amount: string, failCallBack: () => void, successCallBack: () => void) => void;
+  withdrawAllKSM: (failCallBack: () => void, successCallBack: () => void) => void;
 }
 
 export const GAS_ARGS = { gas: 2500000 };
@@ -366,14 +366,14 @@ export function useNftContract (account: string | undefined, ethAccount: string 
     }
   }, [account, api, matcherContractInstance, evmCollectionInstance, queueExtrinsic, web3Instance]);
 
-  const withdrawKSM = useCallback(async (amount: string, failCallBack: () => void, successCallBack: () => void) => {
+  const withdrawAllKSM = useCallback(async (failCallBack: () => void, successCallBack: () => void) => {
     try {
-      if (account && ethAccount && amount && matcherContractInstance && web3Instance) {
+      if (account && ethAccount && matcherContractInstance && web3Instance) {
         // currency_code 0x0000000000000000000000000000000000000001
         const extrinsic = api.tx.evm.call(
           ethAccount,
           contractAddress,
-          (matcherContractInstance.methods as MarketplaceAbiMethods).withdraw(amount, '0x0000000000000000000000000000000000000001', ethAccount).encodeABI(),
+          (matcherContractInstance.methods as MarketplaceAbiMethods).withdrawAllKSM(ethAccount).encodeABI(),
           value,
           GAS_ARGS.gas,
           await web3Instance.eth.getGasPrice(),
@@ -509,6 +509,6 @@ export function useNftContract (account: string | undefined, ethAccount: string 
     isContractReady,
     tokenAsk,
     transferToken,
-    withdrawKSM
+    withdrawAllKSM
   };
 }
