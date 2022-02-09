@@ -69,10 +69,7 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
 
   const closeAskModal = useCallback(() => {
     setReadyToAskPrice(false);
-
-    setTimeout(() => {
-      sendCurrentUserAction('ASK_NOT_FILLED');
-    }, 1000);
+    sendCurrentUserAction('ASK_NOT_FILLED');
   }, [setReadyToAskPrice, sendCurrentUserAction]);
 
   const ksmFeesCheck = useCallback(async () => {
