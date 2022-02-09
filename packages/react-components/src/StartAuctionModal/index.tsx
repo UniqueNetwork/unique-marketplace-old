@@ -8,6 +8,7 @@ import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button';
 import Modal from 'semantic-ui-react/dist/commonjs/modules/Modal/Modal';
+import { Input } from '@polkadot/react-components';
 
 import { useApi } from '@polkadot/react-hooks';
 
@@ -15,7 +16,6 @@ import closeIcon from './closeIconBlack.svg';
 import { CrossAccountId, normalizeAccountId, subToEth } from '@polkadot/react-hooks/utils';
 import { web3Accounts, web3FromSource } from '@polkadot/extension-dapp';
 import Select from '../UIKitComponents/SelectUIKit/Select';
-import Input from '../UIKitComponents/InputUIKit/Input';
 
 
 interface Props {
@@ -31,8 +31,8 @@ function StartAuctionModal({ account, closeModal, collection, tokenId, tokenOwne
   const { api } = useApi();
   const [tokenPart] = useState<number>(1);
 
-  const [minStep, setMinStep] = useState<number>();
-  const [startingPrice, setStartingPrice] = useState<number>();
+  const [minStep, setMinStep] = useState<string>();
+  const [startingPrice, setStartingPrice] = useState<string>();
   const [duration, setDuration] = useState<string>();
 
   const { uniqueApi } = envConfig;
@@ -41,17 +41,14 @@ function StartAuctionModal({ account, closeModal, collection, tokenId, tokenOwne
   const kusamaTransferFee = 0.123; // todo getKusamaTransferFee(recipient, value)
 
   const onMinStepInputChange = useCallback(
-    (value: number) => {
-      console.log('Number(value)', Number(value));
-      if (typeof Number(value) === 'number') {
-        setMinStep(value);
-      }
+    (value: string) => {
+      setMinStep(value);
     },
     [setMinStep]
   );
 
   const onInputStartingPriceChange = useCallback(
-    (value: number) => {
+    (value: string) => {
       setStartingPrice(value);
     },
     [setStartingPrice]
@@ -149,7 +146,7 @@ function StartAuctionModal({ account, closeModal, collection, tokenId, tokenOwne
       size='tiny'
     >
       <ModalHeader>
-        <h2>Sell on auction</h2>
+        <h2>Start auction</h2>
         <img
           alt='Close modal'
           onClick={closeModal}
@@ -157,19 +154,25 @@ function StartAuctionModal({ account, closeModal, collection, tokenId, tokenOwne
         />
       </ModalHeader>
       <ModalContent>
+        <LabelText>
+          Minimum step*
+        </LabelText>
         <InputWrapper
-          label='Minimum step*'
           onChange={onMinStepInputChange}
           type='number'
           value={minStep}
         />
         <Row>
-          <InputWrapper
-            label='Starting Price'
-            onChange={onInputStartingPriceChange}
-            type='number'
-            value={startingPrice}
-          />
+          <Col>
+            <LabelText>
+              Starting Price
+            </LabelText>
+            <InputWrapper
+              onChange={onInputStartingPriceChange}
+              type='number'
+              value={startingPrice}
+            />
+          </Col>
           <SelectWrapper
             label='Duration*'
             onChange={onDurationSelectChange}
@@ -203,17 +206,39 @@ const WarningText = styled.div`
   background-color: #FFF4E0;
   width: 100%;
 
-  span{
+  span {
     color: #F9A400;
     font: 500 14px/22px var(--font-inter);
   }
 `;
 
+const LabelText = styled.div`
+  margin-bottom: 5px;
+  width: 100%;
+  color: #040b1d;
+  font: 600 16px/24px var(--font-inter);
+`;
+
 const InputWrapper = styled(Input)`
   margin-bottom: 32px;
 
-  &&& input{
-    border:none;
+  &&& .input {
+    margin:0;
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    
+    input {
+      font-family: var(--font-inter) !important;
+      padding: 8px 16px !important;
+      line-height: 24px;
+      border-radius: 4px;
+      border-color: #d2d3d6;
+      box-sizing: border-box;
+      height: 40px;
+    }
   }
 `;
 
@@ -221,7 +246,7 @@ const SelectWrapper = styled(Select)`
    && {
      margin-bottom: 32px;
 
-     .menu{
+     .menu {
        background-color: #fff;
      }
    }
@@ -231,7 +256,7 @@ const ButtonWrapper = styled.div`
   display: flex;
   justify-content: flex-end;
 
-  &&& button{
+  &&& button {
     font-family: var(--font-inter) !important;
     margin-right: 0;
   }
@@ -241,34 +266,21 @@ const Row = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+`;
 
-  .unique-input{
-    margin-right: 24px;
-  }
+const Col = styled.div`
+  width: 100%; 
+  margin-right: 24px;
 `;
 
 const SellModalStyled = styled(Modal)`
 &&& {
-
   padding: 1.5rem !important;
   background-color: #fff;
   width: 640px;
 
-  .unique-input-text {
-    width: 100%;
-  }
-
   .unique-select .select-wrapper > svg {
     z-index: 20;
-  }
-
-  .unique-tabs-contents {
-    padding-top: 32px;
-    padding-bottom: 0;
-  }
-
-  .unique-tabs-labels {
-    margin-top: 16px;
   }
 }
   
@@ -284,6 +296,10 @@ const ModalHeader = styled(Modal.Header)`
 
       h2 {
       margin-bottom:0
+      }
+
+      img {
+        cursor: pointer;
       }
     }
 `;

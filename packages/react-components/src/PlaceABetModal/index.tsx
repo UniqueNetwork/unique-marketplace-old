@@ -1,11 +1,10 @@
 // Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import './styles.scss';
-
 import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
 
 import React, { useState } from 'react';
+import styled from 'styled-components';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form/Form';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button';
 import Modal from 'semantic-ui-react/dist/commonjs/modules/Modal/Modal';
@@ -44,12 +43,11 @@ function PlaceABetModal({ account, closeModal, collection, tokenId, tokenOwner, 
   // const kusamaBalancesAll = useCall<DeriveBalancesAll>(kusamaApi?.derive.balances?.all, [account]);
 
   const minBid = 123 // todo get from backend;
-
   const lastBid = 456 // todo get from backend;
-
   const minStep = 1 // todo get from backend;
+  const startBid = lastBid ? lastBid + minStep : minBid;
 
-  const [bid, setBid] = useState<string>(String(lastBid ? lastBid + minStep : minBid));
+  const [bid, setBid] = useState<string>(String(startBid));
 
   const kusamaTransferFee = 0.123; // todo getKusamaTransferFee(recipient, value)
 
@@ -109,43 +107,143 @@ function PlaceABetModal({ account, closeModal, collection, tokenId, tokenOwner, 
   };
 
   return (
-    <Modal
-      className='unique-modal'
+    <ModalStyled
       onClose={closeModal}
       open
       size='tiny'
     >
-      <Modal.Header>
+      <ModalHeader>
         <h2>Place a bid</h2>
         <img
           alt='Close modal'
           onClick={closeModal}
           src={closeIcon as string}
         />
-      </Modal.Header>
-      <Modal.Content>
-        <Form className='transfer-form'>
-          <Form.Field>
-            <Input
-              className='is-small'
-              onChange={setBid}
-              placeholder='Bid'
-              value={bid}
-            />
-            <div className='input-description'>{`Минимальная ставка ${minBid} KSM (последняя ${lastBid} KSM + шаг ${minStep} KSM)`} </div>
-            <div className='warning-block'>A fee of ~ {kusamaTransferFee} KSM can be applied to the transaction</div>
-          </Form.Field>
-        </Form>
-      </Modal.Content>
-      <Modal.Actions>
-        <Button
-          content='Confirm'
-          disabled={!bid}
-          onClick={placeABid}
+      </ModalHeader>
+      <ModalContent>
+        <InputWrapper
+          className='is-small'
+          onChange={setBid}
+          placeholder='Bid'
+          type='number'
+          value={bid}
         />
-      </Modal.Actions>
-    </Modal>
+        <InputDescription className='input-description'>{`Минимальная ставка ${minBid} KSM (последняя ${lastBid} KSM + шаг ${minStep} KSM)`} </InputDescription>
+        <WarningText>
+          <span>
+            A fee of ~ {kusamaTransferFee} KSM can be applied to the transaction
+          </span>
+        </WarningText>
+      </ModalContent>
+      <ModalActions>
+        <ButtonWrapper>
+          <Button
+            content='Confirm'
+            disabled={parseInt(bid) < startBid}
+            onClick={placeABid}
+          />
+        </ButtonWrapper>
+      </ModalActions>
+    </ModalStyled>
   );
 }
+
+const InputDescription = styled.div`
+  color: #81858e;
+  font-family: var(--font-inter);
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 22px;
+  margin: 8px 0 32px;
+`;
+
+const InputWrapper = styled(Input)`
+  &&& .input {
+    margin:0;
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    
+    input {
+      font-family: var(--font-inter) !important;
+      padding: 8px 16px !important;
+      line-height: 24px;
+      border-radius: 4px;
+      border-color: #d2d3d6;
+      box-sizing: border-box;
+      height: 40px;
+    }
+  }
+`;
+
+const WarningText = styled.div`
+  box-sizing: border-box;
+  display: flex;
+  padding: 8px 16px;
+  margin-bottom: 24px;
+  border-radius: 4px;
+  background-color: #FFF4E0;
+  width: 100%;
+
+  span {
+    color: #F9A400;
+    font: 500 14px/22px var(--font-inter);
+  }
+`;
+
+const ModalStyled = styled(Modal)`
+  &&& {
+  padding: 1.5rem !important;
+  background-color: #fff;
+  width: 640px;
+
+  .unique-select .select-wrapper > svg {
+    z-index: 20;
+  }
+}
+  
+`;
+
+const ModalHeader = styled(Modal.Header)`
+  &&&& { 
+    padding: 0;
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+      h2 {
+      margin-bottom:0
+      }
+
+      img {
+        cursor: pointer;
+      }
+    }
+`;
+
+const ModalContent = styled(Modal.Content)`
+  &&&& { 
+    padding: 0;
+    }
+`;
+
+const ModalActions = styled(Modal.Actions)`
+  &&&& { 
+    padding: 0 !important;
+    }
+`;
+
+const ButtonWrapper = styled.div`
+  display: flex;
+  justify-content: flex-end;
+
+  &&& button {
+    font-family: var(--font-inter) !important;
+    margin-right: 0;
+  }
+`;
 
 export default React.memo(PlaceABetModal);
