@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
+import envConfig from '@polkadot/apps-config/envConfig';
 
 import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
@@ -33,6 +34,11 @@ function StartAuctionModal({ account, closeModal, collection, tokenId, tokenOwne
   const [minStep, setMinStep] = useState<number>();
   const [startingPrice, setStartingPrice] = useState<number>();
   const [duration, setDuration] = useState<string>();
+
+  const { uniqueApi } = envConfig;
+  const apiUrl = process.env.NODE_ENV === 'development' ? '' : uniqueApi;
+
+  const kusamaTransferFee = 0.123; // todo getKusamaTransferFee(recipient, value)
 
   const onMinStepInputChange = useCallback(
     (value: number) => {
@@ -112,7 +118,28 @@ function StartAuctionModal({ account, closeModal, collection, tokenId, tokenOwne
       startPrice: startingPrice,
       priceStep: minStep,
     }, null, ' '));
-    // todo send this body to backend
+    // send data to backend
+    const url = `${apiUrl}/auction/create_auction`;
+    const data = {
+      tx,
+      days: parseInt(duration as string),
+      startPrice: startingPrice,
+      priceStep: minStep,
+    };
+
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      const json = await response.json();
+      alert(`Token put up for auction ${JSON.stringify(json)}`);
+    } catch (error) {
+      console.error('Ошибка:', error);
+    }
   };
 
   return (
@@ -152,7 +179,7 @@ function StartAuctionModal({ account, closeModal, collection, tokenId, tokenOwne
         </Row>
         <WarningText>
           <span>
-            A fee of ~ 0.000000000000052 OPL can be applied to the transaction
+            A fee of ~ {kusamaTransferFee} KSM can be applied to the transaction
           </span>
         </WarningText>
         <ButtonWrapper>
