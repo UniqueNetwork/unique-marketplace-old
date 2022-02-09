@@ -42,7 +42,7 @@ export type TokenFullAskType = {
 }
 export type TokenAskType = { flagActive: '0' | '1', ownerAddr: string, price: BN };
 
-const { contractAddress, contractOwner, value } = envConfig;
+const { contractAddress, contractOwner } = envConfig;
 
 export interface AskOutputInterface {
   output: [string, string, string, BN, string]
@@ -369,12 +369,11 @@ export function useNftContract (account: string | undefined, ethAccount: string 
   const withdrawAllKSM = useCallback(async (failCallBack: () => void, successCallBack: () => void) => {
     try {
       if (account && ethAccount && matcherContractInstance && web3Instance) {
-        // currency_code 0x0000000000000000000000000000000000000001
         const extrinsic = api.tx.evm.call(
           ethAccount,
           contractAddress,
           (matcherContractInstance.methods as MarketplaceAbiMethods).withdrawAllKSM(ethAccount).encodeABI(),
-          value,
+          0,
           GAS_ARGS.gas,
           await web3Instance.eth.getGasPrice(),
           null
