@@ -33,11 +33,11 @@ interface Props {
   updateTokens: (collectionId: string) => void;
 }
 
-function PlaceABetModal ({ account, closeModal, collection, tokenId, tokenOwner, updateTokens }: Props): React.ReactElement<Props> {
+function PlaceABetModal({ account, closeModal, collection, tokenId, tokenOwner, updateTokens }: Props): React.ReactElement<Props> {
   const { api } = useApi();
   const { kusamaApi } = useKusamaApi(account || '');
 
-  console.log('kusamaApi',kusamaApi);
+  console.log('kusamaApi', kusamaApi);
   // const balancesAll = useCall<DeriveBalancesAll>(api.derive.balances?.all, [account]);
   // const kusamaBalancesAll = useCall<DeriveBalancesAll>(kusamaApi?.derive.balances?.all, [account]);
   const [bid, setBid] = useState<string>(String(1));
@@ -100,20 +100,11 @@ function PlaceABetModal ({ account, closeModal, collection, tokenId, tokenOwner,
               placeholder='Bid'
               value={bid}
             />
-             <div className='input-description'>{'Минимальная ставка 4679.15 QTZ (последняя 4678.15 KSM + шаг 1 KSM)'} </div>
-             <div className='warning-block'>A fee of ~ 0.000000000000052 OPL can be applied to the transaction</div>
+            <div className='input-description'>{'Минимальная ставка 4679.15 QTZ (последняя 4678.15 KSM + шаг 1 KSM)'} </div>
+            <div className='warning-block'>A fee of ~ 0.000000000000052 OPL can be applied to the transaction</div>
           </Form.Field>
         </Form>
       </Modal.Content>
-      <Modal.Description className='modal-description'>
-        
-        {/* <div>
-          <p> Be careful, the transaction cannot be reverted.</p>
-          <p> Make sure to use the Substrate address created with polkadot.js or this marketplace.</p>
-          <p> Do not use address of third party wallets, exchanges or hardware signers, like ledger nano.</p>
-        </div> */}
-      </Modal.Description>
-
       <Modal.Actions>
         <Button
           content='Confirm'

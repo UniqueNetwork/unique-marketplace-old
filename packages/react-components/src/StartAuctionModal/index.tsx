@@ -1,24 +1,18 @@
 // Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-//import './styles.scss';
-
 import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
 
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
-import Form from 'semantic-ui-react/dist/commonjs/collections/Form/Form';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button';
 import Modal from 'semantic-ui-react/dist/commonjs/modules/Modal/Modal';
 
-import { Input as InputSUI, Label, StatusContext } from '@polkadot/react-components';
 import { useApi } from '@polkadot/react-hooks';
-import { keyring } from '@polkadot/ui-keyring';
 
 import closeIcon from './closeIconBlack.svg';
 import { CrossAccountId, normalizeAccountId, subToEth } from '@polkadot/react-hooks/utils';
 import { web3Accounts, web3FromSource } from '@polkadot/extension-dapp';
-import Tabs from '../UIKitComponents/TabsUIKit/Tabs';
 import Select from '../UIKitComponents/SelectUIKit/Select';
 import Input from '../UIKitComponents/InputUIKit/Input';
 
@@ -32,31 +26,18 @@ interface Props {
   updateTokens: (collectionId: string) => void;
 }
 
-function StartAuctionModal ({ account, closeModal, collection, tokenId, tokenOwner, updateTokens }: Props): React.ReactElement<Props> {
+function StartAuctionModal({ account, closeModal, collection, tokenId, tokenOwner, updateTokens }: Props): React.ReactElement<Props> {
   const { api } = useApi();
   const [tokenPart] = useState<number>(1);
-  const [activeTab, setActiveTab] = useState<number>(0);
-  const [priceInputValue, setpriceInputValue] = useState<number>(15);
 
   const [minStep, setMinStep] = useState<number>();
   const [startingPrice, setStartingPrice] = useState<number>();
   const [duration, setDuration] = useState<string>();
 
-  const onPriceInputChange = useCallback(
-    (value: number) => {
-      setpriceInputValue(value);
-    },
-    [setpriceInputValue]
-  );
-
-  const onButtonClick = useCallback(() => {
-    console.log('click on confirm');
-  }, []);
-
   const onMinStepInputChange = useCallback(
     (value: number) => {
       console.log('Number(value)', Number(value));
-      if(typeof Number(value) === 'number'){
+      if (typeof Number(value) === 'number') {
         setMinStep(value);
       }
     },
@@ -95,12 +76,7 @@ function StartAuctionModal ({ account, closeModal, collection, tokenId, tokenOwn
       title: '21 days'
     }
   ];
-  const onTabClick = useCallback(
-    (tabIndex: number) => {
-      setActiveTab(tabIndex);
-    },
-    [setActiveTab]
-  );
+
   const startAuction = async () => {
 
     if (!account) {
@@ -139,69 +115,6 @@ function StartAuctionModal ({ account, closeModal, collection, tokenId, tokenOwn
     // todo send this body to backend
   };
 
-  const sellOnFixPrice = startAuction;
-
-  const FixedPriceTab = (
-    <>
-      <InputWrapper
-        label='Price*'
-        onChange={onPriceInputChange}
-        type='number'
-        value={priceInputValue}
-      />
-      <WarningText>
-        <span>
-        A fee of ~ 0.000000000000052 OPL can be applied to the transaction
-        </span>
-      </WarningText>
-      <ButtonWrapper>
-        <Button
-          content='Confirm'
-          disabled={!priceInputValue}
-          onClick={sellOnFixPrice}
-          title='Confirm'
-        />
-      </ButtonWrapper>
-    </>
-  );
-
-  const AuctionTab = (
-    <>
-      <InputWrapper
-        label='Minimum step*'
-        onChange={onMinStepInputChange}
-        type='number'
-        value={minStep}
-      />
-      <Row>
-        <InputWrapper
-          label='Starting Price'
-          onChange={onInputStartingPriceChange}
-          type='number'
-          value={startingPrice}
-        />
-        <SelectWrapper
-          label='Duration*'
-          onChange={onDurationSelectChange}
-          options={durationOptions}
-          value={duration}
-        />
-      </Row>
-      <WarningText>
-        <span>
-        A fee of ~ 0.000000000000052 OPL can be applied to the transaction
-        </span>
-      </WarningText>
-      <ButtonWrapper>
-        <Button
-          content='Confirm'
-          disabled={!minStep || !duration}
-          onClick={startAuction}
-        />
-      </ButtonWrapper>
-    </>
-  );
-
   return (
     <SellModalStyled
       onClose={closeModal}
@@ -209,7 +122,7 @@ function StartAuctionModal ({ account, closeModal, collection, tokenId, tokenOwn
       size='tiny'
     >
       <ModalHeader>
-        <h2>Selling method</h2>
+        <h2>Sell on auction</h2>
         <img
           alt='Close modal'
           onClick={closeModal}
@@ -217,23 +130,39 @@ function StartAuctionModal ({ account, closeModal, collection, tokenId, tokenOwn
         />
       </ModalHeader>
       <ModalContent>
-          <Tabs
-        activeIndex={activeTab}
-        labels={['Fixed price', 'Auction']}
-        onClick={onTabClick}
-      />
-      <Tabs activeIndex={activeTab}>
-        {FixedPriceTab}
-        {AuctionTab}
-      </Tabs>
+        <InputWrapper
+          label='Minimum step*'
+          onChange={onMinStepInputChange}
+          type='number'
+          value={minStep}
+        />
+        <Row>
+          <InputWrapper
+            label='Starting Price'
+            onChange={onInputStartingPriceChange}
+            type='number'
+            value={startingPrice}
+          />
+          <SelectWrapper
+            label='Duration*'
+            onChange={onDurationSelectChange}
+            options={durationOptions}
+            value={duration}
+          />
+        </Row>
+        <WarningText>
+          <span>
+            A fee of ~ 0.000000000000052 OPL can be applied to the transaction
+          </span>
+        </WarningText>
+        <ButtonWrapper>
+          <Button
+            content='Confirm'
+            disabled={!minStep || !duration}
+            onClick={startAuction}
+          />
+        </ButtonWrapper>
       </ModalContent>
-      {/* <ModalDescription>
-        <div>
-          <p> Be careful, the transaction cannot be reverted.</p>
-          <p> Make sure to use the Substrate address created with polkadot.js or this marketplace.</p>
-          <p> Do not use address of third party wallets, exchanges or hardware signers, like ledger nano.</p>
-        </div>
-      </ModalDescription> */}
     </SellModalStyled>
   );
 }
@@ -264,12 +193,6 @@ const InputWrapper = styled(Input)`
 const SelectWrapper = styled(Select)`
    && {
      margin-bottom: 32px;
-
-     .select-wrapper{
-
-       .select-value{
-       }
-     }
 
      .menu{
        background-color: #fff;
@@ -327,6 +250,7 @@ const SellModalStyled = styled(Modal)`
 const ModalHeader = styled(Modal.Header)`
   &&&& { 
     padding: 0;
+    margin-bottom: 24px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -343,14 +267,8 @@ const ModalContent = styled(Modal.Content)`
     }
 `;
 
-const ModalDescription = styled(Modal.Description)`
-  &&&& { 
-    padding: 0;
-    }
-`;
-
 export default React.memo(StartAuctionModal);
 function web3Enable(arg0: string) {
-    throw new Error('Function not implemented.');
+  throw new Error('Function not implemented.');
 }
 
