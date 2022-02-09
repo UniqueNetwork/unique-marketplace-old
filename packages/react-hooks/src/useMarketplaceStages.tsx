@@ -1,4 +1,4 @@
-// Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
+// Copyright 2017-2022 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
@@ -15,7 +15,7 @@ import { useKusamaApi, useNftContract, useToken } from '@polkadot/react-hooks';
 import marketplaceStateMachine from './stateMachine';
 import { CrossAccountId, normalizeAccountId } from './utils';
 
-const { commission, escrowAddress, kusamaDecimals } = envConfig;
+const { commission, escrowAddress } = envConfig;
 
 type UserActionType = 'BUY' | 'CANCEL' | 'SELL' | 'REVERT_UNUSED_MONEY' | 'UPDATE_TOKEN_STATE' | 'ASK_NOT_FILLED';
 
@@ -51,7 +51,7 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
   const [tokenDepositor, setTokenDepositor] = useState<string>();
   const [tokenInfo, setTokenInfo] = useState<TokenDetailsInterface>();
   const { getTokenInfo } = useToken();
-  const { addAsk, approveTokenToContract, buyToken, cancelAsk, checkWhiteList, deposited, depositor, evmCollectionInstance, getApproved, getTokenAsk, getUserDeposit, initCollectionAbi, isContractReady, tokenAsk, transferToken, withdrawKSM } = useNftContract(account, ethAccount);
+  const { addAsk, approveTokenToContract, buyToken, cancelAsk, checkWhiteList, deposited, depositor, evmCollectionInstance, getApproved, getTokenAsk, getUserDeposit, initCollectionAbi, isContractReady, tokenAsk, transferToken, withdrawAllKSM } = useNftContract(account, ethAccount);
   const [error, setError] = useState<string | null>(null);
   const [readyToAskPrice, setReadyToAskPrice] = useState<boolean>(false);
   const [tokenPriceForSale, setTokenPriceForSale] = useState<BN>();
@@ -249,10 +249,8 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
   }, [buyToken, collectionInfo, tokenId, send]);
 
   const revertMoney = useCallback(() => {
-    const amount = parseFloat(withdrawAmount) * Math.pow(10, kusamaDecimals);
-
-    withdrawKSM(amount.toString(), () => send('WITHDRAW_FAIL'), () => send('WITHDRAW_SUCCESS'));
-  }, [send, withdrawKSM, withdrawAmount]);
+    withdrawAllKSM(() => send('WITHDRAW_FAIL'), () => send('WITHDRAW_SUCCESS'));
+  }, [send, withdrawAllKSM]);
 
   const checkAsk = useCallback(async () => {
     if (collectionInfo) {
