@@ -1,0 +1,107 @@
+@import '../styles.scss';
+
+.unique-input {
+    font-family: $font-family;
+    font-size: $font-size;
+    font-weight: $font-weight;
+    position: relative;
+    width: 100%;
+
+    label {
+        color: $color-secondary-500;
+        display: block;
+        font-size: 16px;
+        font-weight: 600;
+        height: 24px;
+        line-height: 24px;
+        margin-bottom: 5px;
+        overflow: hidden;
+        position: relative;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        width: 100%;
+    }
+
+    .additional-text {
+        color: $color-grey-500;
+        font-size: 14px;
+        height: 22px;
+        line-height: 22px;
+        margin-bottom: 12px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        width: 100%;
+    }
+
+    .status-text {
+        color: $color-grey-500;
+        font-size: 14px;
+        line-height: 22px;
+        margin-top: 8px;
+        min-height: 22px;
+        width: 100%;
+    }
+
+    &.error,
+    &.error:focus-within {
+        .input-wrapper {
+            border: 1px solid $color-coral-500;
+        }
+        .status-text {
+            color: $color-coral-500;
+        }
+    }
+
+    .input-wrapper {
+        position: relative;
+        border: 1px solid $color-grey-300;
+        border-radius: $border-radius;
+        display: flex;
+        align-items: center;
+        height: 40px;
+
+        &:focus-within {
+            border: 1px solid $color-grey-400;
+        }
+
+        &.disabled {
+            background-color: $color-grey-100;
+
+            input {
+                color: $color-blue-grey-400;
+            }
+        }
+
+        input {
+            color: $color-secondary-500;
+            outline: none;
+            padding: 11px 12px;
+            width: calc(100% - 24px);
+            border: none;
+            background: none;
+            &::placeholder {
+                color: $color-grey-400;
+            }
+        }
+
+        &.with-icon {
+            svg {
+                position: relative;
+                margin: 0 10px;
+            }
+            &.to-right {
+                flex-direction: row;
+                input {
+                    padding: 11px 0px 11px 12px;
+                }
+            }
+            &.to-left {
+                flex-direction: row-reverse;
+                input {
+                    padding: 11px 12px 11px 0px;
+                }
+            }
+        }
+    }
+}

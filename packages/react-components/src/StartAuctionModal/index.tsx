@@ -1,22 +1,27 @@
 // Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import './styles.scss';
+//import './styles.scss';
 
 import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
 
 import React, { useCallback, useContext, useEffect, useState } from 'react';
+import styled from 'styled-components';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form/Form';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button';
 import Modal from 'semantic-ui-react/dist/commonjs/modules/Modal/Modal';
 
-import { Input, Label, StatusContext } from '@polkadot/react-components';
+import { Input as InputSUI, Label, StatusContext } from '@polkadot/react-components';
 import { useApi } from '@polkadot/react-hooks';
 import { keyring } from '@polkadot/ui-keyring';
 
 import closeIcon from './closeIconBlack.svg';
 import { CrossAccountId, normalizeAccountId, subToEth } from '@polkadot/react-hooks/utils';
 import { web3Accounts, web3FromSource } from '@polkadot/extension-dapp';
+import Tabs from '../UIKitComponents/TabsUIKit/Tabs';
+import Select from '../UIKitComponents/SelectUIKit/Select';
+import Input from '../UIKitComponents/InputUIKit/Input';
+
 
 interface Props {
   account?: string;
@@ -29,10 +34,73 @@ interface Props {
 
 function StartAuctionModal ({ account, closeModal, collection, tokenId, tokenOwner, updateTokens }: Props): React.ReactElement<Props> {
   const { api } = useApi();
-  const [daysCount, setDaysCount] = useState<number>(7);
-  const [minPrice, setMinPrice] = useState<number>(100);
-  const [minStep, setMinStep] = useState<number>(10);
   const [tokenPart] = useState<number>(1);
+  const [activeTab, setActiveTab] = useState<number>(0);
+  const [priceInputValue, setpriceInputValue] = useState<number>(15);
+
+  const [minStep, setMinStep] = useState<number>();
+  const [startingPrice, setStartingPrice] = useState<number>();
+  const [duration, setDuration] = useState<string>();
+
+  const onPriceInputChange = useCallback(
+    (value: number) => {
+      setpriceInputValue(value);
+    },
+    [setpriceInputValue]
+  );
+
+  const onButtonClick = useCallback(() => {
+    console.log('click on confirm');
+  }, []);
+
+  const onMinStepInputChange = useCallback(
+    (value: number) => {
+      console.log('Number(value)', Number(value));
+      if(typeof Number(value) === 'number'){
+        setMinStep(value);
+      }
+    },
+    [setMinStep]
+  );
+
+  const onInputStartingPriceChange = useCallback(
+    (value: number) => {
+      setStartingPrice(value);
+    },
+    [setStartingPrice]
+  );
+
+  const onDurationSelectChange = useCallback(
+    (value: string) => {
+      setDuration(value);
+    },
+    [setDuration]
+  );
+
+  const durationOptions = [
+    {
+      id: '3 days',
+      title: '3 days'
+    },
+    {
+      id: '7 days',
+      title: '7 days'
+    },
+    {
+      id: '14 days',
+      title: '14 days'
+    },
+    {
+      id: '21 days',
+      title: '21 days'
+    }
+  ];
+  const onTabClick = useCallback(
+    (tabIndex: number) => {
+      setActiveTab(tabIndex);
+    },
+    [setActiveTab]
+  );
   const startAuction = async () => {
 
     if (!account) {
@@ -64,80 +132,222 @@ function StartAuctionModal ({ account, closeModal, collection, tokenId, tokenOwn
     const tx = extrinsic.toJSON();
     console.log('txHex', JSON.stringify({
       tx,
-      days: daysCount,
-      startPrice: minPrice,
+      days: parseInt(duration as string),
+      startPrice: startingPrice,
       priceStep: minStep,
     }, null, ' '));
     // todo send this body to backend
   };
 
+  const sellOnFixPrice = startAuction;
+
+  const FixedPriceTab = (
+    <>
+      <InputWrapper
+        label='Price*'
+        onChange={onPriceInputChange}
+        type='number'
+        value={priceInputValue}
+      />
+      <WarningText>
+        <span>
+        A fee of ~ 0.000000000000052 OPL can be applied to the transaction
+        </span>
+      </WarningText>
+      <ButtonWrapper>
+        <Button
+          content='Confirm'
+          disabled={!priceInputValue}
+          onClick={sellOnFixPrice}
+          title='Confirm'
+        />
+      </ButtonWrapper>
+    </>
+  );
+
+  const AuctionTab = (
+    <>
+      <InputWrapper
+        label='Minimum step*'
+        onChange={onMinStepInputChange}
+        type='number'
+        value={minStep}
+      />
+      <Row>
+        <InputWrapper
+          label='Starting Price'
+          onChange={onInputStartingPriceChange}
+          type='number'
+          value={startingPrice}
+        />
+        <SelectWrapper
+          label='Duration*'
+          onChange={onDurationSelectChange}
+          options={durationOptions}
+          value={duration}
+        />
+      </Row>
+      <WarningText>
+        <span>
+        A fee of ~ 0.000000000000052 OPL can be applied to the transaction
+        </span>
+      </WarningText>
+      <ButtonWrapper>
+        <Button
+          content='Confirm'
+          disabled={!minStep || !duration}
+          onClick={startAuction}
+        />
+      </ButtonWrapper>
+    </>
+  );
+
   return (
-    <Modal
-      className='unique-modal'
+    <SellModalStyled
       onClose={closeModal}
       open
       size='tiny'
     >
-      <Modal.Header>
-        <h2>Start Auction</h2>
+      <ModalHeader>
+        <h2>Selling method</h2>
         <img
           alt='Close modal'
           onClick={closeModal}
           src={closeIcon as string}
         />
-      </Modal.Header>
-      <Modal.Content>
-        <Form className='transfer-form'>
-          <Form.Field>
-            <Label label={'Days'} />
-            <Input
-              className='isSmall'
-              onChange={setDaysCount}
-              placeholder='Days'
-              value={daysCount}
-            />
-          </Form.Field>
-        </Form>
-        <Form className='transfer-form'>
-          <Form.Field>
-            <Label label={'Min Price'} />
-            <Input
-              className='isSmall'
-              onChange={setMinPrice}
-              placeholder='Days'
-              value={minPrice}
-            />
-          </Form.Field>
-        </Form>
-        <Form className='transfer-form'>
-          <Form.Field>
-            <Label label={'Min Step'} />
-            <Input
-              className='isSmall'
-              onChange={setMinStep}
-              placeholder='Days'
-              value={minStep}
-            />
-          </Form.Field>
-        </Form>
-      </Modal.Content>
-      <Modal.Description className='modalDescription'>
+      </ModalHeader>
+      <ModalContent>
+          <Tabs
+        activeIndex={activeTab}
+        labels={['Fixed price', 'Auction']}
+        onClick={onTabClick}
+      />
+      <Tabs activeIndex={activeTab}>
+        {FixedPriceTab}
+        {AuctionTab}
+      </Tabs>
+      </ModalContent>
+      {/* <ModalDescription>
         <div>
           <p> Be careful, the transaction cannot be reverted.</p>
           <p> Make sure to use the Substrate address created with polkadot.js or this marketplace.</p>
           <p> Do not use address of third party wallets, exchanges or hardware signers, like ledger nano.</p>
         </div>
-      </Modal.Description>
-
-      <Modal.Actions>
-        <Button
-          content='Start Auction'
-          onClick={startAuction}
-        />
-      </Modal.Actions>
-    </Modal>
+      </ModalDescription> */}
+    </SellModalStyled>
   );
 }
+
+const WarningText = styled.div`
+  box-sizing: border-box;
+  display: flex;
+  padding: 8px 16px;
+  margin-bottom: 24px;
+  border-radius: 4px;
+  background-color: #FFF4E0;
+  width: 100%;
+
+  span{
+    color: #F9A400;
+    font: 500 14px/22px var(--font-inter);
+  }
+`;
+
+const InputWrapper = styled(Input)`
+  margin-bottom: 32px;
+
+  &&& input{
+    border:none;
+  }
+`;
+
+const SelectWrapper = styled(Select)`
+   && {
+     margin-bottom: 32px;
+
+     .select-wrapper{
+
+       .select-value{
+       }
+     }
+
+     .menu{
+       background-color: #fff;
+     }
+   }
+`;
+
+const ButtonWrapper = styled.div`
+  display: flex;
+  justify-content: flex-end;
+
+  &&& button{
+    font-family: var(--font-inter) !important;
+    margin-right: 0;
+  }
+`;
+
+const Row = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .unique-input{
+    margin-right: 24px;
+  }
+`;
+
+const SellModalStyled = styled(Modal)`
+&&& {
+
+  padding: 1.5rem !important;
+  background-color: #fff;
+  width: 640px;
+
+  .unique-input-text {
+    width: 100%;
+  }
+
+  .unique-select .select-wrapper > svg {
+    z-index: 20;
+  }
+
+  .unique-tabs-contents {
+    padding-top: 32px;
+    padding-bottom: 0;
+  }
+
+  .unique-tabs-labels {
+    margin-top: 16px;
+  }
+}
+  
+`;
+
+const ModalHeader = styled(Modal.Header)`
+  &&&& { 
+    padding: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+      h2 {
+      margin-bottom:0
+      }
+    }
+`;
+
+const ModalContent = styled(Modal.Content)`
+  &&&& { 
+    padding: 0;
+    }
+`;
+
+const ModalDescription = styled(Modal.Description)`
+  &&&& { 
+    padding: 0;
+    }
+`;
 
 export default React.memo(StartAuctionModal);
 function web3Enable(arg0: string) {

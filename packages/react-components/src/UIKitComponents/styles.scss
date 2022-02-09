@@ -1,0 +1,50 @@
+$font-family: 'Inter', sans-serif;
+$font-family-heading: 'Raleway', sans-serif;
+$font-size: 14px;
+$font-weight: 400;
+$border-radius: 4px;
+
+// base colors
+$color-primary-500: #009cf0;
+$color-secondary-500: #040b1d;
+$color-blue-grey-500: #7f90a1;
+$color-grey-500: #81858e;
+$color-coral-500: #ff6335;
+$color-additional-positive-500: #2dbf15;
+$color-additional-warning-500: #f9a400;
+$color-additional-light: #ffffff;
+$color-additional-dark: #040b1d;
+
+// color palette
+$color-primary-100: lighten($color-primary-500, 51%);
+$color-primary-200: lighten($color-primary-500, 42%);
+$color-primary-300: lighten($color-primary-500, 23%);
+$color-primary-400: lighten($color-primary-500, 7%);
+$color-primary-600: darken($color-primary-500, 7%);
+$color-primary-700: darken($color-primary-500, 17%);
+$color-secondary-100: lighten($color-secondary-500, 20%);
+$color-secondary-200: lighten($color-secondary-500, 16%);
+$color-secondary-300: lighten($color-secondary-500, 12%);
+$color-secondary-400: lighten($color-secondary-500, 8%);
+$color-secondary-600: darken($color-secondary-500, 2%);
+$color-secondary-700: darken($color-secondary-500, 4%);
+$color-blue-grey-100: lighten($color-blue-grey-500, 40%);
+$color-blue-grey-200: lighten($color-blue-grey-500, 25%);
+$color-blue-grey-300: lighten($color-blue-grey-500, 15%);
+$color-blue-grey-400: lighten($color-blue-grey-500, 10%);
+$color-blue-grey-600: darken($color-blue-grey-500, 10%);
+$color-blue-grey-700: darken($color-blue-grey-500, 15%);
+$color-grey-100: lighten($color-grey-500, 40%);
+$color-grey-200: lighten($color-grey-500, 35%);
+$color-grey-300: lighten($color-grey-500, 30%);
+$color-grey-400: lighten($color-grey-500, 25%);
+$color-grey-600: darken($color-grey-500, 10%);
+$color-grey-700: darken($color-grey-500, 15%);
+$color-coral-100: lighten($color-coral-500, 36%);
+$color-coral-200: lighten($color-coral-500, 28%);
+$color-coral-300: lighten($color-coral-500, 20%);
+$color-coral-400: lighten($color-coral-500, 15%);
+$color-coral-600: darken($color-coral-500, 8%);
+$color-coral-700: darken($color-coral-500, 12%);
+$color-additional-positive-100: lighten($color-additional-positive-500, 53%);
+$color-additional-warning-100: lighten($color-additional-warning-500, 45%);

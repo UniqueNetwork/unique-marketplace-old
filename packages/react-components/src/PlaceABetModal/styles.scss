@@ -1,6 +1,8 @@
 .ui.modal.unique-modal {
+  width: 640px;
+  padding: 1.5rem !important;
   .header {
-    padding: 1.5rem 1.5rem 16px 1.5rem !important;
+    padding: 0 !important;
 
     img {
       position: absolute;
@@ -10,10 +12,40 @@
   }
 
   .content {
-    padding: 0 1.5rem 1.5rem 1.5rem !important;
+    padding: 0 !important;
+
+    .input {
+      margin-top: 0;
+      margin-bottom: 8px;
+
+      input {
+        font-family: var(--font-inter) !important;
+        padding: 8px 16px !important;
+        line-height: 24px;
+        border-radius: 4px;
+        box-sizing: border-box;
+        height: 40px;
+      }
+    }
+
+    .input-description {
+      color: #81858e;
+      font-family: var(--font-inter);
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 22px;
+    }
 
     .warning-block {
-      font-size: 18px;
+      color: #f9a400;
+      font-family: var(--font-inter);
+      font-weight: 500;
+      font-size: 14px;
+      line-height: 22px;
+      padding: 8px 16px;
+      background-color: #fff4e0;
+      margin-top: 32px;
+      margin-bottom: 24px;
     }
   }
 
@@ -27,8 +59,14 @@
   }
 
   .actions {
-    padding: 1rem !important;
+    padding: 0 !important;
     float: right;
+    margin: 0;
+
+    .button {
+      font-family: var(--font-inter) !important;
+      margin: 0;
+    }
   }
 }
 
