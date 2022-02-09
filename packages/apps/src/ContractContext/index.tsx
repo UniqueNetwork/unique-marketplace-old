@@ -68,8 +68,13 @@ function Contracts ({ account, children }: Props): React.ReactElement<Props> | n
   const [web3Instance, setWeb3Instance] = useState<Web3>();
   const [ethAccount, setEthAccount] = useState<string>();
   const abiRef = useRef<Contract>();
+  const accountRef = useRef<string>();
+
+  console.log('ethAccount', ethAccount, 'deposited', deposited?.toString());
 
   const getUserDeposit = useCallback(async (): Promise<BN | null> => {
+    console.log('getUserDeposit');
+
     try {
       if (ethAccount && matcherContractInstance) {
         const result = await (matcherContractInstance.methods as MarketplaceAbiMethods).balanceKSM(ethAccount).call();
@@ -105,12 +110,6 @@ function Contracts ({ account, children }: Props): React.ReactElement<Props> | n
     setWeb3Instance,
     web3Instance
   }), [account, ethAccount, matcherContractInstance, deposited, evmCollectionInstance, getUserDeposit, web3Instance]);
-
-  useEffect(() => {
-    if (account) {
-      setEthAccount(subToEth(account).toLowerCase());
-    }
-  }, [account]);
 
   const initAbi = useCallback(() => {
     if (account && ethAccount && !abiRef.current) {
@@ -151,6 +150,17 @@ function Contracts ({ account, children }: Props): React.ReactElement<Props> | n
   useEffect(() => {
     void initAbi();
   }, [initAbi]);
+
+  useEffect(() => {
+    if (account && accountRef.current !== account) {
+      const ethAcc = subToEth(account).toLowerCase();
+
+      setEthAccount(ethAcc);
+      void getUserDeposit();
+
+      accountRef.current = account;
+    }
+  }, [account, getUserDeposit]);
 
   return (
     <ContractContext.Provider value={value}>
