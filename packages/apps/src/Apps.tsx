@@ -188,7 +188,6 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
               )}
               { openPanel === 'balances' && (
                 <ManageBalances
-                  account={account}
                   setOpenPanel={setOpenPanel}
                 />
               )}

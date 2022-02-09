@@ -1,4 +1,4 @@
-// Copyright 2017-2021 @polkadot/react-api authors & contributors
+// Copyright 2017-2022 @polkadot/react-api authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import BN from 'bn.js';
@@ -49,6 +49,9 @@ export type MarketplaceAbiMethods = {
   },
   // (amount: string, currencyCode: string, address: string) => any;
   withdraw: (amount: string, currencyCode: string, address: string) => {
+    encodeABI: () => any;
+  };
+  withdrawAllKSM: (ethAddress: string) => {
     encodeABI: () => any;
   };
 }
