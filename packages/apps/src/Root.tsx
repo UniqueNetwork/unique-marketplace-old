@@ -5,20 +5,17 @@ import type { ThemeDef } from '@polkadot/react-components/types';
 import type { KeyringStore } from '@polkadot/ui-keyring/types';
 
 import React, { Suspense, useEffect, useState } from 'react';
+import { QueryClient, QueryClientProvider } from 'react-query';
 import { HashRouter } from 'react-router-dom';
 import { ThemeProvider } from 'styled-components';
-
 import { Api } from '@polkadot/react-api';
 import Queue from '@polkadot/react-components/Status/Queue';
 import { BlockAuthors, Events } from '@polkadot/react-query';
 import { settings } from '@polkadot/ui-settings';
-import envConfig from '@polkadot/apps-config/envConfig';
 
 import Apps from './Apps';
 import { Themes, uniqueTheme } from './themes';
 import WindowDimensions from './WindowDimensions';
-
-const { uniqueSubstrateApi } = envConfig;
 
 interface Props {
   store?: KeyringStore;
@@ -42,27 +39,30 @@ function Root ({ store }: Props): React.ReactElement<Props> {
     settings.on('change', (settings) => setTheme(createTheme(settings)));
   }, []);
 
+  const queryClient = new QueryClient();
+
   return (
-    <Suspense fallback='...'>
-      <ThemeProvider theme={theme}>
-        <Queue>
-          <Api
-            store={store}
-            url={uniqueSubstrateApi}
-          >
-            <BlockAuthors>
-              <Events>
-                <HashRouter>
-                  <WindowDimensions>
-                    <Apps />
-                  </WindowDimensions>
-                </HashRouter>
-              </Events>
-            </BlockAuthors>
-          </Api>
-        </Queue>
-      </ThemeProvider>
-    </Suspense>
+    <QueryClientProvider client={queryClient}>
+      <Suspense fallback='...'>
+        <ThemeProvider theme={theme}>
+          <Queue>
+            <Api
+              store={store}
+            >
+              <BlockAuthors>
+                <Events>
+                  <HashRouter>
+                    <WindowDimensions>
+                      <Apps />
+                    </WindowDimensions>
+                  </HashRouter>
+                </Events>
+              </BlockAuthors>
+            </Api>
+          </Queue>
+        </ThemeProvider>
+      </Suspense>
+    </QueryClientProvider>
   );
 }
 

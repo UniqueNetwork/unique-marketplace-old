@@ -23,10 +23,10 @@ module.exports = merge(
           changeOrigin: true,
           target: 'https://market-api-opal.unique.network'
         },
-        /* 'https://market-api-opal.unique.network': {
+        '/api/settings': {
           changeOrigin: true,
           target: 'https://market-api-opal.unique.network'
-        }, */
+        },
         [process.env.WHITE_LABEL_URL]: {
           changeOrigin: true,
           target: process.env.WHITE_LABEL_URL
