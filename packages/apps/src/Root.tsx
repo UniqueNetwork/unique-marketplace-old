@@ -5,7 +5,6 @@ import type { ThemeDef } from '@polkadot/react-components/types';
 import type { KeyringStore } from '@polkadot/ui-keyring/types';
 
 import React, { Suspense, useEffect, useState } from 'react';
-import { QueryClient, QueryClientProvider } from 'react-query';
 import { HashRouter } from 'react-router-dom';
 import { ThemeProvider } from 'styled-components';
 import { Api } from '@polkadot/react-api';
@@ -39,30 +38,26 @@ function Root ({ store }: Props): React.ReactElement<Props> {
     settings.on('change', (settings) => setTheme(createTheme(settings)));
   }, []);
 
-  const queryClient = new QueryClient();
-
   return (
-    <QueryClientProvider client={queryClient}>
-      <Suspense fallback='...'>
-        <ThemeProvider theme={theme}>
-          <Queue>
-            <Api
-              store={store}
-            >
-              <BlockAuthors>
-                <Events>
-                  <HashRouter>
-                    <WindowDimensions>
-                      <Apps />
-                    </WindowDimensions>
-                  </HashRouter>
-                </Events>
-              </BlockAuthors>
-            </Api>
-          </Queue>
-        </ThemeProvider>
-      </Suspense>
-    </QueryClientProvider>
+    <Suspense fallback='...'>
+      <ThemeProvider theme={theme}>
+        <Queue>
+          <Api
+            store={store}
+          >
+            <BlockAuthors>
+              <Events>
+                <HashRouter>
+                  <WindowDimensions>
+                    <Apps />
+                  </WindowDimensions>
+                </HashRouter>
+              </Events>
+            </BlockAuthors>
+          </Api>
+        </Queue>
+      </ThemeProvider>
+    </Suspense>
   );
 }
 
