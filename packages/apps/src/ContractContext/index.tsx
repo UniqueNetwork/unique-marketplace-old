@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import BN from 'bn.js';
-import React, { useCallback, useEffect, useMemo, useState, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Web3 from 'web3';
 import { Contract } from 'web3-eth-contract';
 
@@ -16,8 +16,6 @@ import { subToEth } from '@polkadot/react-hooks/utils';
 import { evmToAddress } from '@polkadot/util-crypto';
 
 import ContractContext from './ContractContext';
-
-const { contractAddress, minPrice, uniqueSubstrateApiRpc } = envConfig;
 
 export type MarketplaceAbiMethods = {
   addAsk: (price: string, currencyCode: string, address: string, tokenId: string) => {
@@ -69,6 +67,7 @@ function Contracts ({ account, children }: Props): React.ReactElement<Props> | n
   const [ethAccount, setEthAccount] = useState<string>();
   const abiRef = useRef<Contract>();
   const accountRef = useRef<string>();
+  const { contractAddress, minPrice, uniqueSubstrateApiRpc } = envConfig;
 
   console.log('ethAccount', ethAccount, 'deposited', deposited?.toString());
 
@@ -96,7 +95,7 @@ function Contracts ({ account, children }: Props): React.ReactElement<Props> | n
 
       return null;
     }
-  }, [ethAccount, matcherContractInstance, setDeposited]);
+  }, [ethAccount, matcherContractInstance, minPrice]);
 
   const value = useMemo(() => ({
     account,
@@ -112,7 +111,7 @@ function Contracts ({ account, children }: Props): React.ReactElement<Props> | n
   }), [account, ethAccount, matcherContractInstance, deposited, evmCollectionInstance, getUserDeposit, web3Instance]);
 
   const initAbi = useCallback(() => {
-    if (account && ethAccount && !abiRef.current) {
+    if (account && ethAccount && !abiRef.current && contractAddress) {
       console.log('mySubEthAddress', evmToAddress(ethAccount, 42, 'blake2'));
       /* options
       {
@@ -145,7 +144,7 @@ function Contracts ({ account, children }: Props): React.ReactElement<Props> | n
         // User has denied account access to DApp...
       }
     }
-  }, [account, ethAccount]);
+  }, [account, contractAddress, ethAccount, uniqueSubstrateApiRpc]);
 
   useEffect(() => {
     void initAbi();

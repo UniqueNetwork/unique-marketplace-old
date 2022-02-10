@@ -1,11 +1,10 @@
-// Copyright 2017-2021 @polkadot/apps-config authors & contributors
+// Copyright 2017-2022 @polkadot/apps-config authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import type { TFunction } from 'i18next';
 import type { LinkOption } from './types';
-import envConfig from '@polkadot/apps-config/envConfig';
 
-const { uniqueSubstrateApi } = envConfig;
+import envConfig from '@polkadot/apps-config/envConfig';
 
 export const CUSTOM_ENDPOINT_KEY = 'polkadot-app-custom-endpoints';
 
@@ -63,6 +62,8 @@ export function createOwn (t: TFunction): LinkOption[] {
 }
 
 export function createDev (t: TFunction): LinkOption[] {
+  const { uniqueSubstrateApi } = envConfig;
+
   return [
     {
       dnslink: 'local',

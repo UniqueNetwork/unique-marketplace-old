@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export type EnvConfigType = {
-  commission?: number;
+  commission: number;
   contractAddress?: string; // 5FgbNg55FCFT3j1KokxsHaEgp4wfnDMGazCLw3mqC359bY72
   contractOwner?: string;
   decimals?: number;
@@ -15,15 +15,15 @@ export type EnvConfigType = {
   ipfsGateway?: string;
   kusamaApiUrl?: string;
   kusamaBackupApiUrl?: string;
-  kusamaDecimals?: number; // 12
+  kusamaDecimals: number; // 12
   maxGas?: number; // 1000000000000
-  minPrice?: number;
+  minPrice: number;
   quoteId?: number; // 2
   uniqueCollectionIds?: string[]; // ['23']
   uniqueApi: string;
   uniqueBlockExplorer?: string;
   uniqueSubstrateApi?: string;
-  uniqueSubstrateApiRpc?: string;
+  uniqueSubstrateApiRpc: string;
   value?: number; // 0
   version?: string;
   whiteLabelUrl?: string;
@@ -53,7 +53,7 @@ declare global {
       UNIQUE_BLOCK_EXPLORER?: string;
       UNIQUE_COLLECTION_IDS?: string; // ['23']
       UNIQUE_SUBSTRATE_API?: string;
-      UNIQUE_SUBSTRATE_API_RPC?: string;
+      UNIQUE_SUBSTRATE_API_RPC: string;
       VALUE?: number; // 0
       VERSION?: string;
       WHITE_LABEL_URL?: string;
