@@ -1,4 +1,4 @@
-// Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
+// Copyright 2017-2022 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import './styles.scss';
@@ -10,8 +10,6 @@ import Modal from 'semantic-ui-react/dist/commonjs/modules/Modal/Modal';
 
 import envConfig from '@polkadot/apps-config/envConfig';
 import { Input } from '@polkadot/react-components';
-
-const { minPrice } = envConfig;
 
 interface Props {
   closeModal: () => void;
@@ -26,6 +24,7 @@ interface CustomSyntheticEvent extends SyntheticEvent{
 
 function SetPriceModal (props: Props): React.ReactElement<Props> {
   const { closeModal, onSavePrice, setTokenPriceForSale, tokenPriceForSale } = props;
+  const { minPrice } = envConfig;
 
   const onSetPrice = useCallback((price: string) => {
     const floatPrice = parseFloat(price);
@@ -44,7 +43,7 @@ function SetPriceModal (props: Props): React.ReactElement<Props> {
     }
 
     setTokenPriceForSale(price);
-  }, [setTokenPriceForSale]);
+  }, [minPrice, setTokenPriceForSale]);
 
   const onPriceKeyDown = (event: CustomSyntheticEvent) => {
     ((event.key === ',' || event.key === '.') && !tokenPriceForSale.length) && event.preventDefault();

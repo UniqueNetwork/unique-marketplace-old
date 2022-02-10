@@ -17,10 +17,6 @@ import envConfig from '@polkadot/apps-config/envConfig';
 import { useApi, useCollection, useFetch, useIsMountedRef } from '@polkadot/react-hooks';
 import { subToEth } from '@polkadot/react-hooks/utils';
 
-const { uniqueApi, uniqueCollectionIds } = envConfig;
-
-const apiUrl = process.env.NODE_ENV === 'development' ? '' : uniqueApi;
-
 export type MetadataType = {
   metadata?: string;
 }
@@ -79,6 +75,8 @@ export function useCollections () {
   const mountedRef = useIsMountedRef();
   const filtersRef = useRef<Filters>();
   const { getDetailedCollectionInfo } = useCollection();
+  const { uniqueApi, uniqueCollectionIds } = envConfig;
+  const apiUrl = process.env.NODE_ENV === 'development' ? '' : uniqueApi;
 
   const getTokensOfCollection = useCallback(async (collectionId: string, ownerId: string): Promise<string[]> => {
     if (!api || !collectionId || !ownerId) {
@@ -111,14 +109,14 @@ export function useCollections () {
         mountedRef.current && setOffers([]);
       }
 
-      if (filters) {
+      if (filters && uniqueCollectionIds?.length) {
         Object.keys(filters).forEach((filterKey: string) => {
           const currentFilter: string | string[] | number = filters[filterKey];
 
           if (Array.isArray(currentFilter)) {
             if (filterKey === 'collectionIds') {
               if (!currentFilter?.length) {
-                url = `${url}${envConfig.uniqueCollectionIds.map((item: string) => `&collectionId=${item}`).join('')}`;
+                url = `${url}${uniqueCollectionIds.map((item: string) => `&collectionId=${item}`).join('')}`;
               } else {
                 url = `${url}${currentFilter.map((item: string) => `&collectionId=${item}`).join('')}`;
               }
@@ -166,7 +164,7 @@ export function useCollections () {
       console.log('getOffers error', e);
       setOffersLoading(false);
     }
-  }, [fetchData, mountedRef]);
+  }, [apiUrl, fetchData, mountedRef, uniqueCollectionIds]);
 
   /**
    * Return the list of token trades
@@ -217,7 +215,7 @@ export function useCollections () {
       console.log('getTrades error', e);
       setTradesLoading(false);
     }
-  }, [fetchData, mountedRef]);
+  }, [apiUrl, fetchData, mountedRef]);
 
   const presetTokensCollections = useCallback(async (): Promise<NftCollectionInterface[]> => {
     if (!api) {
@@ -276,7 +274,7 @@ export function useCollections () {
 
       return [];
     }
-  }, [getDetailedCollectionInfo, mountedRef]);
+  }, [getDetailedCollectionInfo, mountedRef, uniqueCollectionIds]);
 
   return {
     error,

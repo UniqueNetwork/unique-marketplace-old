@@ -1,4 +1,4 @@
-// Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
+// Copyright 2017-2022 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import './styles.scss';
@@ -7,16 +7,14 @@ import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection
 
 import React, { useCallback, useEffect, useState } from 'react';
 import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
-import { Switcher } from '@polkadot/react-components';
 
 import { Filters } from '@polkadot/app-nft-market/containers/NftMarket';
 import envConfig from '@polkadot/apps-config/envConfig';
+import { Switcher } from '@polkadot/react-components';
 import { fromStringToBnString } from '@polkadot/react-hooks/utils';
 
 import { SESSION_STORAGE_KEYS } from './constants';
 import FilterContainerItem from './FilterContainerItem';
-
-const { kusamaDecimals, uniqueCollectionIds } = envConfig;
 
 interface PropTypes {
   account: string|undefined;
@@ -51,6 +49,7 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearFilters, coll
   const [isShowPrice, setIsShowPrice] = useState<boolean>(true);
   const [collectionsChecked, setCollectionsChecked] = useState<string[]>([]);
   const areAllCollectionsChecked = getFromStorage(SESSION_STORAGE_KEYS.ARE_ALL_COLLECTIONS_CHECKED) as boolean;
+  const { kusamaDecimals, uniqueCollectionIds } = envConfig;
 
   const changePrices = useCallback((minPrice: string | undefined, maxPrice: string | undefined) => {
     const filtersCopy = { ...filters };
@@ -65,13 +64,12 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearFilters, coll
       delete filtersCopy.maxPrice;
     } else {
       filtersCopy.maxPrice = fromStringToBnString(maxPrice, kusamaDecimals);
-
     }
 
     setFilters(filtersCopy);
 
     setInStorage(SESSION_STORAGE_KEYS.FILTERS, filtersCopy);
-  }, [filters, setFilters]);
+  }, [filters, kusamaDecimals, setFilters]);
 
   const clearPrices = useCallback(() => {
     const pricesDefaultValue = { maxPrice: '', minPrice: '' };
@@ -140,12 +138,12 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearFilters, coll
     setFilters(newFilters);
     setInStorage(SESSION_STORAGE_KEYS.FILTERS, newFilters);
 
-    if (newIds.length === uniqueCollectionIds.length) {
+    if (newIds.length === uniqueCollectionIds?.length) {
       setInStorage(SESSION_STORAGE_KEYS.ARE_ALL_COLLECTIONS_CHECKED, true);
     } else {
       setInStorage(SESSION_STORAGE_KEYS.ARE_ALL_COLLECTIONS_CHECKED, false);
     }
-  }, [collectionsChecked, filters, setFilters]);
+  }, [collectionsChecked, filters, setFilters, uniqueCollectionIds?.length]);
 
   const clearCheckedValues = useCallback(() => {
     const newFilters = { ...filters, collectionIds: [] };
@@ -174,10 +172,10 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearFilters, coll
   const onCheckBoxMockFunc = useCallback(() => null, []);
 
   useEffect(() => {
-    if (filters.collectionIds.length !== uniqueCollectionIds.length || areAllCollectionsChecked) {
+    if (filters.collectionIds.length !== uniqueCollectionIds?.length || areAllCollectionsChecked) {
       setCollectionsChecked(filters.collectionIds);
     }
-  }, [areAllCollectionsChecked, filters]);
+  }, [areAllCollectionsChecked, filters, uniqueCollectionIds]);
 
   useEffect(() => {
     updateSeller();

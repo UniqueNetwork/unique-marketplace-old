@@ -1,4 +1,4 @@
-// Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
+// Copyright 2017-2022 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import './styles.scss';
@@ -21,8 +21,6 @@ import BuySteps from './BuySteps';
 import SaleSteps from './SaleSteps';
 import SetPriceModal from './SetPriceModal';
 
-const { contractAddress, escrowAddress, kusamaDecimals } = envConfig;
-
 interface NftDetailsProps {
   account: string;
 }
@@ -41,6 +39,7 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
   const { attributes, collectionInfo, tokenUrl } = useSchema(account, collectionId, tokenId);
   const [tokenPriceForSale, setTokenPriceForSale] = useState<string>('');
   const { cancelStep, checkWhiteList, deposited, formatKsmBalance, getKusamaTransferFee, getRevertedFee, kusamaAvailableBalance, readyToAskPrice, sendCurrentUserAction, setPrice, setReadyToAskPrice, tokenAsk, tokenInfo, transferStep } = useMarketplaceStages(account, ethAccount, collectionInfo, tokenId);
+  const { contractAddress, escrowAddress, kusamaDecimals } = envConfig;
 
   const uSellIt = tokenAsk && tokenAsk?.ownerAddr.toLowerCase() === ethAccount && tokenAsk.flagActive === '1';
   const uOwnIt = tokenInfo?.owner?.Substrate === account || tokenInfo?.owner?.Ethereum?.toLowerCase() === ethAccount || uSellIt;
@@ -60,7 +59,7 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
     const price = priceLeft.add(priceRight);
 
     setPrice(price);
-  }, [setPrice, tokenPriceForSale]);
+  }, [kusamaDecimals, setPrice, tokenPriceForSale]);
 
   const onTransferSuccess = useCallback(() => {
     setShowTransferForm(false);
@@ -74,7 +73,7 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
 
   const ksmFeesCheck = useCallback(async () => {
     // tokenPrice + marketFees + kusamaFees * 2
-    if (tokenAsk?.price) {
+    if (tokenAsk?.price && escrowAddress) {
       const kusamaFees: BN | null = await getKusamaTransferFee(escrowAddress, tokenAsk.price);
 
       if (kusamaFees) {
@@ -85,7 +84,7 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
         setLowKsmBalanceToBuy(isLow);
       }
     }
-  }, [deposited, kusamaAvailableBalance, getKusamaTransferFee, tokenAsk]);
+  }, [tokenAsk, escrowAddress, getKusamaTransferFee, kusamaAvailableBalance, deposited]);
 
   const getMarketPrice = useCallback((price: BN) => {
     return formatPrice(formatKsmBalance(price.sub(getRevertedFee(price))));

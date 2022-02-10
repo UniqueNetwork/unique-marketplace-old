@@ -6,10 +6,6 @@ import { useCallback, useEffect, useState } from 'react';
 import envConfig from '@polkadot/apps-config/envConfig';
 import { useFetch } from '@polkadot/react-hooks/useFetch';
 
-const { uniqueApi } = envConfig;
-
-const apiUrl = process.env.NODE_ENV === 'development' ? '' : uniqueApi;
-
 export type Settings = {
   blockchain?: {
     escrowAddress: string;
@@ -30,16 +26,14 @@ export type Settings = {
 export const useSettings = () => {
   const { fetchData } = useFetch();
   const [apiSettings, setApiSettings] = useState<Settings>();
+  const { uniqueApi } = envConfig;
+  const apiUrl = process.env.NODE_ENV === 'development' ? '' : uniqueApi;
 
   const getSettings = useCallback(() => {
     const url = `${apiUrl}/api/settings`;
 
     fetchData<Settings>(url).subscribe((result: Settings) => {
       if (result?.blockchain) {
-        if (!window.ENV) {
-          window.ENV = {};
-        }
-
         envConfig.escrowAddress = result.blockchain.escrowAddress;
         envConfig.commission = result.blockchain.kusama.marketCommission;
         envConfig.kusamaApiUrl = result.blockchain.kusama.wsEndpoint;
@@ -49,10 +43,10 @@ export const useSettings = () => {
 
         setApiSettings(result);
 
-        console.log('apiSettings', result);
+        console.log('envConfig', envConfig);
       }
     });
-  }, [fetchData]);
+  }, [apiUrl, fetchData]);
 
   useEffect(() => {
     getSettings();

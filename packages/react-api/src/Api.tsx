@@ -244,7 +244,7 @@ function Api ({ children, store }: Props): React.ReactElement<Props> | null {
   );
 
   const initKusamaApi = useCallback(() => {
-    if (!apiSettings?.blockchain?.unique.wsEndpoint) {
+    if (!apiSettings?.blockchain?.kusama.wsEndpoint) {
       return;
     }
 
@@ -266,7 +266,7 @@ function Api ({ children, store }: Props): React.ReactElement<Props> | null {
 
     setIsKusamaApiInitialized(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [apiSettings]);
 
   const initChainApi = useCallback(() => {
     if (!apiSettings?.blockchain?.unique.wsEndpoint) {
