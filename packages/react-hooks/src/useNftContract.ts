@@ -196,7 +196,9 @@ export function useNftContract (account: string | undefined, ethAccount: string 
             0,
             GAS_ARGS.gas,
             await web3Instance.eth.getGasPrice(),
-            null
+            null,
+            null,
+            []
           );
 
           if (onlyGetFees) {
@@ -254,7 +256,9 @@ export function useNftContract (account: string | undefined, ethAccount: string 
             0,
             GAS_ARGS.gas,
             await web3Instance.eth.getGasPrice(),
-            null
+            null,
+            null,
+            []
           );
 
           queueExtrinsic({
@@ -285,7 +289,9 @@ export function useNftContract (account: string | undefined, ethAccount: string 
           0,
           GAS_ARGS.gas,
           await web3Instance.eth.getGasPrice(),
-          null
+          null,
+          null,
+          []
         );
 
         console.log('extrinsic', extrinsic);
@@ -348,7 +354,9 @@ export function useNftContract (account: string | undefined, ethAccount: string 
           0,
           GAS_ARGS.gas,
           await web3Instance.eth.getGasPrice(),
-          null
+          null,
+          null,
+          []
         );
 
         queueExtrinsic({
@@ -376,7 +384,9 @@ export function useNftContract (account: string | undefined, ethAccount: string 
           0,
           GAS_ARGS.gas,
           await web3Instance.eth.getGasPrice(),
-          null
+          null,
+          null,
+          []
         );
 
         queueExtrinsic({
