@@ -17,11 +17,15 @@ module.exports = merge(
       proxy: {
         '/Offers': {
           changeOrigin: true,
-          target: 'https://market-api-opal.unique.network'
+          target: 'https://dev-api.unique.network'
         },
         '/Trades': {
           changeOrigin: true,
-          target: 'https://market-api-opal.unique.network'
+          target: 'https://dev-api.unique.network'
+        },
+        '/auction': {
+          changeOrigin: true,
+          target: 'https://dev-api.unique.network'
         },
         /* 'https://market-api-opal.unique.network': {
           changeOrigin: true,

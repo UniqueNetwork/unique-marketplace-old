@@ -13,10 +13,11 @@ import { Input } from '@polkadot/react-components';
 import { useApi } from '@polkadot/react-hooks';
 
 import closeIcon from './closeIconBlack.svg';
-import { CrossAccountId, normalizeAccountId, subToEth } from '@polkadot/react-hooks/utils';
+import { CrossAccountId, fromStringToBnString, normalizeAccountId, subToEth } from '@polkadot/react-hooks/utils';
 import { web3Accounts, web3FromSource } from '@polkadot/extension-dapp';
 import Select from '../UIKitComponents/SelectUIKit/Select';
 
+const { kusamaDecimals, uniqueCollectionIds } = envConfig;
 
 interface Props {
   account?: string;
@@ -33,7 +34,7 @@ function StartAuctionModal({ account, closeModal, collection, tokenId, tokenOwne
 
   const [minStep, setMinStep] = useState<string>();
   const [startingPrice, setStartingPrice] = useState<string>();
-  const [duration, setDuration] = useState<string>();
+  const [duration, setDuration] = useState<number>();
 
   const { uniqueApi } = envConfig;
   const apiUrl = process.env.NODE_ENV === 'development' ? '' : uniqueApi;
@@ -56,26 +57,26 @@ function StartAuctionModal({ account, closeModal, collection, tokenId, tokenOwne
 
   const onDurationSelectChange = useCallback(
     (value: string) => {
-      setDuration(value);
+      setDuration(+value);
     },
     [setDuration]
   );
 
   const durationOptions = [
     {
-      id: '3 days',
+      id: 3,
       title: '3 days'
     },
     {
-      id: '7 days',
+      id: 7,
       title: '7 days'
     },
     {
-      id: '14 days',
+      id: 14,
       title: '14 days'
     },
     {
-      id: '21 days',
+      id: 21,
       title: '21 days'
     }
   ];
@@ -86,8 +87,10 @@ function StartAuctionModal({ account, closeModal, collection, tokenId, tokenOwne
       return;
     }
 
+    // todo form validation
+
     const recipient = {
-      Substrate: '5CJZRtf2V2ntkzzFzXjgRBSLbCnLvQUqvdnD5abLX3V7RTiA', // todo get address from auction seed
+      Substrate: '5DymvaYC4QNyA2KSR1kzaa44YhiPLWgD71ymgT8pSujzpnsg', // todo get /api/settings -> auction.address
     };
 
     let extrinsic = api.tx.unique.transfer(recipient, collection.id, tokenId, tokenPart);
@@ -109,22 +112,16 @@ function StartAuctionModal({ account, closeModal, collection, tokenId, tokenOwne
 
     await extrinsic.signAsync(signer.address, { signer: injector.signer });
     const tx = extrinsic.toJSON();
-    console.log('txHex', JSON.stringify({
-      tx,
-      days: parseInt(duration as string),
-      startPrice: startingPrice,
-      priceStep: minStep,
-    }, null, ' '));
-    // send data to backend
     const url = `${apiUrl}/auction/create_auction`;
     const data = {
       tx,
-      days: parseInt(duration as string),
-      startPrice: startingPrice,
-      priceStep: minStep,
+      days: duration,
+      startPrice: String(fromStringToBnString(startingPrice!, kusamaDecimals)),
+      priceStep: String(fromStringToBnString(minStep!, kusamaDecimals)),
     };
 
     try {
+      // todo loader
       const response = await fetch(url, {
         method: 'POST',
         body: JSON.stringify(data),
@@ -133,6 +130,7 @@ function StartAuctionModal({ account, closeModal, collection, tokenId, tokenOwne
         }
       });
       const json = await response.json();
+      // todo close modal
       alert(`Token put up for auction ${JSON.stringify(json)}`);
     } catch (error) {
       console.error('Ошибка:', error);
@@ -229,7 +227,7 @@ const InputWrapper = styled(Input)`
       -webkit-appearance: none;
       margin: 0;
     }
-    
+
     input {
       font-family: var(--font-inter) !important;
       padding: 8px 16px !important;
@@ -269,7 +267,7 @@ const Row = styled.div`
 `;
 
 const Col = styled.div`
-  width: 100%; 
+  width: 100%;
   margin-right: 24px;
 `;
 
@@ -283,11 +281,11 @@ const SellModalStyled = styled(Modal)`
     z-index: 20;
   }
 }
-  
+
 `;
 
 const ModalHeader = styled(Modal.Header)`
-  &&&& { 
+  &&&& {
     padding: 0;
     margin-bottom: 24px;
     display: flex;
@@ -305,13 +303,12 @@ const ModalHeader = styled(Modal.Header)`
 `;
 
 const ModalContent = styled(Modal.Content)`
-  &&&& { 
+  &&&& {
     padding: 0;
     }
 `;
 
 export default React.memo(StartAuctionModal);
-function web3Enable(arg0: string) {
-  throw new Error('Function not implemented.');
-}
+
+
 

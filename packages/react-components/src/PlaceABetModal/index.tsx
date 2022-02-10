@@ -38,26 +38,24 @@ function PlaceABetModal({ account, closeModal, collection, tokenId, tokenOwner, 
   const { api } = useApi();
   const { kusamaApi, getKusamaTransferFee } = useKusamaApi(account || '');
 
-  console.log('kusamaApi', kusamaApi);
-  // const balancesAll = useCall<DeriveBalancesAll>(api.derive.balances?.all, [account]);
-  // const kusamaBalancesAll = useCall<DeriveBalancesAll>(kusamaApi?.derive.balances?.all, [account]);
-
   const minBid = 123 // todo get from backend;
-  const lastBid = 456 // todo get from backend;
+  const lastBid = 1 // todo get from backend;
   const minStep = 1 // todo get from backend;
   const startBid = lastBid ? lastBid + minStep : minBid;
 
   const [bid, setBid] = useState<string>(String(startBid));
 
-  const kusamaTransferFee = 0.123; // todo getKusamaTransferFee(recipient, value)
+  const kusamaTransferFee = 0.123; // todo getKusamaTransferFee(recipient, value) packages/react-components/src/NftDetails/index.tsx line 80
 
   const placeABid = async () => {
     if (!account) {
       return;
     }
 
+    // todo validation form
+
     const recipient = {
-      Substrate: '5CJZRtf2V2ntkzzFzXjgRBSLbCnLvQUqvdnD5abLX3V7RTiA' // todo get address from auction seed
+      Substrate: '5DymvaYC4QNyA2KSR1kzaa44YhiPLWgD71ymgT8pSujzpnsg', // todo get /api/settings -> auction.address
     };
 
     const extrinsic = kusamaApi.tx.balances.transfer(
@@ -77,13 +75,6 @@ function PlaceABetModal({ account, closeModal, collection, tokenId, tokenOwner, 
     await extrinsic.signAsync(signer.address, { signer: injector.signer });
     const tx = extrinsic.toJSON();
 
-    console.log('txHex', JSON.stringify({
-      tokenId,
-      tx,
-      collectionId: collection.id
-    }, null, ' '));
-
-    // send data to backend
     const url = `${apiUrl}/auction/place_bid`;
     const data = {
       tokenId,
@@ -92,6 +83,7 @@ function PlaceABetModal({ account, closeModal, collection, tokenId, tokenOwner, 
     };
 
     try {
+      // todo loader
       const response = await fetch(url, {
         method: 'POST',
         body: JSON.stringify(data),
@@ -100,7 +92,7 @@ function PlaceABetModal({ account, closeModal, collection, tokenId, tokenOwner, 
         }
       });
       const json = await response.json();
-      alert(`Token is up for sale ${JSON.stringify(json)}`);
+      // todo close modal
     } catch (error) {
       console.error('Ошибка:', error);
     }
@@ -139,7 +131,7 @@ function PlaceABetModal({ account, closeModal, collection, tokenId, tokenOwner, 
         <ButtonWrapper>
           <Button
             content='Confirm'
-            disabled={parseInt(bid) < startBid}
+            disabled={false /* parseInt(bid) < startBid */}
             onClick={placeABid}
           />
         </ButtonWrapper>
@@ -165,7 +157,7 @@ const InputWrapper = styled(Input)`
       -webkit-appearance: none;
       margin: 0;
     }
-    
+
     input {
       font-family: var(--font-inter) !important;
       padding: 8px 16px !important;
@@ -203,11 +195,11 @@ const ModalStyled = styled(Modal)`
     z-index: 20;
   }
 }
-  
+
 `;
 
 const ModalHeader = styled(Modal.Header)`
-  &&&& { 
+  &&&& {
     padding: 0;
     margin-bottom: 24px;
     display: flex;
@@ -225,13 +217,13 @@ const ModalHeader = styled(Modal.Header)`
 `;
 
 const ModalContent = styled(Modal.Content)`
-  &&&& { 
+  &&&& {
     padding: 0;
     }
 `;
 
 const ModalActions = styled(Modal.Actions)`
-  &&&& { 
+  &&&& {
     padding: 0 !important;
     }
 `;

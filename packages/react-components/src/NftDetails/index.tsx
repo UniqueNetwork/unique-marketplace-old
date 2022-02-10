@@ -28,6 +28,9 @@ interface NftDetailsProps {
 }
 
 function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetailsProps> {
+
+  // todo get offer info from backend @ArsenyMedoev must make the endpoint
+
   const query = new URLSearchParams(useLocation().search);
   const tokenId = query.get('tokenId') || '';
   const collectionId = query.get('collectionId') || '';
