@@ -1,4 +1,4 @@
-// Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
+// Copyright 2017-2022 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
@@ -6,11 +6,8 @@ import type { TokenDetailsInterface } from '@polkadot/react-hooks/useToken';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import envConfig from '@polkadot/apps-config/envConfig';
-
 import { useIsMountedRef, useMetadata, useToken } from '@polkadot/react-hooks';
 import { useCollection } from '@polkadot/react-hooks/useCollection';
-
-const { ipfsGateway } = envConfig;
 
 export type AttributesDecoded = {
   [key: string]: string | string[],
@@ -41,6 +38,7 @@ export function useSchema (account: string | undefined, collectionId: string, to
   const { getDetailedCollectionInfo } = useCollection();
   const mountedRef = useIsMountedRef();
   const { getTokenAttributes, getTokenImageUrl } = useMetadata();
+  const { ipfsGateway } = envConfig;
 
   const tokenName = useMemo(() => {
     if (attributes) {
@@ -87,7 +85,7 @@ export function useSchema (account: string | undefined, collectionId: string, to
     let tokenImageUrl: string;
     let ipfsJson: IpfsJsonType;
 
-    if (collectionInf.schemaVersion === 'Unique' && attributes?.ipfsJson) {
+    if (collectionInf.schemaVersion === 'Unique' && attributes?.ipfsJson && ipfsGateway) {
       try {
         ipfsJson = JSON.parse(attributes.ipfsJson as string) as IpfsJsonType;
         tokenImageUrl = `${ipfsGateway}/${ipfsJson?.ipfs}`;
@@ -101,7 +99,7 @@ export function useSchema (account: string | undefined, collectionId: string, to
     }
 
     mountedRef.current && setTokenUrl(tokenImageUrl);
-  }, [attributes, getTokenImageUrl, mountedRef]);
+  }, [attributes, getTokenImageUrl, ipfsGateway, mountedRef]);
 
   useEffect(() => {
     if (collectionInfo) {

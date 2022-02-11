@@ -1,8 +1,8 @@
-// Copyright 2017-2021 @polkadot/react-api authors & contributors
+// Copyright 2017-2022 @polkadot/react-api authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import BN from 'bn.js';
-import React, { useCallback, useEffect, useMemo, useState, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Web3 from 'web3';
 import { Contract } from 'web3-eth-contract';
 
@@ -16,8 +16,6 @@ import { subToEth } from '@polkadot/react-hooks/utils';
 import { evmToAddress } from '@polkadot/util-crypto';
 
 import ContractContext from './ContractContext';
-
-const { contractAddress, minPrice, uniqueSubstrateApiRpc } = envConfig;
 
 export type MarketplaceAbiMethods = {
   addAsk: (price: string, currencyCode: string, address: string, tokenId: string) => {
@@ -51,6 +49,9 @@ export type MarketplaceAbiMethods = {
   withdraw: (amount: string, currencyCode: string, address: string) => {
     encodeABI: () => any;
   };
+  withdrawAllKSM: (ethAddress: string) => {
+    encodeABI: () => any;
+  };
 }
 
 interface Props {
@@ -65,8 +66,14 @@ function Contracts ({ account, children }: Props): React.ReactElement<Props> | n
   const [web3Instance, setWeb3Instance] = useState<Web3>();
   const [ethAccount, setEthAccount] = useState<string>();
   const abiRef = useRef<Contract>();
+  const accountRef = useRef<string>();
+  const { contractAddress, minPrice, uniqueSubstrateApiRpc } = envConfig;
+
+  console.log('ethAccount', ethAccount, 'deposited', deposited?.toString());
 
   const getUserDeposit = useCallback(async (): Promise<BN | null> => {
+    console.log('getUserDeposit');
+
     try {
       if (ethAccount && matcherContractInstance) {
         const result = await (matcherContractInstance.methods as MarketplaceAbiMethods).balanceKSM(ethAccount).call();
@@ -88,7 +95,7 @@ function Contracts ({ account, children }: Props): React.ReactElement<Props> | n
 
       return null;
     }
-  }, [ethAccount, matcherContractInstance, setDeposited]);
+  }, [ethAccount, matcherContractInstance, minPrice]);
 
   const value = useMemo(() => ({
     account,
@@ -103,14 +110,8 @@ function Contracts ({ account, children }: Props): React.ReactElement<Props> | n
     web3Instance
   }), [account, ethAccount, matcherContractInstance, deposited, evmCollectionInstance, getUserDeposit, web3Instance]);
 
-  useEffect(() => {
-    if (account) {
-      setEthAccount(subToEth(account).toLowerCase());
-    }
-  }, [account]);
-
   const initAbi = useCallback(() => {
-    if (account && ethAccount && !abiRef.current) {
+    if (account && ethAccount && !abiRef.current && contractAddress) {
       console.log('mySubEthAddress', evmToAddress(ethAccount, 42, 'blake2'));
       /* options
       {
@@ -143,11 +144,22 @@ function Contracts ({ account, children }: Props): React.ReactElement<Props> | n
         // User has denied account access to DApp...
       }
     }
-  }, [account, ethAccount]);
+  }, [account, contractAddress, ethAccount, uniqueSubstrateApiRpc]);
 
   useEffect(() => {
     void initAbi();
   }, [initAbi]);
+
+  useEffect(() => {
+    if (account && accountRef.current !== account) {
+      const ethAcc = subToEth(account).toLowerCase();
+
+      setEthAccount(ethAcc);
+      void getUserDeposit();
+
+      accountRef.current = account;
+    }
+  }, [account, getUserDeposit]);
 
   return (
     <ContractContext.Provider value={value}>

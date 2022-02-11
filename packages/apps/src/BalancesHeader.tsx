@@ -72,7 +72,6 @@ function BalancesHeader (props: Props): React.ReactElement<{ account?: string }>
         />
       </div>
       <PopupMenu
-        account={account}
         isPopupActive={isPopupActive}
       />
     </div>

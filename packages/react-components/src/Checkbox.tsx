@@ -63,11 +63,15 @@ export default React.memo(styled(Checkbox)`
   }
 
   .ui--Icon {
-    border: 1px solid var(--link-color);
+    border: 1px solid var(--card-border-color);
     border-radius: 4px;
     width: 20px;
     height: 20px;
     padding: 2px;
+
+    &:hover {
+      border: 1px solid var(--link-color);
+    }
 
     &.whiteColor {
       background: var(--link-color);

@@ -1,4 +1,4 @@
-// Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
+// Copyright 2017-2022 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
@@ -15,8 +15,6 @@ import { useKusamaApi, useNftContract, useToken } from '@polkadot/react-hooks';
 import marketplaceStateMachine from './stateMachine';
 import { CrossAccountId, normalizeAccountId } from './utils';
 
-const { commission, escrowAddress, kusamaDecimals } = envConfig;
-
 type UserActionType = 'BUY' | 'CANCEL' | 'SELL' | 'REVERT_UNUSED_MONEY' | 'UPDATE_TOKEN_STATE' | 'ASK_NOT_FILLED';
 
 export interface MarketplaceStagesInterface {
@@ -24,7 +22,7 @@ export interface MarketplaceStagesInterface {
   checkWhiteList: (ethAddress: string) => Promise<boolean>;
   deposited: BN | undefined;
   depositor: string | undefined;
-  escrowAddress: string;
+  escrowAddress?: string;
   error: string | null;
   formatKsmBalance: (value: BN | undefined) => string;
   getFee: (price: BN) => BN;
@@ -51,12 +49,13 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
   const [tokenDepositor, setTokenDepositor] = useState<string>();
   const [tokenInfo, setTokenInfo] = useState<TokenDetailsInterface>();
   const { getTokenInfo } = useToken();
-  const { addAsk, approveTokenToContract, buyToken, cancelAsk, checkWhiteList, deposited, depositor, getApproved, getTokenAsk, getUserDeposit, initCollectionAbi, isContractReady, tokenAsk, transferToken, withdrawKSM } = useNftContract(account, ethAccount);
+  const { addAsk, approveTokenToContract, buyToken, cancelAsk, checkWhiteList, deposited, depositor, evmCollectionInstance, getApproved, getTokenAsk, getUserDeposit, initCollectionAbi, isContractReady, tokenAsk, transferToken, withdrawAllKSM } = useNftContract(account, ethAccount);
   const [error, setError] = useState<string | null>(null);
   const [readyToAskPrice, setReadyToAskPrice] = useState<boolean>(false);
   const [tokenPriceForSale, setTokenPriceForSale] = useState<BN>();
   const { formatKsmBalance, getKusamaTransferFee, kusamaApi, kusamaAvailableBalance, kusamaTransfer } = useKusamaApi(account);
   const kusamaExistentialDeposit = kusamaApi?.consts.balances?.existentialDeposit as unknown as BN;
+  const { commission, escrowAddress } = envConfig;
 
   console.log('state', state.value);
 
@@ -65,7 +64,7 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
   }, [send]);
 
   const loadingTokenInfo = useCallback(async () => {
-    if (!collectionInfo) {
+    if (!collectionInfo || !evmCollectionInstance) {
       return;
     }
 
@@ -93,15 +92,15 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
     }
 
     send('WAIT_FOR_USER_ACTION');
-  }, [collectionInfo, getTokenInfo, getUserDeposit, send, getTokenAsk, tokenId]);
+  }, [collectionInfo, evmCollectionInstance, getTokenInfo, tokenId, getTokenAsk, getUserDeposit, escrowAddress, send]);
 
   const getRevertedFee = useCallback((price: BN): BN => {
     return price.div(new BN(commission + 100)).mul(new BN(commission));
-  }, []);
+  }, [commission]);
 
   const getFee = useCallback((price: BN): BN => {
     return price.mul(new BN(commission)).div(new BN(100));
-  }, []);
+  }, [commission]);
 
   const checkIsOnEthAddress = useCallback(async () => {
     if (collectionInfo) {
@@ -134,10 +133,10 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
   }, [checkMinDeposit, send]);
 
   const transferMinDeposit = useCallback(() => {
-    if (kusamaExistentialDeposit) {
+    if (kusamaExistentialDeposit && escrowAddress) {
       kusamaTransfer(escrowAddress, kusamaExistentialDeposit, send, send);
     }
-  }, [kusamaExistentialDeposit, kusamaTransfer, send]);
+  }, [escrowAddress, kusamaExistentialDeposit, kusamaTransfer, send]);
 
   const transferToEth = useCallback(() => {
     if (collectionInfo && ethAccount) {
@@ -211,7 +210,7 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
   const buy = useCallback(async () => {
     const userDeposit = await getUserDeposit();
 
-    if (tokenAsk && userDeposit) {
+    if (tokenAsk && userDeposit && escrowAddress) {
       if (!isDepositEnough(userDeposit, tokenAsk.price)) {
         const needed = depositNeeded(userDeposit, tokenAsk.price);
 
@@ -228,7 +227,7 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
         send('DEPOSIT_ENOUGH');
       }
     }
-  }, [getUserDeposit, tokenAsk, isDepositEnough, send, depositNeeded, kusamaAvailableBalance, kusamaTransfer, formatKsmBalance]);
+  }, [getUserDeposit, tokenAsk, isDepositEnough, depositNeeded, kusamaAvailableBalance, kusamaTransfer, escrowAddress, send, formatKsmBalance]);
 
   const checkDepositReady = useCallback(async () => {
     const userDeposit = await getUserDeposit();
@@ -249,10 +248,8 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
   }, [buyToken, collectionInfo, tokenId, send]);
 
   const revertMoney = useCallback(() => {
-    const amount = parseFloat(withdrawAmount) * Math.pow(10, kusamaDecimals);
-
-    withdrawKSM(amount.toString(), () => send('WITHDRAW_FAIL'), () => send('WITHDRAW_SUCCESS'));
-  }, [send, withdrawKSM, withdrawAmount]);
+    withdrawAllKSM(() => send('WITHDRAW_FAIL'), () => send('WITHDRAW_SUCCESS'));
+  }, [send, withdrawAllKSM]);
 
   const checkAsk = useCallback(async () => {
     if (collectionInfo) {

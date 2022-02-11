@@ -1,4 +1,4 @@
-// Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
+// Copyright 2017-2022 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import type { TradeType } from '@polkadot/react-hooks/useCollections';
@@ -11,18 +11,17 @@ import { ListComponent } from '@polkadot/react-components';
 import Pagination from '@polkadot/react-components/Pagination';
 import { useCollections } from '@polkadot/react-hooks';
 
-const { kusamaDecimals, uniqueCollectionIds } = envConfig;
-
 function TradeHistory ({ account }: { account?: string }): React.ReactElement {
   const { getTrades, myTrades, trades, tradesCount } = useCollections();
   const [tradesList, setTradesList] = useState<TradeType[]>();
   const [page, setPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(20);
   const [sortedValue, setSortedValue] = useState<[string, string] | undefined>();
+  const { kusamaDecimals, uniqueCollectionIds } = envConfig;
 
   const fetchTrades = useCallback(() => {
     getTrades({ account, collectionIds: uniqueCollectionIds, page, pageSize, sort: sortedValue ? `${sortedValue[0]}(${sortedValue[1]})` : undefined });
-  }, [account, getTrades, page, pageSize, sortedValue]);
+  }, [account, getTrades, page, pageSize, sortedValue, uniqueCollectionIds]);
 
   const headerRef = useRef([
     ['Token', 'start', undefined, undefined, 'TokenId'],

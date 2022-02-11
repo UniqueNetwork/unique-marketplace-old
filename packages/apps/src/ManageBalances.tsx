@@ -1,8 +1,7 @@
-// Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
+// Copyright 2017-2022 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import BN from 'bn.js';
-import React, { memo, useCallback, useContext, useMemo, useState } from 'react';
+import React, { memo, useCallback, useContext, useState, VFC } from 'react';
 import { NavLink } from 'react-router-dom';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
 import Popup from 'semantic-ui-react/dist/commonjs/modules/Popup';
@@ -10,52 +9,27 @@ import Popup from 'semantic-ui-react/dist/commonjs/modules/Popup';
 import ContractContext from '@polkadot/apps/ContractContext/ContractContext';
 import envConfig from '@polkadot/apps-config/envConfig';
 import { OpenPanelType } from '@polkadot/apps-routing/types';
-import { ChainBalance, WithdrawModal } from '@polkadot/react-components';
-import { useBalances } from '@polkadot/react-hooks';
+import { ChainBalance } from '@polkadot/react-components';
+import { useBalances, useNftContract } from '@polkadot/react-hooks';
 import { formatKsmBalance } from '@polkadot/react-hooks/useKusamaApi';
 
 import question from './images/question.svg';
 
-const { minPrice } = envConfig;
-
-interface Props {
-  account?: string;
+interface ManageBalancesProps {
   setOpenPanel: (isOpen: OpenPanelType) => void;
 }
 
-const ManageBalances = (props: Props) => {
-  const { account } = props;
-
-  const { deposited } = useContext(ContractContext);
+const ManageBalances: VFC<ManageBalancesProps> = () => {
+  const { account, deposited, ethAccount, getUserDeposit } = useContext(ContractContext);
   const { freeBalance, freeKusamaBalance } = useBalances(account);
-  const [showWithdrawModal, toggleWithdrawModal] = useState<boolean>(false);
+  const { withdrawAllKSM } = useNftContract(account, ethAccount);
+  const [isPopupActive, setIsPopupActive] = useState<boolean>(true);
+  const { minPrice } = envConfig;
 
-  const closeModal = useCallback(() => {
-    toggleWithdrawModal(false);
-  }, []);
-
-  const openModal = useCallback(() => {
-    toggleWithdrawModal(true);
-  }, []);
-
-  const withdrawPopup = useMemo(() => {
-    return (
-      <div className='withdraw-popup'>
-        <Button
-          className='withdraw-button'
-          onClick={openModal}
-        >
-          Withdraw deposit
-        </Button>
-        or <NavLink
-          exact={true}
-          strict={true}
-          to={'/faq'}
-        >learn more
-        </NavLink> in FAQ
-      </div>
-    );
-  }, [openModal]);
+  const revertMoney = useCallback(() => {
+    setIsPopupActive(false);
+    withdrawAllKSM(() => setIsPopupActive(true), () => void getUserDeposit());
+  }, [getUserDeposit, withdrawAllKSM]);
 
   return (
     <div className='manage-balances mobile'>
@@ -68,14 +42,30 @@ const ManageBalances = (props: Props) => {
           <span className='unit'>KSM</span>
         </div>
         <div className='balance-line'>
-          { +formatKsmBalance(deposited) > minPrice && deposited ? formatKsmBalance(new BN(deposited)) : 0}
+          { deposited?.gtn(minPrice) ? formatKsmBalance(deposited) : 0}
           <span className='unit'>KSM deposit</span>
-          { !!(deposited && +formatKsmBalance(deposited) > minPrice) && (
+          { isPopupActive && deposited?.gtn(minPrice) && (
             <Popup
               className='mobile withdraw-popup'
-              content={withdrawPopup}
+              content={(
+                <div className='withdraw-popup'>
+                  <Button
+                    className='withdraw-button'
+                    onClick={revertMoney}
+                  >
+                    Withdraw deposit
+                  </Button>
+                  or <NavLink
+                    exact={true}
+                    strict={true}
+                    to={'/faq'}
+                  >learn more
+                  </NavLink> in FAQ
+                </div>
+              )}
               on='click'
               position='bottom left'
+              style={{ left: '-7px' }}
               trigger={(
                 <img
                   alt='withdraw'
@@ -85,24 +75,7 @@ const ManageBalances = (props: Props) => {
             />
           )}
         </div>
-        {/* Todo uncomment this when the 'View all tokens' functional will be clear */}
-        {/* <div className='footer-balance' */}
-        {/*  onClick={setOpenPanel.bind(null, 'tokens')}> */}
-        {/*  <Menu.Item */}
-        {/*    active={location.pathname === '/wallet'} */}
-        {/*    as={NavLink} */}
-        {/*    className='' */}
-        {/*    name='View all tokens' */}
-        {/*    to='/wallet' */}
-        {/*  /> */}
-        {/* </div> */}
       </div>
-      { showWithdrawModal && (
-        <WithdrawModal
-          account={account}
-          closeModal={closeModal}
-        />
-      )}
     </div>
   );
 };

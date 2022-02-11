@@ -1,4 +1,4 @@
-// Copyright 2017-2021 @polkadot/react-api authors & contributors
+// Copyright 2017-2022 @polkadot/react-api authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import type BN from 'bn.js';
@@ -13,8 +13,8 @@ import store from 'store';
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import { deriveMapCache, setDeriveCache } from '@polkadot/api-derive/util';
 import { ethereumChains, typesBundle, typesChain } from '@polkadot/apps-config';
-import envConfig from '@polkadot/apps-config/envConfig';
 import { web3Accounts, web3Enable } from '@polkadot/extension-dapp';
+import { useSettings } from '@polkadot/react-api/useSettings';
 import { TokenUnit } from '@polkadot/react-components/InputNumber';
 import { StatusContext } from '@polkadot/react-components/Status';
 import ApiSigner from '@polkadot/react-signer/signers/ApiSigner';
@@ -27,7 +27,6 @@ import { defaults as addressDefaults } from '@polkadot/util-crypto/address/defau
 import ApiContext from './ApiContext';
 import { decodeUrlTypes } from './urlTypes';
 
-const { kusamaApiUrl } = envConfig;
 const registry = new TypeRegistry();
 const kusamaRegistry = new TypeRegistry();
 
@@ -224,8 +223,9 @@ async function loadOnReady (api: ApiPromise, injectedPromise: Promise<InjectedEx
   };
 }
 
-function Api ({ children, store, url }: Props): React.ReactElement<Props> | null {
+function Api ({ children, store }: Props): React.ReactElement<Props> | null {
   const { queuePayload, queueSetTxStatus } = useContext(StatusContext);
+  const { apiSettings } = useSettings();
   const [state, setState] = useState<ApiState>({ hasInjectedAccounts: false, isApiReady: false } as unknown as ApiState);
 
   const [isApiConnected, setIsApiConnected] = useState(false);
@@ -244,9 +244,11 @@ function Api ({ children, store, url }: Props): React.ReactElement<Props> | null
   );
 
   const initKusamaApi = useCallback(() => {
-    console.log('kusamaApiInitialized!!!');
+    if (!apiSettings?.blockchain?.kusama.wsEndpoint) {
+      return;
+    }
 
-    const provider = new WsProvider(kusamaApiUrl);
+    const provider = new WsProvider(apiSettings.blockchain.kusama.wsEndpoint);
     const signer = new ApiSigner(registry, queuePayload, queueSetTxStatus);
     const types = getDevTypes();
 
@@ -264,13 +266,14 @@ function Api ({ children, store, url }: Props): React.ReactElement<Props> | null
 
     setIsKusamaApiInitialized(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [apiSettings]);
 
-  // initial initialization
-  useEffect((): void => {
-    console.log('setIsApiInitialized!!!');
+  const initChainApi = useCallback(() => {
+    if (!apiSettings?.blockchain?.unique.wsEndpoint) {
+      return;
+    }
 
-    const provider = new WsProvider(url);
+    const provider = new WsProvider(apiSettings.blockchain.unique.wsEndpoint);
     const signer = new ApiSigner(registry, queuePayload, queueSetTxStatus);
     const types = getDevTypes();
 
@@ -308,7 +311,14 @@ function Api ({ children, store, url }: Props): React.ReactElement<Props> | null
     });
 
     setIsApiInitialized(true);
-  }, [initKusamaApi, queuePayload, queueSetTxStatus, store, url]);
+  }, [apiSettings, initKusamaApi, queuePayload, queueSetTxStatus, store]);
+
+  // initial initialization
+  useEffect((): void => {
+    if (apiSettings) {
+      initChainApi();
+    }
+  }, [apiSettings, initChainApi, initKusamaApi, queuePayload, queueSetTxStatus, store]);
 
   if (!value.isApiInitialized) {
     return null;

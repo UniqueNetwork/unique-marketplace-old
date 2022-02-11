@@ -1,4 +1,4 @@
-// Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
+// Copyright 2017-2022 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import { createMachine } from 'xstate';
@@ -72,7 +72,7 @@ const marketplaceStateMachine = createMachine<Context>({
     openAskModal: {
       on: {
         ASK_FILLED: 'addAsk',
-        ASK_NOT_FILLED: 'checkAsk'
+        ASK_NOT_FILLED: 'loadingTokenInfo'
       }
     },
     revertMoney: {
