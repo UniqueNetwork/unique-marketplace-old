@@ -5,6 +5,8 @@ import { useCallback, useEffect, useState } from 'react';
 
 import envConfig from '@polkadot/apps-config/envConfig';
 import { useFetch } from '@polkadot/react-hooks/useFetch';
+import { io } from 'socket.io-client';
+import { Socket } from 'socket.io-client/build/esm/socket';
 
 export type Settings = {
   blockchain?: {
@@ -24,6 +26,7 @@ export type Settings = {
   auction?: {
     commission: number;
     address: string;
+    socket: Socket;
   }
 }
 
@@ -44,7 +47,21 @@ export const useSettings = () => {
         envConfig.uniqueCollectionIds = result.blockchain.unique.collectionIds;
         envConfig.contractAddress = result.blockchain.unique.contractAddress;
         envConfig.uniqueSubstrateApi = result.blockchain.unique.wsEndpoint;
-        setApiSettings(result);
+
+        if (result.auction) {
+          const script = document.createElement('script');
+          script.src = "https://cdn.socket.io/4.4.1/socket.io.min.js"
+          script.onload = function() {
+            const socket = io(apiUrl, {
+              path: '/socket.io'
+            });
+            result.auction!.socket = socket;
+            setApiSettings(result); // todo tochno?
+          }
+          document.head.appendChild(script);
+        } else {
+          setApiSettings(result);
+        }
       }
     });
   }, [apiUrl, fetchData]);

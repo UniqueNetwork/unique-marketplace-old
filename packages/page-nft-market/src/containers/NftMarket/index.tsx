@@ -27,6 +27,8 @@ import MarketFilters from '../MarketFilters';
 import { SESSION_STORAGE_KEYS } from '../MarketFilters/constants';
 import noMyTokensIcon from '../MarketFilters/noMyTokens.svg';
 import MarketSort from '../MarketSort';
+import { useSettings } from '@polkadot/react-api/useSettings';
+import { OfferType } from '@polkadot/react-hooks/useCollections';
 
 interface NftMarketProps {
   account?: string | undefined;
@@ -56,6 +58,7 @@ const defaultFilters = {
 
 const NftMarket = ({ account, openPanel, setOpenPanel }: NftMarketProps): ReactElement => {
   const history = useHistory();
+  const { apiSettings } = useSettings();
   const storageFilters = JSON.parse(sessionStorage.getItem(SESSION_STORAGE_KEYS.FILTERS) as string) as Filters;
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   const initialFilters = storageFilters && !equal(storageFilters, defaultFilters) ? storageFilters : defaultFilters;
@@ -134,6 +137,43 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: NftMarketProps): ReactE
   useEffect(() => {
     void getOffers(page, perPage, filters);
   }, [filters, getOffers, page]);
+
+  useEffect(() => {
+    if (apiSettings && apiSettings.auction && apiSettings.auction.socket) {
+
+      const auctions: {
+        collectionId: OfferType['collectionId'];
+        tokenId: OfferType['tokenId'];
+      }[] = offers.filter(o => !!o.auction).map((o) => {
+        return {
+          collectionId: o.collectionId,
+          tokenId: o.tokenId,
+        }
+      });
+
+      console.log('auc', auctions);
+
+      apiSettings.auction.socket.on('data', (d) => {
+        console.log('income', auctions);
+      });
+
+      auctions.forEach((auction) => {
+        apiSettings.auction!.socket.emit('subscribeToAuction', auction);
+      });
+
+      apiSettings.auction!.socket.on('bidPlaced', (offer) => {
+        console.log(`hey hey, new bid for ${offer.collectionId} - ${offer.tokenId}`, offer);
+      });
+
+      return () => {
+        auctions.forEach((auction) => {
+          apiSettings.auction!.socket.emit('unsubscribeFromAuction', auction);
+        });
+      }
+
+    }
+    return () => {};
+  }, [offers, apiSettings])
 
   return (
     <div className={marketClassName}>

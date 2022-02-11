@@ -27,7 +27,8 @@ export interface TokenInterface extends TokenDetailsInterface {
 }
 
 export type OfferType = {
-  auction: {
+  auction?: {
+    id: string;
     bids: Array<{amount: string, bidderAddress: string}>;
     priceStep: string;
     startPrice: string;
