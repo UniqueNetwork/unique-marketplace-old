@@ -12,6 +12,8 @@ import Card from 'semantic-ui-react/dist/commonjs/views/Card';
 
 import { useDecoder, useSchema } from '@polkadot/react-hooks';
 import { formatKsmBalance } from '@polkadot/react-hooks/useKusamaApi';
+import logoKusama from '../../../../../packages/apps/public/logos/kusama.svg';
+import { useTimeToFinish } from '@polkadot/react-hooks/useTimeToFinish';
 
 interface Props {
   account: string | undefined;
@@ -23,6 +25,10 @@ interface Props {
 const NftTokenCard = ({ account, collectionId, openDetailedInformationModal, token }: Props): React.ReactElement<Props> => {
   const { collectionInfo, tokenName, tokenUrl } = useSchema(account, collectionId, token.tokenId);
   const { collectionName16Decoder, hex2a } = useDecoder();
+  const timeToFinish = useTimeToFinish(token.auction.stopAt);
+  const indexOfYourBid = token.auction.bids.findIndex((bid) => { return bid.bidderAddress === account });
+  const yourBidIsLeading = indexOfYourBid === 0;
+  const yourBidIsOutbid = indexOfYourBid > 0
 
   const onCardClick = useCallback(() => {
     openDetailedInformationModal(collectionId, token.tokenId);
@@ -46,12 +52,30 @@ const NftTokenCard = ({ account, collectionId, openDetailedInformationModal, tok
           <Card.Description>
             <div className='card-name'>
               <div className='card-name__title'>{hex2a(collectionInfo.tokenPrefix)} {`#${token.tokenId}`} {tokenName?.value}</div>
-              <div className='card-name__field'>{ collectionName16Decoder(collectionInfo.name)}</div>
+              <div className='card-name__field'>{ `${collectionName16Decoder(collectionInfo.name)} [${collectionId}]` }</div>
             </div>
-            { token.price && (
-              <div className='card-price'>
-                <div className='card-price__title'> {formatKsmBalance(new BN(token.price))} KSM</div>
-              </div>
+            { token.price && (!token.auction.status) && (
+              <>
+                <div className='card-price'>
+                  <div className='card-price__title'>{formatKsmBalance(new BN(token.price))}</div>
+                  <img width={16} src={logoKusama} />
+                </div>
+                <div className='caption grey'>Price</div>
+              </>
+            )}
+            {token.auction.status === 'created' && (
+              <>
+                <div className='card-price'>
+                  <div className='card-price__title'> {formatKsmBalance(new BN(token.auction.bids[0]?.amount || token.auction.startPrice))}</div>
+                  <img width={16} src={logoKusama} />
+                </div>
+                <div className='caption-row'>
+                  {yourBidIsLeading && <div className='caption green'> Leading bid</div>}
+                  {yourBidIsOutbid && <div className='caption red'> Outbid</div>}
+                  {!yourBidIsLeading && !yourBidIsOutbid && <div className='caption grey'>{token.auction.bids[0] ? 'Last bid' : 'Minimum bid '}</div>}
+                  <div className='caption'>{timeToFinish}</div>
+                </div>
+              </>
             )}
           </Card.Description>
           <Card.Meta>
