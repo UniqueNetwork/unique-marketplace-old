@@ -21,16 +21,20 @@ export type Settings = {
   },
   error?: boolean;
   message?: string;
+  auction?: {
+    commission: number;
+    address: string;
+  }
 }
 
 export const useSettings = () => {
   const { fetchData } = useFetch();
   const [apiSettings, setApiSettings] = useState<Settings>();
   const { uniqueApi } = envConfig;
-  const apiUrl = process.env.NODE_ENV === 'development' ? '' : uniqueApi;
+  const apiUrl = uniqueApi;
 
   const getSettings = useCallback(() => {
-    const url = `${apiUrl}/api/settings`;
+    const url = `${apiUrl}/api/settings`; // todo why proxy? wat?
 
     fetchData<Settings>(url).subscribe((result: Settings) => {
       if (result?.blockchain) {
@@ -40,10 +44,7 @@ export const useSettings = () => {
         envConfig.uniqueCollectionIds = result.blockchain.unique.collectionIds;
         envConfig.contractAddress = result.blockchain.unique.contractAddress;
         envConfig.uniqueSubstrateApi = result.blockchain.unique.wsEndpoint;
-
         setApiSettings(result);
-
-        console.log('envConfig', envConfig);
       }
     });
   }, [apiUrl, fetchData]);

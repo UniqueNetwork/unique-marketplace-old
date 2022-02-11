@@ -14,9 +14,16 @@ import { AppProps as Props } from '@polkadot/react-components/types';
 import { useApi } from '@polkadot/react-hooks';
 
 import NftMarket from './containers/NftMarket';
+import { useSettings } from '@polkadot/react-api/useSettings';
 
 function PageNftMarketplace ({ account, basePath, openPanel, setOpenPanel }: Props): React.ReactElement<Props> {
   const { isApiConnected, isApiReady } = useApi();
+  const { apiSettings } = useSettings();
+  if (apiSettings?.auction) {
+    // todo socket.io
+  }
+
+  // todo https://dev-api.unique.network/Offer/562/72
 
   if (!isApiReady || !isApiConnected) {
     return (
