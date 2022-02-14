@@ -1,4 +1,4 @@
-// Copyright 2017-2021 @polkadot/apps-config authors & contributors
+// Copyright 2017-2022 @polkadot/apps-config authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import type { TFunction } from 'i18next';
@@ -7,8 +7,6 @@ import type { LinkOption } from './types';
 import envConfig from '@polkadot/apps-config/envConfig';
 
 import { expandEndpoints } from './util';
-
-const { uniqueSubstrateApi } = envConfig;
 /* eslint-disable sort-keys */
 
 // The available endpoints that will show in the dropdown. For the most part (with the exception of
@@ -18,6 +16,8 @@ const { uniqueSubstrateApi } = envConfig;
 //   value: The actual hosted secure websocket endpoint
 
 export function createTesting (t: TFunction, firstOnly: boolean, withSort: boolean): LinkOption[] {
+  const { uniqueSubstrateApi } = envConfig;
+
   return expandEndpoints(t, [
     // alphabetical based on chain name, e.g. Amber, Arcadia, Beresheet, ...
     {

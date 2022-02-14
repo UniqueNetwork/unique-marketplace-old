@@ -1,4 +1,4 @@
-// Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
+// Copyright 2017-2022 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import './styles.scss';
@@ -25,21 +25,21 @@ const SaleSteps: React.FC<StepsProps> = ({ step }) => {
           completed={step > 1}
           inactive={step < 1}
           numb={1}
-          text={'Send NFT to own ethAddress'}
+          text={'Prepare an NFT to be sent to smart contract'}
         />
         <Step
           active={step === 2}
           completed={step > 2}
           inactive={step < 2}
           numb={2}
-          text={'Approve NFT for sell'}
+          text={'Allow smart contract to receive an NFT'}
         />
         <Step
           active={step === 3}
           completed={step > 3}
           inactive={step < 3}
           numb={3}
-          text={'Set Price'}
+          text={'Set the NFT price'}
         />
       </div>
     </div>

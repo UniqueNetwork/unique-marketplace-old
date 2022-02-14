@@ -13,8 +13,6 @@ import { ChainBalance } from '@polkadot/react-components';
 import { useBalances, useNftContract } from '@polkadot/react-hooks';
 import { formatKsmBalance } from '@polkadot/react-hooks/useKusamaApi';
 
-const { minPrice } = envConfig;
-
 interface Props {
   isPopupActive?: boolean
 }
@@ -24,6 +22,7 @@ const PopupMenu = (props: Props) => {
   const { account, deposited, ethAccount, getUserDeposit } = useContext(ContractContext);
   const { freeBalance, freeKusamaBalance } = useBalances(account);
   const { withdrawAllKSM } = useNftContract(account, ethAccount);
+  const { minPrice } = envConfig;
 
   const revertMoney = useCallback(() => {
     withdrawAllKSM(() => null, () => void getUserDeposit());

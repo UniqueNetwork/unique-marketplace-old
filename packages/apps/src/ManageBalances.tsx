@@ -15,8 +15,6 @@ import { formatKsmBalance } from '@polkadot/react-hooks/useKusamaApi';
 
 import question from './images/question.svg';
 
-const { minPrice } = envConfig;
-
 interface ManageBalancesProps {
   setOpenPanel: (isOpen: OpenPanelType) => void;
 }
@@ -26,6 +24,7 @@ const ManageBalances: VFC<ManageBalancesProps> = () => {
   const { freeBalance, freeKusamaBalance } = useBalances(account);
   const { withdrawAllKSM } = useNftContract(account, ethAccount);
   const [isPopupActive, setIsPopupActive] = useState<boolean>(true);
+  const { minPrice } = envConfig;
 
   const revertMoney = useCallback(() => {
     setIsPopupActive(false);

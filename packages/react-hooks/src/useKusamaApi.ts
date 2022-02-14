@@ -1,4 +1,4 @@
-// Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
+// Copyright 2017-2022 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import BN from 'bn.js';
@@ -12,8 +12,6 @@ import { useKusamaBalance } from '@polkadot/react-hooks/useKusamaBalance';
 import { formatStrBalance } from '@polkadot/react-hooks/utils';
 import { encodeAddress } from '@polkadot/util-crypto';
 
-const { kusamaDecimals } = envConfig;
-
 interface UseKusamaApiInterface {
   encodedKusamaAccount: string | undefined;
   formatKsmBalance: (balance: BN | undefined) => string;
@@ -24,6 +22,8 @@ interface UseKusamaApiInterface {
 }
 
 export function formatKsmBalance (value: BN | undefined = new BN(0)): string {
+  const { kusamaDecimals } = envConfig;
+
   return formatStrBalance(value, kusamaDecimals);
 }
 
