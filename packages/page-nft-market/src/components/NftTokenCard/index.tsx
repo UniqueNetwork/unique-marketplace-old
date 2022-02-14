@@ -58,7 +58,7 @@ const NftTokenCard = ({ account, collectionId, openDetailedInformationModal, tok
               <>
                 <div className='card-price'>
                   <div className='card-price__title'>{formatKsmBalance(new BN(token.price))}</div>
-                  <img width={16} src={logoKusama} />
+                  <img width={16} src={logoKusama as string} />
                 </div>
                 <div className='caption grey'>Price</div>
               </>
@@ -66,8 +66,8 @@ const NftTokenCard = ({ account, collectionId, openDetailedInformationModal, tok
             {token.auction.status === 'created' && (
               <>
                 <div className='card-price'>
-                  <div className='card-price__title'> {formatKsmBalance(new BN(token.auction.bids[0]?.amount || token.auction.startPrice))}</div>
-                  <img width={16} src={logoKusama} />
+                  <div className='card-price__title'> {formatKsmBalance(new BN(token.price || token.auction.startPrice))}</div>
+                  <img width={16} src={logoKusama as string} />
                 </div>
                 <div className='caption-row'>
                   {yourBidIsLeading && <div className='caption green'> Leading bid</div>}

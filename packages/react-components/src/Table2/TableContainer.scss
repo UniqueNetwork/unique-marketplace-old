@@ -1,0 +1,18 @@
+@import '../UIKitComponents/styles.scss';
+
+.unique-table-outer {
+    .column-heading {
+        display: flex;
+    }
+    .cursor-pointer {
+        cursor: pointer;
+    }
+    .icon-wrapper {
+        width: 24px;
+        height: 24px;
+        margin-left: 4px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+}

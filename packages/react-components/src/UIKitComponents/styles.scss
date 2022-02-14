@@ -48,3 +48,51 @@ $color-coral-600: darken($color-coral-500, 8%);
 $color-coral-700: darken($color-coral-500, 12%);
 $color-additional-positive-100: lighten($color-additional-positive-500, 53%);
 $color-additional-warning-100: lighten($color-additional-warning-500, 45%);
+
+$base-colors-map: (
+    color-primary-500: $color-primary-500,
+    color-secondary-500: $color-secondary-500,
+    color-blue-grey-500: $color-blue-grey-500,
+    color-grey-500: $color-grey-500,
+    color-coral-500: $color-coral-500,
+    color-additional-positive-500: $color-additional-positive-500,
+    color-additional-warning-500: $color-additional-warning-500,
+    color-additional-light: $color-additional-light,
+    color-additional-dark: $color-additional-dark
+);
+
+@mixin font-body($size) {
+    font-family: $font-family;
+    font-weight: 400;
+    @if ($size== 'xs') {
+        font-size: 12px;
+        line-height: 18px;
+    } @else if ($size== 's') {
+        font-size: 14px;
+        line-height: 21px;
+    } @else if ($size== 'm') {
+        font-size: 16px;
+        line-height: 24px;
+    } @else if ($size== 'l') {
+        font-size: 18px;
+        line-height: 26px;
+    }
+}
+
+@mixin font-heading($size) {
+    font-family: $font-family-heading;
+    font-weight: 700;
+    @if ($size== 1) {
+        font-size: 36px;
+        line-height: 48px;
+    } @else if ($size== 2) {
+        font-size: 28px;
+        line-height: 42px;
+    } @else if ($size== 3) {
+        font-size: 24px;
+        line-height: 36px;
+    } @else if ($size== 4) {
+        font-size: 20px;
+        line-height: 28px;
+    }
+}

@@ -1,0 +1,12 @@
+@import "../../../UIKitComponents/styles.scss";
+
+.table-header-cell {
+    background-color: $color-blue-grey-100;
+    text-align: left;
+    padding: 8px 16px;
+    @include font-body(m);
+    font-weight: 500;
+    color: $color-blue-grey-500;
+    border-spacing: 5px;
+    border-width: 0;
+}
