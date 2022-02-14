@@ -1,0 +1,6 @@
+@import "../../../UIKitComponents/styles.scss";
+
+.table-cell {
+    padding: 8px 16px;
+    @include font-body(m);
+}
