@@ -1,7 +1,3 @@
-/**
- * @author Anna Mikhailova <amikhailova@usetech.com>
- */
-
 import * as React from 'react';
 import { FC } from 'react';
 import './TableContainer.scss';

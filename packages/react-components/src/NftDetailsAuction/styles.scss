@@ -150,10 +150,61 @@
     }
 
     .offers {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+
       .heading {
         font: 700 20px/28px var(--font-raleway);
         margin-bottom: 8px;
       } 
+
+      .leading-bid {
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+
+        .bid {
+          padding: 8px 16px;
+          border-radius: 4px;
+        }
+
+        .current-bid {
+          font: 400 16px/24px var(--font-inter);
+          color: #81858E;
+        }
+
+        >div:nth-of-type(2) {
+          margin-left: 8px;
+        }
+
+        .you-lead {
+          color: #2DBF15;
+          background-color: #E9FCE6;
+        }
+
+        .you-outbid {
+          color: #FF6335;
+          background-color: #FFF1ED;
+        }
+      }
+    }
+
+    .buttons {
+      .button-danger {
+        background-color: transparent !important;
+        color: #FF6335;
+        border: 1px solid #FF6335;
+
+        &:hover {
+          background-color: #FFF1ED !important;
+          border-color: #FF9E82;
+        }
+
+        .loader:after {
+          border-color: #FF6335 transparent transparent !important;
+        }
+      }
     }
   }
 
