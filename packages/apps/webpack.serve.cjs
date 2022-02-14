@@ -25,7 +25,7 @@ module.exports = merge(
         },
         '/api/settings': {
           changeOrigin: true,
-          target: 'https://market-api-opal.unique.network'
+          target: process?.env?.UNIQUE_API || 'https://market-api-opal.unique.network'
         },
         [process.env.WHITE_LABEL_URL]: {
           changeOrigin: true,
