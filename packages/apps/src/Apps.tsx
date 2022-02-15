@@ -25,13 +25,13 @@ import Signer from '@polkadot/react-signer';
 
 import BalancesHeader from './BalancesHeader';
 import Contracts from './ContractContext';
+import Footer from './Footer';
 import ManageAccounts from './ManageAccounts';
 import ManageBalances from './ManageBalances';
 import MobileAccountSelector from './MobileAccountSelector';
 import MobileMenu from './MobileMenu';
 import MobileMenuHeader from './MobileMenuHeader';
 import ScrollToTop from './ScrollToTop';
-import WarmUp from './WarmUp';
 
 export const PORTAL_ID = 'portals';
 
@@ -233,10 +233,10 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
               </>
             </Contracts>
           </ErrorBoundary>
+          <Footer />
           <Status />
         </Signer>
       </div>
-      <WarmUp />
     </>
   );
 }

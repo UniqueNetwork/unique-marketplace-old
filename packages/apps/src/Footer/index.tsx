@@ -4,9 +4,6 @@
 import React, { memo, ReactElement } from 'react';
 import styled from 'styled-components';
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import packageJson from '../../../../package.json';
 import discord from '../../public/logos/discord.svg';
 import github from '../../public/logos/github.svg';
 import subsocial from '../../public/logos/subsocial.svg';
@@ -25,7 +22,6 @@ function Footer ({ className = '' }): ReactElement {
           >Unique Network</a> —
             the NFT chain build for Polkadot and Kusama.
           </div>
-          <div className='app-footer__info__version'>Version {(packageJson as { version: string }).version}</div>
         </div>
         <div className='app-footer__social-links'>
           <a
@@ -85,7 +81,7 @@ function Footer ({ className = '' }): ReactElement {
 }
 
 export default memo(styled(Footer)`
-  padding: calc(var(--gap)/2) calc((var(--gap) / 2) * 3);
+  padding: var(--gap);
   background: var(--card-background);
   font-size: 14px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
@@ -120,6 +116,7 @@ export default memo(styled(Footer)`
 
   @media (max-width: 767px) {
     padding: var(--gap);
+    padding-bottom: 76px;
 
     .app-footer--container {
       align-items: flex-start;
