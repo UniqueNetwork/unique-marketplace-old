@@ -15,7 +15,7 @@ import envConfig from '@polkadot/apps-config/envConfig';
 import { TransferModal, StartAuctionModal, PlaceABetModal, WarningText } from '@polkadot/react-components';
 import formatPrice from '@polkadot/react-components/util/formatPrice';
 import { useBalance, useDecoder, useMarketplaceStages, useSchema } from '@polkadot/react-hooks';
-import { subToEth } from '@polkadot/react-hooks/utils';
+import { shortAddress, subToEth } from '@polkadot/react-hooks/utils';
 import { OfferType } from '@polkadot/react-hooks/useCollections';
 
 import BuySteps from './BuySteps';
@@ -26,6 +26,7 @@ import clock from '../../../../packages/apps/public/icons/clock.svg';
 import { useTimeToFinish } from '@polkadot/react-hooks/useTimeToFinish';
 import Table, { TColor, TSize } from '../Table2/TableContainer';
 import Text from '../UIKitComponents/Text/Text';
+import { useBidStatus } from '@polkadot/react-hooks/useBidStatus';
 
 interface NftDetailsAuctionProps {
   account: string;
@@ -58,6 +59,10 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
     getRevertedFee, kusamaAvailableBalance, readyToAskPrice, sendCurrentUserAction, setPrice,
     setReadyToAskPrice, tokenAsk, tokenInfo, transferStep } = useMarketplaceStages(account, ethAccount, collectionInfo, tokenId);
   const { contractAddress, escrowAddress, kusamaDecimals } = envConfig;
+  const { auction, price, seller } = offer;
+  const { bids, priceStep, startPrice, status, stopAt } = auction;
+  const timeLeft = useTimeToFinish(stopAt);
+  const { yourBidIsLeading, yourBidIsOutbid } = useBidStatus(bids, account || '');
 
   const columnsArray = [
     {
@@ -70,7 +75,7 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
       icon: 'arrows-down-up',
       render: (rowNumber: number) => (
         <Text size="m" color="additional-dark">
-          {`${formatKsmBalance(new BN(bids[rowNumber].amount))} KSM`}
+          {bids.length ? `${formatKsmBalance(new BN(bids[rowNumber].amount))} KSM` : ''}
         </Text>
       )
     },
@@ -84,26 +89,22 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
       icon: 'calendar',
       render: (rowNumber: number) => (
         <Text size="m" color="blue-grey-600">
-          {dataArray[rowNumber].time}
+          {dataArray[0].time}
         </Text>
       )
     },
     {
-      title: 'Author',
-      dataIndex: 'author',
-      key: 'author',
+      title: 'Bidder',
+      dataIndex: 'bidder',
+      key: 'bidder',
       width: 150,
       render: (rowNumber: number) => (
         <Text size="m" color="primary-500">
-          {`${bids[rowNumber].bidderAddress.substr(0, 5)}...${bids[rowNumber].bidderAddress.substr(-5, 5)}`}
+          {bids.length ? shortAddress(bids[rowNumber].bidderAddress) : ''}
         </Text>
       )
     }
   ]
-
-  const { auction, price, seller } = offer;
-  const { bids, priceStep, startPrice, status, stopAt } = auction;
-  const timeLeft = useTimeToFinish(stopAt);
 
   const uSellIt = seller === account;
   const fee = 123; //todo get fee
@@ -222,8 +223,6 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
 
   return (
     <div className='toke-details'>
-
-      NFTAuction
       <div
         className='go-back'
       >
@@ -368,6 +367,7 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
 
                 {(uSellIt && !transferStep) && (
                   <Button
+                    className='button-danger'
                     content={
                       <>
                         Delist
@@ -391,8 +391,12 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
             <div className='divider' />
             <div className='offers'>
               <div className='heading'>Offers</div>
-
-              <Table data={[...bids]} columns={columnsArray}></Table>
+              {<div className='leading-bid'>
+                {yourBidIsLeading && <div className='bid you-lead'>Your bid is leading</div>}
+                {yourBidIsOutbid && <div className='bid you-outbid'>Your offer is outbid</div>}
+                <div className='current-bid'>{bids.length ? `Leading bid ${shortAddress(bids.reverse()[0].bidderAddress)}` : 'There are no bids'}</div>
+              </div>}
+              {!!bids.length && <Table data={[...bids.reverse()]} columns={columnsArray}></Table>}
             </div>
 
             {!!(uOwnIt && !uSellIt && !isInWhiteList && kusamaExistentialDeposit) && (
