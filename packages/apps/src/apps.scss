@@ -504,6 +504,7 @@ a {
 @media (max-width: 1024px) {
   .app-wrapper {
     background-color: var(--card-background);
+    justify-content: space-between;
   }
   .app-header {
     position: fixed;

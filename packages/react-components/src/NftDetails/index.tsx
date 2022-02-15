@@ -40,6 +40,7 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
   const [isInWhiteList, setIsInWhiteList] = useState<boolean>(false);
   const [lowKsmBalanceToBuy, setLowKsmBalanceToBuy] = useState<boolean>(false);
   const [kusamaFees, setKusamaFees] = useState<BN | null>(null);
+  const [whiteListAmount, setWhiteListAmount] = useState<BN | null>(null);
   const { balance, kusamaExistentialDeposit } = useBalance(account);
   const { hex2a } = useDecoder();
   const { attributes, collectionInfo, tokenUrl } = useSchema(account, collectionId, tokenId);
@@ -77,6 +78,16 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
     setReadyToAskPrice(false);
     sendCurrentUserAction('ASK_NOT_FILLED');
   }, [setReadyToAskPrice, sendCurrentUserAction]);
+
+  const whiteListFeeCheck = useCallback(async () => {
+    if (escrowAddress && kusamaExistentialDeposit) {
+      const transferMinDepositFee: BN | null = await getKusamaTransferFee(escrowAddress, kusamaExistentialDeposit);
+
+      if (transferMinDepositFee) {
+        setWhiteListAmount(transferMinDepositFee.add(kusamaExistentialDeposit));
+      }
+    }
+  }, [escrowAddress, getKusamaTransferFee, kusamaExistentialDeposit]);
 
   const ksmFeesCheck = useCallback(async () => {
     // tokenPrice + marketFees + kusamaFees * 2
@@ -141,6 +152,10 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
       setIsInWhiteList(result);
     }
   }, [checkWhiteList, ethAccount]);
+
+  useEffect(() => {
+    void whiteListFeeCheck();
+  }, [whiteListFeeCheck]);
 
   useEffect(() => {
     void ksmFeesCheck();
@@ -244,7 +259,7 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
             { uSellIt && (
               <Header as='h4'>You`re selling it!</Header>
             )}
-            { (!uOwnIt && !isOwnerContract && tokenInfo?.owner && tokenAsk?.flagActive !== '1') && (
+            { (account && !uOwnIt && !isOwnerContract && tokenInfo?.owner && tokenAsk?.flagActive !== '1') && (
               <Header as='h5'>The owner is {tokenInfo?.owner.Substrate || tokenInfo?.owner.Ethereum || ''}</Header>
             )}
             <div className='buttons'>
@@ -262,14 +277,14 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
                   }
                 </>
               )}
-              {(!account && !!tokenPrice) && (
+              {(!account) && (
                 <div>
                   <Button
                     content='Buy it'
                     disabled
                     title='ass'
                   />
-                  <p className='text-with-button'>Сonnect your wallet to make transactions</p>
+                  <p className='text-with-button'>Connect your wallet to make transactions</p>
                 </div>
               )}
               <>
@@ -291,7 +306,7 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
                 { (uOwnIt && !uSellIt) && (
                   <Button
                     content='Sell'
-                    disabled={!!(!isInWhiteList && kusamaExistentialDeposit && !kusamaAvailableBalance?.gte(kusamaExistentialDeposit.muln(2)))}
+                    disabled={!!(!isInWhiteList && whiteListAmount && !kusamaAvailableBalance?.gte(whiteListAmount))}
                     onClick={onSell}
                   />
                 )}
@@ -322,13 +337,13 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
               </>
             </div>
 
-            { !!(uOwnIt && !uSellIt && !isInWhiteList && kusamaExistentialDeposit) && (
+            { !!(uOwnIt && !uSellIt && !isInWhiteList && whiteListAmount) && (
               <>
-                { kusamaAvailableBalance?.gte(kusamaExistentialDeposit.muln(2))
+                { kusamaAvailableBalance?.gte(whiteListAmount)
                   ? (
                     <WarningText
                       className='info'
-                      text={`A fee of ~ ${formatKsmBalance(kusamaExistentialDeposit)} KSM may be applied to the transaction. Your address will be added to the whitelist, allowing you to make transactions without network fees.`}
+                      text={`A fee of ~ ${formatKsmBalance(whiteListAmount)} KSM may be applied to the first sale transaction. Your address will be added to the transaction sponsoring whitelist allowing you to make future feeless transactions.`}
                     />
                   )
                   : (

@@ -1,4 +1,4 @@
-// Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
+// Copyright 2017-2022 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import { useCallback } from 'react';
@@ -6,7 +6,7 @@ import { useCallback } from 'react';
 import { useApi } from '@polkadot/react-hooks/useApi';
 import { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
 
-import { normalizeAccountId } from './utils';
+// import { normalizeAccountId } from './utils';
 
 export interface TokenDetailsInterface {
   owner?: { Ethereum?: string, Substrate?: string };
@@ -29,7 +29,7 @@ export function useToken (): UseTokenInterface {
     }
 
     try {
-      let tokenDetailsData: TokenDetailsInterface = {};
+      /* let tokenDetailsData: TokenDetailsInterface = {};
 
       const variableData = (await api.rpc.unique.variableMetadata(collectionId, tokenId)).toJSON() as string;
       const constData: string = (await api.rpc.unique.constMetadata(collectionId, tokenId)).toJSON() as string;
@@ -39,9 +39,9 @@ export function useToken (): UseTokenInterface {
         constData,
         owner: crossAccount,
         variableData
-      };
+      }; */
 
-      return tokenDetailsData;
+      return (await api.query.nonfungible.tokenData(collectionId, tokenId)).toJSON() as TokenDetailsInterface;
     } catch (e) {
       console.log('getDetailedTokenInfo error', e);
 
