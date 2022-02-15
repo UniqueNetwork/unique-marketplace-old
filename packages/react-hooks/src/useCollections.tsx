@@ -25,11 +25,13 @@ export interface TokenInterface extends TokenDetailsInterface {
   collectionId: string;
   id: string;
 }
+export type BidType = {
+  amount: string, bidderAddress: string
+}
 
 export type OfferType = {
-  auction?: {
-    id: string;
-    bids: Array<{amount: string, bidderAddress: string}>;
+  auction: {
+    bids: BidType[];
     priceStep: string;
     startPrice: string;
     status: string;
