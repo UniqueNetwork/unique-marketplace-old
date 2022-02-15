@@ -20,6 +20,7 @@ import { subToEth } from '@polkadot/react-hooks/utils';
 import BuySteps from './BuySteps';
 import SaleSteps from './SaleSteps';
 import SetPriceModal from './SetPriceModal';
+import { useSettings } from '@polkadot/react-api/useSettings';
 
 interface NftDetailsProps {
   account: string;
@@ -45,6 +46,7 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
   const [tokenPriceForSale, setTokenPriceForSale] = useState<string>('');
   const { cancelStep, checkWhiteList, deposited, formatKsmBalance, getKusamaTransferFee, getRevertedFee, kusamaAvailableBalance, readyToAskPrice, sendCurrentUserAction, setPrice, setReadyToAskPrice, tokenAsk, tokenInfo, transferStep } = useMarketplaceStages(account, ethAccount, collectionInfo, tokenId);
   const { contractAddress, escrowAddress, kusamaDecimals } = envConfig;
+  const { apiSettings } = useSettings();
 
   const uSellIt = tokenAsk && tokenAsk?.ownerAddr.toLowerCase() === ethAccount && tokenAsk.flagActive === '1';
   const uOwnIt = tokenInfo?.owner?.Substrate === account || tokenInfo?.owner?.Ethereum?.toLowerCase() === ethAccount || uSellIt;
@@ -252,10 +254,12 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
                     content='Transfer'
                     onClick={toggleTransferForm}
                   />
-                  <Button
-                    content='Sell on Auction'
-                    onClick={toggleAuctionForm}
-                  />
+                  {apiSettings?.auction &&
+                    <Button
+                      content='Sell on Auction'
+                      onClick={toggleAuctionForm}
+                    />
+                  }
                 </>
               )}
               {(!account && !!tokenPrice) && (

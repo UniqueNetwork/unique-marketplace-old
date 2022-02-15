@@ -16,6 +16,8 @@ import closeIcon from './closeIconBlack.svg';
 import { CrossAccountId, fromStringToBnString, normalizeAccountId, subToEth } from '@polkadot/react-hooks/utils';
 import { web3Accounts, web3FromSource } from '@polkadot/extension-dapp';
 import Select from '../UIKitComponents/SelectUIKit/Select';
+import { Loader } from 'semantic-ui-react';
+import { useSettings } from '@polkadot/react-api/useSettings';
 
 const { kusamaDecimals, uniqueCollectionIds } = envConfig;
 
@@ -35,6 +37,8 @@ function StartAuctionModal({ account, closeModal, collection, tokenId, tokenOwne
   const [minStep, setMinStep] = useState<string>();
   const [startingPrice, setStartingPrice] = useState<string>();
   const [duration, setDuration] = useState<number>();
+  const [isLoading, setIsLoading] = useState(false);
+  const { apiSettings } = useSettings();
 
   const { uniqueApi } = envConfig;
   const apiUrl = process.env.NODE_ENV === 'development' ? '' : uniqueApi;
@@ -90,7 +94,7 @@ function StartAuctionModal({ account, closeModal, collection, tokenId, tokenOwne
     // todo form validation
 
     const recipient = {
-      Substrate: '5DymvaYC4QNyA2KSR1kzaa44YhiPLWgD71ymgT8pSujzpnsg', // todo get /api/settings -> auction.address
+      Substrate: apiSettings?.auction?.address
     };
 
     let extrinsic = api.tx.unique.transfer(recipient, collection.id, tokenId, tokenPart);
@@ -121,7 +125,7 @@ function StartAuctionModal({ account, closeModal, collection, tokenId, tokenOwne
     };
 
     try {
-      // todo loader
+      setIsLoading(true);
       const response = await fetch(url, {
         method: 'POST',
         body: JSON.stringify(data),
@@ -130,7 +134,8 @@ function StartAuctionModal({ account, closeModal, collection, tokenId, tokenOwne
         }
       });
       const json = await response.json();
-      // todo close modal
+      setIsLoading(false);
+      closeModal();
       alert(`Token put up for auction ${JSON.stringify(json)}`);
     } catch (error) {
       console.error('Ошибка:', error);
@@ -185,10 +190,18 @@ function StartAuctionModal({ account, closeModal, collection, tokenId, tokenOwne
         </WarningText>
         <ButtonWrapper>
           <Button
-            content='Confirm'
-            disabled={!minStep || !duration}
+            disabled={isLoading || !minStep || !duration}
             onClick={startAuction}
-          />
+          >
+            <>
+              {isLoading ? (
+                <Loader
+                  active
+                  inline='centered'
+                />
+              ) : 'Confirm'}
+            </>
+          </Button>
         </ButtonWrapper>
       </ModalContent>
     </SellModalStyled>

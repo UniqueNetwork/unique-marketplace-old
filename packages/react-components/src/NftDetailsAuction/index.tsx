@@ -94,9 +94,9 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
       )
     },
     {
-      title: 'Author',
-      dataIndex: 'author',
-      key: 'author',
+      title: 'Bidder',
+      dataIndex: 'bidder',
+      key: 'bidder',
       width: 150,
       render: (rowNumber: number) => (
         <Text size="m" color="primary-500">

@@ -19,6 +19,8 @@ import { fromStringToBnString } from '@polkadot/react-hooks/utils';
 import { encodeAddress } from '@polkadot/util-crypto/address/encode';
 
 import closeIcon from './closeIconBlack.svg';
+import { Loader } from 'semantic-ui-react';
+import { useSettings } from '@polkadot/react-api/useSettings';
 
 const { uniqueApi } = envConfig;
 const apiUrl = process.env.NODE_ENV === 'development' ? '' : uniqueApi;
@@ -37,6 +39,8 @@ interface Props {
 function PlaceABetModal({ account, closeModal, collection, tokenId, tokenOwner, updateTokens }: Props): React.ReactElement<Props> {
   const { api } = useApi();
   const { kusamaApi, getKusamaTransferFee } = useKusamaApi(account || '');
+  const [isLoading, setIsLoading] = useState(false);
+  const { apiSettings } = useSettings();
 
   const minBid = 123 // todo get from backend;
   const lastBid = 1 // todo get from backend;
@@ -55,7 +59,7 @@ function PlaceABetModal({ account, closeModal, collection, tokenId, tokenOwner, 
     // todo validation form
 
     const recipient = {
-      Substrate: '5DymvaYC4QNyA2KSR1kzaa44YhiPLWgD71ymgT8pSujzpnsg', // todo get /api/settings -> auction.address
+      Substrate: apiSettings?.auction?.address 
     };
 
     const extrinsic = kusamaApi.tx.balances.transfer(
@@ -83,7 +87,7 @@ function PlaceABetModal({ account, closeModal, collection, tokenId, tokenOwner, 
     };
 
     try {
-      // todo loader
+      setIsLoading(true);
       const response = await fetch(url, {
         method: 'POST',
         body: JSON.stringify(data),
@@ -92,7 +96,8 @@ function PlaceABetModal({ account, closeModal, collection, tokenId, tokenOwner, 
         }
       });
       const json = await response.json();
-      // todo close modal
+      setIsLoading(false);
+      closeModal();
     } catch (error) {
       console.error('Ошибка:', error);
     }
@@ -130,10 +135,18 @@ function PlaceABetModal({ account, closeModal, collection, tokenId, tokenOwner, 
       <ModalActions>
         <ButtonWrapper>
           <Button
-            content='Confirm'
-            disabled={false /* parseInt(bid) < startBid */}
+            disabled={false /* isLoading || parseInt(bid) < startBid */}
             onClick={placeABid}
-          />
+          >
+            <>
+              {isLoading ? (
+                <Loader
+                  active
+                  inline='centered'
+                />
+              ) : 'Confirm'}
+            </>
+          </Button>
         </ButtonWrapper>
       </ModalActions>
     </ModalStyled>
