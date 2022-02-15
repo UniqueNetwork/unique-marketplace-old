@@ -32,7 +32,6 @@ function TransferModal ({ account, closeModal, collection, tokenId, tokenOwner, 
   const { queueExtrinsic } = useContext(StatusContext);
   const [tokenPart] = useState<number>(1);
   const [isAddressError, setIsAddressError] = useState<boolean>(true);
-  console.log('tokenOwner', tokenOwner, 'account', account, 'recipient', recipient);
 
   const transferToken = useCallback(() => {
     if (!account) {
