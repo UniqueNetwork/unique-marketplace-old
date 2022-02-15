@@ -22,9 +22,6 @@ import closeIcon from './closeIconBlack.svg';
 import { Loader } from 'semantic-ui-react';
 import { useSettings } from '@polkadot/react-api/useSettings';
 
-const { uniqueApi } = envConfig;
-const apiUrl = process.env.NODE_ENV === 'development' ? '' : uniqueApi;
-
 const { kusamaDecimals, uniqueCollectionIds } = envConfig;
 
 interface Props {
@@ -79,7 +76,7 @@ function PlaceABetModal({ account, closeModal, collection, tokenId, tokenOwner, 
     await extrinsic.signAsync(signer.address, { signer: injector.signer });
     const tx = extrinsic.toJSON();
 
-    const url = `${apiUrl}/auction/place_bid`;
+    const url = `/auction/place_bid`;
     const data = {
       tokenId,
       tx,

@@ -37,7 +37,7 @@ export const useSettings = () => {
   const apiUrl = uniqueApi;
 
   const getSettings = useCallback(() => {
-    const url = `${apiUrl}/api/settings`; // todo why proxy? wat?
+    const url = `/api/settings`; // todo why proxy? wat?
 
     fetchData<Settings>(url).subscribe((result: Settings) => {
       if (result?.blockchain) {

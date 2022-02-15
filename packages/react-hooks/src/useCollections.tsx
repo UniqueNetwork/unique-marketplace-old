@@ -85,8 +85,7 @@ export function useCollections () {
   const mountedRef = useIsMountedRef();
   const filtersRef = useRef<Filters>();
   const { getDetailedCollectionInfo } = useCollection();
-  const { uniqueApi, uniqueCollectionIds } = envConfig;
-  const apiUrl = process.env.NODE_ENV === 'development' ? '' : uniqueApi;
+  const { uniqueCollectionIds } = envConfig;
 
   const getTokensOfCollection = useCallback(async (collectionId: string, ownerId: string): Promise<string[]> => {
     if (!api || !collectionId || !ownerId) {
@@ -112,7 +111,7 @@ export function useCollections () {
   const getOffers = useCallback((page: number, pageSize: number, filters?: Filters) => {
     try {
       mountedRef.current && setOffersLoading(true);
-      let url = `${apiUrl}/Offers?page=${page}&pageSize=${pageSize}`;
+      let url = `/Offers?page=${page}&pageSize=${pageSize}`;
 
       // reset offers before loading first page
       if (page === 1) {
@@ -174,7 +173,7 @@ export function useCollections () {
       console.log('getOffers error', e);
       setOffersLoading(false);
     }
-  }, [apiUrl, fetchData, mountedRef, uniqueCollectionIds]);
+  }, [fetchData, mountedRef, uniqueCollectionIds]);
 
   /**
    * Return the list of token trades
@@ -185,7 +184,7 @@ export function useCollections () {
     pageSize,
     sort }: { account?: string, collectionIds?: string[], page: number, pageSize: number, sort?: string}) => {
     try {
-      let url = `${apiUrl}/Trades`;
+      let url = `/Trades`;
 
       if (account && account.length) {
         url = `${url}/${account}`;
@@ -225,7 +224,7 @@ export function useCollections () {
       console.log('getTrades error', e);
       setTradesLoading(false);
     }
-  }, [apiUrl, fetchData, mountedRef]);
+  }, [fetchData, mountedRef]);
 
   const presetTokensCollections = useCallback(async (): Promise<NftCollectionInterface[]> => {
     if (!api) {
