@@ -223,6 +223,7 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
 
   return (
     <div className='toke-details'>
+      NFT Auction
       <div
         className='go-back'
       >

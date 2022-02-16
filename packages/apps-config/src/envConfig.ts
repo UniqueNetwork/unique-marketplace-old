@@ -26,7 +26,6 @@ export type EnvConfigType = {
   uniqueSubstrateApiRpc: string;
   value?: number; // 0
   version?: string;
-  whiteLabelUrl?: string;
 };
 
 declare global {
@@ -86,7 +85,6 @@ const envConfig: EnvConfigType = {
   uniqueSubstrateApiRpc: window.ENV?.UNIQUE_SUBSTRATE_API_RPC || process.env.UNIQUE_SUBSTRATE_API_RPC,
   value: +window.ENV?.VALUE || process.env.VALUE,
   version: window.ENV?.VERSION || process.env.VERSION,
-  whiteLabelUrl: window.ENV?.WHITE_LABEL_URL || process.env.WHITE_LABEL_URL
 };
 
 export default envConfig;

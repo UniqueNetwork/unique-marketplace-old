@@ -8,6 +8,8 @@ const { merge } = require('webpack-merge');
 
 const baseConfig = require('./webpack.base.cjs');
 
+require('dotenv-defaults').config();
+
 module.exports = merge(
   baseConfig(__dirname, 'development'),
   {
@@ -17,24 +19,24 @@ module.exports = merge(
       proxy: {
         '/Offers': {
           changeOrigin: true,
-          target: 'https://dev-api.unique.network'
+          target: process.env.UNIQUE_API
+        },
+        '/Offer': {
+          changeOrigin: true,
+          target: process.env.UNIQUE_API
         },
         '/Trades': {
           changeOrigin: true,
-          target: 'https://dev-api.unique.network'
+          target: process.env.UNIQUE_API
         },
         '/auction': {
           changeOrigin: true,
-          target: 'https://dev-api.unique.network'
+          target: process.env.UNIQUE_API
         },
         '/api/settings': {
           changeOrigin: true,
-          target: 'https://market-api-opal.unique.network'
+          target: process.env.UNIQUE_API
         },
-        [process.env.WHITE_LABEL_URL]: {
-          changeOrigin: true,
-          target: process.env.WHITE_LABEL_URL
-        }
       },
       static: path.resolve(__dirname, 'build')
     },

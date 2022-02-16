@@ -3,14 +3,11 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { useApi } from '@polkadot/react-hooks/useApi';
-import envConfig from '@polkadot/apps-config/envConfig';
 import { OfferType } from './useCollections';
 
 
 export function useOffer(collectionId: string, tokenId: string): {offer?: OfferType} {
   const { api, isApiConnected, isApiReady } = useApi();
-  const { uniqueApi } = envConfig;
-  const apiUrl = process.env.NODE_ENV === 'development' ? '' : uniqueApi;
 
   const isApi = api && isApiReady && isApiConnected;
 
@@ -26,7 +23,7 @@ export function useOffer(collectionId: string, tokenId: string): {offer?: OfferT
     }
 
     try {
-      fetch(`${apiUrl}/Offer/${collectionId}/${tokenId}`)
+      fetch(`/Offer/${collectionId}/${tokenId}`)
         .then((response) => {
           return response.json();
         })
