@@ -115,10 +115,6 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
   const tokenPrice = (tokenAsk?.flagActive === '1' && tokenAsk?.price && tokenAsk?.price.gtn(0)) ? tokenAsk.price : 0;
   const isOwnerContract = !uOwnIt && tokenInfo?.owner?.Ethereum?.toLowerCase() === contractAddress;
 
-  console.log('offer from NFT Card', offer);
-
-  console.log('bids', bids);
-
   const goBack = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     history.back();
@@ -223,7 +219,6 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
 
   return (
     <div className='toke-details'>
-      NFT Auction
       <div
         className='go-back'
       >
