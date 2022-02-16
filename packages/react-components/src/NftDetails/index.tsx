@@ -90,13 +90,12 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
   }, [escrowAddress, getKusamaTransferFee, kusamaExistentialDeposit]);
 
   const ksmFeesCheck = useCallback(async () => {
-    // tokenPrice + marketFees + kusamaFees * 2
     if (tokenAsk?.price && escrowAddress) {
       const kusamaFees: BN | null = await getKusamaTransferFee(escrowAddress, tokenAsk.price);
 
       if (kusamaFees) {
         setKusamaFees(kusamaFees);
-        const balanceNeeded = tokenAsk.price.add(kusamaFees.muln(2));
+        const balanceNeeded = tokenAsk.price.add(kusamaFees);
         const isLow = !!kusamaAvailableBalance?.add(deposited || new BN(0)).lte(balanceNeeded);
 
         setLowKsmBalanceToBuy(isLow);
@@ -240,7 +239,6 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
                 <Header as={'h2'}>
                   {formatPrice(formatKsmBalance(tokenPrice))} KSM
                 </Header>
-                {/* @todo - substrate commission from price - fixed? */}
                 <p>Price: {getMarketPrice(tokenPrice)} KSM, Fee: {formatKsmBalance(getRevertedFee(tokenPrice))} KSM</p>
                 {/* { (!uOwnIt && !transferStep && tokenAsk) && lowBalanceToBuy && (
                   <div className='warning-block'>Your balance is too low to pay fees. <a href='https://t.me/unique2faucetbot'
@@ -292,11 +290,11 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
                   <>
                     <WarningText
                       className='info'
-                      text={`A small Kusama Network transaction fee up to ${formatKsmBalance(kusamaFees.muln(2))} KSM will be
+                      text={`A small Kusama Network transaction fee up to ${formatKsmBalance(kusamaFees)} KSM will be
                       applied to the transaction`}
                     />
                     <Button
-                      content={`Buy it - ${formatKsmBalance(tokenPrice.add(kusamaFees.muln(2)))} KSM`}
+                      content={`Buy it - ${formatKsmBalance(tokenPrice.add(kusamaFees))} KSM`}
                       disabled={lowKsmBalanceToBuy}
                       onClick={onBuy}
                     />
