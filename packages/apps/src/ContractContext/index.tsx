@@ -67,7 +67,7 @@ function Contracts ({ account, children }: Props): React.ReactElement<Props> | n
   const [ethAccount, setEthAccount] = useState<string>();
   const abiRef = useRef<Contract>();
   const accountRef = useRef<string>();
-  const { contractAddress, minPrice, uniqueSubstrateApiRpc } = envConfig;
+  const { contractAddress, minPrice, uniqueSubstrateApi } = envConfig;
 
   console.log('ethAccount', ethAccount, 'deposited', deposited?.toString());
 
@@ -111,7 +111,7 @@ function Contracts ({ account, children }: Props): React.ReactElement<Props> | n
   }), [account, ethAccount, matcherContractInstance, deposited, evmCollectionInstance, getUserDeposit, web3Instance]);
 
   const initAbi = useCallback(() => {
-    if (account && ethAccount && !abiRef.current && contractAddress) {
+    if (account && ethAccount && !abiRef.current && contractAddress && uniqueSubstrateApi) {
       console.log('mySubEthAddress', evmToAddress(ethAccount, 42, 'blake2'));
       /* options
       {
@@ -123,7 +123,14 @@ function Contracts ({ account, children }: Props): React.ReactElement<Props> | n
         }
       }
        */
-      const provider = new Web3.providers.HttpProvider(uniqueSubstrateApiRpc);
+      const provider = new Web3.providers.WebsocketProvider(uniqueSubstrateApi, {
+        reconnect: {
+          auto: true,
+          delay: 5000,
+          maxAttempts: 5,
+          onTimeout: false
+        }
+      });
       // const web3 = new Web3(window.ethereum);
       const web3 = new Web3(provider);
 
@@ -144,7 +151,7 @@ function Contracts ({ account, children }: Props): React.ReactElement<Props> | n
         // User has denied account access to DApp...
       }
     }
-  }, [account, contractAddress, ethAccount, uniqueSubstrateApiRpc]);
+  }, [account, contractAddress, ethAccount, uniqueSubstrateApi]);
 
   useEffect(() => {
     void initAbi();
