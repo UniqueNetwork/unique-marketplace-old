@@ -14,6 +14,12 @@ export interface TokenDetailsInterface {
   variableData?: string;
 }
 
+export interface NonFungibleTokenDTO {
+  owner?: { ethereum?: string, substrate?: string };
+  constData?: string;
+  variableData?: string;
+}
+
 interface UseTokenInterface {
   getDetailedReFungibleTokenInfo: (collectionId: string, tokenId: string) => Promise<TokenDetailsInterface>;
   getDetailedTokenInfo: (collectionId: string, tokenId: string) => Promise<TokenDetailsInterface>
@@ -41,7 +47,16 @@ export function useToken (): UseTokenInterface {
         variableData
       }; */
 
-      return (await api.query.nonfungible.tokenData(collectionId, tokenId)).toJSON() as TokenDetailsInterface;
+      const tokenDetailsDTO: NonFungibleTokenDTO = (await api.query.nonfungible.tokenData(collectionId, tokenId)).toJSON() as NonFungibleTokenDTO;
+
+      return {
+        constData: tokenDetailsDTO.constData,
+        owner: {
+          Ethereum: tokenDetailsDTO?.owner?.ethereum,
+          Substrate: tokenDetailsDTO?.owner?.substrate
+        },
+        variableData: tokenDetailsDTO.variableData
+      };
     } catch (e) {
       console.log('getDetailedTokenInfo error', e);
 
