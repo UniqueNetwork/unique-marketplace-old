@@ -86,7 +86,7 @@ export function useCollections () {
   const filtersRef = useRef<Filters>();
   const { getDetailedCollectionInfo } = useCollection();
   const { uniqueApi, uniqueCollectionIds } = envConfig;
-  const apiUrl = process.env.NODE_ENV === 'development' ? '' : uniqueApi;
+  const apiUrl = uniqueApi;
 
   const getTokensOfCollection = useCallback(async (collectionId: string, ownerId: string): Promise<string[]> => {
     if (!api || !collectionId || !ownerId) {

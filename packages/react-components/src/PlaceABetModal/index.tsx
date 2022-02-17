@@ -21,8 +21,9 @@ import { encodeAddress } from '@polkadot/util-crypto/address/encode';
 import closeIcon from './closeIconBlack.svg';
 import { Loader } from 'semantic-ui-react';
 import { useSettings } from '@polkadot/react-api/useSettings';
+import { keyring } from '@polkadot/ui-keyring';
 const { uniqueApi } = envConfig;
-const apiUrl = process.env.NODE_ENV === 'development' ? '' : uniqueApi;
+const apiUrl = uniqueApi;
 
 const { kusamaDecimals, uniqueCollectionIds } = envConfig;
 
@@ -66,16 +67,11 @@ function PlaceABetModal({ account, closeModal, collection, tokenId, tokenOwner, 
       fromStringToBnString(bid, kusamaDecimals)
     );
 
-    const accounts = await web3Accounts();
-    const signer = accounts.find((a) => a.address === account);
+    const pair = keyring.getPair(account);
+    const { meta: { source } } = pair;
+    const injector = await web3FromSource(source);
 
-    if (!signer) {
-      return;
-    }
-
-    const injector = await web3FromSource(signer.meta.source);
-
-    await extrinsic.signAsync(signer.address, { signer: injector.signer });
+    await extrinsic.signAsync(account, { signer: injector.signer });
     const tx = extrinsic.toJSON();
 
     const url = `${apiUrl}/auction/place_bid`;

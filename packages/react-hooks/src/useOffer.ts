@@ -9,7 +9,7 @@ import { OfferType } from './useCollections';
 export function useOffer(collectionId: string, tokenId: string): {offer?: OfferType} {
   const { api, isApiConnected, isApiReady } = useApi();
   const { uniqueApi } = envConfig;
-  const apiUrl = process.env.NODE_ENV === 'development' ? '' : uniqueApi;
+  const apiUrl = uniqueApi;
 
   const isApi = api && isApiReady && isApiConnected;
 
