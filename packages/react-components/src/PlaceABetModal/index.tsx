@@ -71,7 +71,6 @@ function PlaceABetModal({ account, closeModal, collection, offer, tokenId, token
     const injector = await web3FromSource(source);
 
     await extrinsic.signAsync(account, { signer: injector.signer });
-    console.log('extrinsic',extrinsic);
     const tx = extrinsic.toJSON();
 
     const url = `${apiUrl}/auction/place_bid`;
