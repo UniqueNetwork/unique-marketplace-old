@@ -1,4 +1,4 @@
-// Copyright 2017-2021 @polkadot/react-components authors & contributors
+// Copyright 2017-2022 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import type { KeyringOption$Type, KeyringOptions, KeyringSectionOption, KeyringSectionOptions } from '@polkadot/ui-keyring/options/types';
@@ -13,6 +13,7 @@ import { withMulti, withObservable } from '@polkadot/react-api/hoc';
 import { keyring } from '@polkadot/ui-keyring';
 import { createOptionItem } from '@polkadot/ui-keyring/options/item';
 import { isNull, isUndefined } from '@polkadot/util';
+import { decodeAddress, encodeAddress } from '@polkadot/util-crypto';
 
 import Dropdown from '../Dropdown';
 import { getAddressName } from '../util';
@@ -74,9 +75,11 @@ function transformToAccountId (value: string): string | undefined {
 
   const accountId = transformToAddress(value);
 
+  const normalizeSubstrate = encodeAddress(decodeAddress(accountId));
+
   return !accountId
     ? undefined
-    : accountId;
+    : normalizeSubstrate;
 }
 
 function createOption (address: string): Option {
@@ -212,7 +215,7 @@ class InputAddress extends React.PureComponent<Props, State> {
     }
 
     return getAddressName(value);
-  }
+  };
 
   private getLastOptionValue (): KeyringSectionOption | undefined {
     const available = this.getFiltered();
@@ -244,7 +247,7 @@ class InputAddress extends React.PureComponent<Props, State> {
         ? transformToAccountId(address)
         : undefined
     );
-  }
+  };
 
   private onChangeMulti = (addresses: string[]): void => {
     const { onChangeMulti } = this.props;
@@ -256,7 +259,7 @@ class InputAddress extends React.PureComponent<Props, State> {
           .filter((address) => address as string) as string[]
       );
     }
-  }
+  };
 
   private onSearch = (filteredOptions: KeyringSectionOptions, _query: string): KeyringSectionOptions => {
     const { isInput = true } = this.props;
@@ -288,7 +291,7 @@ class InputAddress extends React.PureComponent<Props, State> {
 
       return !(isNull(item.value) || isUndefined(item.value)) || (!isLast && !!hasNext);
     });
-  }
+  };
 }
 
 const ExportedComponent = withMulti(
