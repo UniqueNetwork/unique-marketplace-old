@@ -5,16 +5,14 @@ import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection
 
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import Form from 'semantic-ui-react/dist/commonjs/collections/Form/Form';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button';
 import Modal from 'semantic-ui-react/dist/commonjs/modules/Modal/Modal';
 
-import { DeriveBalancesAll } from '@polkadot/api-derive/types';
+import BN from 'bn.js';
 import envConfig from '@polkadot/apps-config/envConfig';
-import { web3Accounts, web3FromSource } from '@polkadot/extension-dapp';
+import { web3FromSource } from '@polkadot/extension-dapp';
 import { Input } from '@polkadot/react-components';
-import { useApi, useCall, useKusamaApi } from '@polkadot/react-hooks';
-import { formatKsmBalance } from '@polkadot/react-hooks/useKusamaApi';
+import { useApi, useKusamaApi } from '@polkadot/react-hooks';
 import { fromStringToBnString } from '@polkadot/react-hooks/utils';
 import { encodeAddress } from '@polkadot/util-crypto/address/encode';
 
@@ -22,32 +20,33 @@ import closeIcon from './closeIconBlack.svg';
 import { Loader } from 'semantic-ui-react';
 import { useSettings } from '@polkadot/react-api/useSettings';
 import { keyring } from '@polkadot/ui-keyring';
+import { OfferType } from '@polkadot/react-hooks/useCollections';
 const { uniqueApi } = envConfig;
 const apiUrl = uniqueApi;
 
-const { kusamaDecimals, uniqueCollectionIds } = envConfig;
+const { kusamaDecimals } = envConfig;
 
 interface Props {
-  account?: string;
+  offer: OfferType;
   collection: NftCollectionInterface;
   closeModal: () => void;
   tokenId: string;
+  account?: string;
   tokenOwner?: { Ethereum?: string, Substrate?: string };
   updateTokens: (collectionId: string) => void;
 }
 
-function PlaceABetModal({ account, closeModal, collection, tokenId, tokenOwner, updateTokens }: Props): React.ReactElement<Props> {
+function PlaceABetModal({ account, closeModal, collection, offer, tokenId, tokenOwner, updateTokens }: Props): React.ReactElement<Props> {
   const { api } = useApi();
-  const { kusamaApi, getKusamaTransferFee } = useKusamaApi(account || '');
+  const { kusamaApi, formatKsmBalance, getKusamaTransferFee } = useKusamaApi(account || '');
   const [isLoading, setIsLoading] = useState(false);
+  
   const { apiSettings } = useSettings();
+  const { auction:{bids, priceStep, startPrice, status, stopAt}, price, seller } = offer;
 
-  const minBid = 123 // todo get from backend;
-  const lastBid = 1 // todo get from backend;
-  const minStep = 1 // todo get from backend;
-  const startBid = lastBid ? lastBid + minStep : minBid;
+  const minBid = bids.length > 0 ? Number(price) + Number(priceStep) : price;
 
-  const [bid, setBid] = useState<string>(String(startBid));
+  const [bid, setBid] = useState<string>(formatKsmBalance(new BN(minBid)));
 
   const kusamaTransferFee = 0.123; // todo getKusamaTransferFee(recipient, value) packages/react-components/src/NftDetails/index.tsx line 80
 
@@ -72,6 +71,7 @@ function PlaceABetModal({ account, closeModal, collection, tokenId, tokenOwner, 
     const injector = await web3FromSource(source);
 
     await extrinsic.signAsync(account, { signer: injector.signer });
+    console.log('extrinsic',extrinsic);
     const tx = extrinsic.toJSON();
 
     const url = `${apiUrl}/auction/place_bid`;
@@ -120,12 +120,12 @@ function PlaceABetModal({ account, closeModal, collection, tokenId, tokenOwner, 
           type='number'
           value={bid}
         />
-        <InputDescription className='input-description'>{`Минимальная ставка ${minBid} KSM (последняя ${lastBid} KSM + шаг ${minStep} KSM)`} </InputDescription>
-        <WarningText>
+        <InputDescription className='input-description'>{`Минимальная ставка ${minBid} KSM`} </InputDescription>
+        {bid && <WarningText>
           <span>
             A fee of ~ {kusamaTransferFee} KSM can be applied to the transaction
           </span>
-        </WarningText>
+        </WarningText>}
       </ModalContent>
       <ModalActions>
         <ButtonWrapper>

@@ -12,57 +12,51 @@ import Image from 'semantic-ui-react/dist/commonjs/elements/Image';
 import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
 import envConfig from '@polkadot/apps-config/envConfig';
-import { TransferModal, StartAuctionModal, PlaceABetModal, WarningText } from '@polkadot/react-components';
-import formatPrice from '@polkadot/react-components/util/formatPrice';
+import { PlaceABetModal, WarningText } from '@polkadot/react-components';
 import { useBalance, useDecoder, useMarketplaceStages, useSchema } from '@polkadot/react-hooks';
 import { shortAddress, subToEth } from '@polkadot/react-hooks/utils';
 import { OfferType } from '@polkadot/react-hooks/useCollections';
 
 import BuySteps from './BuySteps';
 import SaleSteps from './SaleSteps';
-import SetPriceModal from './SetPriceModal';
 import logoKusama from '../../../../packages/apps/public/logos/kusama.svg';
 import clock from '../../../../packages/apps/public/icons/clock.svg';
-import { useTimeToFinish } from '@polkadot/react-hooks/useTimeToFinish';
+import { useTimeToFinishAuction } from '@polkadot/react-hooks/useTimeToFinishAuction';
 import Table, { TColor, TSize } from '../Table2/TableContainer';
 import Text from '../UIKitComponents/Text/Text';
 import { useBidStatus } from '@polkadot/react-hooks/useBidStatus';
+import { useSettings } from '@polkadot/react-api/useSettings';
+import { getFormatedBidsTime } from '../util';
 
 interface NftDetailsAuctionProps {
   account: string;
   offer: OfferType;
 }
 
-let dataArray = [
-  {
-    time: '15-09-2021, 13:50:29'
-  }
-];
-
 function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.ReactElement<NftDetailsAuctionProps> {
 
   const query = new URLSearchParams(useLocation().search);
   const tokenId = query.get('tokenId') || '';
   const collectionId = query.get('collectionId') || '';
-  const [showTransferForm, setShowTransferForm] = useState<boolean>(false);
-  const [showAuctionForm, setShowAuctionForm] = useState<boolean>(false);
   const [showBetForm, setShowBetForm] = useState<boolean>(false);
   const [ethAccount, setEthAccount] = useState<string>();
   const [isInWhiteList, setIsInWhiteList] = useState<boolean>(false);
-  const [lowKsmBalanceToBuy, setLowKsmBalanceToBuy] = useState<boolean>(false);
-  const [kusamaFees, setKusamaFees] = useState<BN | null>(null);
+  const [whiteListAmount, setWhiteListAmount] = useState<BN | null>(null);
+  const [fee, setFee] = useState<BN>();
   const { balance, kusamaExistentialDeposit } = useBalance(account);
   const { hex2a } = useDecoder();
   const { attributes, collectionInfo, tokenUrl } = useSchema(account, collectionId, tokenId);
-  const [tokenPriceForSale, setTokenPriceForSale] = useState<string>('');
-  const { cancelStep, checkWhiteList, deposited, formatKsmBalance, getKusamaTransferFee,
-    getRevertedFee, kusamaAvailableBalance, readyToAskPrice, sendCurrentUserAction, setPrice,
-    setReadyToAskPrice, tokenAsk, tokenInfo, transferStep } = useMarketplaceStages(account, ethAccount, collectionInfo, tokenId);
-  const { contractAddress, escrowAddress, kusamaDecimals } = envConfig;
-  const { auction, price, seller } = offer;
-  const { bids, priceStep, startPrice, status, stopAt } = auction;
-  const timeLeft = useTimeToFinish(stopAt);
+  const { cancelStep, checkWhiteList, formatKsmBalance, getKusamaTransferFee, kusamaAvailableBalance, sendCurrentUserAction, 
+    tokenAsk, tokenInfo, transferStep } = useMarketplaceStages(account, ethAccount, collectionInfo, tokenId);
+  const { contractAddress } = envConfig;
+  const { auction: { bids, priceStep, stopAt }, price, seller } = offer;
+  const timeLeft = useTimeToFinishAuction(stopAt);
   const { yourBidIsLeading, yourBidIsOutbid } = useBidStatus(bids, account || '');
+  const { apiSettings } = useSettings();
+  const escrowAddress = apiSettings?.blockchain?.escrowAddress;
+  const commission = apiSettings?.auction?.commission;
+
+  const bid = bids.length > 0 ? Number(price) + Number(priceStep) : price;
 
   const columnsArray = [
     {
@@ -89,7 +83,7 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
       icon: 'calendar',
       render: (rowNumber: number) => (
         <Text size="m" color="blue-grey-600">
-          {dataArray[0].time}
+          {getFormatedBidsTime(bids[rowNumber].createdAt)}
         </Text>
       )
     },
@@ -107,8 +101,6 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
   ]
 
   const uSellIt = seller === account;
-  const fee = 123; //todo get fee
-
   // should I take into account Substrate and Ethereum?
   const uOwnIt = tokenInfo?.owner?.Substrate === account || tokenInfo?.owner?.Ethereum?.toLowerCase() === ethAccount || uSellIt;
 
@@ -120,75 +112,42 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
     history.back();
   }, []);
 
-  const onSavePrice = useCallback(() => {
-    const parts = tokenPriceForSale.split('.');
-    const priceLeft = new BN(parts[0]).mul(new BN(10).pow(new BN(12)));
-    const priceRight = new BN(parseFloat(`0.${parts[1]}`) * Math.pow(10, kusamaDecimals));
-    const price = priceLeft.add(priceRight);
-
-    setPrice(price);
-  }, [kusamaDecimals, setPrice, tokenPriceForSale]);
-
   const onTransferSuccess = useCallback(() => {
-    setShowTransferForm(false);
     sendCurrentUserAction('UPDATE_TOKEN_STATE');
   }, [sendCurrentUserAction]);
 
-  const closeAskModal = useCallback(() => {
-    setReadyToAskPrice(false);
-    sendCurrentUserAction('ASK_NOT_FILLED');
-  }, [setReadyToAskPrice, sendCurrentUserAction]);
+  const whiteListFeeCheck = useCallback(async () => {
+    if (escrowAddress && kusamaExistentialDeposit) {
+      const transferMinDepositFee: BN | null = await getKusamaTransferFee(escrowAddress, kusamaExistentialDeposit);
 
-  const ksmFeesCheck = useCallback(async () => {
-    // tokenPrice + marketFees + kusamaFees * 2
-    if (tokenAsk?.price && escrowAddress) {
-      const kusamaFees: BN | null = await getKusamaTransferFee(escrowAddress, tokenAsk.price);
-
-      if (kusamaFees) {
-        setKusamaFees(kusamaFees);
-        const balanceNeeded = tokenAsk.price.add(kusamaFees.muln(2));
-        const isLow = !!kusamaAvailableBalance?.add(deposited || new BN(0)).lte(balanceNeeded);
-
-        setLowKsmBalanceToBuy(isLow);
+      if (transferMinDepositFee) {
+        setWhiteListAmount(transferMinDepositFee.add(kusamaExistentialDeposit));
       }
     }
-  }, [tokenAsk, escrowAddress, getKusamaTransferFee, kusamaAvailableBalance, deposited]);
+  }, [escrowAddress, getKusamaTransferFee, kusamaExistentialDeposit]);
 
-  const getMarketPrice = useCallback((price: BN) => {
-    return formatPrice(formatKsmBalance(price.sub(getRevertedFee(price))));
-  }, [formatKsmBalance, getRevertedFee]);
+  // marketFee + kusamaFee
+  const getFee = useCallback(async () => {
+    if (bid && commission && escrowAddress) {
+      const kusamaFee: BN | null = await getKusamaTransferFee(escrowAddress, new BN(bid));
+      const marketCommission = Number(bid) / 100 * commission;
+      const marketFee: BN | null = new BN(marketCommission);
+
+      if (kusamaFee) {
+        setFee(kusamaFee.add(marketFee));
+      } else {
+        setFee(marketFee);
+      }
+    }
+  }, [bid, commission, escrowAddress, getKusamaTransferFee]);
 
   const onCancel = useCallback(() => {
     sendCurrentUserAction('CANCEL');
   }, [sendCurrentUserAction]);
 
-  const onBuy = useCallback(() => {
-    sendCurrentUserAction('BUY');
-  }, [sendCurrentUserAction]);
-
-  const toggleTransferForm = useCallback(() => {
-    setShowTransferForm(!showTransferForm);
-  }, [showTransferForm]);
-
-  const toggleAuctionForm = useCallback(() => {
-    setShowAuctionForm(!showAuctionForm);
-  }, [showAuctionForm]);
-
   const toggleBetForm = useCallback(() => {
     setShowBetForm(!showBetForm);
   }, [showBetForm]);
-
-  const onSell = useCallback(() => {
-    sendCurrentUserAction('SELL');
-  }, [sendCurrentUserAction]);
-
-  const closeTransferModal = useCallback(() => {
-    setShowTransferForm(false);
-  }, []);
-
-  const closeAuctionModal = useCallback(() => {
-    setShowAuctionForm(false);
-  }, []);
 
   const closeBetModal = useCallback(() => {
     setShowBetForm(false);
@@ -204,8 +163,8 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
   }, [checkWhiteList, ethAccount]);
 
   useEffect(() => {
-    void ksmFeesCheck();
-  }, [ksmFeesCheck]);
+    void getFee();
+  }, [getFee]);
 
   useEffect(() => {
     void checkIsInWhiteList();
@@ -219,6 +178,7 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
 
   return (
     <div className='toke-details'>
+      NFT Auction
       <div
         className='go-back'
       >
@@ -281,23 +241,6 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
                 })}
               </div>
             )}
-            {!!tokenPrice && (
-              <>
-                <Header as={'h2'}>
-                  {formatPrice(formatKsmBalance(tokenPrice))} KSM
-                </Header>
-                {/* @todo - substrate commission from price - fixed? */}
-                <p>Price: {getMarketPrice(tokenPrice)} KSM, Fee: {formatKsmBalance(getRevertedFee(tokenPrice))} KSM</p>
-                {/* { (!uOwnIt && !transferStep && tokenAsk) && lowBalanceToBuy && (
-                  <div className='warning-block'>Your balance is too low to pay fees. <a href='https://t.me/unique2faucetbot'
-                    rel='noreferrer nooperer'
-                    target='_blank'>Get testUNQ here</a></div>
-                )} */}
-                {(!uOwnIt && !transferStep && tokenAsk) && lowKsmBalanceToBuy && (
-                  <div className='warning-block'>Your balance is too low to buy</div>
-                )}
-              </>
-            )}
             <div className='divider' />
             {(uOwnIt && !uSellIt) && (
               <Header as='h4'>You own it!</Header>
@@ -311,22 +254,10 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
             <div className='divider' />
             <div className='price-wrapper'>
               <img src={logoKusama as string} width={32} />
-              <div className='price'>{formatKsmBalance(bids[0] ? new BN((price + priceStep + fee)) : new BN(startPrice + fee))}</div>
+              <div className='price'>{fee && formatKsmBalance(new BN(bid).add(fee))}</div>
             </div>
-            <div className='price-description'>{`price (or last bid) ${formatKsmBalance(new BN(price)) || formatKsmBalance(new BN(startPrice))} KSM + шаг + fee ${fee} KSM`}</div>
+            <div className='price-description'>{`bid ${formatKsmBalance(new BN(bid))} KSM + fee ${formatKsmBalance(fee)} KSM`}</div>
             <div className='buttons'>
-              {(uOwnIt && !uSellIt) && (
-                <>
-                  <Button
-                    content='Transfer'
-                    onClick={toggleTransferForm}
-                  />
-                  <Button
-                    content='Sell on Auction'
-                    onClick={toggleAuctionForm}
-                  />
-                </>
-              )}
               {(!account && !!tokenPrice) && (
                 <div>
                   <Button
@@ -338,30 +269,11 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
                 </div>
               )}
               <>
-                {(!uOwnIt && !transferStep && !!tokenPrice && kusamaFees) && (
-                  <>
-                    <WarningText
-                      className='info'
-                      text={`A small Kusama Network transaction fee up to ${formatKsmBalance(kusamaFees.muln(2))} KSM will be
-                      applied to the transaction`}
-                    />
-                    <Button
-                      content={`Buy it - ${formatKsmBalance(tokenPrice.add(kusamaFees.muln(2)))} KSM`}
-                      disabled={lowKsmBalanceToBuy}
-                      onClick={onBuy}
-                    />
-                  </>
-                )}
-                {
-                  (!uOwnIt) && (
-                    <Button
-                      content='Place a bid'
-                      onClick={toggleBetForm}
-                    />
-                  )
-                }
-
-                {(uSellIt && !transferStep) && (
+                <Button
+                  content='Place a bid'
+                  onClick={toggleBetForm}
+                />
+                {(uSellIt && !bids.length) && (
                   <Button
                     className='button-danger'
                     content={
@@ -395,13 +307,13 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
               {!!bids.length && <Table data={[...bids.reverse()]} columns={columnsArray}></Table>}
             </div>
 
-            {!!(uOwnIt && !uSellIt && !isInWhiteList && kusamaExistentialDeposit) && (
+            {!!(uOwnIt && !uSellIt && !isInWhiteList && whiteListAmount) && (
               <>
-                {kusamaAvailableBalance?.gte(kusamaExistentialDeposit.muln(2))
+                {kusamaAvailableBalance?.gte(whiteListAmount)
                   ? (
                     <WarningText
                       className='info'
-                      text={`A fee of ~ ${formatKsmBalance(kusamaExistentialDeposit)} KSM may be applied to the transaction. Your address will be added to the whitelist, allowing you to make transactions without network fees.`}
+                      text={`A fee of ~ ${formatKsmBalance(whiteListAmount)} KSM may be applied to the transaction. Your address will be added to the whitelist, allowing you to make transactions without network fees.`}
                     />
                   )
                   : (
@@ -412,30 +324,10 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
                   )}
               </>
             )}
-
-            {(showTransferForm && collectionInfo) && (
-              <TransferModal
-                account={account}
-                closeModal={closeTransferModal}
-                collection={collectionInfo}
-                tokenId={tokenId}
-                tokenOwner={tokenInfo?.owner}
-                updateTokens={onTransferSuccess}
-              />
-            )}
-            {(showAuctionForm && collectionInfo) && (
-              <StartAuctionModal
-                account={account}
-                closeModal={closeAuctionModal}
-                collection={collectionInfo}
-                tokenId={tokenId}
-                tokenOwner={tokenInfo?.owner}
-                updateTokens={onTransferSuccess}
-              />
-            )}
             {(showBetForm && collectionInfo) && (
               <PlaceABetModal
                 account={account}
+                offer={offer}
                 closeModal={closeBetModal}
                 collection={collectionInfo}
                 tokenId={tokenId}
@@ -459,14 +351,6 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
           </div>
         </div>
       </div>
-      {readyToAskPrice && (
-        <SetPriceModal
-          closeModal={closeAskModal}
-          onSavePrice={onSavePrice}
-          setTokenPriceForSale={setTokenPriceForSale}
-          tokenPriceForSale={tokenPriceForSale}
-        />
-      )}
     </div>
   );
 }

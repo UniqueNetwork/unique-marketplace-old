@@ -21,7 +21,7 @@ function NftCard({ account }: NftDetailsProps): React.ReactElement<NftDetailsPro
 
   return (
     <div>
-      {!offer && <NftDetails
+      {!offer?.auction && <NftDetails
         account={account || ''}
       />}
       {offer?.auction && <NftDetailsAuction

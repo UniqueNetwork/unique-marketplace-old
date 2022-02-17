@@ -181,11 +181,13 @@ function StartAuctionModal({ account, closeModal, collection, tokenId, tokenOwne
             value={duration}
           />
         </Row>
-        <WarningText>
-          <span>
-            A fee of ~ {kusamaTransferFee} KSM can be applied to the transaction
-          </span>
-        </WarningText>
+        {!minStep || !duration &&
+          <WarningText>
+            <span>
+              A fee of ~ {kusamaTransferFee} KSM can be applied to the transaction
+            </span>
+          </WarningText>
+        }
         <ButtonWrapper>
           <Button
             disabled={isLoading || !minStep || !duration}

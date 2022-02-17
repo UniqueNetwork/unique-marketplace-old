@@ -13,7 +13,7 @@ import Card from 'semantic-ui-react/dist/commonjs/views/Card';
 import { useDecoder, useSchema } from '@polkadot/react-hooks';
 import { formatKsmBalance } from '@polkadot/react-hooks/useKusamaApi';
 import logoKusama from '../../../../../packages/apps/public/logos/kusama.svg';
-import { useTimeToFinish } from '@polkadot/react-hooks/useTimeToFinish';
+import { useTimeToFinishAuction } from '@polkadot/react-hooks/useTimeToFinishAuction';
 import { useBidStatus } from '@polkadot/react-hooks/useBidStatus';
 
 interface Props {
@@ -27,7 +27,7 @@ const NftTokenCard = ({ account, collectionId, openDetailedInformationModal, tok
   const { collectionInfo, tokenName, tokenUrl } = useSchema(account, collectionId, token.tokenId);
   const { collectionName16Decoder, hex2a } = useDecoder();
   const {bids, startPrice, status, stopAt} = token.auction;
-  const timeToFinish = useTimeToFinish(stopAt);
+  const timeToFinish = useTimeToFinishAuction(stopAt);
   const { yourBidIsLeading, yourBidIsOutbid} = useBidStatus(bids, account||'');
 
   const onCardClick = useCallback(() => {

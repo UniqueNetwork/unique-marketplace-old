@@ -26,7 +26,7 @@ export interface TokenInterface extends TokenDetailsInterface {
   id: string;
 }
 export type BidType = {
-  amount: string, bidderAddress: string
+  amount: string, bidderAddress: string, createdAt: string
 }
 
 export type OfferType = {
