@@ -16,12 +16,11 @@ import { Input } from '@polkadot/react-components';
 import { useApi, useCall, useKusamaApi } from '@polkadot/react-hooks';
 import { formatKsmBalance } from '@polkadot/react-hooks/useKusamaApi';
 import { fromStringToBnString } from '@polkadot/react-hooks/utils';
-import { encodeAddress } from '@polkadot/util-crypto/address/encode';
+import { decodeAddress, encodeAddress } from '@polkadot/util-crypto';
 
 import closeIcon from './closeIconBlack.svg';
 import { Loader } from 'semantic-ui-react';
 import { useSettings } from '@polkadot/react-api/useSettings';
-import { keyring } from '@polkadot/ui-keyring';
 const { uniqueApi } = envConfig;
 const apiUrl = uniqueApi;
 
@@ -41,6 +40,7 @@ function PlaceABetModal({ account, closeModal, collection, tokenId, tokenOwner, 
   const { kusamaApi, getKusamaTransferFee } = useKusamaApi(account || '');
   const [isLoading, setIsLoading] = useState(false);
   const { apiSettings } = useSettings();
+  const accountUniversal = encodeAddress(decodeAddress(account), 42);
 
   const minBid = 123 // todo get from backend;
   const lastBid = 1 // todo get from backend;
@@ -66,10 +66,13 @@ function PlaceABetModal({ account, closeModal, collection, tokenId, tokenOwner, 
       encodeAddress(recipient.Substrate),
       fromStringToBnString(bid, kusamaDecimals)
     );
-
-    const pair = keyring.getPair(account);
-    const { meta: { source } } = pair;
-    const injector = await web3FromSource(source);
+    const accounts = await web3Accounts();
+    const signer = accounts.find((a) => a.address === accountUniversal);
+    if (!signer) {
+      return;
+    }
+    
+    const injector = await web3FromSource(signer.meta.source);
 
     await extrinsic.signAsync(account, { signer: injector.signer });
     const tx = extrinsic.toJSON();
