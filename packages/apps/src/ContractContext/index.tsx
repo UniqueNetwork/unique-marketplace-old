@@ -69,11 +69,7 @@ function Contracts ({ account, children }: Props): React.ReactElement<Props> | n
   const accountRef = useRef<string>();
   const { contractAddress, minPrice, uniqueSubstrateApi } = envConfig;
 
-  console.log('ethAccount', ethAccount, 'deposited', deposited?.toString());
-
   const getUserDeposit = useCallback(async (): Promise<BN | null> => {
-    console.log('getUserDeposit');
-
     try {
       if (ethAccount && matcherContractInstance) {
         const result = await (matcherContractInstance.methods as MarketplaceAbiMethods).balanceKSM(ethAccount).call();

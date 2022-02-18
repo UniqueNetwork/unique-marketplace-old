@@ -459,7 +459,7 @@ export function useNftContract (account: string | undefined, ethAccount: string 
 
       setEvmCollectionInstance(evmCollection);
     }
-  }, [setEvmCollectionInstance, web3Instance]);
+  }, [contractOwner, setEvmCollectionInstance, web3Instance]);
 
   const isContractReady = useMemo(() => {
     return !!(matcherContractInstance);

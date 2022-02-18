@@ -408,12 +408,6 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
   }, [state, loadingTokenInfo]);
 
   useEffect(() => {
-    if (state.matches('loadingTokenInfo')) {
-      void loadingTokenInfo();
-    }
-  }, [state, loadingTokenInfo]);
-
-  useEffect(() => {
     if (state.matches('waitForTokenRevert')) {
       void waitForTokenRevert();
     }
