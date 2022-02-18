@@ -10,16 +10,15 @@ import Modal from 'semantic-ui-react/dist/commonjs/modules/Modal/Modal';
 
 import BN from 'bn.js';
 import envConfig from '@polkadot/apps-config/envConfig';
-import { web3FromSource } from '@polkadot/extension-dapp';
+import { web3Accounts, web3FromSource } from '@polkadot/extension-dapp';
 import { Input } from '@polkadot/react-components';
 import { useApi, useKusamaApi } from '@polkadot/react-hooks';
 import { fromStringToBnString } from '@polkadot/react-hooks/utils';
-import { encodeAddress } from '@polkadot/util-crypto/address/encode';
+import { decodeAddress, encodeAddress } from '@polkadot/util-crypto';
 
 import closeIcon from './closeIconBlack.svg';
 import { Loader } from 'semantic-ui-react';
 import { useSettings } from '@polkadot/react-api/useSettings';
-import { keyring } from '@polkadot/ui-keyring';
 import { OfferType } from '@polkadot/react-hooks/useCollections';
 const { uniqueApi } = envConfig;
 const apiUrl = uniqueApi;
@@ -43,6 +42,7 @@ function PlaceABetModal({ account, closeModal, collection, offer, tokenId, token
   
   const { apiSettings } = useSettings();
   const { auction:{bids, priceStep, startPrice, status, stopAt}, price, seller } = offer;
+  const accountUniversal = encodeAddress(decodeAddress(account), 42);
 
   const minBid = bids.length > 0 ? Number(price) + Number(priceStep) : price;
 
@@ -65,10 +65,13 @@ function PlaceABetModal({ account, closeModal, collection, offer, tokenId, token
       encodeAddress(recipient.Substrate),
       fromStringToBnString(bid, kusamaDecimals)
     );
-
-    const pair = keyring.getPair(account);
-    const { meta: { source } } = pair;
-    const injector = await web3FromSource(source);
+    const accounts = await web3Accounts();
+    const signer = accounts.find((a) => a.address === accountUniversal);
+    if (!signer) {
+      return;
+    }
+    
+    const injector = await web3FromSource(signer.meta.source);
 
     await extrinsic.signAsync(account, { signer: injector.signer });
     const tx = extrinsic.toJSON();

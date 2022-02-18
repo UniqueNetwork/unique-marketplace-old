@@ -14,11 +14,11 @@ import { useApi } from '@polkadot/react-hooks';
 
 import closeIcon from './closeIconBlack.svg';
 import { CrossAccountId, fromStringToBnString, normalizeAccountId, subToEth } from '@polkadot/react-hooks/utils';
-import { web3FromSource } from '@polkadot/extension-dapp';
+import { web3Accounts, web3FromSource } from '@polkadot/extension-dapp';
 import Select from '../UIKitComponents/SelectUIKit/Select';
 import { Loader } from 'semantic-ui-react';
 import { useSettings } from '@polkadot/react-api/useSettings';
-import { keyring } from '@polkadot/ui-keyring';
+import { decodeAddress, encodeAddress } from '@polkadot/util-crypto';
 
 const { kusamaDecimals, uniqueCollectionIds } = envConfig;
 
@@ -43,6 +43,7 @@ function StartAuctionModal({ account, closeModal, collection, tokenId, tokenOwne
 
   const { uniqueApi } = envConfig;
   const apiUrl = uniqueApi;
+  const accountUniversal = encodeAddress(decodeAddress(account), 42);
 
   const kusamaTransferFee = 0.123; // todo getKusamaTransferFee(recipient, value)
 
@@ -108,9 +109,13 @@ function StartAuctionModal({ account, closeModal, collection, tokenId, tokenOwne
       }
     }
 
-    const pair = keyring.getPair(account);
-    const { meta: { source } } = pair;
-    const injector = await web3FromSource(source);
+    const accounts = await web3Accounts();
+    const signer = accounts.find((a) => a.address === accountUniversal);
+    if (!signer) {
+      return;
+    }
+
+    const injector = await web3FromSource(signer.meta.source);
 
     await extrinsic.signAsync(account, { signer: injector.signer });
     const tx = extrinsic.toJSON();
