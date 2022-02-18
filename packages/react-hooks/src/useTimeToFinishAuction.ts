@@ -1,7 +1,7 @@
 // Copyright 2017-2021 @polkadot/react-hooks authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-export const useTimeToFinish = (stopAt: Date) => {
+export const useTimeToFinishAuction = (stopAt: Date) => {
 
     const today = new Date().toISOString();
     const ms = new Date(stopAt).getTime() - new Date(today).getTime();

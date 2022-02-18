@@ -18,7 +18,7 @@ import Text from '../UIKitComponents/Text/Text';
 export type TSize = 'm' | 's';
 export type TColor = 'primary' | 'blue-grey';
 
-type TColumn = {
+export type TColumn = {
     title: string;
     key: string;
     width?: number;

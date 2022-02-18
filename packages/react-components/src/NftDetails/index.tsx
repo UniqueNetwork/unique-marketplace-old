@@ -12,7 +12,7 @@ import Image from 'semantic-ui-react/dist/commonjs/elements/Image';
 import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
 import envConfig from '@polkadot/apps-config/envConfig';
-import { TransferModal, StartAuctionModal, PlaceABetModal, WarningText } from '@polkadot/react-components';
+import { TransferModal, StartAuctionModal, WarningText } from '@polkadot/react-components';
 import formatPrice from '@polkadot/react-components/util/formatPrice';
 import { useBalance, useDecoder, useMarketplaceStages, useSchema } from '@polkadot/react-hooks';
 import { subToEth } from '@polkadot/react-hooks/utils';
@@ -28,14 +28,11 @@ interface NftDetailsProps {
 
 function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetailsProps> {
 
-  // todo get offer info from backend @ArsenyMedoev must make the endpoint
-
   const query = new URLSearchParams(useLocation().search);
   const tokenId = query.get('tokenId') || '';
   const collectionId = query.get('collectionId') || '';
   const [showTransferForm, setShowTransferForm] = useState<boolean>(false);
   const [showAuctionForm, setShowAuctionForm] = useState<boolean>(false);
-  const [showBetForm, setShowBetForm] = useState<boolean>(false);
   const [ethAccount, setEthAccount] = useState<string>();
   const [isInWhiteList, setIsInWhiteList] = useState<boolean>(false);
   const [lowKsmBalanceToBuy, setLowKsmBalanceToBuy] = useState<boolean>(false);
@@ -123,10 +120,6 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
     setShowAuctionForm(!showAuctionForm);
   }, [showAuctionForm]);
 
-  const toggleBetForm = useCallback(() => {
-    setShowBetForm(!showBetForm);
-  }, [showBetForm]);
-
   const onSell = useCallback(() => {
     sendCurrentUserAction('SELL');
   }, [sendCurrentUserAction]);
@@ -137,10 +130,6 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
 
   const closeAuctionModal = useCallback(() => {
     setShowAuctionForm(false);
-  }, []);
-
-  const closeBetModal = useCallback(() => {
-    setShowBetForm(false);
   }, []);
 
   const checkIsInWhiteList = useCallback(async () => {
@@ -308,14 +297,6 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
                     onClick={onSell}
                   />
                 )}
-                {
-                  (!uOwnIt) && (
-                    <Button
-                      content='Place A Bet'
-                      onClick={toggleBetForm}
-                    />
-                  )
-                }
                 { (uSellIt && !transferStep) && (
                   <Button
                     content={
@@ -367,16 +348,6 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
               <StartAuctionModal
                 account={account}
                 closeModal={closeAuctionModal}
-                collection={collectionInfo}
-                tokenId={tokenId}
-                tokenOwner={tokenInfo?.owner}
-                updateTokens={onTransferSuccess}
-              />
-            )}
-            { (showBetForm && collectionInfo) && (
-              <PlaceABetModal
-                account={account}
-                closeModal={closeBetModal}
                 collection={collectionInfo}
                 tokenId={tokenId}
                 tokenOwner={tokenInfo?.owner}

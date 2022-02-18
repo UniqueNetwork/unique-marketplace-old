@@ -10,11 +10,11 @@ import { useLocation } from 'react-router-dom';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header/Header';
 import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
-import { NftDetails } from '@polkadot/react-components';
 // local imports and components
 import { AppProps as Props } from '@polkadot/react-components/types';
 import { useApi } from '@polkadot/react-hooks';
 import { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
+import NftCard from '@polkadot/react-components/NftCard';
 
 import NftWallet from './containers/NftWallet';
 
@@ -62,7 +62,7 @@ function PageNftWallet ({ account, basePath, openPanel, setOpenPanel }: Props): 
       { (isApiReady && isApiConnected) && (
         <Switch>
           <Route path={`${basePath}/token-details`}>
-            <NftDetails
+            <NftCard
               account={account || ''}
             />
           </Route>
