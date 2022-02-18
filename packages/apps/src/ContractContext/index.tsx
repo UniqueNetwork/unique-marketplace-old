@@ -13,7 +13,6 @@ import marketplaceAbi from '@polkadot/react-hooks/abi/marketPlaceAbi.json';
 import { formatKsmBalance } from '@polkadot/react-hooks/useKusamaApi';
 import { TokenAskType } from '@polkadot/react-hooks/useNftContract';
 import { subToEth } from '@polkadot/react-hooks/utils';
-import { evmToAddress } from '@polkadot/util-crypto';
 
 import ContractContext from './ContractContext';
 
@@ -107,8 +106,7 @@ function Contracts ({ account, children }: Props): React.ReactElement<Props> | n
   }), [account, ethAccount, matcherContractInstance, deposited, evmCollectionInstance, getUserDeposit, web3Instance]);
 
   const initAbi = useCallback(() => {
-    if (account && ethAccount && !abiRef.current && contractAddress && uniqueSubstrateApi) {
-      console.log('mySubEthAddress', evmToAddress(ethAccount, 42, 'blake2'));
+    if (!abiRef.current && contractAddress && uniqueSubstrateApi) {
       /* options
       {
         reconnect: {
@@ -136,9 +134,7 @@ function Contracts ({ account, children }: Props): React.ReactElement<Props> | n
         setWeb3Instance(web3);
 
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        const newContractInstance: Contract = new web3.eth.Contract(marketplaceAbi as any, contractAddress, {
-          from: ethAccount
-        });
+        const newContractInstance: Contract = new web3.eth.Contract(marketplaceAbi as any, contractAddress);
 
         setMatcherContractInstance(newContractInstance);
 
@@ -147,7 +143,7 @@ function Contracts ({ account, children }: Props): React.ReactElement<Props> | n
         // User has denied account access to DApp...
       }
     }
-  }, [account, contractAddress, ethAccount, uniqueSubstrateApi]);
+  }, [contractAddress, uniqueSubstrateApi]);
 
   useEffect(() => {
     void initAbi();
