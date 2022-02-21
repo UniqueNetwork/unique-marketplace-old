@@ -135,8 +135,10 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: NftMarketProps): ReactE
   }, [addMintCollectionToList]);
 
   useEffect(() => {
-    void getOffers(page, perPage, filters);
-  }, [filters, getOffers, page]);
+    if(apiSettings){
+      void getOffers(page, perPage, filters);
+    }
+  }, [apiSettings, filters, getOffers, page]);
 
   useEffect(() => {
     if (apiSettings && apiSettings.auction && apiSettings.auction.socket) {
