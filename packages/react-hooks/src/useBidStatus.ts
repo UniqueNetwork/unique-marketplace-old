@@ -9,7 +9,7 @@ export function useBidStatus(bids: BidType[], account: string): {indexOfYourBid:
 
   const accountUniversal = encodeAddress(decodeAddress(account), 42);
 
-  const indexOfYourBid = bids.reverse().findIndex((bid) => { return encodeAddress(decodeAddress(bid.bidderAddress), 42) === accountUniversal });
+  const indexOfYourBid = [...bids].reverse().findIndex((bid) => { return encodeAddress(decodeAddress(bid.bidderAddress), 42) === accountUniversal });
   const yourBidIsLeading = indexOfYourBid === 0;
   const yourBidIsOutbid = indexOfYourBid > 0;
 

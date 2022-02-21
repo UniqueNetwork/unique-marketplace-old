@@ -132,7 +132,7 @@ function PlaceABetModal({ account, closeModal, collection, offer, tokenId, token
       <ModalActions>
         <ButtonWrapper>
           <Button
-            disabled={false /* isLoading || parseInt(bid) < startBid */}
+            disabled={isLoading || parseInt(bid) < minBid}
             onClick={placeABid}
           >
             <>

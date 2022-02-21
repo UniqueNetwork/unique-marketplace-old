@@ -30,10 +30,11 @@ import { adaptiveFixed, getFormatedBidsTime } from '../util';
 
 interface NftDetailsAuctionProps {
   account: string;
+  getOffer: (collectionId: string, tokenId: string) => Promise<never[] | 0>;
   offer: OfferType;
 }
 
-function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.ReactElement<NftDetailsAuctionProps> {
+function NftDetailsAuction({ account, getOffer, offer }: NftDetailsAuctionProps): React.ReactElement<NftDetailsAuctionProps> {
 
   const query = new URLSearchParams(useLocation().search);
   const tokenId = query.get('tokenId') || '';
@@ -69,7 +70,7 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
       icon: 'arrows-down-up',
       render: (rowNumber: number) => (
         <Text size="m" color="additional-dark">
-          {bids.length ? `${adaptiveFixed(Number(formatKsmBalance(new BN(bids[rowNumber].amount))), 4)} KSM` : ''}
+          {bids.length ? `${adaptiveFixed(Number(formatKsmBalance(new BN([...bids].reverse()[rowNumber].amount))), 4)} KSM` : ''}
         </Text>
       )
     },
@@ -83,7 +84,7 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
       icon: 'calendar',
       render: (rowNumber: number) => (
         <Text size="m" color="blue-grey-600">
-          {getFormatedBidsTime(bids[rowNumber].createdAt)}
+          {getFormatedBidsTime([...bids].reverse()[rowNumber].createdAt)}
         </Text>
       )
     },
@@ -94,7 +95,7 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
       width: 150,
       render: (rowNumber: number) => (
         <Text size="m" color="primary-500">
-          {bids.length ? shortAddress(bids[rowNumber].bidderAddress) : ''}
+          {bids.length ? shortAddress([...bids].reverse()[rowNumber].bidderAddress) : ''}
         </Text>
       )
     }
@@ -151,6 +152,7 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
 
   const closeBetModal = useCallback(() => {
     setShowBetForm(false);
+    getOffer(collectionId, tokenId);
   }, []);
 
   const checkIsInWhiteList = useCallback(async () => {
@@ -302,9 +304,9 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
               {<div className='leading-bid'>
                 {yourBidIsLeading && <div className='bid you-lead'>Your bid is leading</div>}
                 {yourBidIsOutbid && <div className='bid you-outbid'>Your offer is outbid</div>}
-                <div className='current-bid'>{bids.length ? `Leading bid ${shortAddress(bids.reverse()[0].bidderAddress)}` : 'There are no bids'}</div>
+                <div className='current-bid'>{bids.length ? `Leading bid ${shortAddress([...bids].reverse()[0].bidderAddress)}` : 'There are no bids'}</div>
               </div>}
-              {!!bids.length && <Table data={[...bids.reverse()]} columns={columnsArray}></Table>}
+              {!!bids.length && <Table data={[...bids]} columns={columnsArray}></Table>}
             </div>
 
             {!!(uOwnIt && !uSellIt && !isInWhiteList && whiteListAmount) && (
