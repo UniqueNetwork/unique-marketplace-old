@@ -26,7 +26,7 @@ import Table, { TColor, TSize } from '../Table2/TableContainer';
 import Text from '../UIKitComponents/Text/Text';
 import { useBidStatus } from '@polkadot/react-hooks/useBidStatus';
 import { useSettings } from '@polkadot/react-api/useSettings';
-import { getFormatedBidsTime } from '../util';
+import { adaptiveFixed, getFormatedBidsTime } from '../util';
 
 interface NftDetailsAuctionProps {
   account: string;
@@ -69,7 +69,7 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
       icon: 'arrows-down-up',
       render: (rowNumber: number) => (
         <Text size="m" color="additional-dark">
-          {bids.length ? `${formatKsmBalance(new BN(bids[rowNumber].amount))} KSM` : ''}
+          {bids.length ? `${adaptiveFixed(Number(formatKsmBalance(new BN(bids[rowNumber].amount))), 4)} KSM` : ''}
         </Text>
       )
     },
@@ -254,9 +254,9 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
             <div className='divider' />
             <div className='price-wrapper'>
               <img src={logoKusama as string} width={32} />
-              <div className='price'>{fee && formatKsmBalance(new BN(bid).add(fee))}</div>
+              <div className='price'>{fee && adaptiveFixed(Number(formatKsmBalance(new BN(bid).add(fee))), 4)}</div>
             </div>
-            <div className='price-description'>{`bid ${formatKsmBalance(new BN(bid))} KSM + fee ${formatKsmBalance(fee)} KSM`}</div>
+            <div className='price-description'>{`bid ${adaptiveFixed(Number(formatKsmBalance((new BN(bid)))), 4)} KSM + fee ${formatKsmBalance(fee)} KSM`}</div>
             <div className='buttons'>
               {(!account && !!tokenPrice) && (
                 <div>

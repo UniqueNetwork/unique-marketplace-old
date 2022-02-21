@@ -15,6 +15,7 @@ import { formatKsmBalance } from '@polkadot/react-hooks/useKusamaApi';
 import logoKusama from '../../../../../packages/apps/public/logos/kusama.svg';
 import { useTimeToFinishAuction } from '@polkadot/react-hooks/useTimeToFinishAuction';
 import { useBidStatus } from '@polkadot/react-hooks/useBidStatus';
+import { adaptiveFixed } from '@polkadot/react-components/util';
 
 interface Props {
   account: string | undefined;
@@ -26,9 +27,9 @@ interface Props {
 const NftTokenCard = ({ account, collectionId, openDetailedInformationModal, token }: Props): React.ReactElement<Props> => {
   const { collectionInfo, tokenName, tokenUrl } = useSchema(account, collectionId, token.tokenId);
   const { collectionName16Decoder, hex2a } = useDecoder();
-  const {bids, startPrice, status, stopAt} = token.auction;
+  const { bids, status, stopAt } = token.auction;
   const timeToFinish = useTimeToFinishAuction(stopAt);
-  const { yourBidIsLeading, yourBidIsOutbid} = useBidStatus(bids, account||'');
+  const { yourBidIsLeading, yourBidIsOutbid } = useBidStatus(bids, account || '');
 
   const onCardClick = useCallback(() => {
     openDetailedInformationModal(collectionId, token.tokenId);
@@ -66,7 +67,7 @@ const NftTokenCard = ({ account, collectionId, openDetailedInformationModal, tok
             {status === 'created' && (
               <>
                 <div className='card-price'>
-                  <div className='card-price__title'> {formatKsmBalance(new BN(token.price || startPrice))}</div>
+                  <div className='card-price__title'> {adaptiveFixed(Number(formatKsmBalance(new BN(token.price))), 4)}</div>
                   <img width={16} src={logoKusama as string} />
                 </div>
                 <div className='caption-row'>
