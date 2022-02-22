@@ -39,6 +39,7 @@ export interface QueueTx extends AccountInfo {
   error?: Error;
   extrinsic?: SubmittableExtrinsic;
   id: number;
+  isKusama?: boolean;
   isUnsigned?: boolean;
   payload?: SignerPayloadJSON;
   result?: any;
@@ -87,6 +88,7 @@ export interface PartialQueueTxExtrinsic extends PartialAccountInfo {
   txStartCb?: () => void;
   txUpdateCb?: TxCallback;
   isUnsigned?: boolean;
+  isKusama?: boolean;
 }
 
 export interface PartialQueueTxRpc extends PartialAccountInfo {

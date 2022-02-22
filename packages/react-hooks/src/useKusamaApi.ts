@@ -4,6 +4,7 @@
 import BN from 'bn.js';
 import { useCallback, useContext, useEffect, useState } from 'react';
 
+import { Keyring } from '@polkadot/api';
 import { ApiPromise } from '@polkadot/api/promise';
 import envConfig from '@polkadot/apps-config/envConfig';
 import { StatusContext } from '@polkadot/react-components';
@@ -11,7 +12,6 @@ import { useApi } from '@polkadot/react-hooks/useApi';
 import { useKusamaBalance } from '@polkadot/react-hooks/useKusamaBalance';
 import { formatStrBalance } from '@polkadot/react-hooks/utils';
 import { encodeAddress } from '@polkadot/util-crypto';
-import { Keyring } from '@polkadot/api';
 
 const keyring = new Keyring({ type: 'sr25519' });
 
@@ -51,6 +51,7 @@ export const useKusamaApi = (account?: string): UseKusamaApiInterface => {
       queueExtrinsic({
         accountId: encodedKusamaAccount,
         extrinsic,
+        isKusama: true,
         isUnsigned: false,
         txFailedCb: () => { onFail('SIGN_TRANSACTION_FAIL'); },
         txStartCb: () => { onSuccess('SIGN_SUCCESS'); },

@@ -152,7 +152,8 @@ async function extractParams (api: ApiPromise, address: string, options: Partial
 }
 
 function TxSigned ({ className, currentItem, requestAddress }: Props): React.ReactElement<Props> | null {
-  const { api } = useApi();
+  const apiData = useApi();
+  const api = currentItem?.isKusama ? apiData.kusamaApi : apiData.api;
   const { getLedger } = useLedger();
   const { queueSetTxStatus } = useContext(StatusContext);
   const [flags, setFlags] = useState(() => extractExternal(requestAddress));
