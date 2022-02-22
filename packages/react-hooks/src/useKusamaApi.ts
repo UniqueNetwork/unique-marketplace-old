@@ -11,6 +11,9 @@ import { useApi } from '@polkadot/react-hooks/useApi';
 import { useKusamaBalance } from '@polkadot/react-hooks/useKusamaBalance';
 import { formatStrBalance } from '@polkadot/react-hooks/utils';
 import { encodeAddress } from '@polkadot/util-crypto';
+import { Keyring } from '@polkadot/api';
+
+const keyring = new Keyring({ type: 'sr25519' });
 
 interface UseKusamaApiInterface {
   encodedKusamaAccount: string | undefined;
@@ -34,12 +37,20 @@ export const useKusamaApi = (account?: string): UseKusamaApiInterface => {
   const { queueExtrinsic } = useContext(StatusContext);
   const { kusamaAvailableBalance } = useKusamaBalance(api, account);
 
-  const kusamaTransfer = useCallback((recipient: string, value: BN, onSuccess: (status: string) => void, onFail: (status: string) => void) => {
+  console.log('kusamaAvailableBalance', kusamaAvailableBalance);
+
+  const kusamaTransfer = useCallback(async (recipient: string, value: BN, onSuccess: (status: string) => void, onFail: (status: string) => void) => {
     if (encodedKusamaAccount && api) {
+      const extrinsic = api.tx.balances
+        .transfer(recipient, value);
+
+      const publicKey = keyring.decodeAddress(account);
+
+      console.log('publicKey', publicKey);
+
       queueExtrinsic({
         accountId: encodedKusamaAccount,
-        extrinsic: api.tx.balances
-          .transfer(recipient, value),
+        extrinsic,
         isUnsigned: false,
         txFailedCb: () => { onFail('SIGN_TRANSACTION_FAIL'); },
         txStartCb: () => { onSuccess('SIGN_SUCCESS'); },
@@ -47,7 +58,7 @@ export const useKusamaApi = (account?: string): UseKusamaApiInterface => {
         txUpdateCb: (data) => { console.log('update', data); }
       });
     }
-  }, [api, encodedKusamaAccount, queueExtrinsic]);
+  }, [account, api, encodedKusamaAccount, queueExtrinsic]);
 
   const getKusamaTransferFee = useCallback(async (recipient: string, value: BN): Promise<BN | null> => {
     if (encodedKusamaAccount && api) {

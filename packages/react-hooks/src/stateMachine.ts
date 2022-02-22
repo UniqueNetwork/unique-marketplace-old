@@ -102,7 +102,8 @@ const marketplaceStateMachine = createMachine<Context>({
     },
     waitForWhiteListing: {
       on: {
-        HAS_MINT_DEPOSIT: 'checkIsOnEth'
+        HAS_MINT_DEPOSIT: 'checkIsOnEth',
+        SIGN_TRANSACTION_FAIL: 'loadingTokenInfo'
       }
     },
     transferToEth: {

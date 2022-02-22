@@ -1,4 +1,4 @@
-// Copyright 2017-2021 @polkadot/react-signer authors & contributors
+// Copyright 2017-2022 @polkadot/react-signer authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import type { SignerOptions } from '@polkadot/api/submittable/types';
@@ -75,7 +75,7 @@ async function signAndSend (queueSetTxStatus: QueueTxMessageSetStatus, currentIt
     console.error('signAndSend: error:', error);
     queueSetTxStatus(currentItem.id, 'error', {}, error as Error);
 
-    currentItem.txFailedCb && currentItem.txFailedCb(error as any);
+    currentItem.txFailedCb && currentItem.txFailedCb(error as Error);
   }
 }
 
@@ -90,7 +90,7 @@ async function signAsync (queueSetTxStatus: QueueTxMessageSetStatus, { id, txFai
     console.error('signAsync: error:', error);
     queueSetTxStatus(id, 'error', undefined, error as Error);
 
-    txFailedCb(error as any);
+    txFailedCb(error as Error);
   }
 
   return null;
@@ -256,6 +256,8 @@ function TxSigned ({ className, currentItem, requestAddress }: Props): React.Rea
         ]);
 
         queueSetTxStatus(currentItem.id, status);
+
+        console.log('signAndSend', queueSetTxStatus, currentItem, tx, pairOrAddress, options);
 
         await signAndSend(queueSetTxStatus, currentItem, tx, pairOrAddress, options);
       }

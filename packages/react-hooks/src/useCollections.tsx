@@ -104,11 +104,6 @@ export function useCollections () {
       mountedRef.current && setOffersLoading(true);
       let url = `${apiUrl}/Offers?page=${page}&pageSize=${pageSize}`;
 
-      // reset offers before loading first page
-      if (page === 1) {
-        mountedRef.current && setOffers([]);
-      }
-
       if (filters && uniqueCollectionIds?.length) {
         Object.keys(filters).forEach((filterKey: string) => {
           const currentFilter: string | string[] | number = filters[filterKey];
@@ -148,7 +143,7 @@ export function useCollections () {
               setOffers([]);
             } else if (result.items.length) {
               // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-              if (!equal(filters, filtersRef.current)) {
+              if (!equal(filters, filtersRef.current) || page === 1) {
                 setOffers(result.items);
               } else {
                 setOffers((prevOffers) => [...prevOffers, ...result.items]);
@@ -159,7 +154,7 @@ export function useCollections () {
 
         filtersRef.current = filters;
         setOffersLoading(false);
-      });
+      }).unsubscribe();
     } catch (e) {
       console.log('getOffers error', e);
       setOffersLoading(false);

@@ -1,4 +1,4 @@
-// Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
+// Copyright 2017-2022 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import './styles.scss';
@@ -8,8 +8,7 @@ import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import equal from 'deep-equal';
-// external imports
-import React, { memo, ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { memo, ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
 import { useHistory } from 'react-router';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
@@ -20,7 +19,6 @@ import envConfig from '@polkadot/apps-config/envConfig';
 import { OpenPanelType } from '@polkadot/apps-routing/types';
 import { useCollections, useIsMountedRef } from '@polkadot/react-hooks';
 
-// local imports and components
 import NftTokenCard from '../../components/NftTokenCard';
 import SearchForm from '../../components/SearchForm';
 import MarketFilters from '../MarketFilters';
@@ -36,11 +34,6 @@ interface NftMarketProps {
 
 export interface Filters {
   collectionIds: string[];
-  /* minPrice?: string;
-  maxPrice?: string;
-  traitsCount: string[];
-  seller?: string;
-  sort: string; */
   sort: string;
   traitsCount: string[];
   [key: string]: string | string[] | number;
@@ -49,7 +42,7 @@ export interface Filters {
 const perPage = 20;
 
 const defaultFilters = {
-  collectionIds: [...envConfig.uniqueCollectionIds],
+  collectionIds: envConfig.uniqueCollectionIds || [],
   sort: 'desc(creationDate)',
   traitsCount: []
 };
@@ -67,6 +60,7 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: NftMarketProps): ReactE
   const [filters, setFilters] = useState<Filters>(initialFilters);
   const [loadingCollections, setLoadingCollections] = useState<boolean>(false);
   const mountedRef = useIsMountedRef();
+  const filtersRef = useRef<Filters>();
 
   const hasMore = !!(offers && offersCount) && offers.length < offersCount;
 
@@ -134,6 +128,14 @@ const NftMarket = ({ account, openPanel, setOpenPanel }: NftMarketProps): ReactE
   useEffect(() => {
     void getOffers(page, perPage, filters);
   }, [filters, getOffers, page]);
+
+  useEffect(() => {
+    if (filtersRef.current && filtersRef.current !== filters) {
+      setPage(1);
+    }
+
+    filtersRef.current = filters;
+  }, [filters]);
 
   return (
     <div className={marketClassName}>

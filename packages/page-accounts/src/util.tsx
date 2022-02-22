@@ -1,12 +1,16 @@
-// Copyright 2017-2021 @polkadot/app-accounts authors & contributors
+// Copyright 2017-2022 @polkadot/app-accounts authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import type { KeyringAddress } from '@polkadot/ui-keyring/types';
+import type { ActionStatus } from '@polkadot/react-components/Status/types';
+import type { AccountId, AccountIndex, Address } from '@polkadot/types/interfaces';
+import type { CreateResult, KeyringAddress } from '@polkadot/ui-keyring/types';
 import type { SortedAccount } from './types';
 
+import FileSaver from 'file-saver';
 import React from 'react';
 
-import { Menu } from '@polkadot/react-components';
+import { getEnvironment } from '@polkadot/react-api/util';
+import { InputAddress, Menu } from '@polkadot/react-components';
 import { keyring } from '@polkadot/ui-keyring';
 
 export function createMenuGroup (items: (React.ReactNode | false | undefined | null)[]): React.ReactNode | null {
@@ -25,6 +29,42 @@ function expandList (mapped: SortedAccount[], entry: SortedAccount): SortedAccou
   });
 
   return mapped;
+}
+
+export type AccountIdIsh = AccountId | AccountIndex | Address | string | Uint8Array | null;
+
+export function downloadAccount ({ json, pair }: CreateResult): void {
+  FileSaver.saveAs(
+    new Blob([JSON.stringify(json)], { type: 'application/json; charset=utf-8' }),
+    `${pair.address}.json`
+  );
+}
+
+export function tryCreateAccount (commitAccount: () => CreateResult, success: string): ActionStatus {
+  const status: ActionStatus = {
+    action: 'create',
+    message: success,
+    status: 'success'
+  };
+
+  try {
+    const result = commitAccount();
+    const address = result.pair.address;
+
+    status.account = address;
+
+    if (getEnvironment() === 'web') {
+      downloadAccount(result);
+    }
+
+    downloadAccount(result);
+    InputAddress.setLastValue('account', address);
+  } catch (error) {
+    status.status = 'error';
+    status.message = (error as Error).message;
+  }
+
+  return status;
 }
 
 export function sortAccounts (addresses: string[], favorites: string[]): SortedAccount[] {
