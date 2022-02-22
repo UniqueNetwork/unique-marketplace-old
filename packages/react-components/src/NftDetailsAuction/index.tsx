@@ -13,7 +13,7 @@ import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
 import envConfig from '@polkadot/apps-config/envConfig';
 import { PlaceABetModal, WarningText } from '@polkadot/react-components';
-import { useBalance, useDecoder, useMarketplaceStages, useSchema } from '@polkadot/react-hooks';
+import { useApi, useBalance, useDecoder, useMarketplaceStages, useSchema } from '@polkadot/react-hooks';
 import { shortAddress, subToEth } from '@polkadot/react-hooks/utils';
 import { OfferType } from '@polkadot/react-hooks/useCollections';
 
@@ -47,7 +47,7 @@ function NftDetailsAuction({ account, getOffer, offer }: NftDetailsAuctionProps)
   const { balance, kusamaExistentialDeposit } = useBalance(account);
   const { hex2a } = useDecoder();
   const { attributes, collectionInfo, tokenUrl } = useSchema(account, collectionId, tokenId);
-  const { cancelStep, checkWhiteList, formatKsmBalance, getKusamaTransferFee, kusamaAvailableBalance, sendCurrentUserAction, 
+  const { cancelStep, checkWhiteList, formatKsmBalance, getKusamaTransferFee, kusamaAvailableBalance, sendCurrentUserAction,
     tokenAsk, tokenInfo, transferStep } = useMarketplaceStages(account, ethAccount, collectionInfo, tokenId);
   const { contractAddress } = envConfig;
   const { auction: { bids, priceStep, stopAt }, price, seller } = offer;
@@ -56,8 +56,10 @@ function NftDetailsAuction({ account, getOffer, offer }: NftDetailsAuctionProps)
   const { apiSettings } = useSettings();
   const escrowAddress = apiSettings?.blockchain?.escrowAddress;
   const commission = apiSettings?.auction?.commission;
+  const { systemChain } = useApi();
 
   const bid = bids.length > 0 ? Number(price) + Number(priceStep) : price;
+  const currentChain = systemChain.split(' ')[0];
 
   const columnsArray = [
     {
@@ -80,7 +82,7 @@ function NftDetailsAuction({ account, getOffer, offer }: NftDetailsAuctionProps)
       key: 'time',
       width: 200,
       headingTextSize: 'm' as TSize,
-      color: 'primary' as TColor,
+      color: 'blue-grey' as TColor,
       icon: 'calendar',
       render: (rowNumber: number) => (
         <Text size="m" color="blue-grey-600">
@@ -94,9 +96,11 @@ function NftDetailsAuction({ account, getOffer, offer }: NftDetailsAuctionProps)
       key: 'bidder',
       width: 150,
       render: (rowNumber: number) => (
-        <Text size="m" color="primary-500">
-          {bids.length ? shortAddress([...bids].reverse()[rowNumber].bidderAddress) : ''}
-        </Text>
+        <a href={`https://uniquescan.io/${currentChain}/account/${[...bids].reverse()[rowNumber].bidderAddress}`}>
+          <Text size="m" color="primary-500">
+            {bids.length ? shortAddress([...bids].reverse()[rowNumber].bidderAddress) : ''}
+          </Text>
+        </a>
       )
     }
   ]
