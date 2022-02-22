@@ -258,8 +258,6 @@ function TxSigned ({ className, currentItem, requestAddress }: Props): React.Rea
 
         queueSetTxStatus(currentItem.id, status);
 
-        console.log('signAndSend', queueSetTxStatus, currentItem, tx, pairOrAddress, options);
-
         await signAndSend(queueSetTxStatus, currentItem, tx, pairOrAddress, options);
       }
     },

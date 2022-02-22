@@ -57,7 +57,7 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
   const kusamaExistentialDeposit = kusamaApi?.consts.balances?.existentialDeposit as unknown as BN;
   const { commission, escrowAddress } = envConfig;
 
-  console.log('account', account);
+  console.log('state', state.value);
 
   const sendCurrentUserAction = useCallback((userAction: UserActionType) => {
     send(userAction);

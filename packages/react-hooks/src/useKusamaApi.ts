@@ -4,7 +4,6 @@
 import BN from 'bn.js';
 import { useCallback, useContext, useEffect, useState } from 'react';
 
-import { Keyring } from '@polkadot/api';
 import { ApiPromise } from '@polkadot/api/promise';
 import envConfig from '@polkadot/apps-config/envConfig';
 import { StatusContext } from '@polkadot/react-components';
@@ -12,8 +11,6 @@ import { useApi } from '@polkadot/react-hooks/useApi';
 import { useKusamaBalance } from '@polkadot/react-hooks/useKusamaBalance';
 import { formatStrBalance } from '@polkadot/react-hooks/utils';
 import { encodeAddress } from '@polkadot/util-crypto';
-
-const keyring = new Keyring({ type: 'sr25519' });
 
 interface UseKusamaApiInterface {
   encodedKusamaAccount: string | undefined;
@@ -37,20 +34,12 @@ export const useKusamaApi = (account?: string): UseKusamaApiInterface => {
   const { queueExtrinsic } = useContext(StatusContext);
   const { kusamaAvailableBalance } = useKusamaBalance(api, account);
 
-  console.log('kusamaAvailableBalance', kusamaAvailableBalance);
-
-  const kusamaTransfer = useCallback(async (recipient: string, value: BN, onSuccess: (status: string) => void, onFail: (status: string) => void) => {
+  const kusamaTransfer = useCallback((recipient: string, value: BN, onSuccess: (status: string) => void, onFail: (status: string) => void) => {
     if (encodedKusamaAccount && api) {
-      const extrinsic = api.tx.balances
-        .transfer(recipient, value);
-
-      const publicKey = keyring.decodeAddress(account);
-
-      console.log('publicKey', publicKey);
-
       queueExtrinsic({
         accountId: encodedKusamaAccount,
-        extrinsic,
+        extrinsic: api.tx.balances
+          .transfer(recipient, value),
         isKusama: true,
         isUnsigned: false,
         txFailedCb: () => { onFail('SIGN_TRANSACTION_FAIL'); },
@@ -59,7 +48,7 @@ export const useKusamaApi = (account?: string): UseKusamaApiInterface => {
         txUpdateCb: (data) => { console.log('update', data); }
       });
     }
-  }, [account, api, encodedKusamaAccount, queueExtrinsic]);
+  }, [api, encodedKusamaAccount, queueExtrinsic]);
 
   const getKusamaTransferFee = useCallback(async (recipient: string, value: BN): Promise<BN | null> => {
     if (encodedKusamaAccount && api) {

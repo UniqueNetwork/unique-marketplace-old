@@ -277,7 +277,15 @@ function Api ({ children, store }: Props): React.ReactElement<Props> | null {
     const signer = new ApiSigner(registry, queuePayload, queueSetTxStatus);
     const types = getDevTypes();
 
-    api = new ApiPromise({ provider, registry, signer, types, typesBundle, typesChain });
+    api = new ApiPromise({ provider,
+      registry,
+      rpc: {
+        unique: rpc
+      },
+      signer,
+      types,
+      typesBundle,
+      typesChain });
 
     api.on('connected', () => setIsApiConnected(true));
     api.on('disconnected', () => setIsApiConnected(false));

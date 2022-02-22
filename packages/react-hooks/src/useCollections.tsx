@@ -154,7 +154,7 @@ export function useCollections () {
 
         filtersRef.current = filters;
         setOffersLoading(false);
-      }).unsubscribe();
+      });
     } catch (e) {
       console.log('getOffers error', e);
       setOffersLoading(false);
