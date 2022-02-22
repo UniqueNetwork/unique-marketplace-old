@@ -121,30 +121,16 @@ function NftDetailsAuction({ account, getOffer, offer }: NftDetailsAuctionProps)
     sendCurrentUserAction('UPDATE_TOKEN_STATE');
   }, [sendCurrentUserAction]);
 
-  const whiteListFeeCheck = useCallback(async () => {
-    if (escrowAddress && kusamaExistentialDeposit) {
-      const transferMinDepositFee: BN | null = await getKusamaTransferFee(escrowAddress, kusamaExistentialDeposit);
-
-      if (transferMinDepositFee) {
-        setWhiteListAmount(transferMinDepositFee.add(kusamaExistentialDeposit));
-      }
-    }
-  }, [escrowAddress, getKusamaTransferFee, kusamaExistentialDeposit]);
-
-  // marketFee + kusamaFee
+  // transferFee
   const getFee = useCallback(async () => {
-    if (bid && commission && escrowAddress) {
+    if (bid && escrowAddress) {
       const kusamaFee: BN | null = await getKusamaTransferFee(escrowAddress, new BN(bid));
-      const marketCommission = Number(bid) / 100 * commission;
-      const marketFee: BN | null = new BN(marketCommission);
 
       if (kusamaFee) {
-        setFee(kusamaFee.add(marketFee));
-      } else {
-        setFee(marketFee);
+        setFee(kusamaFee);
       }
     }
-  }, [bid, commission, escrowAddress, getKusamaTransferFee]);
+  }, [bid, escrowAddress, getKusamaTransferFee]);
 
   const onCancel = useCallback(() => {
     sendCurrentUserAction('CANCEL');
@@ -260,9 +246,10 @@ function NftDetailsAuction({ account, getOffer, offer }: NftDetailsAuctionProps)
             <div className='divider' />
             <div className='price-wrapper'>
               <img src={logoKusama as string} width={32} />
-              <div className='price'>{fee && adaptiveFixed(Number(formatKsmBalance(new BN(bid).add(fee))), 4)}</div>
+              <div className='price'>{fee && adaptiveFixed(Number(formatKsmBalance(new BN(bid).add(fee))), 6)}</div>
             </div>
-            <div className='price-description'>{`bid ${adaptiveFixed(Number(formatKsmBalance((new BN(bid)))), 4)} KSM + fee ${formatKsmBalance(fee)} KSM`}</div>
+            {bids.length && <div className='price-description'>{`last bid ${(adaptiveFixed(Number(formatKsmBalance((new BN(price)))), 4))} KSM + step ${adaptiveFixed(Number(formatKsmBalance((new BN(priceStep)))), 4)} KSM + network fee ${formatKsmBalance(fee)} KSM`}</div>}
+            {!bids.length && <div className='price-description'>{`start price ${adaptiveFixed(Number(formatKsmBalance((new BN(bid)))), 4)} KSM + network fee ${formatKsmBalance(fee)} KSM`}</div>}
             <div className='buttons'>
               {(!account && !!tokenPrice) && (
                 <div>
