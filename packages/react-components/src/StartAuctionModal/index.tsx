@@ -20,7 +20,7 @@ import { Loader } from 'semantic-ui-react';
 import { useSettings } from '@polkadot/react-api/useSettings';
 import { decodeAddress, encodeAddress } from '@polkadot/util-crypto';
 
-const { kusamaDecimals, uniqueCollectionIds } = envConfig;
+const { kusamaDecimals } = envConfig;
 
 interface Props {
   account?: string;
@@ -34,18 +34,15 @@ interface Props {
 function StartAuctionModal({ account, closeModal, collection, tokenId, tokenOwner, updateTokens }: Props): React.ReactElement<Props> {
   const { api } = useApi();
   const [tokenPart] = useState<number>(1);
-
   const [minStep, setMinStep] = useState<string>();
   const [startingPrice, setStartingPrice] = useState<string>();
   const [duration, setDuration] = useState<number>();
   const [isLoading, setIsLoading] = useState(false);
   const { apiSettings } = useSettings();
-
   const { uniqueApi } = envConfig;
   const apiUrl = uniqueApi;
   const accountUniversal = encodeAddress(decodeAddress(account), 42);
-
-  const kusamaTransferFee = 0.123; // todo getKusamaTransferFee(recipient, value)
+  const kusamaTransferFee = 0.000052;
 
   const onMinStepInputChange = useCallback(
     (value: string) => {
@@ -185,7 +182,7 @@ function StartAuctionModal({ account, closeModal, collection, tokenId, tokenOwne
             value={duration}
           />
         </Row>
-        {!minStep || !duration &&
+        {minStep && duration && startingPrice &&
           <WarningText>
             <span>
               A fee of ~ {kusamaTransferFee} KSM will be applied to the transaction
