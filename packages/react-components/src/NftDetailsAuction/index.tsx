@@ -72,7 +72,7 @@ function NftDetailsAuction({ account, getOffer, offer }: NftDetailsAuctionProps)
       icon: 'arrows-down-up',
       render: (rowNumber: number) => (
         <Text size="m" color="additional-dark">
-          {bids.length ? `${adaptiveFixed(Number(formatKsmBalance(new BN([...bids].reverse()[rowNumber].amount))), 4)} KSM` : ''}
+          {bids.length ? `${adaptiveFixed(Number(formatKsmBalance(new BN([...bids].reverse()[rowNumber].amount))), 6)} KSM` : ''}
         </Text>
       )
     },
@@ -248,8 +248,8 @@ function NftDetailsAuction({ account, getOffer, offer }: NftDetailsAuctionProps)
               <img src={logoKusama as string} width={32} />
               <div className='price'>{fee && adaptiveFixed(Number(formatKsmBalance(new BN(bid).add(fee))), 6)}</div>
             </div>
-            {bids.length && <div className='price-description'>{`last bid ${(adaptiveFixed(Number(formatKsmBalance((new BN(price)))), 4))} KSM + step ${adaptiveFixed(Number(formatKsmBalance((new BN(priceStep)))), 4)} KSM + network fee ${formatKsmBalance(fee)} KSM`}</div>}
-            {!bids.length && <div className='price-description'>{`start price ${adaptiveFixed(Number(formatKsmBalance((new BN(bid)))), 4)} KSM + network fee ${formatKsmBalance(fee)} KSM`}</div>}
+            {bids.length && <div className='price-description'>{`last bid ${(adaptiveFixed(Number(formatKsmBalance((new BN(price)))), 6))} KSM + step ${adaptiveFixed(Number(formatKsmBalance((new BN(priceStep)))), 6)} KSM + network fee ${formatKsmBalance(fee)} KSM`}</div>}
+            {!bids.length && <div className='price-description'>{`start price ${adaptiveFixed(Number(formatKsmBalance((new BN(bid)))), 6)} KSM + network fee ${formatKsmBalance(fee)} KSM`}</div>}
             <div className='buttons'>
               {(!account && !!tokenPrice) && (
                 <div>

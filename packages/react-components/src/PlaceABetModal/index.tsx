@@ -3,7 +3,7 @@
 
 import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
 
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button';
 import Modal from 'semantic-ui-react/dist/commonjs/modules/Modal/Modal';
@@ -20,6 +20,7 @@ import closeIcon from './closeIconBlack.svg';
 import { Loader } from 'semantic-ui-react';
 import { useSettings } from '@polkadot/react-api/useSettings';
 import { OfferType } from '@polkadot/react-hooks/useCollections';
+import { adaptiveFixed } from '../util';
 const { uniqueApi } = envConfig;
 const apiUrl = uniqueApi;
 
@@ -39,16 +40,38 @@ function PlaceABetModal({ account, closeModal, collection, offer, tokenId, token
   const { api } = useApi();
   const { kusamaApi, formatKsmBalance, getKusamaTransferFee } = useKusamaApi(account || '');
   const [isLoading, setIsLoading] = useState(false);
-  
+  const [fee, setFee] = useState<BN>();
   const { apiSettings } = useSettings();
-  const { auction:{bids, priceStep, startPrice, status, stopAt}, price, seller } = offer;
+  const escrowAddress = apiSettings?.blockchain?.escrowAddress;
+  const { auction: { bids, priceStep, startPrice, status, stopAt }, price, seller } = offer;
   const accountUniversal = encodeAddress(decodeAddress(account), 42);
 
   const minBid = bids.length > 0 ? Number(price) + Number(priceStep) : price;
 
   const [bid, setBid] = useState<string>(formatKsmBalance(new BN(minBid)));
+  const outsideCloseModal = ()=>{
+    if(!isLoading){
+      closeModal();
+    }
+  }
 
-  const kusamaTransferFee = 0.123; // todo getKusamaTransferFee(recipient, value) packages/react-components/src/NftDetails/index.tsx line 80
+  const lastBidFromThisAccount = [...bids].reverse().find((bid)=>{return (encodeAddress(decodeAddress(bid.bidderAddress), 42) === accountUniversal)});
+  const dispatchBid = formatKsmBalance(new BN(Number(bid)*1e12 - Number(lastBidFromThisAccount?.amount || 0)));
+
+  // kusama transfer fee
+  const getFee = useCallback(async () => {
+    if (dispatchBid && escrowAddress) {
+      const kusamaFee: BN | null = await getKusamaTransferFee(escrowAddress, new BN(dispatchBid));
+
+      if (kusamaFee) {
+        setFee(kusamaFee);
+      }
+    }
+  }, [dispatchBid, escrowAddress, getKusamaTransferFee]);
+
+  useEffect(() => {
+    void getFee();
+  }, [getFee]);
 
   const placeABid = async () => {
     if (!account) {
@@ -58,19 +81,19 @@ function PlaceABetModal({ account, closeModal, collection, offer, tokenId, token
     // todo validation form
 
     const recipient = {
-      Substrate: apiSettings?.auction?.address 
+      Substrate: apiSettings?.auction?.address
     };
 
     const extrinsic = kusamaApi.tx.balances.transfer(
       encodeAddress(recipient.Substrate),
-      fromStringToBnString(bid, kusamaDecimals)
+      fromStringToBnString(dispatchBid, kusamaDecimals)
     );
     const accounts = await web3Accounts();
     const signer = accounts.find((a) => a.address === accountUniversal);
     if (!signer) {
       return;
     }
-    
+
     const injector = await web3FromSource(signer.meta.source);
 
     await extrinsic.signAsync(account, { signer: injector.signer });
@@ -97,12 +120,13 @@ function PlaceABetModal({ account, closeModal, collection, offer, tokenId, token
       closeModal();
     } catch (error) {
       console.error('Ошибка:', error);
+      closeModal();
     }
   };
 
   return (
     <ModalStyled
-      onClose={closeModal}
+      onClose={outsideCloseModal}
       open
       size='tiny'
     >
@@ -110,7 +134,7 @@ function PlaceABetModal({ account, closeModal, collection, offer, tokenId, token
         <h2>Place a bid</h2>
         <img
           alt='Close modal'
-          onClick={closeModal}
+          onClick={outsideCloseModal}
           src={closeIcon as string}
         />
       </ModalHeader>
@@ -122,17 +146,17 @@ function PlaceABetModal({ account, closeModal, collection, offer, tokenId, token
           type='number'
           value={bid}
         />
-        <InputDescription className='input-description'>{`Минимальная ставка ${minBid} KSM`} </InputDescription>
-        {bid && <WarningText>
+        <InputDescription className='input-description'>{`Minimum bet ${adaptiveFixed(Number(formatKsmBalance((new BN(minBid)))), 6)} KSM`} </InputDescription>
+        {!!fee && bid && <WarningText>
           <span>
-            A fee of ~ {kusamaTransferFee} KSM can be applied to the transaction
+            A fee of ~ {formatKsmBalance(fee)} KSM can be applied to the transaction
           </span>
         </WarningText>}
       </ModalContent>
       <ModalActions>
         <ButtonWrapper>
           <Button
-            disabled={isLoading || parseInt(bid) < minBid}
+            disabled={isLoading || Number(bid)*1e12 < minBid}
             onClick={placeABid}
           >
             <>
