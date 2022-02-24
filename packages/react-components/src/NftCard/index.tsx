@@ -17,7 +17,7 @@ function NftCard({ account }: NftDetailsProps): React.ReactElement<NftDetailsPro
   const tokenId = query.get('tokenId') || '';
   const collectionId = query.get('collectionId') || '';
 
-  const { offer } = useOffer(collectionId, tokenId);
+  const { getOffer, offer } = useOffer(collectionId, tokenId);
 
   return (
     <div>
@@ -26,6 +26,7 @@ function NftCard({ account }: NftDetailsProps): React.ReactElement<NftDetailsPro
       />}
       {offer?.auction && <NftDetailsAuction
         account={account || ''}
+        getOffer={getOffer}
         offer={offer}
       />}
     </div>

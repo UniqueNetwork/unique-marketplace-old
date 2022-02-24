@@ -13,7 +13,7 @@ import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
 import envConfig from '@polkadot/apps-config/envConfig';
 import { PlaceABetModal, WarningText } from '@polkadot/react-components';
-import { useBalance, useDecoder, useMarketplaceStages, useSchema } from '@polkadot/react-hooks';
+import { useApi, useBalance, useDecoder, useMarketplaceStages, useSchema } from '@polkadot/react-hooks';
 import { shortAddress, subToEth } from '@polkadot/react-hooks/utils';
 import { OfferType } from '@polkadot/react-hooks/useCollections';
 
@@ -30,10 +30,11 @@ import { adaptiveFixed, getFormatedBidsTime } from '../util';
 
 interface NftDetailsAuctionProps {
   account: string;
+  getOffer: (collectionId: string, tokenId: string) => Promise<never[] | 0>;
   offer: OfferType;
 }
 
-function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.ReactElement<NftDetailsAuctionProps> {
+function NftDetailsAuction({ account, getOffer, offer }: NftDetailsAuctionProps): React.ReactElement<NftDetailsAuctionProps> {
 
   const query = new URLSearchParams(useLocation().search);
   const tokenId = query.get('tokenId') || '';
@@ -46,7 +47,7 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
   const { balance, kusamaExistentialDeposit } = useBalance(account);
   const { hex2a } = useDecoder();
   const { attributes, collectionInfo, tokenUrl } = useSchema(account, collectionId, tokenId);
-  const { cancelStep, checkWhiteList, formatKsmBalance, getKusamaTransferFee, kusamaAvailableBalance, sendCurrentUserAction, 
+  const { cancelStep, checkWhiteList, formatKsmBalance, getKusamaTransferFee, kusamaAvailableBalance, sendCurrentUserAction,
     tokenAsk, tokenInfo, transferStep } = useMarketplaceStages(account, ethAccount, collectionInfo, tokenId);
   const { contractAddress } = envConfig;
   const { auction: { bids, priceStep, stopAt }, price, seller } = offer;
@@ -55,8 +56,10 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
   const { apiSettings } = useSettings();
   const escrowAddress = apiSettings?.blockchain?.escrowAddress;
   const commission = apiSettings?.auction?.commission;
+  const { systemChain } = useApi();
 
   const bid = bids.length > 0 ? Number(price) + Number(priceStep) : price;
+  const currentChain = systemChain.split(' ')[0];
 
   const columnsArray = [
     {
@@ -69,7 +72,7 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
       icon: 'arrows-down-up',
       render: (rowNumber: number) => (
         <Text size="m" color="additional-dark">
-          {bids.length ? `${adaptiveFixed(Number(formatKsmBalance(new BN(bids[rowNumber].amount))), 4)} KSM` : ''}
+          {bids.length ? `${adaptiveFixed(Number(formatKsmBalance(new BN([...bids].reverse()[rowNumber].amount))), 6)} KSM` : ''}
         </Text>
       )
     },
@@ -79,11 +82,11 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
       key: 'time',
       width: 200,
       headingTextSize: 'm' as TSize,
-      color: 'primary' as TColor,
+      color: 'blue-grey' as TColor,
       icon: 'calendar',
       render: (rowNumber: number) => (
         <Text size="m" color="blue-grey-600">
-          {getFormatedBidsTime(bids[rowNumber].createdAt)}
+          {getFormatedBidsTime([...bids].reverse()[rowNumber].createdAt)}
         </Text>
       )
     },
@@ -93,9 +96,11 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
       key: 'bidder',
       width: 150,
       render: (rowNumber: number) => (
-        <Text size="m" color="primary-500">
-          {bids.length ? shortAddress(bids[rowNumber].bidderAddress) : ''}
-        </Text>
+        <a href={`https://uniquescan.io/${currentChain}/account/${[...bids].reverse()[rowNumber].bidderAddress}`}>
+          <Text size="m" color="primary-500">
+            {bids.length ? shortAddress([...bids].reverse()[rowNumber].bidderAddress) : ''}
+          </Text>
+        </a>
       )
     }
   ]
@@ -116,30 +121,16 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
     sendCurrentUserAction('UPDATE_TOKEN_STATE');
   }, [sendCurrentUserAction]);
 
-  const whiteListFeeCheck = useCallback(async () => {
-    if (escrowAddress && kusamaExistentialDeposit) {
-      const transferMinDepositFee: BN | null = await getKusamaTransferFee(escrowAddress, kusamaExistentialDeposit);
-
-      if (transferMinDepositFee) {
-        setWhiteListAmount(transferMinDepositFee.add(kusamaExistentialDeposit));
-      }
-    }
-  }, [escrowAddress, getKusamaTransferFee, kusamaExistentialDeposit]);
-
-  // marketFee + kusamaFee
+  // transferFee
   const getFee = useCallback(async () => {
-    if (bid && commission && escrowAddress) {
+    if (bid && escrowAddress) {
       const kusamaFee: BN | null = await getKusamaTransferFee(escrowAddress, new BN(bid));
-      const marketCommission = Number(bid) / 100 * commission;
-      const marketFee: BN | null = new BN(marketCommission);
 
       if (kusamaFee) {
-        setFee(kusamaFee.add(marketFee));
-      } else {
-        setFee(marketFee);
+        setFee(kusamaFee);
       }
     }
-  }, [bid, commission, escrowAddress, getKusamaTransferFee]);
+  }, [bid, escrowAddress, getKusamaTransferFee]);
 
   const onCancel = useCallback(() => {
     sendCurrentUserAction('CANCEL');
@@ -151,6 +142,7 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
 
   const closeBetModal = useCallback(() => {
     setShowBetForm(false);
+    getOffer(collectionId, tokenId);
   }, []);
 
   const checkIsInWhiteList = useCallback(async () => {
@@ -254,9 +246,10 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
             <div className='divider' />
             <div className='price-wrapper'>
               <img src={logoKusama as string} width={32} />
-              <div className='price'>{fee && adaptiveFixed(Number(formatKsmBalance(new BN(bid).add(fee))), 4)}</div>
+              <div className='price'>{fee && adaptiveFixed(Number(formatKsmBalance(new BN(bid).add(fee))), 6)}</div>
             </div>
-            <div className='price-description'>{`bid ${adaptiveFixed(Number(formatKsmBalance((new BN(bid)))), 4)} KSM + fee ${formatKsmBalance(fee)} KSM`}</div>
+            {bids.length && <div className='price-description'>{`last bid ${(adaptiveFixed(Number(formatKsmBalance((new BN(price)))), 6))} KSM + step ${adaptiveFixed(Number(formatKsmBalance((new BN(priceStep)))), 6)} KSM + network fee ${formatKsmBalance(fee)} KSM`}</div>}
+            {!bids.length && <div className='price-description'>{`start price ${adaptiveFixed(Number(formatKsmBalance((new BN(bid)))), 6)} KSM + network fee ${formatKsmBalance(fee)} KSM`}</div>}
             <div className='buttons'>
               {(!account && !!tokenPrice) && (
                 <div>
@@ -302,9 +295,9 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
               {<div className='leading-bid'>
                 {yourBidIsLeading && <div className='bid you-lead'>Your bid is leading</div>}
                 {yourBidIsOutbid && <div className='bid you-outbid'>Your offer is outbid</div>}
-                <div className='current-bid'>{bids.length ? `Leading bid ${shortAddress(bids.reverse()[0].bidderAddress)}` : 'There are no bids'}</div>
+                <div className='current-bid'>{bids.length ? `Leading bid ${shortAddress([...bids].reverse()[0].bidderAddress)}` : 'There are no bids'}</div>
               </div>}
-              {!!bids.length && <Table data={[...bids.reverse()]} columns={columnsArray}></Table>}
+              {!!bids.length && <Table data={[...bids]} columns={columnsArray}></Table>}
             </div>
 
             {!!(uOwnIt && !uSellIt && !isInWhiteList && whiteListAmount) && (

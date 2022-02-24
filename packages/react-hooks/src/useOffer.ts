@@ -6,7 +6,7 @@ import { useApi } from '@polkadot/react-hooks/useApi';
 import envConfig from '@polkadot/apps-config/envConfig';
 import { OfferType } from './useCollections';
 
-export function useOffer(collectionId: string, tokenId: string): {offer?: OfferType} {
+export function useOffer(collectionId: string, tokenId: string): {getOffer:(collectionId: string, tokenId: string) => Promise<never[] | 0>, offer?: OfferType} {
   const { api, isApiConnected, isApiReady } = useApi();
   const { uniqueApi } = envConfig;
   const apiUrl = uniqueApi;
@@ -41,6 +41,7 @@ export function useOffer(collectionId: string, tokenId: string): {offer?: OfferT
 
 
   return {
+    getOffer,
     offer
   };
 }

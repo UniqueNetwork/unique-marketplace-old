@@ -139,7 +139,6 @@ function StartAuctionModal({ account, closeModal, collection, tokenId, tokenOwne
       const json = await response.json();
       setIsLoading(false);
       closeModal();
-      alert(`Token put up for auction ${JSON.stringify(json)}`);
     } catch (error) {
       console.error('Ошибка:', error);
     }
