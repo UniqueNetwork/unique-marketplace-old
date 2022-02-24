@@ -12,7 +12,7 @@ import Image from 'semantic-ui-react/dist/commonjs/elements/Image';
 import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
 import envConfig from '@polkadot/apps-config/envConfig';
-import { PlaceABetModal, WarningText } from '@polkadot/react-components';
+import { PlaceABetModal } from '@polkadot/react-components';
 import { useApi, useBalance, useDecoder, useMarketplaceStages, useSchema } from '@polkadot/react-hooks';
 import { shortAddress, subToEth } from '@polkadot/react-hooks/utils';
 import { OfferType } from '@polkadot/react-hooks/useCollections';
@@ -26,7 +26,7 @@ import Table, { TColor, TSize } from '../Table2/TableContainer';
 import Text from '../UIKitComponents/Text/Text';
 import { useBidStatus } from '@polkadot/react-hooks/useBidStatus';
 import { useSettings } from '@polkadot/react-api/useSettings';
-import { adaptiveFixed, getFormatedBidsTime } from '../util';
+import { adaptiveFixed, getFormatedBidsTime, getLastBidFromThisAccount } from '../util';
 
 interface NftDetailsAuctionProps {
   account: string;
@@ -41,13 +41,11 @@ function NftDetailsAuction({ account, getOffer, offer }: NftDetailsAuctionProps)
   const collectionId = query.get('collectionId') || '';
   const [showBetForm, setShowBetForm] = useState<boolean>(false);
   const [ethAccount, setEthAccount] = useState<string>();
-  const [isInWhiteList, setIsInWhiteList] = useState<boolean>(false);
-  const [whiteListAmount, setWhiteListAmount] = useState<BN | null>(null);
   const [fee, setFee] = useState<BN>();
-  const { balance, kusamaExistentialDeposit } = useBalance(account);
+  const { balance } = useBalance(account);
   const { hex2a } = useDecoder();
   const { attributes, collectionInfo, tokenUrl } = useSchema(account, collectionId, tokenId);
-  const { cancelStep, checkWhiteList, formatKsmBalance, getKusamaTransferFee, kusamaAvailableBalance, sendCurrentUserAction,
+  const { cancelStep, formatKsmBalance, getKusamaTransferFee, kusamaAvailableBalance, sendCurrentUserAction,
     tokenAsk, tokenInfo, transferStep } = useMarketplaceStages(account, ethAccount, collectionInfo, tokenId);
   const { contractAddress } = envConfig;
   const { auction: { bids, priceStep, stopAt }, price, seller } = offer;
@@ -55,11 +53,13 @@ function NftDetailsAuction({ account, getOffer, offer }: NftDetailsAuctionProps)
   const { yourBidIsLeading, yourBidIsOutbid } = useBidStatus(bids, account || '');
   const { apiSettings } = useSettings();
   const escrowAddress = apiSettings?.blockchain?.escrowAddress;
-  const commission = apiSettings?.auction?.commission;
   const { systemChain } = useApi();
 
   const bid = bids.length > 0 ? Number(price) + Number(priceStep) : price;
   const currentChain = systemChain.split(' ')[0];
+  const lastBidFromThisAccount = getLastBidFromThisAccount(bids, account);
+  const requiredSurchargeToPastBid = Number(formatKsmBalance(new BN(Number(bid))))*1e12 - (Number(lastBidFromThisAccount?.amount) || 0);
+  const lowBalance = Number(formatKsmBalance(kusamaAvailableBalance))*1e12 < (requiredSurchargeToPastBid + Number(formatKsmBalance(fee))*1e12);
 
   const columnsArray = [
     {
@@ -145,22 +145,9 @@ function NftDetailsAuction({ account, getOffer, offer }: NftDetailsAuctionProps)
     getOffer(collectionId, tokenId);
   }, []);
 
-  const checkIsInWhiteList = useCallback(async () => {
-    if (ethAccount) {
-      // check white list
-      const result = await checkWhiteList(ethAccount);
-
-      setIsInWhiteList(result);
-    }
-  }, [checkWhiteList, ethAccount]);
-
   useEffect(() => {
     void getFee();
   }, [getFee]);
-
-  useEffect(() => {
-    void checkIsInWhiteList();
-  }, [checkIsInWhiteList]);
 
   useEffect(() => {
     if (account) {
@@ -246,10 +233,10 @@ function NftDetailsAuction({ account, getOffer, offer }: NftDetailsAuctionProps)
             <div className='divider' />
             <div className='price-wrapper'>
               <img src={logoKusama as string} width={32} />
-              <div className='price'>{fee && adaptiveFixed(Number(formatKsmBalance(new BN(bid).add(fee))), 6)}</div>
+              <div className='price'>{fee && adaptiveFixed(Number(formatKsmBalance(new BN(bid))), 4)}</div>
             </div>
-            {bids.length && <div className='price-description'>{`last bid ${(adaptiveFixed(Number(formatKsmBalance((new BN(price)))), 6))} KSM + step ${adaptiveFixed(Number(formatKsmBalance((new BN(priceStep)))), 6)} KSM + network fee ${formatKsmBalance(fee)} KSM`}</div>}
-            {!bids.length && <div className='price-description'>{`start price ${adaptiveFixed(Number(formatKsmBalance((new BN(bid)))), 6)} KSM + network fee ${formatKsmBalance(fee)} KSM`}</div>}
+            {bids.length !== 0 && <div className='price-description'>{`last bid ${(adaptiveFixed(Number(formatKsmBalance((new BN(price)))), 4))} KSM + step ${adaptiveFixed(Number(formatKsmBalance((new BN(priceStep)))), 4)} KSM`}</div>}
+            {!bids.length && <div className='price-description'>{`start price ${adaptiveFixed(Number(formatKsmBalance((new BN(bid)))), 4)} KSM`}</div>}
             <div className='buttons'>
               {(!account && !!tokenPrice) && (
                 <div>
@@ -288,6 +275,7 @@ function NftDetailsAuction({ account, getOffer, offer }: NftDetailsAuctionProps)
                 <img src={clock as string} width={24} />
                 {timeLeft}
               </div>
+              {lowBalance && <div className='low-balance'>Not enough KSM to place bid</div>}
             </div>
             <div className='divider' />
             <div className='offers'>
@@ -299,24 +287,6 @@ function NftDetailsAuction({ account, getOffer, offer }: NftDetailsAuctionProps)
               </div>}
               {!!bids.length && <Table data={[...bids]} columns={columnsArray}></Table>}
             </div>
-
-            {!!(uOwnIt && !uSellIt && !isInWhiteList && whiteListAmount) && (
-              <>
-                {kusamaAvailableBalance?.gte(whiteListAmount)
-                  ? (
-                    <WarningText
-                      className='info'
-                      text={`A fee of ~ ${formatKsmBalance(whiteListAmount)} KSM may be applied to the transaction. Your address will be added to the whitelist, allowing you to make transactions without network fees.`}
-                    />
-                  )
-                  : (
-                    <WarningText
-                      className='warning'
-                      text={'Your balance is too low to pay fees.'}
-                    />
-                  )}
-              </>
-            )}
             {(showBetForm && collectionInfo) && (
               <PlaceABetModal
                 account={account}
