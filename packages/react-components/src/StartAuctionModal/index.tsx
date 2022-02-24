@@ -19,6 +19,7 @@ import Select from '../UIKitComponents/SelectUIKit/Select';
 import { Loader } from 'semantic-ui-react';
 import { useSettings } from '@polkadot/react-api/useSettings';
 import { decodeAddress, encodeAddress } from '@polkadot/util-crypto';
+import { useHistory } from "react-router-dom"
 
 const { kusamaDecimals } = envConfig;
 
@@ -43,6 +44,13 @@ function StartAuctionModal({ account, closeModal, collection, tokenId, tokenOwne
   const apiUrl = uniqueApi;
   const accountUniversal = encodeAddress(decodeAddress(account), 42);
   const kusamaTransferFee = 0.000052;
+  const history = useHistory();
+
+  const outsideCloseModal = ()=>{
+    if(!isLoading){
+      closeModal();
+    }
+  }
 
   const onMinStepInputChange = useCallback(
     (value: string) => {
@@ -136,14 +144,19 @@ function StartAuctionModal({ account, closeModal, collection, tokenId, tokenOwne
       const json = await response.json();
       setIsLoading(false);
       closeModal();
+      // renew tokenCards
+      history.push(`${window.location.href}`);
     } catch (error) {
       console.error('Ошибка:', error);
+      closeModal();
+      // renew tokenCards
+      history.push(`${window.location.href}`);
     }
   };
 
   return (
     <SellModalStyled
-      onClose={closeModal}
+      onClose={outsideCloseModal}
       open
       size='tiny'
     >
@@ -151,7 +164,7 @@ function StartAuctionModal({ account, closeModal, collection, tokenId, tokenOwne
         <h2>Start auction</h2>
         <img
           alt='Close modal'
-          onClick={closeModal}
+          onClick={outsideCloseModal}
           src={closeIcon as string}
         />
       </ModalHeader>
