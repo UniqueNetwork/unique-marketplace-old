@@ -12,7 +12,7 @@ import BN from 'bn.js';
 import envConfig from '@polkadot/apps-config/envConfig';
 import { web3Accounts, web3FromSource } from '@polkadot/extension-dapp';
 import { Input } from '@polkadot/react-components';
-import { useApi, useKusamaApi } from '@polkadot/react-hooks';
+import { useKusamaApi } from '@polkadot/react-hooks';
 import { fromStringToBnString } from '@polkadot/react-hooks/utils';
 import { decodeAddress, encodeAddress } from '@polkadot/util-crypto';
 
@@ -20,7 +20,7 @@ import closeIcon from './closeIconBlack.svg';
 import { Loader } from 'semantic-ui-react';
 import { useSettings } from '@polkadot/react-api/useSettings';
 import { OfferType } from '@polkadot/react-hooks/useCollections';
-import { adaptiveFixed } from '../util';
+import { adaptiveFixed, getLastBidFromThisAccount } from '../util';
 const { uniqueApi } = envConfig;
 const apiUrl = uniqueApi;
 
@@ -37,13 +37,12 @@ interface Props {
 }
 
 function PlaceABetModal({ account, closeModal, collection, offer, tokenId, tokenOwner, updateTokens }: Props): React.ReactElement<Props> {
-  const { api } = useApi();
   const { kusamaApi, formatKsmBalance, getKusamaTransferFee } = useKusamaApi(account || '');
   const [isLoading, setIsLoading] = useState(false);
   const [fee, setFee] = useState<BN>();
   const { apiSettings } = useSettings();
   const escrowAddress = apiSettings?.blockchain?.escrowAddress;
-  const { auction: { bids, priceStep, startPrice, status, stopAt }, price, seller } = offer;
+  const { auction: { bids, priceStep }, price } = offer;
   const accountUniversal = encodeAddress(decodeAddress(account), 42);
 
   const minBid = bids.length > 0 ? Number(price) + Number(priceStep) : price;
@@ -54,8 +53,7 @@ function PlaceABetModal({ account, closeModal, collection, offer, tokenId, token
       closeModal();
     }
   }
-
-  const lastBidFromThisAccount = [...bids].reverse().find((bid)=>{return (encodeAddress(decodeAddress(bid.bidderAddress), 42) === accountUniversal)});
+  const lastBidFromThisAccount = getLastBidFromThisAccount(bids, account);
   const dispatchBid = formatKsmBalance(new BN(Number(bid)*1e12 - Number(lastBidFromThisAccount?.amount || 0)));
 
   // kusama transfer fee
@@ -146,10 +144,10 @@ function PlaceABetModal({ account, closeModal, collection, offer, tokenId, token
           type='number'
           value={bid}
         />
-        <InputDescription className='input-description'>{`Minimum bet ${adaptiveFixed(Number(formatKsmBalance((new BN(minBid)))), 6)} KSM`} </InputDescription>
+        <InputDescription className='input-description'>{`Minimum bet ${adaptiveFixed(Number(formatKsmBalance((new BN(minBid)))), 2)} KSM`} </InputDescription>
         {!!fee && bid && <WarningText>
           <span>
-            A fee of ~ {formatKsmBalance(fee)} KSM can be applied to the transaction
+            A fee of ~ {formatKsmBalance(fee)} KSM will be applied to the transaction
           </span>
         </WarningText>}
       </ModalContent>

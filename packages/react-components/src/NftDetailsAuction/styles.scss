@@ -149,6 +149,16 @@
       }
     }
 
+    .low-balance {
+      display: flex;
+      align-items: center;
+      font: 500 14px/22px var(--font-inter);
+      color: #FF6335;
+      padding: 8px 16px;
+      background-color: #FFF1ED;
+      border-radius: 4px;
+    }
+
     .offers {
       display: flex;
       flex-direction: column;
