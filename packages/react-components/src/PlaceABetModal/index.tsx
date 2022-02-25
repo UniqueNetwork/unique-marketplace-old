@@ -44,17 +44,18 @@ function PlaceABetModal({ account, closeModal, collection, offer, tokenId, token
   const escrowAddress = apiSettings?.blockchain?.escrowAddress;
   const { auction: { bids, priceStep }, price } = offer;
   const accountUniversal = encodeAddress(decodeAddress(account), 42);
+  const [inputError, setInputError] = useState(false);
 
   const minBid = bids.length > 0 ? Number(price) + Number(priceStep) : price;
 
   const [bid, setBid] = useState<string>(formatKsmBalance(new BN(minBid)));
-  const outsideCloseModal = ()=>{
-    if(!isLoading){
+  const outsideCloseModal = () => {
+    if (!isLoading) {
       closeModal();
     }
   }
   const lastBidFromThisAccount = getLastBidFromThisAccount(bids, account);
-  const dispatchBid = formatKsmBalance(new BN(Number(bid)*1e12 - Number(lastBidFromThisAccount?.amount || 0)));
+  const dispatchBid = formatKsmBalance(new BN(Number(bid) * 1e12 - Number(lastBidFromThisAccount?.amount || 0)));
 
   // kusama transfer fee
   const getFee = useCallback(async () => {
@@ -66,6 +67,17 @@ function PlaceABetModal({ account, closeModal, collection, offer, tokenId, token
       }
     }
   }, [dispatchBid, escrowAddress, getKusamaTransferFee]);
+
+  const inputValidate = () => {
+    if (Number(bid) < Number(formatKsmBalance(new BN(minBid)))) {
+      setInputError(true);
+    } 
+  }
+
+  const onInputChange = (val:string) => {
+    setInputError(false);
+    setBid(val);
+  }
 
   useEffect(() => {
     void getFee();
@@ -138,12 +150,14 @@ function PlaceABetModal({ account, closeModal, collection, offer, tokenId, token
       </ModalHeader>
       <ModalContent>
         <InputWrapper
-          className='is-small'
-          onChange={setBid}
+          isError={inputError}
+          onBlur={inputValidate}
+          onChange={onInputChange}
           placeholder='Bid'
           type='number'
           value={bid}
         />
+        {inputError && <ErrorText>the bid cannot be less than the minimum</ErrorText>}
         <InputDescription className='input-description'>{`Minimum bet ${adaptiveFixed(Number(formatKsmBalance((new BN(minBid)))), 2)} KSM`} </InputDescription>
         {!!fee && bid && <WarningText>
           <span>
@@ -154,7 +168,7 @@ function PlaceABetModal({ account, closeModal, collection, offer, tokenId, token
       <ModalActions>
         <ButtonWrapper>
           <Button
-            disabled={isLoading || Number(bid)*1e12 < minBid}
+            disabled={isLoading || Number(bid) * 1e12 < minBid}
             onClick={placeABid}
           >
             <>
@@ -171,6 +185,11 @@ function PlaceABetModal({ account, closeModal, collection, offer, tokenId, token
     </ModalStyled>
   );
 }
+
+const ErrorText = styled.div`
+  color: #FF6335;
+  padding-top:8px;
+`;
 
 const InputDescription = styled.div`
   color: #81858e;
@@ -195,7 +214,7 @@ const InputWrapper = styled(Input)`
       padding: 8px 16px !important;
       line-height: 24px;
       border-radius: 4px;
-      border-color: #d2d3d6;
+      border-color: ${props => (props.isError ? '#FF6335' : `#d2d3d6`)};
       box-sizing: border-box;
       height: 40px;
     }
