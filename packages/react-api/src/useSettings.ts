@@ -53,7 +53,8 @@ export const useSettings = () => {
           script.src = "https://cdn.socket.io/4.4.1/socket.io.min.js"
           script.onload = function() {
             const socket = io(apiUrl, {
-              path: '/api/socket.io'
+              path: '/socket.io',
+              transports: ['websocket'],
             });
             result.auction!.socket = socket;
             setApiSettings(result); // todo tochno?
