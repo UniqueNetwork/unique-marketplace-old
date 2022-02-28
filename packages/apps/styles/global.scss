@@ -673,6 +673,17 @@ button.ui.button,.ui--Button,.button-link {
   padding: 32px;
 }
 
+.unique-modal.ui.modal.ui--Modal {
+  .header {
+    font-size: 28px;
+    line-height: 42px;
+    color: var(--sub-header-text-transform);
+    font-family: var(--font-inter);
+    font-style: normal;
+    font-weight: bold;
+  }
+}
+
 .unique-form {
   .form-field {
     margin: 12px 0;

@@ -1,4 +1,4 @@
-// Copyright 2017-2021 @polkadot/app-accounts authors & contributors
+// Copyright 2017-2022 @polkadot/app-accounts authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import type { ActionStatus } from '@polkadot/react-components/Status/types';
@@ -98,10 +98,12 @@ function QrModal ({ className = '', onClose, onStatusChange }: Props): React.Rea
 
   return (
     <Modal
-      className={className}
-      header={'Add account via Qr'}
-      size='large'
+      className={`${className} unique-modal`}
+      size='small'
     >
+      <Modal.Header>
+        <header>Add an account via Qr-code</header>
+      </Modal.Header>
       <Modal.Content>
         {scanned
           ? (
@@ -143,12 +145,10 @@ function QrModal ({ className = '', onClose, onStatusChange }: Props): React.Rea
           : (
             <Modal.Columns>
               <Modal.Column>
+                <p>Provide the account QR from the module/external application for scanning. Once detected as valid, you will be taken to the next step to add the account to your list.</p>
                 <div className='qr-wrapper'>
                   <QrScanAddress onScan={_onScan} />
                 </div>
-              </Modal.Column>
-              <Modal.Column>
-                <p>Provide the account QR from the module/external application for scanning. Once detected as valid, you will be taken to the next step to add the account to your list.</p>
               </Modal.Column>
             </Modal.Columns>
           )
@@ -170,5 +170,11 @@ export default React.memo(styled(QrModal)`
   .qr-wrapper {
     margin: 0 auto;
     max-width: 30rem;
+  }
+
+  p {
+    color: var(--input-placeholder-search-color);
+    font-size: 14px;
+    margin-bottom: calc(var(--gap) * 2);
   }
 `);

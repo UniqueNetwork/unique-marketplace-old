@@ -1,9 +1,11 @@
-// Copyright 2017-2021 @polkadot/react-components authors & contributors
+// Copyright 2017-2022 @polkadot/react-components, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import React from 'react';
+import styled from 'styled-components';
 
-import Input from './Input';
+import Input from '../Input';
+import password from './password.svg';
 
 interface Props {
   autoFocus?: boolean;
@@ -33,6 +35,12 @@ function Password ({ autoFocus, children, className = '', defaultValue, help, is
       className={`ui--Password ${className}`}
       defaultValue={defaultValue}
       help={help}
+      icon={
+        <img
+          alt='password'
+          src={password as string}
+        />
+      }
       isDisabled={isDisabled}
       isError={isError}
       isFull={isFull}
@@ -42,7 +50,7 @@ function Password ({ autoFocus, children, className = '', defaultValue, help, is
       onChange={onChange}
       onEnter={onEnter}
       onEscape={onEscape}
-      placeholder={placeholder}
+      placeholder='Password'
       tabIndex={tabIndex}
       type='password'
       value={value}
@@ -53,4 +61,20 @@ function Password ({ autoFocus, children, className = '', defaultValue, help, is
   );
 }
 
-export default React.memo(Password);
+export default React.memo(styled(Password)`
+
+  .ui.left.icon.input.ui--Input {
+    input {
+      background: var(--bg-page);
+      border: 1px solid var(--border-color);
+      padding-left: var(--gap) !important;
+      border-radius: 4px;
+    }
+  }
+
+  img {
+    position: absolute;
+    right: 18px;
+    top: 9px;
+  }
+`);
