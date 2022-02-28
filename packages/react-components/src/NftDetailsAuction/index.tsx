@@ -48,12 +48,14 @@ function NftDetailsAuction({ account, getOffer, offer }: NftDetailsAuctionProps)
   const { cancelStep, formatKsmBalance, getKusamaTransferFee, kusamaAvailableBalance, sendCurrentUserAction,
     tokenAsk, tokenInfo, transferStep } = useMarketplaceStages(account, ethAccount, collectionInfo, tokenId);
   const { contractAddress } = envConfig;
-  const { auction: { bids, priceStep, stopAt }, price, seller } = offer;
+  const { auction: { priceStep, stopAt }, price, seller } = offer;
+  const [bids, setBids] = useState(offer.auction.bids)
   const timeLeft = useTimeToFinishAuction(stopAt);
   const { yourBidIsLeading, yourBidIsOutbid } = useBidStatus(bids, account || '');
   const { apiSettings } = useSettings();
   const escrowAddress = apiSettings?.blockchain?.escrowAddress;
   const { systemChain } = useApi();
+  console.log('bids', bids);
 
   const bid = bids.length > 0 ? Number(price) + Number(priceStep) : price;
   const currentChain = systemChain.split(' ')[0];
@@ -144,6 +146,37 @@ function NftDetailsAuction({ account, getOffer, offer }: NftDetailsAuctionProps)
     setShowBetForm(false);
     getOffer(collectionId, tokenId);
   }, []);
+
+  useEffect(() => {
+    if (apiSettings && apiSettings.auction && apiSettings.auction.socket) {
+
+      const auction = {
+          collectionId: collectionId,
+          tokenId: tokenId,
+        };
+
+      console.log('auc', auction);
+      console.log('apiSettings.auction.socket', apiSettings.auction.socket);
+
+      apiSettings.auction.socket.on('data', (d) => {
+        console.log('income', auction);
+      });
+
+      apiSettings.auction!.socket.emit('subscribeToAuction', auction);
+
+      apiSettings.auction!.socket.on('bidPlaced', (offer) => {
+        setBids(offer.auction.bids);
+        
+        console.log(`hey hey, new bid for ${offer.collectionId} - ${offer.tokenId}`, offer);
+      });
+
+      return () => {
+          apiSettings.auction!.socket.emit('unsubscribeFromAuction', auction);
+      }
+
+    }
+    return () => {};
+  }, [offer, apiSettings])
 
   useEffect(() => {
     void getFee();

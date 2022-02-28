@@ -56,8 +56,10 @@ export const useSettings = () => {
               path: '/socket.io',
               transports: ['websocket'],
             });
-            result.auction!.socket = socket;
-            setApiSettings(result); // todo tochno?
+            socket.on("connect", () => {
+              result.auction!.socket = socket;
+              setApiSettings(result);
+            });
           }
           document.head.appendChild(script);
         } else {
