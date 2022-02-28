@@ -156,7 +156,6 @@ function NftDetailsAuction({ account, getOffer, offer }: NftDetailsAuctionProps)
         };
 
       console.log('auc', auction);
-      console.log('apiSettings.auction.socket', apiSettings.auction.socket);
 
       apiSettings.auction.socket.on('data', (d) => {
         console.log('income', auction);
