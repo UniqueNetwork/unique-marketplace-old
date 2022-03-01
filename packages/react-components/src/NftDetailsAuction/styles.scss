@@ -215,6 +215,21 @@
           border-color: #FF6335 transparent transparent !important;
         }
       }
+      .button-outlined {
+        background-color: transparent !important;
+        color: #009CF0;
+        border: 1px solid #009CF0;
+
+        &:hover {
+          background-color: #F5FCFF !important;
+          border-color: #15ADFF;
+          color: #15ADFF
+        }
+
+        .loader:after {
+          border-color: #009CF0 transparent transparent !important;
+        }
+      }
     }
   }
 

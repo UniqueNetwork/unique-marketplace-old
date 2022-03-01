@@ -26,11 +26,13 @@ import Table, { TColor, TSize } from '../Table2/TableContainer';
 import Text from '../UIKitComponents/Text/Text';
 import { useBidStatus } from '@polkadot/react-hooks/useBidStatus';
 import { useSettings } from '@polkadot/react-api/useSettings';
-import { adaptiveFixed, getFormatedBidsTime, getLastBidFromThisAccount } from '../util';
+import { adaptiveFixed, getBidsFromAccount, getFormatedBidsTime, getLastBidFromThisAccount } from '../util';
+import { useAuctionApi } from '@polkadot/react-api/useAuctionApi';
+import { useHistory } from "react-router-dom"
 
 interface NftDetailsAuctionProps {
   account: string;
-  getOffer: (collectionId: string, tokenId: string) => Promise<never[] | 0>;
+  getOffer: (collectionId: string, tokenId: string) => Promise<never[] | 0>; // todo exchange to offer from socket
   offer: OfferType;
 }
 
@@ -45,7 +47,7 @@ function NftDetailsAuction({ account, getOffer, offer }: NftDetailsAuctionProps)
   const { balance } = useBalance(account);
   const { hex2a } = useDecoder();
   const { attributes, collectionInfo, tokenUrl } = useSchema(account, collectionId, tokenId);
-  const { cancelStep, formatKsmBalance, getKusamaTransferFee, kusamaAvailableBalance, sendCurrentUserAction,
+  const { formatKsmBalance, getKusamaTransferFee, kusamaAvailableBalance, sendCurrentUserAction,
     tokenAsk, tokenInfo, transferStep } = useMarketplaceStages(account, ethAccount, collectionInfo, tokenId);
   const { contractAddress } = envConfig;
   const { auction: { priceStep, stopAt }, price, seller } = offer;
@@ -53,15 +55,17 @@ function NftDetailsAuction({ account, getOffer, offer }: NftDetailsAuctionProps)
   const timeLeft = useTimeToFinishAuction(stopAt);
   const { yourBidIsLeading, yourBidIsOutbid } = useBidStatus(bids, account || '');
   const { apiSettings } = useSettings();
+  const { cancelAuction, withdrawBids } = useAuctionApi();
   const escrowAddress = apiSettings?.blockchain?.escrowAddress;
   const { systemChain } = useApi();
-  console.log('bids', bids);
+  const [waitingResponse, setWaitingResponse] = useState<Boolean>(false);
+  const routerHistory = useHistory();
 
   const bid = bids.length > 0 ? Number(price) + Number(priceStep) : price;
   const currentChain = systemChain.split(' ')[0];
-  const lastBidFromThisAccount = getLastBidFromThisAccount(bids, account);
-  const requiredSurchargeToPastBid = Number(formatKsmBalance(new BN(Number(bid))))*1e12 - (Number(lastBidFromThisAccount?.amount) || 0);
-  const lowBalance = Number(formatKsmBalance(kusamaAvailableBalance))*1e12 < (requiredSurchargeToPastBid + Number(formatKsmBalance(fee))*1e12);
+  const lastBidFromThisAccount = getLastBidFromThisAccount([...bids].reverse(), account);
+  const requiredSurchargeToPastBid = Number(formatKsmBalance(new BN(Number(bid)))) * 1e12 - (Number(lastBidFromThisAccount?.amount) || 0);
+  const lowBalance = Number(formatKsmBalance(kusamaAvailableBalance)) * 1e12 < (requiredSurchargeToPastBid + Number(formatKsmBalance(fee)) * 1e12);
 
   const columnsArray = [
     {
@@ -106,7 +110,7 @@ function NftDetailsAuction({ account, getOffer, offer }: NftDetailsAuctionProps)
       )
     }
   ]
-
+  const userHasBids = getBidsFromAccount(account, bids).length>0;
   const uSellIt = seller === account;
   // should I take into account Substrate and Ethereum?
   const uOwnIt = tokenInfo?.owner?.Substrate === account || tokenInfo?.owner?.Ethereum?.toLowerCase() === ethAccount || uSellIt;
@@ -135,8 +139,8 @@ function NftDetailsAuction({ account, getOffer, offer }: NftDetailsAuctionProps)
   }, [bid, escrowAddress, getKusamaTransferFee]);
 
   const onCancel = useCallback(() => {
-    sendCurrentUserAction('CANCEL');
-  }, [sendCurrentUserAction]);
+    cancelAuction(account, collectionId, tokenId, setWaitingResponse)
+  }, [account, collectionId, tokenId, setWaitingResponse]);
 
   const toggleBetForm = useCallback(() => {
     setShowBetForm(!showBetForm);
@@ -147,13 +151,17 @@ function NftDetailsAuction({ account, getOffer, offer }: NftDetailsAuctionProps)
     getOffer(collectionId, tokenId);
   }, []);
 
+  const withdraw = useCallback(() => {
+    withdrawBids(account, collectionId, tokenId, setWaitingResponse)
+  }, [account, collectionId, tokenId, setWaitingResponse]);
+
   useEffect(() => {
     if (apiSettings && apiSettings.auction && apiSettings.auction.socket) {
 
       const auction = {
-          collectionId: collectionId,
-          tokenId: tokenId,
-        };
+        collectionId: collectionId,
+        tokenId: tokenId,
+      };
 
       console.log('auc', auction);
 
@@ -165,16 +173,18 @@ function NftDetailsAuction({ account, getOffer, offer }: NftDetailsAuctionProps)
 
       apiSettings.auction!.socket.on('bidPlaced', (offer) => {
         setBids(offer.auction.bids);
-        
-        console.log(`hey hey, new bid for ${offer.collectionId} - ${offer.tokenId}`, offer);
+      });
+
+      apiSettings.auction!.socket.on('auctionClosed', (offer) => {
+        routerHistory.push(`${window.location.href}`);
       });
 
       return () => {
-          apiSettings.auction!.socket.emit('unsubscribeFromAuction', auction);
+        apiSettings.auction!.socket.emit('unsubscribeFromAuction', auction);
       }
 
     }
-    return () => {};
+    return () => { };
   }, [offer, apiSettings])
 
   useEffect(() => {
@@ -285,13 +295,28 @@ function NftDetailsAuction({ account, getOffer, offer }: NftDetailsAuctionProps)
                   content='Place a bid'
                   onClick={toggleBetForm}
                 />
+                {userHasBids && <Button
+                  className='button-outlined'
+                  content={
+                    <>
+                      Withdraw
+                      {waitingResponse && (
+                        <Loader
+                          active
+                          inline='centered'
+                        />
+                      )}
+                    </>
+                  }
+                  onClick={withdraw}
+                />}
                 {(uSellIt && !bids.length) && (
                   <Button
                     className='button-danger'
                     content={
                       <>
                         Delist
-                        {cancelStep && (
+                        {waitingResponse && (
                           <Loader
                             active
                             inline='centered'

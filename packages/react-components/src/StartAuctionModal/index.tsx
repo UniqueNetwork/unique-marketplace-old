@@ -18,8 +18,8 @@ import { web3Accounts, web3FromSource } from '@polkadot/extension-dapp';
 import Select from '../UIKitComponents/SelectUIKit/Select';
 import { Loader } from 'semantic-ui-react';
 import { useSettings } from '@polkadot/react-api/useSettings';
-import { decodeAddress, encodeAddress } from '@polkadot/util-crypto';
 import { useHistory } from "react-router-dom"
+import { getAccountUniversal } from '../util/auctionUtils';
 
 const { kusamaDecimals } = envConfig;
 
@@ -42,7 +42,6 @@ function StartAuctionModal({ account, closeModal, collection, tokenId, tokenOwne
   const { apiSettings } = useSettings();
   const { uniqueApi } = envConfig;
   const apiUrl = uniqueApi;
-  const accountUniversal = encodeAddress(decodeAddress(account), 42);
   const kusamaTransferFee = 0.000052;
   const history = useHistory();
 
@@ -115,7 +114,7 @@ function StartAuctionModal({ account, closeModal, collection, tokenId, tokenOwne
     }
 
     const accounts = await web3Accounts();
-    const signer = accounts.find((a) => a.address === accountUniversal);
+    const signer = accounts.find((a) => a.address === getAccountUniversal(account));
     if (!signer) {
       return;
     }

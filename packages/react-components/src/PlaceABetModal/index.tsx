@@ -14,13 +14,13 @@ import { web3Accounts, web3FromSource } from '@polkadot/extension-dapp';
 import { Input } from '@polkadot/react-components';
 import { useKusamaApi } from '@polkadot/react-hooks';
 import { fromStringToBnString } from '@polkadot/react-hooks/utils';
-import { decodeAddress, encodeAddress } from '@polkadot/util-crypto';
+import { encodeAddress } from '@polkadot/util-crypto';
 
 import closeIcon from './closeIconBlack.svg';
 import { Loader } from 'semantic-ui-react';
 import { useSettings } from '@polkadot/react-api/useSettings';
 import { OfferType } from '@polkadot/react-hooks/useCollections';
-import { adaptiveFixed, getLastBidFromThisAccount } from '../util';
+import { adaptiveFixed, getAccountUniversal, getLastBidFromThisAccount } from '../util';
 const { uniqueApi } = envConfig;
 const apiUrl = uniqueApi;
 
@@ -43,7 +43,6 @@ function PlaceABetModal({ account, closeModal, collection, offer, tokenId, token
   const { apiSettings } = useSettings();
   const escrowAddress = apiSettings?.blockchain?.escrowAddress;
   const { auction: { bids, priceStep }, price } = offer;
-  const accountUniversal = encodeAddress(decodeAddress(account), 42);
   const [inputError, setInputError] = useState(false);
 
   const minBid = bids.length > 0 ? Number(price) + Number(priceStep) : price;
@@ -54,7 +53,7 @@ function PlaceABetModal({ account, closeModal, collection, offer, tokenId, token
       closeModal();
     }
   }
-  const lastBidFromThisAccount = getLastBidFromThisAccount(bids, account);
+  const lastBidFromThisAccount = getLastBidFromThisAccount(bids, account || '');
   const dispatchBid = formatKsmBalance(new BN(Number(bid) * 1e12 - Number(lastBidFromThisAccount?.amount || 0)));
 
   // kusama transfer fee
@@ -99,7 +98,7 @@ function PlaceABetModal({ account, closeModal, collection, offer, tokenId, token
       fromStringToBnString(dispatchBid, kusamaDecimals)
     );
     const accounts = await web3Accounts();
-    const signer = accounts.find((a) => a.address === accountUniversal);
+    const signer = accounts.find((a) => a.address === getAccountUniversal(account));
     if (!signer) {
       return;
     }
