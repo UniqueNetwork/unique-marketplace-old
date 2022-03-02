@@ -277,11 +277,15 @@ function NftDetailsAuction({ account, getOffer, offer }: NftDetailsAuctionProps)
               </Header>
             )}
             <div className='divider' />
+            <div className='next-bid'>Next minimum bid:</div>
             <div className='price-wrapper'>
               <img src={logoKusama as string} width={32} />
               <div className='price'>{fee && adaptiveFixed(Number(formatKsmBalance(new BN(bid))), 4)}</div>
             </div>
-            {bids.length !== 0 && <div className='price-description'>{`last bid ${(adaptiveFixed(Number(formatKsmBalance((new BN(price)))), 4))} KSM + step ${adaptiveFixed(Number(formatKsmBalance((new BN(priceStep)))), 4)} KSM`}</div>}
+            {bids.length !== 0 && <>
+              <div className='price-description'>{`Last bid: ${(adaptiveFixed(Number(formatKsmBalance((new BN(price)))), 4))} KSM`}</div>
+              <div className='price-description'>{`Minimum step: ${adaptiveFixed(Number(formatKsmBalance((new BN(priceStep)))), 4)} KSM`}</div>
+            </>}
             {!bids.length && <div className='price-description'>{`start price ${adaptiveFixed(Number(formatKsmBalance((new BN(bid)))), 4)} KSM`}</div>}
             <div className='buttons'>
               {(!account && !!tokenPrice) && (

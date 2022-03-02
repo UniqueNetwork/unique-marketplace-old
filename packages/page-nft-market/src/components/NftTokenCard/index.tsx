@@ -10,7 +10,7 @@ import React, { useCallback } from 'react';
 import Image from 'semantic-ui-react/dist/commonjs/elements/Image';
 import Card from 'semantic-ui-react/dist/commonjs/views/Card';
 
-import { useDecoder, useSchema } from '@polkadot/react-hooks';
+import { useApi, useDecoder, useSchema } from '@polkadot/react-hooks';
 import { formatKsmBalance } from '@polkadot/react-hooks/useKusamaApi';
 import logoKusama from '../../../../../packages/apps/public/logos/kusama.svg';
 import { useTimeToFinishAuction } from '@polkadot/react-hooks/useTimeToFinishAuction';
@@ -30,7 +30,8 @@ const NftTokenCard = ({ account, collectionId, openDetailedInformationModal, tok
   const { bids, status, stopAt } = token.auction;
   const timeToFinish = useTimeToFinishAuction(stopAt);
   const { yourBidIsLeading, yourBidIsOutbid } = useBidStatus(bids, account || '');
-
+  const { systemChain } = useApi();
+  const currentChain = systemChain.split(' ')[0];
   const onCardClick = useCallback(() => {
     openDetailedInformationModal(collectionId, token.tokenId);
   }, [collectionId, openDetailedInformationModal, token]);
@@ -41,21 +42,25 @@ const NftTokenCard = ({ account, collectionId, openDetailedInformationModal, tok
       key={token.tokenId}
       onClick={onCardClick}
     >
-      { token && (
+      {token && (
         <Image
           src={tokenUrl}
           ui={false}
           wrapped
         />
       )}
-      { !!(token && collectionInfo) && (
+      {!!(token && collectionInfo) && (
         <Card.Content>
           <Card.Description>
             <div className='card-name'>
               <div className='card-name__title'>{hex2a(collectionInfo.tokenPrefix)} {`#${token.tokenId}`} {tokenName?.value}</div>
-              <div className='card-name__field'>{ `${collectionName16Decoder(collectionInfo.name)} [${collectionId}]` }</div>
+              <div className='card-name__field'>
+                <a href={`https://uniquescan.io/${currentChain}/collections/${collectionId}`}>
+                  {`${collectionName16Decoder(collectionInfo.name)} [${collectionId}]`}
+                </a>
+              </div>
             </div>
-            { token.price && (!status) && (
+            {token.price && (!status) && (
               <>
                 <div className='card-price'>
                   <div className='card-price__title'>{formatKsmBalance(new BN(token.price))}</div>

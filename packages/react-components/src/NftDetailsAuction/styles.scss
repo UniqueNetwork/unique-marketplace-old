@@ -37,7 +37,7 @@
 
     a {
       color: #009cf0;
-      
+
       &:hover {
         color: #15ADFF;
 }
@@ -124,6 +124,12 @@
       }
     }
 
+    .next-bid {
+      font: 500 18px/26px var(--font-inter);
+      color: #040B1D;
+      margin-bottom: 8px;
+    }
+
     .price-wrapper {
       display: flex;
       align-items: center;
@@ -143,7 +149,6 @@
     .price-description {
       font: 400 16px/24px var(--font-inter);
       color: #81858E;
-      margin-bottom: 24px;
     }
 
     .time-left {
@@ -209,6 +214,8 @@
     }
 
     .buttons {
+      margin-top: 24px;
+
       .button-danger {
         background-color: transparent !important;
         color: #FF6335;
@@ -223,6 +230,7 @@
           border-color: #FF6335 transparent transparent !important;
         }
       }
+      
       .button-outlined {
         background-color: transparent !important;
         color: #009CF0;
