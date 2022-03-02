@@ -291,10 +291,10 @@ function NftDetailsAuction({ account, getOffer, offer }: NftDetailsAuctionProps)
                 </div>
               )}
               <>
-                <Button
+                {!uSellIt && <Button
                   content='Place a bid'
                   onClick={toggleBetForm}
-                />
+                />}
                 {userHasBids && <Button
                   className='button-outlined'
                   content={

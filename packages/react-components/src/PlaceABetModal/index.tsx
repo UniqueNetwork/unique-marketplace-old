@@ -93,7 +93,7 @@ function PlaceABetModal({ account, closeModal, collection, offer, tokenId, token
       Substrate: apiSettings?.auction?.address
     };
 
-    const extrinsic = kusamaApi.tx.balances.transfer(
+    const extrinsic = kusamaApi.tx.balances.transferKeepAlive(
       encodeAddress(recipient.Substrate),
       fromStringToBnString(dispatchBid, kusamaDecimals)
     );
