@@ -110,7 +110,7 @@ function NftDetailsAuction({ account, getOffer, offer }: NftDetailsAuctionProps)
       )
     }
   ]
-  const userHasBids = getBidsFromAccount(account, bids).length>0;
+  const userHasBids = getBidsFromAccount(account, bids).length > 0;
   const uSellIt = seller === account;
   // should I take into account Substrate and Ethereum?
   const uOwnIt = tokenInfo?.owner?.Substrate === account || tokenInfo?.owner?.Ethereum?.toLowerCase() === ethAccount || uSellIt;
@@ -270,7 +270,11 @@ function NftDetailsAuction({ account, getOffer, offer }: NftDetailsAuctionProps)
               <Header as='h4'>You`re selling it!</Header>
             )}
             {(!uOwnIt && !isOwnerContract && tokenInfo?.owner && tokenAsk?.flagActive !== '1') && (
-              <Header as='h5'>The owner is {offer.seller}</Header>
+              <Header as='h5'>The owner is&nbsp;
+                <a href={`https://uniquescan.io/${currentChain}/account/${offer.seller}`}>
+                  {offer.seller}
+                </a>
+              </Header>
             )}
             <div className='divider' />
             <div className='price-wrapper'>
@@ -340,7 +344,12 @@ function NftDetailsAuction({ account, getOffer, offer }: NftDetailsAuctionProps)
               {<div className='leading-bid'>
                 {yourBidIsLeading && <div className='bid you-lead'>Your bid is leading</div>}
                 {yourBidIsOutbid && <div className='bid you-outbid'>Your offer is outbid</div>}
-                <div className='current-bid'>{bids.length ? `Leading bid ${shortAddress([...bids].reverse()[0].bidderAddress)}` : 'There are no bids'}</div>
+                {!!bids.length && <div className='current-bid'>Leading bid&nbsp;
+                  <a href={`https://uniquescan.io/${currentChain}/account/${[...bids].reverse()[0].bidderAddress}`}>
+                    {shortAddress([...bids].reverse()[0].bidderAddress)}
+                  </a>
+                </div>}
+                {!bids.length && <div className='current-bid'>There are no bids</div>}
               </div>}
               {!!bids.length && <Table data={[...bids]} columns={columnsArray}></Table>}
             </div>
