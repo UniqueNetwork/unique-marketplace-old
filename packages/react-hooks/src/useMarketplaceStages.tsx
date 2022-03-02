@@ -433,8 +433,6 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
     }
   }, [collectionInfo, initCollectionAbi]);
 
-  console.log('state', state.value);
-
   return {
     cancelStep,
     checkWhiteList,

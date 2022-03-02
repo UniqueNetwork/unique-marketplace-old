@@ -1,11 +1,12 @@
 // Copyright 2017-2022 @polkadot/react-components, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
 
 import Input from '../Input';
 import password from './password.svg';
+import passwordShown from './passwordShown.svg';
 
 interface Props {
   autoFocus?: boolean;
@@ -28,7 +29,13 @@ interface Props {
   withLabel?: boolean;
 }
 
-function Password ({ autoFocus, children, className = '', defaultValue, help, isDisabled, isError, isFull, label, labelExtra, name, onChange, onEnter, onEscape, placeholder, tabIndex, value, withLabel }: Props): React.ReactElement<Props> {
+function Password ({ autoFocus, children, className = '', defaultValue, help, isDisabled, isError, isFull, label, labelExtra, name, onChange, onEnter, onEscape, tabIndex, value, withLabel }: Props): React.ReactElement<Props> {
+  const [inputType, setInputType] = useState<'password' | 'text'>('password');
+
+  const toggleShowPassword = useCallback(() => {
+    setInputType((prevType: 'password' | 'text') => prevType === 'password' ? 'text' : 'password');
+  }, []);
+
   return (
     <Input
       autoFocus={autoFocus}
@@ -36,10 +43,21 @@ function Password ({ autoFocus, children, className = '', defaultValue, help, is
       defaultValue={defaultValue}
       help={help}
       icon={
-        <img
-          alt='password'
-          src={password as string}
-        />
+        inputType === 'password'
+          ? (
+            <img
+              alt='password'
+              onClick={toggleShowPassword}
+              src={password as string}
+            />
+          )
+          : (
+            <img
+              alt='password'
+              onClick={toggleShowPassword}
+              src={passwordShown as string}
+            />
+          )
       }
       isDisabled={isDisabled}
       isError={isError}
@@ -52,7 +70,7 @@ function Password ({ autoFocus, children, className = '', defaultValue, help, is
       onEscape={onEscape}
       placeholder='Password'
       tabIndex={tabIndex}
-      type='password'
+      type={inputType}
       value={value}
       withLabel={withLabel}
     >
@@ -76,5 +94,6 @@ export default React.memo(styled(Password)`
     position: absolute;
     right: 18px;
     top: 9px;
+    cursor: pointer;
   }
 `);
