@@ -37,6 +37,8 @@
 
     a {
       color: #009cf0;
+      font-size: 16px;
+      line-height: 24px;
 
       &:hover {
         color: #15ADFF;
@@ -79,6 +81,12 @@
       }
     }
 
+    h5 {
+      font: 700 20px/28px var(--font-raleway);
+      color: var(--card-text-color);
+      margin: 0;
+    }
+
     .h5 {
       font-size: 14px;
       line-height: 20px;
@@ -94,12 +102,9 @@
 
     .accessories {
       word-break: break-all;
-      color: var(--title-color);
-      font-family: var(--font-inter);
-      opacity: 0.5;
-      font-weight: bold;
-      font-size: 18px;
-      line-height: 27px;
+      color: var(--text-color);
+      font: 700 20px/28px var(--font-raleway);
+      opacity: 1
 
       p {
         font-family: var(--font-roboto);
@@ -110,6 +115,7 @@
         margin-right: 24px;
         margin-bottom: 0;
         color: var(--card-text-color);
+        opacity: 0.5;
       }
     }
 

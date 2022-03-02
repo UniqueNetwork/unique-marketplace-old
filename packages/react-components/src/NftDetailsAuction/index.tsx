@@ -29,6 +29,7 @@ import { useSettings } from '@polkadot/react-api/useSettings';
 import { adaptiveFixed, getBidsFromAccount, getFormatedBidsTime, getLastBidFromThisAccount } from '../util';
 import { useAuctionApi } from '@polkadot/react-api/useAuctionApi';
 import { useHistory } from "react-router-dom"
+import Timer from '../Timer';
 
 interface NftDetailsAuctionProps {
   account: string;
@@ -246,7 +247,7 @@ function NftDetailsAuction({ account, getOffer, offer }: NftDetailsAuctionProps)
             </Header>
             {attributes && Object.values(attributes).length > 0 && (
               <div className='accessories'>
-                Attributes:
+                <span>Attributes</span>
                 {Object.keys(attributes).map((attrKey) => {
                   if (attrKey === 'ipfsJson') {
                     return null;
@@ -270,12 +271,15 @@ function NftDetailsAuction({ account, getOffer, offer }: NftDetailsAuctionProps)
               <Header as='h4'>You`re selling it!</Header>
             )}
             {(!uOwnIt && !isOwnerContract && tokenInfo?.owner && tokenAsk?.flagActive !== '1') && (
-              <Header as='h5'>The owner is&nbsp;
+              <>
+                <Header as='h5'>Owned&nbsp;by&emsp;</Header>
                 <a href={`https://uniquescan.io/${currentChain}/account/${offer.seller}`}>
                   {offer.seller}
                 </a>
-              </Header>
+              </>
             )}
+            <div className='divider' />
+            <Timer time={stopAt} />
             <div className='divider' />
             <div className='next-bid'>Next minimum bid:</div>
             <div className='price-wrapper'>
@@ -348,7 +352,7 @@ function NftDetailsAuction({ account, getOffer, offer }: NftDetailsAuctionProps)
               {<div className='leading-bid'>
                 {yourBidIsLeading && <div className='bid you-lead'>Your bid is leading</div>}
                 {yourBidIsOutbid && <div className='bid you-outbid'>Your offer is outbid</div>}
-                {!!bids.length && <div className='current-bid'>Leading bid&nbsp;
+                {!!bids.length && <div className='current-bid'>Leading bid&emsp;
                   <a href={`https://uniquescan.io/${currentChain}/account/${[...bids].reverse()[0].bidderAddress}`}>
                     {shortAddress([...bids].reverse()[0].bidderAddress)}
                   </a>
