@@ -169,7 +169,7 @@ function StartAuctionModal({ account, closeModal, collection, tokenId, tokenOwne
       </ModalHeader>
       <ModalContent>
         <LabelText>
-          Minimum step*
+          Minimum step, KSM*
         </LabelText>
         <InputWrapper
           onChange={onMinStepInputChange}
@@ -179,7 +179,7 @@ function StartAuctionModal({ account, closeModal, collection, tokenId, tokenOwne
         <Row>
           <Col>
             <LabelText>
-              Starting Price
+              Starting Price, KSM
             </LabelText>
             <InputWrapper
               onChange={onInputStartingPriceChange}
