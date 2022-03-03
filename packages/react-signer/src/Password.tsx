@@ -98,7 +98,7 @@ export default React.memo(styled(Unlock)`
     padding: 10px;
     align-items: center;
     position: absolute;
-    right: 48;
+    right: 48px;
 
     .title {
       font-family: Roboto;
