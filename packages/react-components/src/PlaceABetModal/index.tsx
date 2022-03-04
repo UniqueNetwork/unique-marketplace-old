@@ -20,7 +20,8 @@ import closeIcon from './closeIconBlack.svg';
 import { Loader } from 'semantic-ui-react';
 import { useSettings } from '@polkadot/react-api/useSettings';
 import { OfferType } from '@polkadot/react-hooks/useCollections';
-import { adaptiveFixed, getAccountUniversal, getLastBidFromThisAccount } from '../util';
+import { adaptiveFixed, getAccountUniversal } from '../util';
+import { TCalculatedBid, useAuctionApi } from '@polkadot/react-api/useAuctionApi';
 const { uniqueApi } = envConfig;
 const apiUrl = uniqueApi;
 
@@ -31,7 +32,7 @@ interface Props {
   collection: NftCollectionInterface;
   closeModal: () => void;
   tokenId: string;
-  account?: string;
+  account: string;
   tokenOwner?: { Ethereum?: string, Substrate?: string };
   updateTokens: (collectionId: string) => void;
 }
@@ -44,18 +45,27 @@ function PlaceABetModal({ account, closeModal, collection, offer, tokenId, token
   const escrowAddress = apiSettings?.blockchain?.escrowAddress;
   const { auction: { bids, priceStep }, price } = offer;
   const [inputError, setInputError] = useState(false);
+  const [calculatedBid, setCalculatedBidFromServer] = useState<TCalculatedBid>({} as TCalculatedBid);
+
+  const { getCalculatedBid } = useAuctionApi();
+
+  useEffect(() => {
+    getCalculatedBid({ collectionId: collection.id, tokenId, account, setCalculatedBidFromServer });
+  }, [collection.id, tokenId, account, setCalculatedBidFromServer])
+
 
   const minBid = bids.length > 0 ? Number(price) + Number(priceStep) : price;
 
-  const [bid, setBid] = useState<string>(formatKsmBalance(new BN(minBid)));
+  const [bid, setBid] = useState<string>(formatKsmBalance(new BN(Number(minBid))));
+
   const outsideCloseModal = () => {
     if (!isLoading) {
       closeModal();
     }
   }
-  const lastBidFromThisAccount = getLastBidFromThisAccount(bids, account || '');
-  const dispatchBid = formatKsmBalance(new BN(Number(bid) * 1e12 - Number(lastBidFromThisAccount?.amount || 0)));
-
+  const lastBidFromThisAccount = calculatedBid?.bidderPendingAmount;
+  // Todo problem with calculation round
+  const dispatchBid = formatKsmBalance(new BN(Number(bid) * 1e12 - Number(lastBidFromThisAccount)));
   // kusama transfer fee
   const getFee = useCallback(async () => {
     if (dispatchBid && escrowAddress) {
@@ -73,7 +83,7 @@ function PlaceABetModal({ account, closeModal, collection, offer, tokenId, token
     } 
   }
 
-  const onInputChange = (val:string) => {
+  const onInputChange = (val: string) => {
     setInputError(false);
     setBid(val);
   }
@@ -92,7 +102,6 @@ function PlaceABetModal({ account, closeModal, collection, offer, tokenId, token
     const recipient = {
       Substrate: apiSettings?.auction?.address
     };
-
     const extrinsic = kusamaApi.tx.balances.transferKeepAlive(
       encodeAddress(recipient.Substrate),
       fromStringToBnString(dispatchBid, kusamaDecimals)

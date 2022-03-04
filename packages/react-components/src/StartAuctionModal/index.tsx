@@ -103,7 +103,7 @@ function StartAuctionModal({ account, closeModal, collection, tokenId, tokenOwne
       Substrate: apiSettings?.auction?.address
     };
 
-    let extrinsic = api.tx.unique.transferKeepAlive(recipient, collection.id, tokenId, tokenPart);
+    let extrinsic = api.tx.unique.transfer(recipient, collection.id, tokenId, tokenPart);
 
     if (!tokenOwner?.Substrate || tokenOwner?.Substrate !== account) {
       const ethAccount = subToEth(account).toLowerCase();

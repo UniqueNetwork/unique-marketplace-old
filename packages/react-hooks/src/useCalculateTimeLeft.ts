@@ -19,7 +19,6 @@ export const useCalculateTimeLeft = (time: Date) => {
     const [daysLeft, setDaysLeft] = useState<number>(daysLeftInitial);
 
     const tick = () => {
-        console.log('in tick');
         const today = new Date().toISOString();
         const ms = new Date(time).getTime() - new Date(today).getTime();
 

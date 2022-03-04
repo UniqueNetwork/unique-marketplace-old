@@ -3,9 +3,46 @@ import { getAccountUniversal } from "@polkadot/react-components/util";
 import envConfig from "@polkadot/apps-config/envConfig";
 import { stringToHex } from "@polkadot/util";
 
+export type TCalculatedBid = {
+    // sum of bids from this account
+    bidderPendingAmount:string, 
+    // min bid for this account in order to place a max bid
+    minBidderAmount: string,
+    // max bid for this auction
+    contractPendingPrice: string,
+    // step for this auction
+    priceStep: string
+}
+
 export const useAuctionApi = () => {
     const { uniqueApi } = envConfig;
     const apiUrl = uniqueApi;
+
+    const getCalculatedBid = async ({ collectionId, tokenId, account, setCalculatedBidFromServer }: { collectionId: string, tokenId: string, account: string, setCalculatedBidFromServer: ({bidderPendingAmount, minBidderAmount}:TCalculatedBid)=>void }) => {
+        let responsefromBack;
+        const url = `${apiUrl}/auction/calculate`;
+        const data = {
+            collectionId: Number(collectionId),
+            tokenId: Number(tokenId),
+            bidderAddress: account
+        }
+        console.log(data)
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    body: JSON.stringify(data),
+                    headers: {
+                        'accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                });
+                responsefromBack = await response.json();
+                console.log('responsefromBack', responsefromBack);
+                setCalculatedBidFromServer(responsefromBack);
+            } catch (error) {
+                console.error('Ошибка:', error);
+            }
+    }
 
     const withdrawBids = async (account: string, collectionId: string, tokenId: string, setWaitingResponse: (waiting: boolean) => void) => {
         const accounts = await web3Accounts();
@@ -31,8 +68,7 @@ export const useAuctionApi = () => {
                 const response = await fetch(url, {
                     method: 'DELETE',
                     headers: {
-                        'x-polkadot-signature': signature,
-                        'x-polkadot-signer': account
+                        'Authorization': `${account}:${signature}`,
                     }
                 });
                 const json = await response.json();
@@ -81,5 +117,5 @@ export const useAuctionApi = () => {
         }
     };
 
-    return { cancelAuction, withdrawBids }
+    return { cancelAuction, getCalculatedBid, withdrawBids }
 }

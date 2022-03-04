@@ -21,10 +21,6 @@ export function adaptiveFixed(num: number, needNonZero: number) {
   return res;
 }
 
-export function getLastBidFromThisAccount(bids: BidType[], account: string) {
-  return [...bids].reverse().find((bid) => { return (encodeAddress(decodeAddress(bid.bidderAddress), 42) === getAccountUniversal(account)) });
-}
-
 export function getAccountUniversal(account: string) { return encodeAddress(decodeAddress(account), 42); }
 
 export function getBidsFromAccount(account: string, bids: BidType[]) {
