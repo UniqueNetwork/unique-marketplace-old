@@ -120,6 +120,8 @@ export function formatStrBalance (value: BN | undefined = new BN(0), incomeDecim
   }
 
   const arr = balanceStr.toString().split('.');
+  const afterZero = arr[1] ? `.${arr[1].substr(0, decimals)}`.replace(/0*$/, '') : '';
+  const fullAfterZero = afterZero === '.' ? '' : afterZero;
 
-  return `${arr[0]}${arr[1] ? `.${arr[1].substr(0, decimals)}` : ''}`.replace(/0*$/, '');
+  return `${arr[0]}${fullAfterZero}`;
 }
