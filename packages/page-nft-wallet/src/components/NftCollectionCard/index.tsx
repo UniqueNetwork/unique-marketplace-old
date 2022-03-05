@@ -13,7 +13,7 @@ import Item from 'semantic-ui-react/dist/commonjs/views/Item';
 
 import envConfig from '@polkadot/apps-config/envConfig';
 import { Expander, Tooltip } from '@polkadot/react-components';
-import { useDecoder, useMetadata, useMyTokens } from '@polkadot/react-hooks';
+import { useDecoder, useIsMountedRef, useMetadata, useMyTokens } from '@polkadot/react-hooks';
 
 import NftTokenCard from '../NftTokenCard';
 
@@ -34,38 +34,34 @@ function NftCollectionCard ({ account, canTransferTokens, collection, openTransf
   const [collectionImageUrl, setCollectionImageUrl] = useState<string>();
   const [confirmDeleteCollection, setConfirmDeleteCollection] = useState<boolean>(false);
   const { collectionName16Decoder } = useDecoder();
-  const cleanup = useRef<boolean>(false);
   const { getTokenImageUrl } = useMetadata();
   const { allMyTokens, allTokensCount, ownTokensCount, tokensOnPage } = useMyTokens(account, collection, tokensSelling, currentPerPage);
   const nftWalletPanel = useRef<HTMLDivElement>(null);
+  const mountedRef = useIsMountedRef();
   const { uniqueCollectionIds } = envConfig;
 
   const hasMore = tokensOnPage.length < allMyTokens.length;
 
   const toggleCollection = useCallback((isOpen: boolean) => {
-    setOpened(isOpen);
-  }, []);
+    mountedRef.current && setOpened(isOpen);
+  }, [mountedRef]);
 
   const defineCollectionImage = useCallback(async () => {
     const collectionImage = await getTokenImageUrl(collection, '1');
 
-    if (cleanup.current) {
-      return;
-    }
-
-    setCollectionImageUrl(collectionImage);
-  }, [collection, getTokenImageUrl]);
+    mountedRef.current && setCollectionImageUrl(collectionImage);
+  }, [collection, getTokenImageUrl, mountedRef]);
 
   const toggleConfirmation = useCallback((status: boolean, e: React.MouseEvent<any>) => {
     e.stopPropagation();
 
-    setConfirmDeleteCollection(status);
-  }, []);
+    mountedRef.current && setConfirmDeleteCollection(status);
+  }, [mountedRef]);
 
   const loadMore = useCallback((page: number) => {
     // handle load more on scroll action
-    setCurrentPerPage(page * perPage);
-  }, []);
+    mountedRef.current && setCurrentPerPage(page * perPage);
+  }, [mountedRef]);
 
   // set scroll parent to initialize scroll container in mobile or desktop
   const getScrollParent = useCallback(() => {
@@ -81,12 +77,6 @@ function NftCollectionCard ({ account, canTransferTokens, collection, openTransf
       void defineCollectionImage();
     }
   }, [collection, collectionImageUrl, defineCollectionImage]);
-
-  useEffect(() => {
-    return () => {
-      cleanup.current = true;
-    };
-  }, []);
 
   const useWindow = !getScrollParent();
 
@@ -140,7 +130,7 @@ function NftCollectionCard ({ account, canTransferTokens, collection, openTransf
                   trigger={'Delete collection from wallet'}
                 />
                 <Confirm
-                  content='Are you sure to delete collection from the wallet?'
+                  content='Are you sure you want to delete the collection from the wallet?'
                   onCancel={toggleConfirmation.bind(null, false)}
                   onConfirm={removeCollection.bind(null, collection.id)}
                   open={confirmDeleteCollection}

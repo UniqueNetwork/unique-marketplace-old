@@ -1,10 +1,11 @@
-// Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
+// Copyright 2017-2022 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import type { OpenPanelType } from '@polkadot/apps-routing/types';
 
-import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
+import React, { memo, useCallback, useContext, useEffect, useRef, useState } from 'react';
 
+import ContractContext from '@polkadot/apps/ContractContext/ContractContext';
 import menuArrow from '@polkadot/apps/images/menu-arrow.svg';
 import { ChainBalance, PopupMenu } from '@polkadot/react-components';
 import { useBalances } from '@polkadot/react-hooks';
@@ -17,7 +18,8 @@ interface Props {
 }
 
 function BalancesHeader (props: Props): React.ReactElement<{ account?: string }> {
-  const { account, isMobileMenu, setOpenPanel } = props;
+  const { isMobileMenu, setOpenPanel } = props;
+  const { account, getUserDeposit } = useContext(ContractContext);
   const { freeBalance, freeKusamaBalance } = useBalances(account);
   const [isPopupActive, setIsPopupActive] = useState<boolean>(false);
 
@@ -28,6 +30,10 @@ function BalancesHeader (props: Props): React.ReactElement<{ account?: string }>
       setIsPopupActive(false);
     }
   };
+
+  useEffect(() => {
+    void getUserDeposit();
+  }, [getUserDeposit]);
 
   useEffect(() => {
     document.addEventListener('click', handleClickOutside);

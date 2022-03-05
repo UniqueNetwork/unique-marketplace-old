@@ -40,6 +40,7 @@ export const useKusamaApi = (account?: string): UseKusamaApiInterface => {
         accountId: encodedKusamaAccount,
         extrinsic: api.tx.balances
           .transfer(recipient, value),
+        isKusama: true,
         isUnsigned: false,
         txFailedCb: () => { onFail('SIGN_TRANSACTION_FAIL'); },
         txStartCb: () => { onSuccess('SIGN_SUCCESS'); },

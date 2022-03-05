@@ -1,4 +1,4 @@
-// Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
+// Copyright 2017-2022 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import './styles.scss';
@@ -12,10 +12,10 @@ import Modal from 'semantic-ui-react/dist/commonjs/modules/Modal/Modal';
 
 import { Input, Label, StatusContext } from '@polkadot/react-components';
 import { useApi } from '@polkadot/react-hooks';
+import { CrossAccountId, normalizeAccountId, subToEth } from '@polkadot/react-hooks/utils';
 import { keyring } from '@polkadot/ui-keyring';
 
 import closeIcon from './closeIconBlack.svg';
-import { CrossAccountId, normalizeAccountId, subToEth } from '@polkadot/react-hooks/utils';
 
 interface Props {
   account?: string;
@@ -55,7 +55,7 @@ function TransferModal ({ account, closeModal, collection, tokenId, tokenOwner, 
       txStartCb: () => { closeModal(); },
       txSuccessCb: () => { updateTokens(collection.id); }
     });
-  }, [account, api, closeModal, collection, recipient, tokenId, tokenPart, updateTokens, queueExtrinsic]);
+  }, [account, api, recipient, collection, tokenId, tokenPart, tokenOwner, queueExtrinsic, closeModal, updateTokens]);
 
   const setRecipientAddress = useCallback((value: string) => {
     try {

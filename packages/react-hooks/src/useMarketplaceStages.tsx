@@ -408,12 +408,6 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
   }, [state, loadingTokenInfo]);
 
   useEffect(() => {
-    if (state.matches('loadingTokenInfo')) {
-      void loadingTokenInfo();
-    }
-  }, [state, loadingTokenInfo]);
-
-  useEffect(() => {
     if (state.matches('waitForTokenRevert')) {
       void waitForTokenRevert();
     }
@@ -438,8 +432,6 @@ export const useMarketplaceStages = (account: string | undefined, ethAccount: st
       initCollectionAbi(collectionInfo.id);
     }
   }, [collectionInfo, initCollectionAbi]);
-
-  console.log('state', state.value);
 
   return {
     cancelStep,

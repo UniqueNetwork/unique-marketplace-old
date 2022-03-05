@@ -1,4 +1,4 @@
-// Copyright 2017-2021 @polkadot/react-components authors & contributors
+// Copyright 2017-2022 @polkadot/react-components authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import React, { createRef, useCallback, useState } from 'react';
@@ -7,7 +7,8 @@ import styled from 'styled-components';
 
 import { formatNumber, hexToU8a, isHex, u8aToString } from '@polkadot/util';
 
-import Labelled from './Labelled';
+import Labelled from '../Labelled';
+import fileIcon from './fileIcon.svg';
 
 export interface InputFilePropsBase {
   className?: string;
@@ -98,15 +99,19 @@ function InputFile ({ accept, className = '', clearContent, help, isDisabled, is
       ref={dropRef}
     >
       {({ getInputProps, getRootProps }): JSX.Element => (
-        <div {...getRootProps({ className: `ui--InputFile${isError ? ' error' : ''} ${className}` })} >
+        <div {...getRootProps({ className: `ui--InputFile${isError ? ' error' : ''} ${className}` })}>
+          <img
+            alt='file-icon'
+            src={fileIcon as string}
+          />
           <input {...getInputProps()} />
-          <em className='label' >
+          <span className='label'>
             {
               !file || clearContent
-                ? placeholder || 'click to select or drag and drop the file here'
+                ? placeholder || 'Click to select or drop the file here'
                 : placeholder || '{{name}} ({{size}} bytes)'.replace('{{name}}', file.name).replace('{{size}}', formatNumber(file.size))
             }
-          </em>
+          </span>
         </div>
       )}
     </Dropzone>
@@ -128,17 +133,20 @@ function InputFile ({ accept, className = '', clearContent, help, isDisabled, is
 }
 
 export default React.memo(styled(InputFile)`
+  display: flex;
+  align-items: center;
+  grid-column-gap: 11px;
   background: var(--bg-input);
-  border: 1px solid rgba(34, 36, 38, 0.15);
-  border-radius: 0.28571429rem;
-  font-size: 1rem;
+  border: 1px dashed var(--link-color);
+  border-radius: calc(var(--gap) / 2);
+  font-size: 16px;
   margin: 0.25rem 0;
-  padding: 0.67857143em 1em;
+  padding: calc((var(--gap) / 2) * 3);
   width: 100% !important;
+  color: var(--input-placeholder-search-color);
 
   &.error {
-    background: var(--bg-input-error);
-    border-color: #e0b4b4;
+    border-color: var(--error-color);
   }
 
   &:hover {

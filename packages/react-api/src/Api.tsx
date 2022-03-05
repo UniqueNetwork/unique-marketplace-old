@@ -249,7 +249,7 @@ function Api ({ children, store }: Props): React.ReactElement<Props> | null {
     }
 
     const provider = new WsProvider(apiSettings.blockchain.kusama.wsEndpoint);
-    const signer = new ApiSigner(registry, queuePayload, queueSetTxStatus);
+    const signer = new ApiSigner(kusamaRegistry, queuePayload, queueSetTxStatus);
     const types = getDevTypes();
 
     kusamaApi = new ApiPromise({ provider, registry: kusamaRegistry, signer, types, typesBundle, typesChain });

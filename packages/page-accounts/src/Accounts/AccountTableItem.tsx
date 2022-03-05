@@ -115,7 +115,7 @@ function AccountTableItem ({ account, forgetAccount }: Props): React.ReactElemen
           onClick={openConfirmation}
         />
         <Confirm
-          content='Are you sure to delete address from the wallet?'
+          content='Are you sure you want to delete the address from the wallet?'
           onCancel={closeConfirmation}
           onConfirm={_onForget}
           open={confirmDeleteAccount}

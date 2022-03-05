@@ -73,7 +73,6 @@ export function useCollections () {
   const [tradesLoading, setTradesLoading] = useState<boolean>(false);
   const [myTrades, setMyTrades] = useState<TradeType[]>();
   const mountedRef = useIsMountedRef();
-  const filtersRef = useRef<Filters>();
   const { getDetailedCollectionInfo } = useCollection();
   const { uniqueApi, uniqueCollectionIds } = envConfig;
   const apiUrl = process.env.NODE_ENV === 'development' ? '' : uniqueApi;
@@ -103,11 +102,6 @@ export function useCollections () {
     try {
       mountedRef.current && setOffersLoading(true);
       let url = `${apiUrl}/Offers?page=${page}&pageSize=${pageSize}`;
-
-      // reset offers before loading first page
-      if (page === 1) {
-        mountedRef.current && setOffers([]);
-      }
 
       if (filters && uniqueCollectionIds?.length) {
         Object.keys(filters).forEach((filterKey: string) => {
@@ -143,21 +137,10 @@ export function useCollections () {
         } else {
           if (result) {
             setOffersCount(result.itemsCount);
-
-            if (result.itemsCount === 0) {
-              setOffers([]);
-            } else if (result.items.length) {
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-              if (!equal(filters, filtersRef.current)) {
-                setOffers(result.items);
-              } else {
-                setOffers((prevOffers) => [...prevOffers, ...result.items]);
-              }
-            }
+            setOffers(result.items);
           }
         }
 
-        filtersRef.current = filters;
         setOffersLoading(false);
       });
     } catch (e) {

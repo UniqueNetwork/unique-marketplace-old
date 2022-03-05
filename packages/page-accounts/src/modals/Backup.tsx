@@ -2,10 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import FileSaver from 'file-saver';
-import React, { useCallback, useState } from 'react';
-
-import { AddressRow, Button, Label, Modal, Password } from '@polkadot/react-components';
+import React, { useCallback, useContext, useState } from 'react';
 import Form from 'semantic-ui-react/dist/commonjs/collections/Form/Form';
+
+import { AddressRow, Button, Label, Modal, Password, StatusContext } from '@polkadot/react-components';
 import { keyring } from '@polkadot/ui-keyring';
 
 interface Props {
@@ -18,6 +18,7 @@ function Backup ({ address, onClose }: Props): React.ReactElement<Props> {
   const [{ isPassTouched, password }, setPassword] = useState({ isPassTouched: false, password: '' });
   const [backupFailed, setBackupFailed] = useState(false);
   const isPassValid = !backupFailed && keyring.isPassValid(password);
+  const { queueAction } = useContext(StatusContext);
 
   const _onChangePass = useCallback(
     (password: string): void => {
@@ -40,6 +41,13 @@ function Backup ({ address, onClose }: Props): React.ReactElement<Props> {
         } catch (error) {
           setBackupFailed(true);
           setIsBusy(false);
+
+          queueAction({
+            action: 'Backup',
+            message: 'Unable to decode using the supplied passphrase',
+            status: 'error'
+          });
+
           console.error(error);
 
           return;
@@ -49,7 +57,7 @@ function Backup ({ address, onClose }: Props): React.ReactElement<Props> {
         onClose();
       }, 0);
     },
-    [address, onClose, password]
+    [address, onClose, password, queueAction]
   );
 
   return (

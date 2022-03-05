@@ -1,4 +1,4 @@
-// Copyright 2017-2021 @polkadot/react-signer authors & contributors
+// Copyright 2017-2022 @polkadot/react-signer authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import type { SignerOptions } from '@polkadot/api/submittable/types';
@@ -75,7 +75,7 @@ async function signAndSend (queueSetTxStatus: QueueTxMessageSetStatus, currentIt
     console.error('signAndSend: error:', error);
     queueSetTxStatus(currentItem.id, 'error', {}, error as Error);
 
-    currentItem.txFailedCb && currentItem.txFailedCb(error as any);
+    currentItem.txFailedCb && currentItem.txFailedCb(error as Error);
   }
 }
 
@@ -90,7 +90,7 @@ async function signAsync (queueSetTxStatus: QueueTxMessageSetStatus, { id, txFai
     console.error('signAsync: error:', error);
     queueSetTxStatus(id, 'error', undefined, error as Error);
 
-    txFailedCb(error as any);
+    txFailedCb(error as Error);
   }
 
   return null;
@@ -152,7 +152,8 @@ async function extractParams (api: ApiPromise, address: string, options: Partial
 }
 
 function TxSigned ({ className, currentItem, requestAddress }: Props): React.ReactElement<Props> | null {
-  const { api } = useApi();
+  const apiData = useApi();
+  const api = currentItem?.isKusama ? apiData.kusamaApi : apiData.api;
   const { getLedger } = useLedger();
   const { queueSetTxStatus } = useContext(StatusContext);
   const [flags, setFlags] = useState(() => extractExternal(requestAddress));

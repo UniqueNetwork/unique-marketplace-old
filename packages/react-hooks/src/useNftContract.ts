@@ -107,7 +107,7 @@ export function useNftContract (account: string | undefined, ethAccount: string 
   const [tokenAsk, setTokenAsk] = useState<TokenAskType>();
   const decimals = formatBalance.getDefaults().decimals;
 
-  const { contractAddress, contractOwner } = envConfig;
+  const { contractAddress } = envConfig;
 
   const checkWhiteList = useCallback(async (ethAccount: string): Promise<boolean> => {
     try {
@@ -465,7 +465,7 @@ export function useNftContract (account: string | undefined, ethAccount: string 
   const initCollectionAbi = useCallback((collectionId) => {
     if (web3Instance) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      const evmCollection: Contract = new web3Instance.eth.Contract(nonFungibleAbi as any, collectionIdToAddress(parseInt(collectionId, 10)), { from: contractOwner });
+      const evmCollection: Contract = new web3Instance.eth.Contract(nonFungibleAbi as any, collectionIdToAddress(parseInt(collectionId, 10)));
 
       setEvmCollectionInstance(evmCollection);
     }

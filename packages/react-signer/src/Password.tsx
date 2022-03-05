@@ -1,4 +1,4 @@
-// Copyright 2017-2021 @polkadot/react-signer authors & contributors
+// Copyright 2017-2022 @polkadot/react-signer authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import type { KeyringPair } from '@polkadot/keyring/types';
@@ -98,7 +98,7 @@ export default React.memo(styled(Unlock)`
     padding: 10px;
     align-items: center;
     position: absolute;
-    right: 0;
+    right: 48px;
 
     .title {
       font-family: Roboto;

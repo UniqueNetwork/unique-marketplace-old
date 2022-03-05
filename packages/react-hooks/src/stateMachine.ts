@@ -52,7 +52,8 @@ const marketplaceStateMachine = createMachine<Context>({
     checkDepositReady: {
       on: {
         DEPOSIT_FAIL: 'checkDepositReady',
-        DEPOSIT_SUCCESS: 'buyToken'
+        DEPOSIT_SUCCESS: 'buyToken',
+        SIGN_TRANSACTION_FAIL: 'loadingTokenInfo'
       }
     },
     idle: {
@@ -102,7 +103,8 @@ const marketplaceStateMachine = createMachine<Context>({
     },
     waitForWhiteListing: {
       on: {
-        HAS_MINT_DEPOSIT: 'checkIsOnEth'
+        HAS_MINT_DEPOSIT: 'checkIsOnEth',
+        SIGN_TRANSACTION_FAIL: 'loadingTokenInfo'
       }
     },
     transferToEth: {

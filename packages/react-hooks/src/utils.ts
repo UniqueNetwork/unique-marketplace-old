@@ -1,4 +1,4 @@
-// Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
+// Copyright 2017-2022 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import type { AccountId } from '@polkadot/types/interfaces';
@@ -120,6 +120,8 @@ export function formatStrBalance (value: BN | undefined = new BN(0), incomeDecim
   }
 
   const arr = balanceStr.toString().split('.');
+  const afterZero = arr[1] ? `.${arr[1].substr(0, decimals)}`.replace(/0*$/, '') : '';
+  const fullAfterZero = afterZero === '.' ? '' : afterZero;
 
-  return `${arr[0]}${arr[1] ? `.${arr[1].substr(0, decimals)}` : ''}`;
+  return `${arr[0]}${fullAfterZero}`;
 }
