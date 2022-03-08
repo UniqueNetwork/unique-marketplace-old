@@ -69,7 +69,7 @@ const NftTokenCard = ({ account, collectionId, openDetailedInformationModal, tok
                 <div className='caption grey'>Price</div>
               </>
             )}
-            {status === 'created' && (
+            {/* {status === 'created' && ( */}
               <>
                 <div className='card-price'>
                   <div className='card-price__title'> {adaptiveFixed(Number(formatKsmBalance(new BN(token.price))), 4)}</div>
@@ -82,7 +82,7 @@ const NftTokenCard = ({ account, collectionId, openDetailedInformationModal, tok
                   <div className='caption'>{timeToFinish}</div>
                 </div>
               </>
-            )}
+            {/* )} */}
           </Card.Description>
           <Card.Meta>
             <span className='link'>View

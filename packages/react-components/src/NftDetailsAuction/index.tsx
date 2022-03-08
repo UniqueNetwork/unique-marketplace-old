@@ -28,16 +28,15 @@ import { useBidStatus } from '@polkadot/react-hooks/useBidStatus';
 import { useSettings } from '@polkadot/react-api/useSettings';
 import { adaptiveFixed, getBidsFromAccount, getFormatedBidsTime } from '../util';
 import { TCalculatedBid, useAuctionApi } from '@polkadot/react-api/useAuctionApi';
-import { useHistory } from "react-router-dom"
 import Timer from '../Timer';
+import { useReloadPageSafeAccount } from '@polkadot/react-api/useReloadPageSafeAccount';
 
 interface NftDetailsAuctionProps {
   account: string;
-  getOffer: (collectionId: string, tokenId: string) => Promise<never[] | 0>; // todo exchange to offer from socket
   offer: OfferType;
 }
 
-function NftDetailsAuction({ account, getOffer, offer }: NftDetailsAuctionProps): React.ReactElement<NftDetailsAuctionProps> {
+function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.ReactElement<NftDetailsAuctionProps> {
 
   const query = new URLSearchParams(useLocation().search);
   const tokenId = query.get('tokenId') || '';
@@ -51,8 +50,10 @@ function NftDetailsAuction({ account, getOffer, offer }: NftDetailsAuctionProps)
   const { formatKsmBalance, getKusamaTransferFee, kusamaAvailableBalance, sendCurrentUserAction,
     tokenAsk, tokenInfo, transferStep } = useMarketplaceStages(account, ethAccount, collectionInfo, tokenId);
   const { contractAddress } = envConfig;
-  const { auction: { priceStep, status, stopAt }, price, seller } = offer;
-  const [bids, setBids] = useState(offer.auction.bids)
+  const { auction: { priceStep, startPrice, status, stopAt }, seller } = offer;
+  const [bids, setBids] = useState(offer.auction.bids);
+  const [price, setPrice] = useState(offer.price);
+  const [bid, setBid] = useState(bids.length > 0 ? Number(price) + Number(priceStep) : price);
   const timeLeft = useTimeToFinishAuction(stopAt);
   const { yourBidIsLeading, yourBidIsOutbid } = useBidStatus(bids, account || '');
   const { apiSettings } = useSettings();
@@ -60,7 +61,6 @@ function NftDetailsAuction({ account, getOffer, offer }: NftDetailsAuctionProps)
   const escrowAddress = apiSettings?.blockchain?.escrowAddress;
   const { systemChain } = useApi();
   const [waitingResponse, setWaitingResponse] = useState<Boolean>(false);
-  const routerHistory = useHistory();
   const [calculatedBid, setCalculatedBidFromServer] = useState<TCalculatedBid>({} as TCalculatedBid);
   const { getCalculatedBid } = useAuctionApi();
 
@@ -68,10 +68,9 @@ function NftDetailsAuction({ account, getOffer, offer }: NftDetailsAuctionProps)
     getCalculatedBid({ collectionId, tokenId, account, setCalculatedBidFromServer });
   }, [collectionId, tokenId, account, setCalculatedBidFromServer])
 
-  const bid = bids.length > 0 ? Number(price) + Number(priceStep) : price;
   const currentChain = systemChain.split(' ')[0];
   const lastBidFromThisAccount = calculatedBid?.bidderPendingAmount;
-  const requiredSurchargeToPastBid = Number(formatKsmBalance(new BN(Number(bid)))) * 1e12 - (Number(lastBidFromThisAccount?.amount) || 0);
+  const requiredSurchargeToPastBid = Number(formatKsmBalance(new BN(Number(bid)))) * 1e12 - (Number(lastBidFromThisAccount));
   const lowBalance = Number(formatKsmBalance(kusamaAvailableBalance)) * 1e12 < (requiredSurchargeToPastBid + Number(formatKsmBalance(fee)) * 1e12);
 
   const columnsArray = [
@@ -125,7 +124,6 @@ function NftDetailsAuction({ account, getOffer, offer }: NftDetailsAuctionProps)
   const tokenPrice = (tokenAsk?.flagActive === '1' && tokenAsk?.price && tokenAsk?.price.gtn(0)) ? tokenAsk.price : 0;
   const isOwnerContract = !uOwnIt && tokenInfo?.owner?.Ethereum?.toLowerCase() === contractAddress;
 
-  console.log('offer',offer);
   const goBack = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     history.back();
@@ -156,16 +154,11 @@ function NftDetailsAuction({ account, getOffer, offer }: NftDetailsAuctionProps)
 
   const closeBetModal = useCallback(() => {
     setShowBetForm(false);
-    getOffer(collectionId, tokenId);
   }, []);
 
   const withdraw = useCallback(() => {
     withdrawBids(account, collectionId, tokenId, setWaitingResponse)
   }, [account, collectionId, tokenId, setWaitingResponse]);
-
-  useEffect(()=>{
-    setBids(offer.auction.bids);
-  },[offer])
 
   useEffect(() => {
     if (apiSettings && apiSettings.auction && apiSettings.auction.socket) {
@@ -182,13 +175,14 @@ function NftDetailsAuction({ account, getOffer, offer }: NftDetailsAuctionProps)
       });
 
       apiSettings.auction!.socket.emit('subscribeToAuction', auction);
-
       apiSettings.auction!.socket.on('bidPlaced', (offer) => {
         setBids(offer.auction.bids);
+        setPrice(offer.price);
+        setBid(Number(offer.auction.bids.length > 0 ? Number(offer.price) + Number(offer.auction.priceStep) : offer.price));
       });
 
       apiSettings.auction!.socket.on('auctionClosed', (offer) => {
-        routerHistory.push(`${window.location.href}`);
+        useReloadPageSafeAccount();
       });
 
       return () => {
@@ -197,7 +191,7 @@ function NftDetailsAuction({ account, getOffer, offer }: NftDetailsAuctionProps)
 
     }
     return () => { };
-  }, [offer, apiSettings])
+  }, [apiSettings])
 
   useEffect(() => {
     void getFee();
@@ -305,7 +299,7 @@ function NftDetailsAuction({ account, getOffer, offer }: NftDetailsAuctionProps)
               <div className='price-description'>{`Last bid: ${(adaptiveFixed(Number(formatKsmBalance((new BN(price)))), 4))} KSM`}</div>
               <div className='price-description'>{`Minimum step: ${adaptiveFixed(Number(formatKsmBalance((new BN(priceStep)))), 4)} KSM`}</div>
             </>}
-            {!bids.length && <div className='price-description'>{`start price ${adaptiveFixed(Number(formatKsmBalance((new BN(bid)))), 4)} KSM`}</div>}
+            {!bids.length && <div className='price-description'>{`start price ${adaptiveFixed(Number(formatKsmBalance((new BN(startPrice)))), 4)} KSM`}</div>}
             <div className='buttons'>
               {(!account && !!tokenPrice) && (
                 <div>

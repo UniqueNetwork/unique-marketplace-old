@@ -2,6 +2,7 @@ import { web3Accounts, web3FromSource } from '@polkadot/extension-dapp';
 import { getAccountUniversal } from "@polkadot/react-components/util";
 import envConfig from "@polkadot/apps-config/envConfig";
 import { stringToHex } from "@polkadot/util";
+import { useReloadPageSafeAccount } from './useReloadPageSafeAccount';
 
 export type TCalculatedBid = {
     // sum of bids from this account
@@ -37,7 +38,6 @@ export const useAuctionApi = () => {
                     }
                 });
                 responsefromBack = await response.json();
-                console.log('responsefromBack', responsefromBack);
                 setCalculatedBidFromServer(responsefromBack);
             } catch (error) {
                 console.error('Ошибка:', error);
@@ -104,15 +104,16 @@ export const useAuctionApi = () => {
                 const response = await fetch(url, {
                     method: 'DELETE',
                     headers: {
-                        'x-polkadot-signature': signature,
-                        'x-polkadot-signer': account
+                        'Authorization': `${account}:${signature}`,
                     }
                 });
                 const json = await response.json();
                 setWaitingResponse(false);
+                useReloadPageSafeAccount();
             } catch (error) {
                 console.error('Ошибка:', error);
                 setWaitingResponse(false);
+                useReloadPageSafeAccount();
             }
         }
     };

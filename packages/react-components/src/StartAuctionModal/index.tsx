@@ -18,8 +18,8 @@ import { web3Accounts, web3FromSource } from '@polkadot/extension-dapp';
 import Select from '../UIKitComponents/SelectUIKit/Select';
 import { Loader } from 'semantic-ui-react';
 import { useSettings } from '@polkadot/react-api/useSettings';
-import { useHistory } from "react-router-dom"
 import { getAccountUniversal } from '../util/auctionUtils';
+import { useReloadPageSafeAccount } from '@polkadot/react-api/useReloadPageSafeAccount';
 
 const { kusamaDecimals } = envConfig;
 
@@ -43,10 +43,9 @@ function StartAuctionModal({ account, closeModal, collection, tokenId, tokenOwne
   const { uniqueApi } = envConfig;
   const apiUrl = uniqueApi;
   const kusamaTransferFee = 0.000052;
-  const history = useHistory();
 
-  const outsideCloseModal = ()=>{
-    if(!isLoading){
+  const outsideCloseModal = () => {
+    if (!isLoading) {
       closeModal();
     }
   }
@@ -144,12 +143,12 @@ function StartAuctionModal({ account, closeModal, collection, tokenId, tokenOwne
       setIsLoading(false);
       closeModal();
       // renew tokenCards
-      history.push(`${window.location.href}`);
+      useReloadPageSafeAccount();
     } catch (error) {
       console.error('Ошибка:', error);
       closeModal();
       // renew tokenCards
-      history.push(`${window.location.href}`);
+      useReloadPageSafeAccount();
     }
   };
 
