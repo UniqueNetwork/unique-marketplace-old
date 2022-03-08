@@ -82,11 +82,15 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
       headingTextSize: 'm' as TSize,
       color: 'blue-grey' as TColor,
       icon: 'arrows-down-up',
-      render: (rowNumber: number) => (
-        <Text size="m" color="additional-dark">
-          {bids.length ? `${adaptiveFixed(Number(formatKsmBalance(new BN((bids[rowNumber].balance === '0') ? bids[rowNumber].amount : bids[rowNumber].balance))), 6)} KSM` : ''} 
-        </Text>
-      )
+      render: (rowNumber: number) => {
+        if (rowNumber < 8) {
+          return (
+            <Text size="m" color="additional-dark">
+              {bids.length ? `${adaptiveFixed(Number(formatKsmBalance(new BN((bids[rowNumber].balance === '0') ? bids[rowNumber].amount : bids[rowNumber].balance))), 6)} KSM` : ''}
+            </Text>
+          )
+        }
+      }
     },
     {
       title: 'Time',
