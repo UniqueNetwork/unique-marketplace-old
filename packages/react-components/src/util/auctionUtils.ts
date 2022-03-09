@@ -21,8 +21,13 @@ export function adaptiveFixed(num: number, needNonZero: number) {
   return res;
 }
 
-export function getAccountUniversal(account: string) { return encodeAddress(decodeAddress(account), 42); }
+export function getAccountUniversal(account?: string) {
+  return account ? encodeAddress(decodeAddress(account), 42) : '';
+}
 
-export function getBidsFromAccount(account: string, bids: BidType[]) {
-  return bids.filter((bid) => { return (encodeAddress(decodeAddress(bid.bidderAddress), 42) === getAccountUniversal(account)) })
+export function getBidsFromAccount(bids: BidType[], account?: string) {
+  if (account) {
+    return bids.filter((bid) => { return (encodeAddress(decodeAddress(bid.bidderAddress), 42) === getAccountUniversal(account)) })
+  }
+  return []
 }

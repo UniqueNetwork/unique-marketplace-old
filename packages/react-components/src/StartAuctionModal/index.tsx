@@ -113,6 +113,9 @@ function StartAuctionModal({ account, closeModal, collection, tokenId, tokenOwne
     }
 
     const accounts = await web3Accounts();
+    if (!accounts) {
+      return;
+    }
     const signer = accounts.find((a) => a.address === getAccountUniversal(account));
     if (!signer) {
       return;

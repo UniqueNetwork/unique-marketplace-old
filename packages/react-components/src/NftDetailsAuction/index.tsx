@@ -55,7 +55,7 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
   const [price, setPrice] = useState(offer.price);
   const [bid, setBid] = useState(bids.length > 0 ? Number(price) + Number(priceStep) : price);
   const timeLeft = useTimeToFinishAuction(stopAt);
-  const { yourBidIsLeading, yourBidIsOutbid } = useBidStatus(bids, account || '');
+  const { yourBidIsLeading, yourBidIsOutbid } = useBidStatus(bids, account);
   const { apiSettings } = useSettings();
   const { cancelAuction, withdrawBids } = useAuctionApi();
   const escrowAddress = apiSettings?.blockchain?.escrowAddress;
@@ -65,7 +65,9 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
   const { getCalculatedBid } = useAuctionApi();
 
   useEffect(() => {
-    getCalculatedBid({ collectionId, tokenId, account, setCalculatedBidFromServer });
+    if (account) {
+      getCalculatedBid({ collectionId, tokenId, account, setCalculatedBidFromServer });
+    }
   }, [collectionId, tokenId, account, setCalculatedBidFromServer])
 
   const currentChain = systemChain.split(' ')[0];
@@ -120,10 +122,11 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
       )
     }
   ]
-  const userHasBids = getBidsFromAccount(account, bids).length > 0;
+  const userHasBids = getBidsFromAccount(bids, account).length > 0;
   const uSellIt = seller === account;
+  console.log('userHasBids', userHasBids);
   // should I take into account Substrate and Ethereum?
-  const uOwnIt = tokenInfo?.owner?.Substrate === account || tokenInfo?.owner?.Ethereum?.toLowerCase() === ethAccount || uSellIt;
+  const uOwnIt = tokenInfo?.owner?.Substrate === account || uSellIt;
 
   const tokenPrice = (tokenAsk?.flagActive === '1' && tokenAsk?.price && tokenAsk?.price.gtn(0)) ? tokenAsk.price : 0;
   const isOwnerContract = !uOwnIt && tokenInfo?.owner?.Ethereum?.toLowerCase() === contractAddress;
@@ -147,9 +150,12 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
       }
     }
   }, [bid, escrowAddress, getKusamaTransferFee]);
+  console.log('tokenPrice',tokenPrice);
 
   const onCancel = useCallback(() => {
-    cancelAuction(account, collectionId, tokenId, setWaitingResponse)
+    if (account) {
+      cancelAuction(account, collectionId, tokenId, setWaitingResponse)
+    }
   }, [account, collectionId, tokenId, setWaitingResponse]);
 
   const toggleBetForm = useCallback(() => {
@@ -161,7 +167,9 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
   }, []);
 
   const withdraw = useCallback(() => {
-    withdrawBids(account, collectionId, tokenId, setWaitingResponse)
+    if (account) {
+      withdrawBids(account, collectionId, tokenId, setWaitingResponse)
+    }
   }, [account, collectionId, tokenId, setWaitingResponse]);
 
   useEffect(() => {
@@ -305,7 +313,7 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
             </>}
             {!bids.length && <div className='price-description'>{`start price ${adaptiveFixed(Number(formatKsmBalance((new BN(startPrice)))), 4)} KSM`}</div>}
             <div className='buttons'>
-              {(!account && !!tokenPrice) && (
+              {(!account) && (
                 <div>
                   <Button
                     content='Buy it'
@@ -316,7 +324,7 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
                 </div>
               )}
               <>
-                {!uSellIt && <Button
+                {!uSellIt && account && <Button
                   content='Place a bid'
                   onClick={toggleBetForm}
                 />}

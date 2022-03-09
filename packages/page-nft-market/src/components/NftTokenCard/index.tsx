@@ -29,7 +29,7 @@ const NftTokenCard = ({ account, collectionId, openDetailedInformationModal, tok
   const { collectionName16Decoder, hex2a } = useDecoder();
   const { bids, status, stopAt } = token.auction;
   const timeToFinish = useTimeToFinishAuction(stopAt);
-  const { yourBidIsLeading, yourBidIsOutbid } = useBidStatus(bids, account || '');
+   const { yourBidIsLeading, yourBidIsOutbid } = useBidStatus(bids, account);
   const { systemChain } = useApi();
   const currentChain = systemChain.split(' ')[0];
   const onCardClick = useCallback(() => {

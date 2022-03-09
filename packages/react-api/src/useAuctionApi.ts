@@ -46,6 +46,9 @@ export const useAuctionApi = () => {
 
     const withdrawBids = async (account: string, collectionId: string, tokenId: string, setWaitingResponse: (waiting: boolean) => void) => {
         const accounts = await web3Accounts();
+        if (!accounts) {
+            return;
+        }
         const signer = accounts.find((a) => a.address === getAccountUniversal(account));
         if (!signer) {
             return;
@@ -82,6 +85,9 @@ export const useAuctionApi = () => {
 
     const cancelAuction = async (account: string, collectionId: string, tokenId: string, setWaitingResponse: (waiting: boolean) => void) => {
         const accounts = await web3Accounts();
+        if (!accounts) {
+            return;
+        }
         const signer = accounts.find((a) => a.address === getAccountUniversal(account));
         if (!signer) {
             return;
