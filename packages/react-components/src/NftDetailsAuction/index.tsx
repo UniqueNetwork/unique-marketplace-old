@@ -63,6 +63,7 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
   const [waitingResponse, setWaitingResponse] = useState<Boolean>(false);
   const [calculatedBid, setCalculatedBidFromServer] = useState<TCalculatedBid>({} as TCalculatedBid);
   const { getCalculatedBid } = useAuctionApi();
+  console.log('offer',offer);
 
   useEffect(() => {
     if (account) {
@@ -185,7 +186,7 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
       apiSettings.auction.socket.on('data', (d) => {
         console.log('income', auction);
       });
-
+      
       apiSettings.auction!.socket.emit('subscribeToAuction', auction);
       apiSettings.auction!.socket.on('bidPlaced', (offer) => {
         setBids(offer.auction.bids);
@@ -203,7 +204,7 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
 
     }
     return () => { };
-  }, [apiSettings])
+  }, [apiSettings]);
 
   useEffect(() => {
     void getFee();
@@ -297,7 +298,7 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
             )}
             <div className='divider' />
             {/* Todo remove 'created' after renew auction dataBase */}
-            {status === 'active' || 'created' &&
+            {(status === 'active' || status === 'created') &&
               <>
                 <Timer time={stopAt} />
                 <div className='divider' />
@@ -361,10 +362,6 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
                   />
                 )}
               </>
-              <div className='time-left'>
-                <img src={clock as string} width={24} />
-                {timeLeft}
-              </div>
               {lowBalance && <div className='low-balance'>Not enough KSM to place bid</div>}
             </div>
             <div className='divider' />

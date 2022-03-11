@@ -94,6 +94,22 @@ a {
     }
   }
 
+  .button-outlined {
+    width: 214px;
+    padding: 5px 16px !important;
+    font: 500 14px/22px var(--font-inter) !important;
+    letter-spacing: normal;
+    background-color: transparent !important;
+    color: #009CF0;
+    border: 1px solid #009CF0;
+
+    &:hover {
+      background-color: #F5FCFF !important;
+      border-color: #15ADFF;
+      color: #15ADFF
+    }
+  }
+
   &.hidden {
     display: none;
   }
@@ -401,7 +417,7 @@ a {
 
     .app-user {
       display: grid;
-      grid-template-columns: 1fr 50px;
+      grid-template-columns: 1fr auto;
       grid-column-gap: 16px;
 
       &.hidden {
@@ -418,9 +434,8 @@ a {
         }
 
         .mobile-account-selector {
-          display: grid;
-          grid-template-columns: 24px 1fr;
-          grid-column-gap: 8px;
+          display: flex;
+          gap: 8px;
           align-items: center;
           height: 100%;
 
