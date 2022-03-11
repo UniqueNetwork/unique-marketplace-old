@@ -63,7 +63,7 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
   const [waitingResponse, setWaitingResponse] = useState<Boolean>(false);
   const [calculatedBid, setCalculatedBidFromServer] = useState<TCalculatedBid>({} as TCalculatedBid);
   const { getCalculatedBid } = useAuctionApi();
-  console.log('offer',offer);
+  console.log('offer', offer);
 
   useEffect(() => {
     if (account) {
@@ -85,15 +85,11 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
       headingTextSize: 'm' as TSize,
       color: 'blue-grey' as TColor,
       icon: 'arrows-down-up',
-      render: (rowNumber: number) => {
-        if (rowNumber < 8) {
-          return (
-            <Text size="m" color="additional-dark">
-              {bids.length ? `${adaptiveFixed(Number(formatKsmBalance(new BN((bids[rowNumber].balance === '0') ? bids[rowNumber].amount : bids[rowNumber].balance))), 6)} KSM` : ''}
-            </Text>
-          )
-        }
-      }
+      render: (rowNumber: number) => (
+        <Text size="m" color="additional-dark">
+          {bids.length ? `${adaptiveFixed(Number(formatKsmBalance(new BN((bids[rowNumber].balance === '0') ? bids[rowNumber].amount : bids[rowNumber].balance))), 6)} KSM` : ''}
+        </Text>
+      )
     },
     {
       title: 'Time',
@@ -151,7 +147,7 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
       }
     }
   }, [bid, escrowAddress, getKusamaTransferFee]);
-  console.log('tokenPrice',tokenPrice);
+  console.log('tokenPrice', tokenPrice);
 
   const onCancel = useCallback(() => {
     if (account) {
@@ -376,7 +372,7 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
                 </div>}
                 {!bids.length && <div className='current-bid'>There are no bids</div>}
               </div>}
-              {!!bids.length && <Table data={[...bids]} columns={columnsArray}></Table>}
+              {!!bids.length && <Table data={[...bids.slice(1,8)]} columns={columnsArray}></Table>}
             </div>
             {(showBetForm && collectionInfo) && (
               <PlaceABetModal
