@@ -1,4 +1,4 @@
-// Copyright 2017-2021 @polkadot/app-accounts authors & contributors
+// Copyright 2017-2022 @polkadot/app-accounts authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import type { KeyringPair, KeyringPair$Json } from '@polkadot/keyring/types';
@@ -6,13 +6,12 @@ import type { ActionStatus } from '@polkadot/react-components/Status/types';
 import type { ModalProps } from '../types';
 
 import React, { useCallback, useMemo, useState } from 'react';
+import styled from 'styled-components';
 
-import { AddressRow, Button, InputAddress, InputFile, MarkWarning, Modal, Password } from '@polkadot/react-components';
+import { AddressRow, Button, InputAddress, InputFile, MarkWarning, Modal, Password, WarningText } from '@polkadot/react-components';
 import { useApi } from '@polkadot/react-hooks';
 import { keyring } from '@polkadot/ui-keyring';
 import { u8aToString } from '@polkadot/util';
-
-import ExternalWarning from './ExternalWarning';
 
 interface Props extends ModalProps {
   className?: string;
@@ -94,13 +93,14 @@ function Import ({ className = '', onClose, onStatusChange }: Props): React.Reac
 
   return (
     <Modal
-      className={className}
-      header={'Add via backup file'}
+      className={`${className} unique-modal`}
+      header={'Add an account via backup JSON file'}
       size='small'
     >
       <Modal.Content>
         <Modal.Columns>
           <Modal.Column>
+            <label>Account</label>
             <AddressRow
               defaultName={(pair?.meta.name as string) || null}
               noDefaultNameOpacity
@@ -122,6 +122,7 @@ function Import ({ className = '', onClose, onStatusChange }: Props): React.Reac
             {differentGenesis && (
               <MarkWarning content={'The network from which this account was originally generated is different than the network you are currently connected to. Once imported ensure you toggle the "allow on any network" option for the account to keep it visible on the current network.'} />
             )}
+            <span className='bottom-text'>Provide a backup JSON file encrypted with your account password</span>
           </Modal.Column>
           <Modal.Column>
             <p>Supply a backed-up JSON file, encrypted with your account-specific password.</p>
@@ -139,12 +140,16 @@ function Import ({ className = '', onClose, onStatusChange }: Props): React.Reac
               onEnter={_onSave}
               value={password}
             />
+            <span className='bottom-text'>The password that was previously used to encrypt this account</span>
           </Modal.Column>
           <Modal.Column>
             <p>The password previously used to encrypt this account.</p>
           </Modal.Column>
         </Modal.Columns>
-        <ExternalWarning />
+        <WarningText
+          className='warning'
+          text={'Consider storing your account in a signer such as a browser extension, hardware device, QR-capable phone wallet (non-connected) or desktop application for optimal account security. Future versions of the web-only interface will drop support for non-external accounts, much like the IPFS version.'}
+        />
       </Modal.Content>
       <Modal.Actions onCancel={onClose}>
         <Button
@@ -159,4 +164,11 @@ function Import ({ className = '', onClose, onStatusChange }: Props): React.Reac
   );
 }
 
-export default React.memo(Import);
+export default React.memo(styled(Import)`
+  .bottom-text {
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 22px;
+    color: var(--input-placeholder-search-color);
+  }
+`);

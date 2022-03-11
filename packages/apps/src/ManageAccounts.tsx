@@ -1,4 +1,4 @@
-// Copyright 2017-2021 @polkadot/apps, UseTech authors & contributors
+// Copyright 2017-2022 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import type { OpenPanelType } from '@polkadot/apps-routing/types';
@@ -8,6 +8,7 @@ import { useHistory } from 'react-router';
 
 import { AccountName, IdentityIcon } from '@polkadot/react-components';
 import { useAccounts } from '@polkadot/react-hooks';
+import { decodeAddress, encodeAddress } from '@polkadot/util-crypto';
 
 import infoBlue from './images/infoBlue.svg';
 
@@ -23,7 +24,9 @@ const ManageAccounts = (props: Props): React.ReactElement<Props> => {
   const { allAccounts } = useAccounts();
 
   const onSelectAccount = useCallback((address: string) => {
-    setAccount(address);
+    const normalizeSubstrate = encodeAddress(decodeAddress(address));
+
+    setAccount(normalizeSubstrate);
     setIsMobileMenu('tokens');
   }, [setAccount, setIsMobileMenu]);
 

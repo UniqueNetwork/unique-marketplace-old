@@ -5,6 +5,7 @@ import type { NftCollectionInterface } from '@polkadot/react-hooks/useCollection
 import type { TokenDetailsInterface } from '@polkadot/react-hooks/useToken';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
+
 import envConfig from '@polkadot/apps-config/envConfig';
 import { useIsMountedRef, useMetadata, useToken } from '@polkadot/react-hooks';
 import { useCollection } from '@polkadot/react-hooks/useCollection';

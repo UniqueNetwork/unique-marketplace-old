@@ -1,4 +1,4 @@
-// Copyright 2017-2021 @polkadot/react-components authors & contributors
+// Copyright 2017-2022 @polkadot/react-components authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import type { SubmittableResult } from '@polkadot/api';
@@ -39,6 +39,7 @@ export interface QueueTx extends AccountInfo {
   error?: Error;
   extrinsic?: SubmittableExtrinsic;
   id: number;
+  isKusama?: boolean;
   isUnsigned?: boolean;
   payload?: SignerPayloadJSON;
   result?: any;
@@ -87,6 +88,7 @@ export interface PartialQueueTxExtrinsic extends PartialAccountInfo {
   txStartCb?: () => void;
   txUpdateCb?: TxCallback;
   isUnsigned?: boolean;
+  isKusama?: boolean;
 }
 
 export interface PartialQueueTxRpc extends PartialAccountInfo {

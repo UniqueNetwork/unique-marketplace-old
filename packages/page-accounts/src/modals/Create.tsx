@@ -1,4 +1,4 @@
-// Copyright 2017-2021 @polkadot/app-accounts authors & contributors
+// Copyright 2017-2022 @polkadot/app-accounts authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
 import type { ActionStatus } from '@polkadot/react-components/Status/types';
@@ -10,13 +10,13 @@ import React, { useCallback, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import { DEV_PHRASE } from '@polkadot/keyring/defaults';
-import { getEnvironment } from '@polkadot/react-api/util';
-import { AddressRow, Button, Checkbox, CopyButton, Dropdown, Input, InputAddress, Modal, TextArea } from '@polkadot/react-components';
+import { AddressRow, Button, Checkbox, CopyButton, Dropdown, Input, Modal, TextArea } from '@polkadot/react-components';
 import { useApi, useStepper } from '@polkadot/react-hooks';
 import { keyring } from '@polkadot/ui-keyring';
 import { isHex, u8aToHex } from '@polkadot/util';
 import { hdLedger, hdValidatePath, keyExtractSuri, mnemonicGenerate, mnemonicValidate, randomAsU8a } from '@polkadot/util-crypto';
 
+import { tryCreateAccount } from '../util';
 import CreateConfirmation from './CreateConfirmation';
 import ExternalWarning from './ExternalWarning';
 import PasswordInput from './PasswordInput';
@@ -173,28 +173,10 @@ export function downloadAccount ({ json, pair }: CreateResult): void {
 }
 
 function createAccount (seed: string, derivePath: string, pairType: PairType, { genesisHash, name, tags = [] }: CreateOptions, password: string, success: string): ActionStatus {
-  // we will fill in all the details below
-  const status = { action: 'create' } as ActionStatus;
+  const commitAccount = () =>
+    keyring.addUri(getSuri(seed, derivePath, pairType), password, { genesisHash, isHardware: false, name, tags }, pairType === 'ed25519-ledger' ? 'ed25519' : pairType);
 
-  try {
-    const result = keyring.addUri(getSuri(seed, derivePath, pairType), password, { genesisHash, isHardware: false, name, tags }, pairType === 'ed25519-ledger' ? 'ed25519' : pairType);
-    const { address } = result.pair;
-
-    status.account = address;
-    status.status = 'success';
-    status.message = success;
-
-    InputAddress.setLastValue('account', address);
-
-    if (getEnvironment() === 'web') {
-      downloadAccount(result);
-    }
-  } catch (error) {
-    status.status = 'error';
-    status.message = (error as Error).message;
-  }
-
-  return status;
+  return tryCreateAccount(commitAccount, success);
 }
 
 function Create ({ className = '', onClose, onStatusChange, restoreFromSeed, seed: propsSeed, type: propsType }: Props): React.ReactElement<Props> {

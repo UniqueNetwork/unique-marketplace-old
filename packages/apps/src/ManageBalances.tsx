@@ -28,6 +28,7 @@ const ManageBalances: VFC<ManageBalancesProps> = () => {
 
   const revertMoney = useCallback(() => {
     setIsPopupActive(false);
+
     withdrawAllKSM(() => setIsPopupActive(true), () => void getUserDeposit());
   }, [getUserDeposit, withdrawAllKSM]);
 

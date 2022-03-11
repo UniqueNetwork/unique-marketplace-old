@@ -106,7 +106,7 @@ const FilterContainer: React.FC<PropTypes> = ({ account, allowClearFilters, coll
       setFilters(filtersCopy);
     } else {
       delete filtersCopy.seller;
-      setFilters(filtersCopy);
+      setFilters({ ...filtersCopy });
     }
 
     setInStorage(SESSION_STORAGE_KEYS.FILTERS, filtersCopy);

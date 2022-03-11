@@ -5,6 +5,7 @@ import { useCallback } from 'react';
 
 import { useApi } from '@polkadot/react-hooks/useApi';
 import { NftCollectionInterface } from '@polkadot/react-hooks/useCollection';
+import { decodeAddress, encodeAddress } from '@polkadot/util-crypto';
 
 // import { normalizeAccountId } from './utils';
 
@@ -35,25 +36,13 @@ export function useToken (): UseTokenInterface {
     }
 
     try {
-      /* let tokenDetailsData: TokenDetailsInterface = {};
-
-      const variableData = (await api.rpc.unique.variableMetadata(collectionId, tokenId)).toJSON() as string;
-      const constData: string = (await api.rpc.unique.constMetadata(collectionId, tokenId)).toJSON() as string;
-      const crossAccount = normalizeAccountId((await api.rpc.unique.tokenOwner(collectionId, tokenId)).toJSON() as string) as { Substrate: string };
-
-      tokenDetailsData = {
-        constData,
-        owner: crossAccount,
-        variableData
-      }; */
-
       const tokenDetailsDTO: NonFungibleTokenDTO = (await api.query.nonfungible.tokenData(collectionId, tokenId)).toJSON() as NonFungibleTokenDTO;
 
       return {
         constData: tokenDetailsDTO.constData,
         owner: {
           Ethereum: tokenDetailsDTO?.owner?.ethereum,
-          Substrate: tokenDetailsDTO?.owner?.substrate
+          Substrate: tokenDetailsDTO?.owner?.substrate ? encodeAddress(decodeAddress(tokenDetailsDTO.owner.substrate)) : undefined
         },
         variableData: tokenDetailsDTO.variableData
       };
