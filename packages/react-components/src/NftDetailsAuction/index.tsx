@@ -186,7 +186,7 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
       apiSettings.auction.socket.on('data', (d) => {
         console.log('income', auction);
       });
-      
+
       apiSettings.auction!.socket.emit('subscribeToAuction', auction);
       apiSettings.auction!.socket.on('bidPlaced', (offer) => {
         setBids(offer.auction.bids);
@@ -218,7 +218,6 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
 
   return (
     <div className='toke-details'>
-      NFT Auction
       <div
         className='go-back'
       >
