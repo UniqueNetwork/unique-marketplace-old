@@ -35,10 +35,9 @@ const MobileAccountSelector = (props: MobileAccountSelectorProps): React.ReactEl
   return (
     <div
       className='mobile-account-selector'
-      onClick={onClick}
     >
       {address && (
-        <>
+        <div onClick={onClick}>
           <IdentityIcon
             canNotCopy
             className='icon'
@@ -50,7 +49,7 @@ const MobileAccountSelector = (props: MobileAccountSelectorProps): React.ReactEl
             className={openPanel === 'accounts' ? 'rotate-icon' : ''}
             src={menuArrow as string}
           />
-        </>)}
+        </div>)}
       {!address &&
         <Button
           className='button-outlined'

@@ -435,12 +435,16 @@ a {
 
         .mobile-account-selector {
           display: flex;
-          gap: 8px;
           align-items: center;
           height: 100%;
 
           .rotate-icon{
             transform: rotateX(180deg);
+          }
+          >div {
+            display: flex;
+            align-items: center;
+            gap: 8px;
           }
         }
       }

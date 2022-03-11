@@ -372,7 +372,7 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
                 </div>}
                 {!bids.length && <div className='current-bid'>There are no bids</div>}
               </div>}
-              {!!bids.length && <Table data={[...bids.slice(1,8)]} columns={columnsArray}></Table>}
+              {!!bids.length && <Table data={[...bids.slice(0,7)]} columns={columnsArray}></Table>}
             </div>
             {(showBetForm && collectionInfo) && (
               <PlaceABetModal
