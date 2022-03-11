@@ -5,7 +5,7 @@ import './styles.scss';
 
 import BN from 'bn.js';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button';
 import Header from 'semantic-ui-react/dist/commonjs/elements/Header';
 import Image from 'semantic-ui-react/dist/commonjs/elements/Image';
@@ -20,7 +20,6 @@ import { OfferType } from '@polkadot/react-hooks/useCollections';
 import BuySteps from './BuySteps';
 import SaleSteps from './SaleSteps';
 import logoKusama from '../../../../packages/apps/public/logos/kusama.svg';
-import clock from '../../../../packages/apps/public/icons/clock.svg';
 import { useTimeToFinishAuction } from '@polkadot/react-hooks/useTimeToFinishAuction';
 import Table, { TColor, TSize } from '../Table2/TableContainer';
 import Text from '../UIKitComponents/Text/Text';
@@ -63,7 +62,8 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
   const [waitingResponse, setWaitingResponse] = useState<Boolean>(false);
   const [calculatedBid, setCalculatedBidFromServer] = useState<TCalculatedBid>({} as TCalculatedBid);
   const { getCalculatedBid } = useAuctionApi();
-  console.log('offer', offer);
+  const routerHistory = useHistory();
+  console.log('apiSettings.auction.socket', apiSettings?.auction?.socket);
 
   useEffect(() => {
     if (account) {
@@ -191,7 +191,7 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
       });
 
       apiSettings.auction!.socket.on('auctionClosed', (offer) => {
-        useReloadPageSafeAccount();
+        useReloadPageSafeAccount(routerHistory);
       });
 
       return () => {

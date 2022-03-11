@@ -20,6 +20,7 @@ import { Loader } from 'semantic-ui-react';
 import { useSettings } from '@polkadot/react-api/useSettings';
 import { getAccountUniversal } from '../util/auctionUtils';
 import { useReloadPageSafeAccount } from '@polkadot/react-api/useReloadPageSafeAccount';
+import { useHistory } from 'react-router';
 
 const { kusamaDecimals } = envConfig;
 
@@ -43,6 +44,7 @@ function StartAuctionModal({ account, closeModal, collection, tokenId, tokenOwne
   const { uniqueApi } = envConfig;
   const apiUrl = uniqueApi;
   const kusamaTransferFee = 0.000052;
+  const routerHistory = useHistory();
 
   const outsideCloseModal = () => {
     if (!isLoading) {
@@ -146,12 +148,12 @@ function StartAuctionModal({ account, closeModal, collection, tokenId, tokenOwne
       setIsLoading(false);
       closeModal();
       // renew tokenCards
-      useReloadPageSafeAccount();
+      useReloadPageSafeAccount(routerHistory);
     } catch (error) {
       console.error('Ошибка:', error);
       closeModal();
       // renew tokenCards
-      useReloadPageSafeAccount();
+      useReloadPageSafeAccount(routerHistory);
     }
   };
 

@@ -3,6 +3,7 @@ import { getAccountUniversal } from "@polkadot/react-components/util";
 import envConfig from "@polkadot/apps-config/envConfig";
 import { stringToHex } from "@polkadot/util";
 import { useReloadPageSafeAccount } from './useReloadPageSafeAccount';
+import { useHistory } from 'react-router-dom';
 
 export type TCalculatedBid = {
     // sum of bids from this account
@@ -18,6 +19,7 @@ export type TCalculatedBid = {
 export const useAuctionApi = () => {
     const { uniqueApi } = envConfig;
     const apiUrl = uniqueApi;
+    const history = useHistory();
 
     const getCalculatedBid = async ({ collectionId, tokenId, account, setCalculatedBidFromServer }: { collectionId: string, tokenId: string, account: string, setCalculatedBidFromServer: ({bidderPendingAmount, minBidderAmount}:TCalculatedBid)=>void }) => {
         let responsefromBack;
@@ -115,11 +117,11 @@ export const useAuctionApi = () => {
                 });
                 const json = await response.json();
                 setWaitingResponse(false);
-                useReloadPageSafeAccount();
+                useReloadPageSafeAccount(history);
             } catch (error) {
                 console.error('Ошибка:', error);
                 setWaitingResponse(false);
-                useReloadPageSafeAccount();
+                useReloadPageSafeAccount(history);
             }
         }
     };
