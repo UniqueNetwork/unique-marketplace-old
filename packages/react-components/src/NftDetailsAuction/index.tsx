@@ -20,12 +20,11 @@ import { OfferType } from '@polkadot/react-hooks/useCollections';
 import BuySteps from './BuySteps';
 import SaleSteps from './SaleSteps';
 import logoKusama from '../../../../packages/apps/public/logos/kusama.svg';
-import { useTimeToFinishAuction } from '@polkadot/react-hooks/useTimeToFinishAuction';
 import Table, { TColor, TSize } from '../Table2/TableContainer';
 import Text from '../UIKitComponents/Text/Text';
 import { useBidStatus } from '@polkadot/react-hooks/useBidStatus';
 import { useSettings } from '@polkadot/react-api/useSettings';
-import { adaptiveFixed, getBidsFromAccount, getFormatedBidsTime } from '../util';
+import { adaptiveFixed, getAccountUniversal, getBidsFromAccount, getFormatedBidsTime } from '../util';
 import { TCalculatedBid, useAuctionApi } from '@polkadot/react-api/useAuctionApi';
 import Timer from '../Timer';
 import { useReloadPageSafeAccount } from '@polkadot/react-api/useReloadPageSafeAccount';
@@ -53,7 +52,6 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
   const [bids, setBids] = useState(offer.auction.bids);
   const [price, setPrice] = useState(offer.price);
   const [bid, setBid] = useState(bids.length > 0 ? Number(price) + Number(priceStep) : price);
-  const timeLeft = useTimeToFinishAuction(stopAt);
   const { yourBidIsLeading, yourBidIsOutbid } = useBidStatus(bids, account);
   const { apiSettings } = useSettings();
   const { cancelAuction, withdrawBids } = useAuctionApi();
@@ -63,7 +61,6 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
   const [calculatedBid, setCalculatedBidFromServer] = useState<TCalculatedBid>({} as TCalculatedBid);
   const { getCalculatedBid } = useAuctionApi();
   const routerHistory = useHistory();
-  console.log('apiSettings.auction.socket', apiSettings?.auction?.socket);
 
   useEffect(() => {
     if (account) {
@@ -120,8 +117,7 @@ function NftDetailsAuction({ account, offer }: NftDetailsAuctionProps): React.Re
     }
   ]
   const userHasBids = getBidsFromAccount(bids, account).length > 0;
-  const uSellIt = seller === account;
-  console.log('userHasBids', userHasBids);
+  const uSellIt = getAccountUniversal(seller) === account;
   // should I take into account Substrate and Ethereum?
   const uOwnIt = tokenInfo?.owner?.Substrate === account || uSellIt;
 

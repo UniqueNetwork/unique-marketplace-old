@@ -110,7 +110,7 @@ function StartAuctionModal({ account, closeModal, collection, tokenId, tokenOwne
       const ethAccount = subToEth(account).toLowerCase();
 
       if (tokenOwner?.Ethereum === ethAccount) {
-        extrinsic = api.tx.unique.transferFrom(normalizeAccountId({ Ethereum: ethAccount } as CrossAccountId), normalizeAccountId(recipient as CrossAccountId), collection.id, tokenId, 1);
+        extrinsic = api.tx.unique.transfer(normalizeAccountId({ Ethereum: ethAccount } as CrossAccountId), normalizeAccountId(recipient as CrossAccountId), collection.id, tokenId, 1);
       }
     }
 
