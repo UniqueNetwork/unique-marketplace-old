@@ -47,6 +47,9 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
 
   const tokenPrice = (tokenAsk?.flagActive === '1' && tokenAsk?.price && tokenAsk?.price.gtn(0)) ? tokenAsk.price : 0;
   const isOwnerContract = !uOwnIt && tokenInfo?.owner?.Ethereum?.toLowerCase() === contractAddress;
+  const canShowOwner = ((account || (!account && !tokenPrice)) && (!uOwnIt && !isOwnerContract && tokenInfo?.owner && tokenAsk?.flagActive !== '1'));
+  const canShowLoading = (!collectionInfo || (account && (!kusamaAvailableBalance || !balance)));
+  const disableSellButton = !!(!isInWhiteList && whiteListAmount && !kusamaAvailableBalance?.gte(whiteListAmount));
 
   const goBack = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
@@ -234,7 +237,7 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
             { uSellIt && (
               <Header as='h4'>You`re selling it!</Header>
             )}
-            { (account && !uOwnIt && !isOwnerContract && tokenInfo?.owner && tokenAsk?.flagActive !== '1') && (
+            { (canShowOwner && tokenInfo?.owner) && (
               <Header as='h5'>The owner is {tokenInfo?.owner.Substrate || tokenInfo?.owner.Ethereum || ''}</Header>
             )}
             <div className='buttons'>
@@ -244,7 +247,7 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
                   onClick={toggleTransferForm}
                 />
               )}
-              {(!account) && (
+              {!!(!account && tokenPrice) && (
                 <div>
                   <Button
                     content='Buy it'
@@ -273,7 +276,7 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
                 { (uOwnIt && !uSellIt) && (
                   <Button
                     content='Sell'
-                    disabled={!!(!isInWhiteList && whiteListAmount && !kusamaAvailableBalance?.gte(whiteListAmount))}
+                    disabled={disableSellButton}
                     onClick={onSell}
                   />
                 )}
@@ -330,7 +333,7 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
             { !!(transferStep && transferStep >= 4) && (
               <BuySteps step={transferStep - 3} />
             )}
-            { (!collectionInfo || (account && (!kusamaAvailableBalance || !balance))) && (
+            { canShowLoading && (
               <Loader
                 active
                 className='load-info'

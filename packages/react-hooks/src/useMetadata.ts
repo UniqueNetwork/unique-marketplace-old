@@ -63,6 +63,7 @@ export const useMetadata = (): UseMetadataInterface => {
     if (!collectionInfo.offchainSchema || collectionInfo.offchainSchema === '0x') {
       return '';
     }
+
     try {
       const collectionMetadata = JSON.parse(hex2a(collectionInfo.offchainSchema)) as MetadataType;
 
