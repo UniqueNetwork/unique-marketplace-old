@@ -5,9 +5,10 @@ import type { OpenPanelType } from '@polkadot/apps-routing/types';
 
 import React, { memo, useCallback } from 'react';
 
-import { IdentityIcon } from '@polkadot/react-components';
+import { Button, IdentityIcon } from '@polkadot/react-components';
 
 import menuArrow from './images/menu-arrow.svg';
+import { useHistory } from 'react-router';
 
 interface MobileAccountSelectorProps {
   address?: string;
@@ -17,6 +18,7 @@ interface MobileAccountSelectorProps {
 
 const MobileAccountSelector = (props: MobileAccountSelectorProps): React.ReactElement<MobileAccountSelectorProps> => {
   const { address, openPanel, setOpenPanel } = props;
+  const routerHistory = useHistory();
 
   const onClick = useCallback(() => {
     if (openPanel !== 'accounts') {
@@ -26,23 +28,35 @@ const MobileAccountSelector = (props: MobileAccountSelectorProps): React.ReactEl
     }
   }, [openPanel, setOpenPanel]);
 
+  const linkToAccountPage = useCallback(() => {
+    routerHistory.push('/accounts');
+  }, []);
+
   return (
     <div
       className='mobile-account-selector'
-      onClick={onClick}
     >
-      { address && (
-        <IdentityIcon
-          canNotCopy
-          className='icon'
-          value={address}
-        />
-      )}
-      <img
-        alt='menu-arrow'
-        className={openPanel === 'accounts' ? 'rotate-icon' : ''}
-        src={menuArrow as string}
-      />
+      {address && (
+        <div onClick={onClick}>
+          <IdentityIcon
+            canNotCopy
+            className='icon'
+            value={address}
+          />
+
+          <img
+            alt='menu-arrow'
+            className={openPanel === 'accounts' ? 'rotate-icon' : ''}
+            src={menuArrow as string}
+          />
+        </div>)}
+      {!address &&
+        <Button
+          className='button-outlined'
+          onClick={linkToAccountPage}
+        >
+          Create or connect account
+        </Button>}
     </div>
   );
 };

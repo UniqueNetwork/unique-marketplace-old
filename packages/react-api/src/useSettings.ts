@@ -5,6 +5,8 @@ import { useCallback, useEffect, useState } from 'react';
 
 import envConfig from '@polkadot/apps-config/envConfig';
 import { useFetch } from '@polkadot/react-hooks/useFetch';
+import { io } from 'socket.io-client';
+import { Socket } from 'socket.io-client/build/esm/socket';
 
 export type Settings = {
   blockchain?: {
@@ -21,16 +23,21 @@ export type Settings = {
   },
   error?: boolean;
   message?: string;
+  auction?: {
+    commission: number;
+    address: string;
+    socket: Socket;
+  }
 }
 
 export const useSettings = () => {
   const { fetchData } = useFetch();
   const [apiSettings, setApiSettings] = useState<Settings>();
   const { uniqueApi } = envConfig;
-  const apiUrl = process.env.NODE_ENV === 'development' ? '' : uniqueApi;
+  const apiUrl = uniqueApi;
 
   const getSettings = useCallback(() => {
-    const url = `${apiUrl}/api/settings`;
+    const url = `${apiUrl}/api/settings`; // todo why proxy? wat?
 
     fetchData<Settings>(url).subscribe((result: Settings) => {
       if (result?.blockchain) {
@@ -41,9 +48,23 @@ export const useSettings = () => {
         envConfig.contractAddress = result.blockchain.unique.contractAddress;
         envConfig.uniqueSubstrateApi = result.blockchain.unique.wsEndpoint;
 
-        setApiSettings(result);
-
-        console.log('envConfig', envConfig);
+        if (result.auction) {
+          const script = document.createElement('script');
+          script.src = "https://cdn.socket.io/4.4.1/socket.io.min.js"
+          script.onload = function() {
+            const socket = io(apiUrl, {
+              path: '/socket.io',
+              transports: ['websocket'],
+            });
+            socket.on("connect", () => {
+              result.auction!.socket = socket;
+              setApiSettings(result);
+            });
+          }
+          document.head.appendChild(script);
+        } else {
+          setApiSettings(result);
+        }
       }
     });
   }, [apiUrl, fetchData]);

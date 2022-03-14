@@ -142,6 +142,8 @@ class InputAddress extends React.PureComponent<Props, State> {
 
     // the options could be delayed, don't render without
     if (!hasOptions && !isDisabled) {
+      console.log('hasOptions',hasOptions);
+      console.log('isDisabled',isDisabled);
       // This is nasty, but since this things is non-functional, there is not much
       // we can do (well, wrap it, however that approach is deprecated here)
       return (

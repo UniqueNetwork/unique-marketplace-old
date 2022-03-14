@@ -51,22 +51,54 @@
   }
 
   .card-name {
-    margin-bottom: var(--gap);
-
-    &__title {
-      font: 500 16px/21px var(--font-roboto);
-      margin-bottom: calc(var(--gap) / 2);
-    }
-
-    &__field {
-      font: 400 12px/16px var(--font-inter);
-    }
-  }
-  .card-price {
     margin-bottom: calc(var(--gap) / 2);
 
     &__title {
-      font: 500 14px/16px var(--font-inter);
+      font: 500 18px/26px var(--font-inter);
+    }
+
+    &__field {
+      font: 400 14px/22px var(--font-inter);
+      color: #0085CC;
+    }
+  }
+  .card-price {
+    margin-bottom: calc(var(--gap) / 8);
+    display: flex;
+    align-items: center;
+
+    img {
+      margin-left: 4px;
+      margin-bottom: 1px;
+    }
+
+    &__title {
+      font: 500 18px/26px var(--font-inter);
+    }
+  }
+
+  .caption-row {
+    display: flex;
+    align-items: center;
+
+    > div:nth-of-type(2){
+      margin-left: calc(var(--gap) / 2);
+    }
+  }
+
+  .caption {
+    font: 400 12px/18px var(--font-inter);
+
+    &.grey {
+      color: #81858E;
+    }
+
+    &.green {
+      color: #2DBF15;
+    }
+
+    &.red {
+      color: #FF6335;
     }
   }
 

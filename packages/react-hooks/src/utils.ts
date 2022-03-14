@@ -92,6 +92,11 @@ export function fromStringToBnString (value: string, decimals: number): string {
   return (Number(bigValue) * Math.pow(10, decimals - decimalsFromLessZeroString)).toString();
 }
 
+export function shortAddress (address: string): string {
+ 
+    return `${address.substr(0, 5)}...${address.substr(-5, 5)}`;
+}
+
 export function formatStrBalance (value: BN | undefined = new BN(0), incomeDecimals?: number): string {
   if (!value || value.toString() === '0') {
     return '0';

@@ -25,8 +25,18 @@ export interface TokenInterface extends TokenDetailsInterface {
   collectionId: string;
   id: string;
 }
+export type BidType = {
+  amount: string, bidderAddress: string, createdAt: string, balance: string
+}
 
 export type OfferType = {
+  auction: {
+    bids: BidType[];
+    priceStep: string;
+    startPrice: string;
+    status: string;
+    stopAt: Date;
+  }
   collectionId: number;
   price: BN;
   seller: string;
@@ -75,7 +85,7 @@ export function useCollections () {
   const mountedRef = useIsMountedRef();
   const { getDetailedCollectionInfo } = useCollection();
   const { uniqueApi, uniqueCollectionIds } = envConfig;
-  const apiUrl = process.env.NODE_ENV === 'development' ? '' : uniqueApi;
+  const apiUrl = uniqueApi;
 
   const getTokensOfCollection = useCallback(async (collectionId: string, ownerId: string): Promise<string[]> => {
     if (!api || !collectionId || !ownerId) {

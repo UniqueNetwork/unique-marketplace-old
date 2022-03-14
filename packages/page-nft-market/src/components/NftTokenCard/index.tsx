@@ -10,8 +10,12 @@ import React, { useCallback } from 'react';
 import Image from 'semantic-ui-react/dist/commonjs/elements/Image';
 import Card from 'semantic-ui-react/dist/commonjs/views/Card';
 
-import { useDecoder, useSchema } from '@polkadot/react-hooks';
+import { useApi, useDecoder, useSchema } from '@polkadot/react-hooks';
 import { formatKsmBalance } from '@polkadot/react-hooks/useKusamaApi';
+import logoKusama from '../../../../../packages/apps/public/logos/kusama.svg';
+import { useTimeToFinishAuction } from '@polkadot/react-hooks/useTimeToFinishAuction';
+import { useBidStatus } from '@polkadot/react-hooks/useBidStatus';
+import { adaptiveFixed } from '@polkadot/react-components/util';
 
 interface Props {
   account: string | undefined;
@@ -23,7 +27,11 @@ interface Props {
 const NftTokenCard = ({ account, collectionId, openDetailedInformationModal, token }: Props): React.ReactElement<Props> => {
   const { collectionInfo, tokenName, tokenUrl } = useSchema(account, collectionId, token.tokenId);
   const { collectionName16Decoder, hex2a } = useDecoder();
-
+  const { bids, status, stopAt } = token.auction;
+  const timeToFinish = useTimeToFinishAuction(stopAt);
+   const { yourBidIsLeading, yourBidIsOutbid } = useBidStatus(bids, account);
+  const { systemChain } = useApi();
+  const currentChain = systemChain.split(' ')[0];
   const onCardClick = useCallback(() => {
     openDetailedInformationModal(collectionId, token.tokenId);
   }, [collectionId, openDetailedInformationModal, token]);
@@ -34,25 +42,47 @@ const NftTokenCard = ({ account, collectionId, openDetailedInformationModal, tok
       key={token.tokenId}
       onClick={onCardClick}
     >
-      { token && (
+      {token && (
         <Image
           src={tokenUrl}
           ui={false}
           wrapped
         />
       )}
-      { !!(token && collectionInfo) && (
+      {!!(token && collectionInfo) && (
         <Card.Content>
           <Card.Description>
             <div className='card-name'>
               <div className='card-name__title'>{hex2a(collectionInfo.tokenPrefix)} {`#${token.tokenId}`} {tokenName?.value}</div>
-              <div className='card-name__field'>{ collectionName16Decoder(collectionInfo.name)}</div>
-            </div>
-            { token.price && (
-              <div className='card-price'>
-                <div className='card-price__title'> {formatKsmBalance(new BN(token.price))} KSM</div>
+              <div className='card-name__field'>
+                <a href={`https://uniquescan.io/${currentChain}/collections/${collectionId}`}>
+                  {`${collectionName16Decoder(collectionInfo.name)} [${collectionId}]`}
+                </a>
               </div>
+            </div>
+            {token.price && (!status) && (
+              <>
+                <div className='card-price'>
+                  <div className='card-price__title'>{formatKsmBalance(new BN(token.price))}</div>
+                  <img width={16} src={logoKusama as string} />
+                </div>
+                <div className='caption grey'>Price</div>
+              </>
             )}
+            {/* {status === 'created' && ( */}
+              <>
+                <div className='card-price'>
+                  <div className='card-price__title'> {adaptiveFixed(Number(formatKsmBalance(new BN(token.price))), 4)}</div>
+                  <img width={16} src={logoKusama as string} />
+                </div>
+                <div className='caption-row'>
+                  {yourBidIsLeading && <div className='caption green'> Leading bid</div>}
+                  {yourBidIsOutbid && <div className='caption red'> Outbid</div>}
+                  {!yourBidIsLeading && !yourBidIsOutbid && <div className='caption grey'>{bids[0] ? 'Last bid' : 'Minimum bid '}</div>}
+                  <div className='caption'>{timeToFinish}</div>
+                </div>
+              </>
+            {/* )} */}
           </Card.Description>
           <Card.Meta>
             <span className='link'>View

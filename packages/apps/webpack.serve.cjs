@@ -25,6 +25,10 @@ module.exports = merge(
           changeOrigin: true,
           target: process.env.UNIQUE_API
         },
+        '/auction': {
+          changeOrigin: true,
+          target: process.env.UNIQUE_API
+        },
         '/api/settings': {
           changeOrigin: true,
           target: process.env.UNIQUE_API

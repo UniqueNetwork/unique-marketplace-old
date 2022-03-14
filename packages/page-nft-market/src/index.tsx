@@ -8,15 +8,22 @@ import React from 'react';
 import { Route, Switch } from 'react-router';
 import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
-import { NftDetails } from '@polkadot/react-components';
 // local imports and components
 import { AppProps as Props } from '@polkadot/react-components/types';
 import { useApi } from '@polkadot/react-hooks';
 
 import NftMarket from './containers/NftMarket';
+import { useSettings } from '@polkadot/react-api/useSettings';
+import NftCard from '@polkadot/react-components/NftCard';
 
 function PageNftMarketplace ({ account, basePath, openPanel, setOpenPanel }: Props): React.ReactElement<Props> {
   const { isApiConnected, isApiReady } = useApi();
+  const { apiSettings } = useSettings();
+  if (apiSettings?.auction) {
+    // todo socket.io
+  }
+
+  // todo https://dev-api.unique.network/Offer/562/72
 
   if (!isApiReady || !isApiConnected) {
     return (
@@ -33,8 +40,8 @@ function PageNftMarketplace ({ account, basePath, openPanel, setOpenPanel }: Pro
   return (
     <Switch>
       <Route path={`${basePath}/token-details`}>
-        <NftDetails
-          account={account || ''}
+        <NftCard
+        account={account || ''}
         />
       </Route>
       <Route path={basePath}>

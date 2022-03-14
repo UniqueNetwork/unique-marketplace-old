@@ -12,7 +12,7 @@ import Image from 'semantic-ui-react/dist/commonjs/elements/Image';
 import Loader from 'semantic-ui-react/dist/commonjs/elements/Loader';
 
 import envConfig from '@polkadot/apps-config/envConfig';
-import { TransferModal, WarningText } from '@polkadot/react-components';
+import { TransferModal, StartAuctionModal, WarningText } from '@polkadot/react-components';
 import formatPrice from '@polkadot/react-components/util/formatPrice';
 import { useBalance, useDecoder, useMarketplaceStages, useSchema } from '@polkadot/react-hooks';
 import { subToEth } from '@polkadot/react-hooks/utils';
@@ -20,16 +20,19 @@ import { subToEth } from '@polkadot/react-hooks/utils';
 import BuySteps from './BuySteps';
 import SaleSteps from './SaleSteps';
 import SetPriceModal from './SetPriceModal';
+import { useSettings } from '@polkadot/react-api/useSettings';
 
 interface NftDetailsProps {
   account: string;
 }
 
 function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetailsProps> {
+
   const query = new URLSearchParams(useLocation().search);
   const tokenId = query.get('tokenId') || '';
   const collectionId = query.get('collectionId') || '';
   const [showTransferForm, setShowTransferForm] = useState<boolean>(false);
+  const [showAuctionForm, setShowAuctionForm] = useState<boolean>(false);
   const [ethAccount, setEthAccount] = useState<string>();
   const [isInWhiteList, setIsInWhiteList] = useState<boolean>(false);
   const [lowKsmBalanceToBuy, setLowKsmBalanceToBuy] = useState<boolean>(false);
@@ -41,6 +44,7 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
   const [tokenPriceForSale, setTokenPriceForSale] = useState<string>('');
   const { cancelStep, checkWhiteList, deposited, formatKsmBalance, getKusamaTransferFee, getRevertedFee, kusamaAvailableBalance, readyToAskPrice, sendCurrentUserAction, setPrice, setReadyToAskPrice, tokenAsk, tokenInfo, transferStep } = useMarketplaceStages(account, ethAccount, collectionInfo, tokenId);
   const { contractAddress, escrowAddress, kusamaDecimals } = envConfig;
+  const { apiSettings } = useSettings();
 
   const uSellIt = tokenAsk && tokenAsk?.ownerAddr.toLowerCase() === ethAccount && tokenAsk.flagActive === '1';
   const uOwnIt = tokenInfo?.owner?.Substrate === account || tokenInfo?.owner?.Ethereum?.toLowerCase() === ethAccount || uSellIt;
@@ -112,12 +116,20 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
     setShowTransferForm(!showTransferForm);
   }, [showTransferForm]);
 
+  const toggleAuctionForm = useCallback(() => {
+    setShowAuctionForm(!showAuctionForm);
+  }, [showAuctionForm]);
+
   const onSell = useCallback(() => {
     sendCurrentUserAction('SELL');
   }, [sendCurrentUserAction]);
 
   const closeTransferModal = useCallback(() => {
     setShowTransferForm(false);
+  }, []);
+
+  const closeAuctionModal = useCallback(() => {
+    setShowAuctionForm(false);
   }, []);
 
   const checkIsInWhiteList = useCallback(async () => {
@@ -239,10 +251,18 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
             )}
             <div className='buttons'>
               { (uOwnIt && !uSellIt) && (
-                <Button
-                  content='Transfer'
-                  onClick={toggleTransferForm}
-                />
+                <>
+                  <Button
+                    content='Transfer'
+                    onClick={toggleTransferForm}
+                  />
+                  {apiSettings?.auction &&
+                    <Button
+                      content='Sell on Auction'
+                      onClick={toggleAuctionForm}
+                    />
+                  }
+                </>
               )}
               {(!account) && (
                 <div>
@@ -318,6 +338,16 @@ function NftDetails ({ account }: NftDetailsProps): React.ReactElement<NftDetail
               <TransferModal
                 account={account}
                 closeModal={closeTransferModal}
+                collection={collectionInfo}
+                tokenId={tokenId}
+                tokenOwner={tokenInfo?.owner}
+                updateTokens={onTransferSuccess}
+              />
+            )}
+            { (showAuctionForm && collectionInfo) && (
+              <StartAuctionModal
+                account={account}
+                closeModal={closeAuctionModal}
                 collection={collectionInfo}
                 tokenId={tokenId}
                 tokenOwner={tokenInfo?.owner}

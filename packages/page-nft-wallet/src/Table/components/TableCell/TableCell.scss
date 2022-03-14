@@ -1,0 +1,6 @@
+@import "../../../../assets/styles/index.scss";
+
+.table-cell {
+    padding: 8px 16px;
+    @include font-body(m);
+}

@@ -201,9 +201,9 @@ function Apps ({ className = '' }: Props): React.ReactElement<Props> {
                             <WarningText
                               className='warning no-margin'
                               text={(
-                                <>
-                                  Some features are currently hidden and will only become available once you connect your wallet. You can create new or add your existing substrate account on the <Link to='accounts'><span>account page</span></Link>
-                                </>
+                                <span>
+                                  Some features are currently hidden and will only become available once you connect your wallet. You can create new or add your existing substrate account on the<Link to='accounts'><span>account page</span></Link>
+                                </span>
                               )}
                             />
                             <br />
