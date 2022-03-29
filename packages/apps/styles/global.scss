@@ -684,6 +684,50 @@ button.ui.button,.ui--Button,.button-link {
   }
 }
 
+.ui.button.btn-outlined {
+  padding: 8px 24px;
+  background-color: var(--white-color) !important;
+  border-radius: 4px;
+  font-family: var(--font-roboto);
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+
+  &.primary {
+    color: var(--button-color);
+    border: 1px solid var(--button-color);
+
+    &:active {
+      opacity: 0.8;
+    }
+
+    &.get-ksm {
+      font-size: 12px !important;
+      padding: 4px !important;
+      margin-left: 3px !important;
+      line-height: 12px !important;
+      height: 24px;
+    }
+  }
+
+  &.error {
+    color: var(--error-color);
+    border: 1px solid var(--error-color);
+
+    &:active {
+      opacity: 0.8;
+    }
+  }
+
+  &:hover {
+    background-color: var(--button-background-hover) !important;
+  }
+
+  &.isDisabled  {
+    opacity: 0.4;
+  }
+}
+
 .unique-form {
   .form-field {
     margin: 12px 0;

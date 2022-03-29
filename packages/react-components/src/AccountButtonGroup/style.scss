@@ -3,42 +3,6 @@
     gap: 16px;
     align-items: center;
 
-    .btn-outlined {
-      padding: 8px 24px;
-      background-color: var(--white-color) !important;
-      border-radius: 4px;
-      font-family: var(--font-roboto);
-      font-size: 16px;
-      font-weight: 500;
-      cursor: pointer;
-
-      &.primary {
-        color: var(--button-color);
-        border: 1px solid var(--button-color);
-
-        &:active {
-          opacity: 0.8;
-        }
-      }
-
-      &.error {
-        color: var(--error-color);
-        border: 1px solid var(--error-color);
-
-        &:active {
-          opacity: 0.8;
-        }
-      }
-
-      &:hover {
-        background-color: var(--button-background-hover) !important;
-      }
-
-      &.isDisabled  {
-        opacity: 0.4;
-      }
-    }
-
     .btn-select {
       display: flex;
       flex-direction: column;

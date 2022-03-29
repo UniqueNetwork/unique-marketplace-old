@@ -1,6 +1,7 @@
 // Copyright 2017-2022 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import { RampInstantSDK } from '@ramp-network/ramp-instant-sdk';
 import React, { memo, useCallback, useContext } from 'react';
 import { NavLink } from 'react-router-dom';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
@@ -28,6 +29,19 @@ const PopupMenu = (props: Props) => {
     withdrawAllKSM(() => null, () => void getUserDeposit());
   }, [getUserDeposit, withdrawAllKSM]);
 
+  const handleGetKSMClickByRamp = useCallback(() => {
+    const RampModal = new RampInstantSDK({
+      containerNode: document.getElementById('root') as HTMLDivElement,
+      hostApiKey: envConfig.rampApiKey ?? '',
+      hostAppName: 'Unique Marketplace',
+      hostLogoUrl: 'https://uniquescan.io/logos/unique.svg',
+      swapAsset: 'KSM',
+      variant: 'auto'
+    });
+
+    RampModal.show();
+  }, []);
+
   return (
     <div className={`manage-balances ${isPopupActive ? 'popup active' : 'popup'}`}>
       <div className='main-balance'>
@@ -37,6 +51,12 @@ const PopupMenu = (props: Props) => {
         <div className='balance-line'>
           {formatKsmBalance(freeKusamaBalance)}
           <span className='unit'>KSM</span>
+          <Button
+            className={'btn-outlined primary get-ksm'}
+            onClick={handleGetKSMClickByRamp}
+          >
+            Get KSM
+          </Button>
         </div>
         <div className='balance-line'>
           { deposited?.gtn(minPrice) ? formatKsmBalance(deposited) : 0}
