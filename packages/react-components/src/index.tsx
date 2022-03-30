@@ -35,6 +35,7 @@ export { default as Expander } from './Expander';
 export { default as Extrinsic } from './Extrinsic';
 export { default as FormatBalance } from './FormatBalance';
 export { default as Forget } from './Forget';
+export { default as GetKSMModal } from './GetKSMModal';
 export { default as HelpTooltip } from './HelpTooltip';
 export { default as Icon } from './Icon';
 export { default as IdentityIcon } from './IdentityIcon';

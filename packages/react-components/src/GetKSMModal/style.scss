@@ -1,0 +1,19 @@
+.modal-text{
+  font-family: var(--font-roboto);
+  font-weight: var(--font-weight-normal);
+  color: var(--input-text-color);
+  font-size: 16px;
+  line-height: 24px;
+  margin-top: -2px;
+}
+
+.modal-btn{
+  text-align: right;
+
+  a{
+    background-color: var(--link-color);
+    color: var(--white-color);
+    padding: 8px 24px;
+    border-radius: 4px;
+  }
+}

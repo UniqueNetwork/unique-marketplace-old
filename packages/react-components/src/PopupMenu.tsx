@@ -1,7 +1,6 @@
 // Copyright 2017-2022 @polkadot/apps, UseTech authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { RampInstantSDK } from '@ramp-network/ramp-instant-sdk';
 import React, { memo, useCallback, useContext } from 'react';
 import { NavLink } from 'react-router-dom';
 import Button from 'semantic-ui-react/dist/commonjs/elements/Button/Button';
@@ -10,8 +9,8 @@ import Popup from 'semantic-ui-react/dist/commonjs/modules/Popup';
 import ContractContext from '@polkadot/apps/ContractContext/ContractContext';
 import question from '@polkadot/apps/images/question.svg';
 import envConfig from '@polkadot/apps-config/envConfig';
-import { ChainBalance } from '@polkadot/react-components';
-import { useBalances, useNftContract } from '@polkadot/react-hooks';
+import { ChainBalance, GetKSMModal } from '@polkadot/react-components';
+import { useBalances, useNftContract, useToggle } from '@polkadot/react-hooks';
 import { formatKsmBalance } from '@polkadot/react-hooks/useKusamaApi';
 
 interface Props {
@@ -23,24 +22,12 @@ const PopupMenu = (props: Props) => {
   const { account, deposited, ethAccount, getUserDeposit } = useContext(ContractContext);
   const { freeBalance, freeKusamaBalance } = useBalances(account);
   const { withdrawAllKSM } = useNftContract(account, ethAccount);
+  const [isGetKSMModalOpen, toggleGetKSMModal] = useToggle();
   const { minPrice } = envConfig;
 
   const revertMoney = useCallback(() => {
     withdrawAllKSM(() => null, () => void getUserDeposit());
   }, [getUserDeposit, withdrawAllKSM]);
-
-  const handleGetKSMClickByRamp = useCallback(() => {
-    const RampModal = new RampInstantSDK({
-      containerNode: document.getElementById('root') as HTMLDivElement,
-      hostApiKey: envConfig.rampApiKey ?? '',
-      hostAppName: 'Unique Marketplace',
-      hostLogoUrl: 'https://uniquescan.io/logos/unique.svg',
-      swapAsset: 'KSM',
-      variant: 'auto'
-    });
-
-    RampModal.show();
-  }, []);
 
   return (
     <div className={`manage-balances ${isPopupActive ? 'popup active' : 'popup'}`}>
@@ -53,7 +40,7 @@ const PopupMenu = (props: Props) => {
           <span className='unit'>KSM</span>
           <Button
             className={'btn-outlined primary get-ksm'}
-            onClick={handleGetKSMClickByRamp}
+            onClick={toggleGetKSMModal}
           >
             Get KSM
           </Button>
@@ -94,6 +81,12 @@ const PopupMenu = (props: Props) => {
           )}
         </div>
       </div>
+      { isGetKSMModalOpen && (
+        <GetKSMModal
+          key='modal-transfer'
+          onClose={toggleGetKSMModal}
+        />
+      )}
     </div>
   );
 };
