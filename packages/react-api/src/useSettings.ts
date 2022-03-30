@@ -42,8 +42,6 @@ export const useSettings = () => {
         envConfig.uniqueSubstrateApi = result.blockchain.unique.wsEndpoint;
 
         setApiSettings(result);
-
-        console.log('envConfig', envConfig);
       }
     });
   }, [apiUrl, fetchData]);
