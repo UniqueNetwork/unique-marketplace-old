@@ -5253,6 +5253,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@ramp-network/ramp-instant-sdk@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@ramp-network/ramp-instant-sdk@npm:3.0.0"
+  dependencies:
+    body-scroll-lock: ^2.6.4
+  checksum: fb9965f933df1cad7757f653f57219d61cbfbb1ca83f01fa25d07a3cfff5c163eb32556dd98b4c8138ced2c594bae542dae382896e89e1b2adf614b6a61d805a
+  languageName: node
+  linkType: hard
+
 "@rollup/plugin-alias@npm:^3.1.8":
   version: 3.1.8
   resolution: "@rollup/plugin-alias@npm:3.1.8"
@@ -8435,6 +8444,13 @@ __metadata:
     raw-body: 2.4.2
     type-is: ~1.6.18
   checksum: 9197a300a6580b8723c7b6b1e22cebd5ba47cd4a6fd45c153350efcde79293869ddee8d17d95fb52724812d649d89d62775faab072608d3243a0cbb00582234e
+  languageName: node
+  linkType: hard
+
+"body-scroll-lock@npm:^2.6.4":
+  version: 2.7.1
+  resolution: "body-scroll-lock@npm:2.7.1"
+  checksum: 7a6b57b9315dad3639ac5aa781ed25c2275a53b3aa1527a580eaaf17096ca5c93293c99c2d12ffc92a11388ac7004c8aa943ac9c356717a393727c9216e183e6
   languageName: node
   linkType: hard
 
@@ -22602,6 +22618,7 @@ resolve@^2.0.0-next.3:
     "@polkadot/api-contract": ^7.8.2-4
     "@polkadot/dev": ^0.65.101
     "@polkadot/ts": ^0.4.16
+    "@ramp-network/ramp-instant-sdk": ^3.0.0
     "@types/bn.js": ^4.11.6
     "@types/chart.js": ^2.9.35
     "@types/file-saver": ^2.0.5

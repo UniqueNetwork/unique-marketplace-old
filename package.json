@@ -60,6 +60,7 @@
   "dependencies": {
     "@metamask/detect-provider": "^1.2.0",
     "@polkadot/api-contract": "^7.8.2-4",
+    "@ramp-network/ramp-instant-sdk": "^3.0.0",
     "@types/lodash": "^4.14.168",
     "@types/lodash.memoize": "^4.1.6",
     "@types/react-infinite-scroller": "^1.2.1",

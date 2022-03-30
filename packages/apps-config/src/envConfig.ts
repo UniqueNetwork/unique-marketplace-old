@@ -18,6 +18,7 @@ export type EnvConfigType = {
   kusamaDecimals: number; // 12
   maxGas?: number; // 1000000000000
   minPrice: number;
+  rampApiKey?: string;
   quoteId?: number; // 2
   uniqueCollectionIds?: string[]; // ['23']
   uniqueApi: string;
@@ -47,6 +48,7 @@ declare global {
       KUSAMA_DECIMALS?: number; // 12
       MAX_GAS?: number; // 1000000000000
       MIN_PRICE?: number;
+      RAMP_API_KEY?: string;
       QUOTE_ID?: number; // 2
       UNIQUE_API?: string;
       UNIQUE_BLOCK_EXPLORER?: string;
@@ -77,6 +79,7 @@ const envConfig: EnvConfigType = {
   kusamaDecimals: +window.ENV?.KUSAMA_DECIMALS || process.env.KUSAMA_DECIMALS,
   maxGas: +window.ENV?.MAX_GAS || process.env.MAX_GAS,
   minPrice: +window.ENV?.MIN_PRICE || process.env.MIN_PRICE,
+  rampApiKey: window.ENV?.RAMP_API_KEY || process.env.RAMP_API_KEY,
   quoteId: +window.ENV?.QUOTE_ID || process.env.QUOTE_ID,
   uniqueApi: window.ENV?.UNIQUE_API || process.env.UNIQUE_API,
   uniqueBlockExplorer: window.ENV?.UNIQUE_BLOCK_EXPLORER || process.env.UNIQUE_BLOCK_EXPLORER,
@@ -84,7 +87,7 @@ const envConfig: EnvConfigType = {
   uniqueSubstrateApi: window.ENV?.UNIQUE_SUBSTRATE_API || process.env.UNIQUE_SUBSTRATE_API,
   uniqueSubstrateApiRpc: window.ENV?.UNIQUE_SUBSTRATE_API_RPC || process.env.UNIQUE_SUBSTRATE_API_RPC,
   value: +window.ENV?.VALUE || process.env.VALUE,
-  version: window.ENV?.VERSION || process.env.VERSION,
+  version: window.ENV?.VERSION || process.env.VERSION
 };
 
 export default envConfig;
