@@ -10,7 +10,7 @@ import { ProtobufAttributeType } from '@polkadot/react-components/util/protobufU
 import { useApi } from '@polkadot/react-hooks/useApi';
 import { useDecoder } from '@polkadot/react-hooks/useDecoder';
 
-export type SchemaVersionTypes = 'ImageURL' | 'Unique';
+export type SchemaVersionTypes = 'ImageURL' | 'Unique' | 'TokenURI';
 
 export interface NftCollectionInterface {
   access?: 'Normal' | 'WhiteList'
