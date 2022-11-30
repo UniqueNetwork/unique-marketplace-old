@@ -43,7 +43,7 @@ const TreatsFilter = ({ filters, setFilters }: PropTypes): ReactElement => {
     if (filters.traitsCount.includes(item)) {
       newState = { ...filters, traitsCount: filters.traitsCount.filter((traitsCount) => traitsCount !== item) };
     } else {
-      newState = { ...filters, traitsCount: [...filters.traitsCount, item] };
+      newState = { ...filters, traitsCount: [item] };
     }
 
     setFilters(newState);
